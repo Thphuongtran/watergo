@@ -1,0 +1,408 @@
+<div id='app'>
+   <div v-if='loading == false' class='page-chat'>
+
+      <div class='appbar'>
+         <div class='appbar-top'>
+            <div class='leading'>
+               <button @click='goBack' class='btn-action'>
+                  <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 7.44772 0.447715 7 1 7H18.5C19.0523 7 19.5 7.44772 19.5 8C19.5 8.55228 19.0523 9 18.5 9H1C0.447715 9 0 8.55228 0 8Z" fill="#252831"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/></svg>
+               </button>
+               <div class='leading-group'>
+                  <div class='store-avatar'>
+                     <img v-if='current_user_account == "store"' :src="get_image_upload(user.user_image)">
+                     <img v-if='current_user_account == "user"' :src="get_image_upload(store.store_image)">
+                  </div>
+                  <div v-if='current_user_account == "store"' class='user-info'>
+                     <div class="tt01">{{ user.user_fullname }}</div>
+                     <div class="tt02">Active</div>
+                  </div>
+                  <div v-if='current_user_account == "user"' class='user-info'>
+                     <div class="tt01">{{ store.store_name }}</div>
+                     <div class="tt02">Active</div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class='appbar-bottom'>
+            <div v-if='product != null' class='product-pin'>
+               <div class='leading'>
+                  <img :src="get_image_upload(product.product_image)">
+               </div>
+               <div class='contents'>
+                  <div class='tt01'>{{ product.name }}</div>
+                  <div class='tt02'>{{ get_product_quantity(product) }}</div>
+                  <div class='tt03'>{{ common_get_product_price(product.price ) }}</div>
+               </div>
+            </div>
+         </div>
+
+      </div>
+
+
+      <ul class='list-messenger'>
+
+         <li class='messenger-time'>
+            <span>NOV 26,2022  18:10 pm</span>
+         </li>
+         
+         <li
+            v-if='filter_messengers.length > 0'
+            v-for='(messenger, messengerKey) in filter_messengers' 
+            :class='get_class_layout_for_message( messenger.user_id)'
+            :key='messengerKey'
+         >
+            <div class='avatar'>
+               <img v-if='current_user_account == "store"' :src="get_image_upload(store.store_image)">
+               <img v-if='current_user_account == "user"' :src="get_image_upload(user.user_image)">
+            </div>
+
+            <div class='gr-messenger'>
+               <div v-for='( message, messageKey ) in messenger.messages' :key='messageKey' 
+                  class='messages'>
+                  {{ message.content }}
+               </div>
+            </div>
+
+         </li>
+         
+      </ul>
+
+   </div>
+
+   <div class='box-form-chat'>
+      <div class='auto-message-wrapper'>
+         <div class='auto-message'>
+            <div 
+               @click='btn_send_robot_message(rb_message)'
+               v-for='( rb_message, rb_key) in robots_message' 
+               :key='rb_key'
+               class='item'>
+               {{ rb_message }}
+            </div>
+         </div>
+      </div>
+      <div class='box-chat'>
+         <div v-if='current_user_account == "store"' class='avatar'><img :src="get_image_upload(store.store_image)"></div>
+         <div v-if='current_user_account == "user"' class='avatar'><img :src="get_image_upload(user.user_image)"></div>
+         <label class='input-chat'>
+            <input v-model='chat_content' type='text' placeholder='Message...'>
+            <span @click='btn_send_message' class='icon'>
+               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <circle cx="14" cy="14" r="14" fill="#2790F9"/>
+               <path d="M8.16226 20.93L22.649 14.7582C22.7988 14.6948 22.9265 14.5891 23.0162 14.4541C23.106 14.3191 23.1538 14.1609 23.1538 13.9991C23.1538 13.8374 23.106 13.6792 23.0162 13.5442C22.9265 13.4092 22.7988 13.3035 22.649 13.2401L8.16226 7.06833C8.03682 7.01395 7.89973 6.99147 7.76336 7.0029C7.627 7.01434 7.49564 7.05934 7.38114 7.13384C7.26664 7.20834 7.1726 7.30999 7.10751 7.42964C7.04242 7.54928 7.00833 7.68315 7.0083 7.81917L7 11.6229C7 12.0354 7.30717 12.3902 7.72226 12.4397L19.4528 13.9991L7.72226 15.5503C7.30717 15.6081 7 15.9629 7 16.3754L7.0083 20.1791C7.0083 20.7649 7.61434 21.1692 8.16226 20.93Z" fill="white"/>
+               </svg>
+            </span>
+
+         </label>
+      </div>
+   </div>
+
+   <div v-if='loading == true'>
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
+   </div>
+</div>
+
+<script type='module'>
+
+var { createApp } = Vue;
+
+createApp({
+   data (){
+      return {
+         loading: false,
+
+         product_id: 0,
+         conversation_id: 0,
+
+         current_user_account: '',
+         current_user_id: 0,
+
+         messengers: [],
+         store: {
+            store_id: 0,
+            store_name: 'Store',
+            store_image: ''
+         },
+         
+         product: null,
+
+         user: {
+            user_id: 0,
+            user_fullname: 'User',
+            user_image: ''
+         },
+
+         chat_content: '',
+         list_id_messenger: [],
+
+         robots_message: [
+            'Mặt hàng này còn không?',
+            'Bạn có ship hàng không?',
+            'Mặt hàng này còn không?'
+         ]
+      }
+   },
+   methods: {
+
+      goBack(){ window.goBack();},
+      common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
+      get_image_upload( url ){ return window.get_image_upload( url ); },
+      get_product_quantity(product){ return window.get_product_quantity(product)},
+
+      get_class_layout_for_message( message_user_id  ){
+
+         if( this.current_user_account == 'store' && message_user_id == this.current_user_id ){
+            return 'from-user';
+         }else{
+            return 'to-user';
+         }
+
+         if( this.current_user_account == 'user' && message_user_id == this.current_user_id ){
+            return 'from-user';
+         }else{
+            return 'to-user';
+         }
+      },
+
+      async get_new_messenger_per_second(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_newest_messenger');
+         form.append('conversation_id', parseInt(this.conversation_id));
+         form.append('list_id_messenger', JSON.stringify( this.list_id_messenger));
+         var r = await window.request(form);
+         if(r != undefined){
+            if( r.message == 'chat_found' ){
+               this.messengers.push( ...r.data);
+            }
+         }
+
+      },
+
+      async btn_send_robot_message(rb_message ){
+         // TESTING
+         var _map = [
+            {conversation_id: 1, message_id: 1, content: 'abc', user_id: 1},
+            {conversation_id: 1, message_id: 2, content: 'abc', user_id: 22},
+            {conversation_id: 1, message_id: 3, content: 'abc', user_id: 22},
+            {conversation_id: 1, message_id: 4, content: 'abc', user_id: 22},
+            {conversation_id: 1, message_id: 5, content: 'abc', user_id: 1}
+         ];
+
+         // RESULT
+         // var result = [
+         //    [{conversation_id: 1, content: 'abc', message_id: 1, user_id: 1}],
+         //    [
+         //       {conversation_id: 1, content: 'abc', message_id: 2, user_id: 22},
+         //       {conversation_id: 1, content: 'abc', message_id: 3, user_id: 22},
+         //       {conversation_id: 1, content: 'abc', message_id: 4, user_id: 22},
+         //    ],
+         //    [{conversation_id: 1, content: 'abc',  message_id: 5, user_id: 1}]
+         // ];
+
+            var result = [];
+            var currentGroup = [];
+
+            for (var i = 0; i < _map.length; i++) {
+               var message = _map[i];
+
+               if (currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_id !== message.user_id) {
+                  currentGroup = [];
+                  result.push(currentGroup);
+               }
+
+               currentGroup.push({
+                  conversation_id: message.conversation_id,
+                  content: message.content,
+                  message_id: message.message_id,
+                  user_id: message.user_id
+               });
+            }
+            console.log(result)
+      },
+
+      async btn_send_message(){
+         if( this.chat_content.length > 0 ){
+            var form = new FormData();
+            form.append('action', 'atlantis_send_messenger');
+            form.append('conversation_id', this.conversation_id);
+            form.append('chat_content', this.chat_content);
+            var r = await window.request(form);
+            if( r != undefined){
+               if( r.message == 'messenge_send_ok' ){
+                  // GET id messenger
+                  // refresh
+                  this.messengers.push( r.data );
+               }
+            }
+            console.log(r);
+            this.chat_content = '';
+         }
+      },
+
+      async get_messages(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_messages');
+         form.append('conversation_id', parseInt(this.conversation_id));
+
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if(res.message == 'message_found'){
+               res.data.every( item => this.list_id_messenger.push( parseInt(item.message_id)));
+               this.messengers.push(...res.data);
+            }
+         }
+      },
+
+
+      isLastItem(array, item) {
+         var lastIndex = array.length - 1;
+         return array.indexOf(item) === lastIndex;
+      },
+
+      async get_product(){
+         var form = new FormData();
+         form.append('action', 'atlantis_find_product');
+         form.append('product_id', this.product_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            let res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'product_found' ){
+               this.product = res.data;
+            }
+         }
+
+      },
+
+      async get_product_newest(){
+         var form = new FormData();
+         form.append('action', 'atlantis_find_product_newest');
+         form.append('store_id', this.store.store_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            let res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'product_found' ){
+               this.product= res.data;
+            }
+         }
+      },
+      
+   },
+
+   computed: {
+
+      filter_messengers(){
+         var _filter_messengers = [];
+
+         if(this.messengers.length > 0 ){
+            for (let i = 0; i < this.messengers.length; i++) {
+               // var current_id = this.messengers[i].user_id;
+               // var last_id = null;
+
+               // if (this.messengers[i - 1] !== undefined) {
+               //    last_id = this.messengers[i - 1].user_id;
+               // }
+               // // Check if the current_id already exists in this.messengers
+               // const existingIndex = _filter_messengers.findIndex(
+               //    (item) => item.user_id === current_id
+               // );
+               // if (existingIndex !== -1) {
+               //    // If the current_id exists, push the message to the existing item
+               //    _filter_messengers[existingIndex].messages.push({
+               //       content: this.messengers[i].content
+               //    });
+               // } else {
+               //    // If the current_id doesn't exist, add a new item to this.messengers
+               //    _filter_messengers.push({
+               //    user_id: this.messengers[i].user_id,
+               //       messages: [
+               //          { content: this.messengers[i].content }
+               //       ],
+               //    });
+               // }
+
+            }
+         }
+
+         return _filter_messengers;
+      }
+
+   },
+
+   async created(){
+
+      this.loading = true;
+      const urlParams   = new URLSearchParams(window.location.search);
+      this.conversation_id  = urlParams.get('conversation_id');
+      this.product_id       = urlParams.get('product_id');
+
+
+      if(this.conversation_id != undefined || this.conversation_id != null ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_group_conversations');
+         form.append('conversation_id', this.conversation_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+
+            if( res.message == 'group_conversation_found' ){
+               // STORE
+               this.store.store_id = res.data.store_id;
+               this.store.store_image = res.data.store_image;
+               this.store.store_name = res.data.store_name;
+               // USER
+               this.user.user_id = res.data.user_id;
+               this.user.user_fullname = res.data.fullname == null ? res.data.display_name : res.data.fullname;
+               this.user.user_image = res.data.user_image == null ? 'avatar-dummy.png' : res.data.user_image;
+            }
+         }
+      }
+
+      // GET PRODUCT
+      if( this.product_id != null ){
+         await this.get_product();
+      }else{
+         await this.get_product_newest();
+      }
+
+      // GET USER ACCOUNT
+      var userAccountRequest = new FormData();
+      userAccountRequest.append('action', 'atlantis_get_current_user_account');
+      var _requestAccount = await window.request(userAccountRequest);
+
+      if( _requestAccount != undefined ){
+         var _res = JSON.parse( JSON.stringify(_requestAccount));
+         if( _res.message == 'user_ok'){
+            if(_res.data.user_account == 'store'){
+               this.current_user_account = 'store';
+               this.current_user_id = _res.data.user_id; 
+            }else{
+               this.current_user_account = 'user';
+               this.current_user_id = _res.data.user_id;
+            }
+         }else{
+            this.loading = true;
+         }
+      }
+
+
+      // // GET MESSAGES
+      if( this.conversation_id != null ){
+         await this.get_messages();
+      }else{
+         this.loading = true;
+      }
+
+      this.loading = false;
+
+      console.log(this.messages);
+
+      // setInterval( async () => {
+      //    await this.get_new_messenger_per_second();
+      // }, 2000);
+
+   }
+}).mount('#app');
+</script>

@@ -1,0 +1,93 @@
+.appbar{
+   padding: 0 15px;
+   display: flex;
+   flex-flow: column nowrap;
+   height: auto;
+   align-items: center;
+   width: 100%;
+   .appbar-top{
+      min-height: 56px;
+      width: 100%;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: space-between;
+
+   }
+   .leading{
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+   }
+
+   .btn-action{
+      margin-right: 15px;
+   }
+
+   .btn-text{
+      display: flex;
+      align-items: center;
+      .text{ margin-left: 5px;}
+   }
+   
+   .leading-title{
+      font-weight: 600;
+      font-size: 20px;
+      color: #252831;
+
+      .badge{
+         color: #8F8F8F;
+         font-weight: 400;
+         font-size: 16px;
+         margin: 0 5px;
+      }
+   }
+
+   .action{
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+   }
+
+   .leading-filter{
+      margin: 0 10px;
+      color: #2790F9;
+      .btn-action{
+         margin: 0;
+         font-weight: 500;
+         font-size: 14px;
+         color: #2790F9;
+      }
+   }
+
+   .appbar-bottom{
+		width: 100%;
+   }
+
+}
+
+.appbar-wrapper{
+	background: #2790F9;
+	
+	.leading-title{
+		color: white;
+	}
+	.appbar-bottom{
+		width: 100%;
+		display: flex;
+	}
+	
+	.input-search{
+		margin: 0px 15px;
+		margin-bottom: 10px;
+		
+		input{
+			padding-top: 12px;
+			padding-bottom: 12px;
+		}
+		
+		.icon-search{
+			top: 10px;
+		}
+	}
+}

@@ -1,0 +1,372 @@
+@import '_utils.scss';
+@import '_progess.scss';
+@import '_user.scss';
+@import '_ios_switch.scss';
+@import '_radio_button.scss';
+@import '_banner_notify.scss';
+@import '_home.scss';
+@import '_product.scss';
+@import '_date_table.scss';
+@import '_fake_checkbox.scss';
+@import '_support.scss';
+@import '_modal.scss';
+@import '_simmer.scss';
+@import '_dropdown.scss';
+
+// .user-extra-classes{
+//    background: #E4E4E4;
+// }
+
+.gr-email-verify{
+   display: flex;
+   flex-flow: row wrap;
+   align-items: center;
+   margin-top: 5px;
+   button{
+      width: 50px;
+      font-size: 12px;
+      margin-top: 0;
+   }
+}
+
+.group-button{
+   display: flex;
+   flex-flow: column nowrap;
+   align-items: center;
+
+}
+
+.input-texture{
+   border: 1px solid black;
+   border-radius: 8px;
+   padding: 12px 15px;
+}
+
+.button-texture{
+   width: 100%;
+   font-size: 14px;
+}
+
+button{
+   display: block;
+   -webkit-appearance: none;
+   color: black;
+   padding: 10px 20px;
+   margin: 8px 0;
+   width: 100%;
+   border: none; outline: none; background: none;
+   border-radius: 8px;
+
+}
+
+input{
+   width: 100%;
+   @extend .input-texture;
+   &::placeholder{
+      color: #A2A2A2;
+      font-size: 14px;
+   }
+   &[type='number']{
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+   }
+}
+
+.form-group02{
+   margin-bottom: 20px;
+}
+
+.input{
+   &-style02{
+      border: none;
+      background: #F9F9F9;
+      font-size: 16px;
+      height: 42px;
+      font-weight: 400;
+   }
+}
+
+.label{
+   &-style02{
+      font-size: 14px;
+      margin-bottom: 5px;
+      font-weight: normal;
+      color: #666666;
+   }
+}
+
+.container{
+   width: 80%;
+   margin: auto;
+}
+
+.form-group{
+   display: flex;
+   flex-flow: column nowrap;
+   margin-bottom: 10px;
+
+   &.switch{
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+   }
+}
+
+.label{
+   font-size: 14px;
+   margin: 5px 0;
+}
+
+.ttl-01{
+   margin: 10px 0;
+   color: #7E7E7E;
+   text-align: center;
+   font-size: 14px;
+}
+
+.box-input{
+   display: flex;
+   flex-flow: row nowrap;
+   justify-content: center;
+   margin: 10px 0;
+   input{
+      font-size: 16px;
+      padding: 0;
+      margin: 0 10px;
+      -webkit-appearance: none;
+      text-align: center;
+      width: 45px;
+      height: 45px;
+      border: none;
+      background: white;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.14);
+      border-radius: 10px;
+      &:disabled{
+         box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.14);
+      }
+   }
+}
+
+.button{
+   background: #2636EE;
+   color: white;
+   @extend .button-texture;
+
+   &-outline{
+      display: block;
+      @extend .button-texture;
+      border: 1px solid #2636EE;
+      color: #2636EE;
+   }
+
+   &-link{
+      font-size: 14px;
+      font-weight: 500;
+      margin: 12px 0;
+      color: #2636EE;
+      padding: 0;
+      text-align: left;
+      display: inline-block;
+   }
+
+   &-logo{
+      border: 1px solid black;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: center;
+      @extend .button-texture;
+
+      .text{
+         text-align: left;
+         width: 140px;
+      }
+      img{
+         width: 16px;
+         margin-right: 20px;
+         margin-left: 20px;
+      }
+   }
+
+
+   &.small{
+      padding: 10px 8px;
+      border-radius: 5px;
+      font-size: 14px;
+   }
+
+   &.style01{
+      width: 240px;
+      height: 40px;
+      border-radius: 5px;
+   }
+
+}
+
+.badge-banner{
+   display: flex;
+   flex-flow: column nowrap;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   margin-bottom: 120px;
+
+   img{
+      width: 64px; height: 64px;
+      margin-bottom: 20px;
+   }
+   h3{
+      font-size: 28px;
+      margin-bottom: 20px;
+   }
+}
+
+
+.list-tile{
+   display: flex;
+   flex-flow: column nowrap;
+   justify-content: flex-start;
+   align-items: center;
+
+   .tile-items{
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      position: relative;
+      padding: 12px 0;
+      border-bottom: 4px solid #EAEFF4;
+      border-radius: 0;
+      margin: 0;
+	   &:last-child{
+		   border-bottom: none;
+	   }
+	   
+	   .title{
+		   margin-left: 15px;
+		   font-size: 16px;
+		   color: #271515;
+	   }
+	   
+	   img{
+		   width: 28px;
+	   }
+	   
+      &:after{
+         position: absolute;
+         content: '';
+         border: solid black;
+         border-width: 0 2px 2px 0;
+         display: inline-block;
+         padding: 4px;
+         transform: rotate(-45deg);
+         top: 50%;
+         right: 0;
+      }
+
+      &.no-arrow{&:after{display: none;}}
+	   
+   }
+
+
+   &.col3{
+		li{
+			width: 100%;
+			display: flex;
+			flex-flow: row nowrap;
+			align-items: center;
+			padding: 10px 15px;
+			border-bottom: 5px solid #F1F1F1;
+			
+			.leading{
+				margin-right: 10px;
+			}
+			.contents{
+				
+			}
+			.address{
+				font-size: 14px;
+				margin-bottom: 5px;
+			}
+			.gr-horizontal{
+				font-size: 12px;
+				color: #666666;
+				margin-bottom: 5px;
+			}
+			.actions{
+				margin-left: auto;
+				color: #2636EE;
+				button{
+					padding: 0;
+					color: #2636EE;
+				}
+			}
+         .badge-default{
+            color: #2636EE;
+            border: 1px solid #2636EE;
+            font-size: 12px;
+            padding: 2px 8px;
+         }
+		}
+	}	
+}
+
+
+/*
+   Box STORE VIEW
+*/
+
+.box-store-review{
+   background: #F7F7F7;
+   border-radius: 8px;
+   padding: 10px;
+   display: flex;
+   flex-flow: column nowrap;
+   margin-top: 15px;
+
+   .on-head{
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      .rating-img{ width: 14px; margin-right: 4px; }
+      .rating-point{
+         font-size: 14px;
+         color: #3B4249;
+      }
+   }
+
+   .contents{
+      margin-top: 5px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #3B4249;
+   }
+
+   .title{
+      margin-bottom: 2px;
+      font-weight: 400;
+   }
+
+   .on-right{
+      display: flex;
+      align-items: center;
+   }
+}
+
+
+// END Box STORE VIEW
+
+.page-settings{
+   padding: 0 15px;
+   margin: 0 -15px;
+   height: 100vh;
+
+   &.extra-color{
+      background: #E4E4E4;
+   }
+}
+
