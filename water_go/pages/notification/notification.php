@@ -12,7 +12,7 @@ if( $notificatio_page == 'notification' ){
  
 if($code == 'order-success'){ 
 ?>
-<div class='banner'>
+<!-- <div class='banner'>
    <div class='banner-head'>
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -25,11 +25,11 @@ if($code == 'order-success'){
    <div class='banner-footer'>
       <a href='<?php echo WATERGO_BACK; ?>' class='btn btn-outline'>Exit</a>
    </div>
-</div>
+</div> -->
 <?php } ?>
 
 <?php if($code == 'review-success'){ ?>
-<div class='banner'>
+<!-- <div class='banner'>
    <div class='banner-head'>
       <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="65" cy="65" r="65" fill="#E9E9E9"/>
@@ -59,7 +59,7 @@ if($code == 'order-success'){
    <div class='banner-footer'>
       <a href='<?php echo WATERGO_BACK; ?>' class='btn btn-outline'>Exit</a>
    </div>
-</div>
+</div> -->
 <?php } ?>
 
 <?php if( $code == 'change-password-success'){ ?>
@@ -78,10 +78,10 @@ if($code == 'order-success'){
    </div>
 </div>
 
-<?php // } ?>
+<?php } ?>
 
-<?php //if( $code == 'register-success'){ ?>
-<div class='banner'>
+<?php if( $code == 'register-success'){ ?>
+<!-- <div class='banner'>
    <div class='banner-head'>
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -94,12 +94,12 @@ if($code == 'order-success'){
    <div class='banner-footer'>
       <a href='<?php echo get_bloginfo('url'); ?>/authentication?auth_page=auth-login' class='btn btn-outline'>Exit</a>
    </div>
-</div>
+</div> -->
 
 <?php } ?>
 
 <?php if( $code == 'reset-password-success'){ ?>
-<div class='banner'>
+<!-- <div class='banner'>
    <div class='banner-head'>
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -113,7 +113,7 @@ if($code == 'order-success'){
    <div class='banner-footer'>
       <a href='<?php echo get_bloginfo('url'); ?>/authentication?auth_page=auth-login' class='btn btn-outline'>Exit</a>
    </div>
-</div>
+</div> -->
 
 <?php } ?>
 

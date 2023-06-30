@@ -14,6 +14,7 @@
    $language   = isset( getallheaders()['app_language'] ) != '' ? getallheaders()['app_language'] : '';
    $latitude   = isset( getallheaders()['app_latitude'] ) != '' ? getallheaders()['app_latitude'] : '';
    $longitude  = isset( getallheaders()['app_longitude'] ) != '' ? getallheaders()['app_longitude'] : '';
+   $user_token  = isset( getallheaders()['user_token'] ) != '' ? getallheaders()['user_token'] : '';
 
 ?>
 <!DOCTYPE html>

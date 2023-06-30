@@ -87,7 +87,6 @@ createApp({
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
 
-      gotoHome(){ window.gotoHome();},
       gotoAuthForgetPassword(){ window.gotoAuthForgetPassword()},
       gotoAuthRegister(){ window.gotoAuthRegister()},
 
@@ -105,9 +104,9 @@ createApp({
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
 
-                     window.appBridge.loginSuccess(1);
+                     var _cookie = 'email:' + this.inputEmail;
 
-                     // this.gotoHome();
+                     window.appBridge.loginSuccess(_cookie);
                   }
                   else if(res.message == 'login_error' ){
                      this.res_text_sendcode = 'Login Error.';

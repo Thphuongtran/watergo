@@ -110,21 +110,17 @@ function atlantis_register_user(){
 function atlantis_forget_password(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_forget_password' ){
       $email = isset($_POST['email']) ? $_POST['email'] : '';
-      
-      if( is_email( $email ) == false ){
-         wp_send_json_error([ 'message' => 'email_is_not_correct_format']);
+
+      $res = atlantis_code_verification($email, 'email_exists' );
+
+      if( $res['message'] == 'sendcode_success' ){
+         wp_send_json_success( $res );
          wp_die();
-      }
-      if( email_exists($email) == false ){
-         wp_send_json_error([ 'message' => 'email_is_not_exists']);
-         wp_die();
+      }else{
+         wp_send_json_error( $res );
+         wp_die();  
       }
 
-      $code = generate_verification_code();
-      set_transient( 'verification_code_' . $email, $code, 3600 ); // 1 hour
-      wp_mail($email, 'Code Verifications', "Code Verification $code Expried for 1 hour.");
-      wp_send_json_success(['message' => 'sendcode_success' ]);
-      wp_die();
    }
 
 }
@@ -142,6 +138,7 @@ function atlantis_reset_password(){
          wp_send_json_error([ 'message' => 'email_is_not_correct_format']);
          wp_die();
       }
+      
       if( email_exists($email) == false ){
          wp_send_json_error([ 'message' => 'email_is_not_exists']);
          wp_die();

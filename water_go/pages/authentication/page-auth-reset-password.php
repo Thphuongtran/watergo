@@ -57,6 +57,21 @@
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
+
+   <div v-if='banner_open == true' class='banner'>
+      <div class='banner-head'>
+         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <circle cx="32" cy="32" r="32" fill="#2790F9"/>
+         <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
+         </svg>
+         <h3>Password Changed</h3>
+         <p>Your password has been changed successfully</p>
+      </div>
+
+      <div class='banner-footer'>
+         <button @click='goBack' class='btn btn-outline'>Exit</button>
+      </div>
+   </div>
    
 </div>
 
@@ -66,6 +81,7 @@ createApp({
    data (){
       return {
          loading: false,
+         banner_open: false,
          
          res_text_sendcode: '',
 
@@ -83,7 +99,6 @@ createApp({
    },
    methods: {
       goBack(){window.goBack()},
-      gotoNotification(code){window.gotoNotification(code)},
 
       async btn_resend(){
          this.loading = true;
@@ -134,7 +149,7 @@ createApp({
                      this.res_text_sendcode = 'Password is not match';
                   }
                   if( res.message == 'reset_password_ok' ){
-                     this.gotoNotification('reset-password-success');
+                     this.banner_open = true;
                   }
                }
             }

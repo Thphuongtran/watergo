@@ -50,7 +50,7 @@
 
       <div class='form-group'>
          <button @click='btn_register' class='btn btn-primary'>Sign Up</button>
-         <button @click='gotoLogin' class='btn btn-second mt15'>Log In</button>
+         <button @click='goBack' class='btn btn-second mt15'>Log In</button>
       </div>
 
       <p class='t-second t-center mt25'>Or log in with</p>
@@ -69,6 +69,21 @@
       </div>
    </div>
 
+   <div v-if='banner_open == true' class='banner'>
+      <div class='banner-head'>
+         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <circle cx="32" cy="32" r="32" fill="#2790F9"/>
+         <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
+         </svg>
+         <h3>Congratulations!</h3>
+         <p>Your registration has been successful</p>
+      </div>
+
+      <div class='banner-footer'>
+         <button @click='goBack' class='btn btn-outline'>Exit</button>
+      </div>
+   </div>
+
 </div>
 
 <script>
@@ -78,6 +93,7 @@ createApp({
    data (){
       return {
          loading: false,
+         banner_open: false,
 
          inputEmail: '',
          inputUsername: '',
@@ -99,7 +115,7 @@ createApp({
    },
 
    methods: {
-      gotoLogin(){window.gotoLogin()},
+      goBack(){ window.goBack()},
       gotoNotification(code){ window.gotoNotification(code)},
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
@@ -178,8 +194,8 @@ createApp({
                if(r != undefined ){
                   var res = JSON.parse( JSON.stringify(r));
                   if( res.message == 'register_ok'){
-                     // goto homepage
-                     this.gotoNotification('register-success');
+                     this.banner_open = true;
+                     // this.gotoNotification('register-success');
                   }
                   else if( res.message == 'resgiter_error' ){
                      this.res_text_sendcode = 'Register Error.'; 

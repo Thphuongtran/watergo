@@ -282,6 +282,21 @@
       </div>
    </div>
 
+   <div v-if='banner_open == true' class='banner'>
+      <div class='banner-head'>
+         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <circle cx="32" cy="32" r="32" fill="#2790F9"/>
+         <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
+         </svg>
+
+         <h3>Order Successfully</h3>
+      </div>
+
+      <div class='banner-footer'>
+         <button @click='goBack' class='btn btn-outline'>Exit</button>
+      </div>
+   </div>
+
 </div>
 
 <script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>
@@ -294,6 +309,7 @@ createApp({
    data(){
       return {
          loading: false,
+         banner_open: false,
 
          dropdownTime: [
             { label: '7:00  -  8:00', value: '7:00 - 8:00' },
@@ -372,7 +388,8 @@ createApp({
       }
    },
    methods: { 
-
+      goBack(){ window.goBack() },
+      
       btn_delivery_address_open(){
          this.delivery_address_open = !this.delivery_address_open;
       },
@@ -726,7 +743,8 @@ createApp({
                      if (_carts.products.length === 0) { _watergo_carts.splice(i, 1); }
                   }
                   localStorage.setItem('watergo_carts', JSON.stringify(_watergo_carts));
-                  this.gotoNotification('order-success');
+                  // 
+                  this.banner_open = true;
 
                }else{
                   this.loading = false;
@@ -737,9 +755,6 @@ createApp({
          }
 
       },
-
-      goBack(){window.goBack()},
-      gotoNotification(code){window.gotoNotification(code)}
 
    },
    computed: {
