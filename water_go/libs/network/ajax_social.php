@@ -64,8 +64,8 @@ function atlantis_social_login(){
       if($type == 'A'){
 
          if(!empty($_POST['information']) && is_email(explode(":",$_POST['information'])[1])){
-            $email =  explode(":",$_POST['information'])[1];
-            $name =  explode("@",$email)[0];
+            $email   = explode(":",$_POST['information'])[1];
+            $name    = explode("@",$email)[0];
             app_social_process_user_login($email, $name);
          }else{
             // _e('Email is required',"umm");

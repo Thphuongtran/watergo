@@ -119,10 +119,11 @@ function atlantis_forget_password(){
          wp_send_json_error([ 'message' => 'email_is_not_exists']);
          wp_die();
       }
+
       $code = generate_verification_code();
       set_transient( 'verification_code_' . $email, $code, 3600 ); // 1 hour
       wp_mail($email, 'Code Verifications', "Code Verification $code Expried for 1 hour.");
-      wp_send_json_success(['message' => 'sendcode_success']);
+      wp_send_json_success(['message' => 'sendcode_success' ]);
       wp_die();
    }
 
@@ -152,6 +153,8 @@ function atlantis_reset_password(){
       }
 
       $get_code = get_transient( 'verification_code_' . $email );
+
+      
 
       if( $get_code != $code ){
          wp_send_json_error([ 'message' => 'code_is_not_correct']);

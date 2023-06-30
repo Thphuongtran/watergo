@@ -21,4 +21,8 @@
       get_template_part('pages/product/page-product-recommend');
    }
 
+   if( $product_page == 'top-products' ){
+      get_template_part('pages/product/page-product-top-related');
+   }
+
 ?>

@@ -26,15 +26,22 @@
       </p>
 
       <div v-if='isCodeSend' class='box-code-verify'>
-         <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" autocomplete='off'>
-         <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" autocomplete='off'>
-         <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" autocomplete='off'>
-         <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' autocomplete='off'>
+         <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+         <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+         <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+         <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
       </div>
 
       <div class='form-group mt10'>
          <span>Password</span>
          <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+      </div>
+
+      <div class='form-check style01 mt15'>
+         <label >
+            <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
+            <span class='text'> I agree with <span class='t-primary'>Terms and Conditions</span></span>
+         </label>
       </div>
 
       <p class='t-red mt10'>
@@ -80,6 +87,8 @@ createApp({
 
          res_text_sendcode: '',
 
+         term_conditions: false,
+
          // CODE VERIFY
          isCodeSend: false,
          code01: '',
@@ -92,6 +101,8 @@ createApp({
    methods: {
       gotoLogin(){window.gotoLogin()},
       gotoNotification(code){ window.gotoNotification(code)},
+
+      toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
 
       moveFocus(event, nextInput){
          var input = event.target;
@@ -154,32 +165,37 @@ createApp({
       async btn_register(){
          var code = this.code01 + this.code02 + this.code03 + this.code04;
          if( this.inputUsername != '' && this.inputEmail != '' && this.inputPassowrd != '' && code != '' ){
-            this.loading = true;
-            var form = new FormData();
-            form.append('action', 'atlantis_register_user');
-            form.append('username', this.inputUsername);
-            form.append('email', this.inputEmail);
-            form.append('password', this.inputPassword);
-            form.append('code', code);
-            var r = await window.request(form);
+            if( this.term_conditions == true){
+               this.loading = true;
+               var form = new FormData();
+               form.append('action', 'atlantis_register_user');
+               form.append('username', this.inputUsername);
+               form.append('email', this.inputEmail);
+               form.append('password', this.inputPassword);
+               form.append('code', code);
+               var r = await window.request(form);
 
-            if(r != undefined ){
-               var res = JSON.parse( JSON.stringify(r));
-               if( res.message == 'register_ok'){
-                  // goto homepage
-                  this.gotoNotification('register-success');
-               }
-               else if( res.message == 'resgiter_error' ){
-                  this.res_text_sendcode = 'Register Error.'; 
+               if(r != undefined ){
+                  var res = JSON.parse( JSON.stringify(r));
+                  if( res.message == 'register_ok'){
+                     // goto homepage
+                     this.gotoNotification('register-success');
+                  }
+                  else if( res.message == 'resgiter_error' ){
+                     this.res_text_sendcode = 'Register Error.'; 
+                     this.loading = false;
+                  }
+               }else{
+                  this.res_text_sendcode = 'Register Error.';   
                   this.loading = false;
                }
             }else{
-               this.res_text_sendcode = 'Register Error.';   
                this.loading = false;
+               this.res_text_sendcode = 'Please agree Terms and Conditions.';
             }
          }else{
-            this.res_text_sendcode = 'Field is not empty.';
             this.loading = false;
+            this.res_text_sendcode = 'All field is not empty.';
          }
       },
 

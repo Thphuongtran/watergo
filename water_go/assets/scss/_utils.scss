@@ -2,6 +2,8 @@
 html{
    font-family: 'Be Vietnam Pro', sans-serif;
    line-height: 1.7;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
 }
 
 input{
@@ -253,6 +255,11 @@ p{
       color: white;
       border-radius: 20px;
       padding: 0 5px;
+      display: none;
+
+      &.enable{
+         display: block;
+      }
    }
 }
 

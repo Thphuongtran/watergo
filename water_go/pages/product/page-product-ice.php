@@ -173,15 +173,6 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
-               res.data.some(item => {
-
-                  item.price = parseInt(item.price);
-                  item.avg_rating = parseFloat(item.avg_rating).toFixed(1);
-                  item.distance = parseFloat(item.distance).toFixed(2);
-                  item.category_id = parseInt(item.category_id);
-                  item.brand_id = parseInt(item.brand_id);
-
-               });
                this.products.push( ...res.data);
             }
          }

@@ -6,7 +6,7 @@
 
             </div>
             <div class='action'>
-               <button @click='gotoLogin' class='btn-action mr0'>
+               <button @click='goBack' class='btn-action mr0'>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                      <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -51,22 +51,13 @@ createApp({
          
          res_text_sendcode: '',
          inputEmail: '',
-         isCodeSend: false,
-         code01: '',
-         code02: '',
-         code03: '',
-         code04: '',
       }
    },
    methods: {
-      gotoLogin(){ window.gotoLogin()},
+      goBack(){ window.goBack()},
       gotoAuthResetPassword(email){ window.gotoAuthResetPassword(email)},
 
       async btn_forget_password(){
-         this.code01 = '';
-         this.code02 = '';
-         this.code03 = '';
-         this.code04 = '';
 
          if( this.inputEmail != ''){
             this.loading = true;
@@ -76,13 +67,21 @@ createApp({
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
+
                if( res.message == 'sendcode_success' ){
                   this.res_text_sendcode = '';
                   this.gotoAuthResetPassword(this.inputEmail);
+               } else if( res.message == 'email_is_not_correct_format' ){
+                  this.loading = false;
+                  this.res_text_sendcode = 'Email is not correct format.';
+               } else if( res.message == 'email_is_not_exists' ){
+                  this.loading = false;
+                  this.res_text_sendcode = 'Email is not exitst.';
                }else{
                   this.loading = false;
                   this.res_text_sendcode = 'Get Code Verify Error.';
                }
+
             }else{
                this.loading = false;
                this.res_text_sendcode = 'Get Code Verify Error.';

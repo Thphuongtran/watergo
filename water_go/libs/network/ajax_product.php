@@ -6,8 +6,8 @@ add_action( 'wp_ajax_atlantis_load_products', 'atlantis_load_products' );
 add_action( 'wp_ajax_nopriv_atlantis_load_product_recommend', 'atlantis_load_product_recommend' );
 add_action( 'wp_ajax_atlantis_load_product_recommend', 'atlantis_load_product_recommend' );
 
-add_action( 'wp_ajax_nopriv_atlantis_load_product_type', 'atlantis_load_product_type' );
-add_action( 'wp_ajax_atlantis_load_product_type', 'atlantis_load_product_type' );
+add_action( 'wp_ajax_nopriv_atlantis_load_product_top_related', 'atlantis_load_product_top_related' );
+add_action( 'wp_ajax_atlantis_load_product_top_related', 'atlantis_load_product_top_related' );
 
 add_action( 'wp_ajax_nopriv_atlantis_find_product', 'atlantis_find_product' );
 add_action( 'wp_ajax_atlantis_find_product', 'atlantis_find_product' );
@@ -142,6 +142,9 @@ function atlantis_load_products(){
 function atlantis_load_product_recommend(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_product_recommend' ){
 
+      $page = isset($_POST['page']) ? $_POST['page'] : 0;
+      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
+
       global $wpdb;
       $sql_type = '';
 
@@ -234,7 +237,7 @@ function atlantis_load_product_recommend(){
 
             wp_watergo_photo.url
 
-         LIMIT 10
+         LIMIT {$page},{$limit}
       ";
 
       $res = $wpdb->get_results($sql_order_success);
@@ -277,7 +280,7 @@ function atlantis_load_product_recommend(){
 
          ORDER BY discount_percent DESC
 
-         LIMIT 10
+         LIMIT {$page},{$limit}
       ";
 
       $sql_unique = "SELECT
@@ -311,7 +314,7 @@ function atlantis_load_product_recommend(){
          LEFT JOIN wp_watergo_photo as p1
          ON p1.upload_by = wp_watergo_products.id AND p1.kind_photo = 'product' 
 
-         ORDER BY RAND() DESC LIMIT 10
+         ORDER BY RAND() DESC LIMIT {$page},{$limit}
       ";
 
       $res = $wpdb->get_results($sql_discount);
@@ -436,6 +439,55 @@ function atlantis_get_product_image(){
       }
 
       wp_send_json_success(['message' => 'image_found', 'data' => $res[0] ]);
+      wp_die();
+   }
+}
+
+
+//
+function atlantis_load_product_top_related(){
+   if(isset($_POST['action']) && $_POST['action'] == 'atlantis_load_product_top_related' ){
+      
+      $category_id = isset($_POST['category_id']) ? $_POST['category_id'] : 0;
+      $page = isset($_POST['page']) ? $_POST['page'] : 0;
+      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
+
+      if($category_id == 0){
+
+         wp_send_json_success(['message' => 'product_not_found' ]);
+         wp_die();
+      }
+
+      $sql = "SELECT wp_watergo_products.*,
+         discount.id as discount_id,
+         discount.product_id as discount_product_id,
+         discount.discount as discount_percent,
+         discount.from as discount_from,
+         discount.to as discount_to,
+
+         wp_watergo_photo.url as product_image
+
+      FROM wp_watergo_products 
+      LEFT JOIN wp_watergo_discounts as discount
+      ON discount.product_id = wp_watergo_products.id
+
+      LEFT JOIN wp_watergo_photo
+      ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
+
+      WHERE wp_watergo_products.category = $category_id
+      ORDER BY wp_watergo_products.id DESC
+      LIMIT {$page},{$limit}";
+
+
+      global $wpdb;
+      $res = $wpdb->get_results($sql);
+      
+      if( empty($res )){
+         wp_send_json_error(['message' => 'product_not_found']);
+         wp_die();  
+      }
+
+      wp_send_json_success(['message' => 'product_found' , 'data' => $res ]);
       wp_die();
    }
 }

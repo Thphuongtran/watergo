@@ -100,10 +100,14 @@ createApp({
                form.append('email', this.inputEmail);
                form.append('password', this.inputPassword);
                var r = await window.request(form);
+
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
-                     this.gotoHome();
+
+                     window.appBridge.loginSuccess(1);
+
+                     // this.gotoHome();
                   }
                   else if(res.message == 'login_error' ){
                      this.res_text_sendcode = 'Login Error.';

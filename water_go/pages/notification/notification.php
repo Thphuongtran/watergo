@@ -8,9 +8,9 @@ if( $notificatio_page == 'notification-index' ){
    get_template_part('pages/notification/notification-index');
 }
 
-// if( $notificatio_page == 'notification' ){
+if( $notificatio_page == 'notification' ){
  
-// if($code == 'order-success'){ 
+if($code == 'order-success'){ 
 ?>
 <div class='banner'>
    <div class='banner-head'>
@@ -26,9 +26,9 @@ if( $notificatio_page == 'notification-index' ){
       <a href='<?php echo WATERGO_BACK; ?>' class='btn btn-outline'>Exit</a>
    </div>
 </div>
-<?php //} ?>
+<?php } ?>
 
-<?php //if($code == 'review-success'){ ?>
+<?php if($code == 'review-success'){ ?>
 <div class='banner'>
    <div class='banner-head'>
       <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,9 +60,9 @@ if( $notificatio_page == 'notification-index' ){
       <a href='<?php echo WATERGO_BACK; ?>' class='btn btn-outline'>Exit</a>
    </div>
 </div>
-<?php //} ?>
+<?php } ?>
 
-<?php //if( $code == 'change-password-success'){ ?>
+<?php if( $code == 'change-password-success'){ ?>
 <div class='banner'>
    <div class='banner-head'>
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,9 +96,9 @@ if( $notificatio_page == 'notification-index' ){
    </div>
 </div>
 
-<?php //} ?>
+<?php } ?>
 
-<?php // if( $code == 'reset-password-success'){ ?>
+<?php if( $code == 'reset-password-success'){ ?>
 <div class='banner'>
    <div class='banner-head'>
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -115,8 +115,8 @@ if( $notificatio_page == 'notification-index' ){
    </div>
 </div>
 
-<?php //} ?>
+<?php } ?>
 
-<?php //} // ?>
+<?php } // ?>
 
 

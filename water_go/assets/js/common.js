@@ -299,6 +299,11 @@ function gotoProductIce(){
 function gotoProductDetail(product_id){
    window.location.href = window.watergo_domain + 'product/?product_page=product-detail&product_id='+ product_id + '&appt=N';
 }
+
+function gotoProductTop( category_id ){
+   window.location.href = window.watergo_domain + 'product/?product_page=top-products&category_id=' + category_id + '&appt=N';
+}
+
 function gotoStoreDetail(store_id){
    window.location.href = window.watergo_domain + 'store/?store_page=store-detail&store_id='+ store_id + '&appt=N';
 }
@@ -488,6 +493,8 @@ function gotoChatMessenger( args ){
 }
 
 
+
+
 function callbackLoginSuccess(type, token, information){
    //alert("ok");return;
 
@@ -504,6 +511,11 @@ function callbackLoginSuccess(type, token, information){
       },
 
       success: function(output) { 
+         /**
+          {
+            
+          } 
+          */
             window.appBridge.loginSuccess(1)
          // let result = jQuery.parseJSON(output);
          // if(result[0] == "success"){ 
@@ -521,6 +533,7 @@ function callbackLoginSuccess(type, token, information){
 function callbackLoginFail(message){
    alert('Login Fail ' + message);
 }
+
 
 
 async function is_conversation_created_or_create( user_id, store_id){

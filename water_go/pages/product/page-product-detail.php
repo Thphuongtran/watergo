@@ -97,7 +97,7 @@
 
          <div v-if='product_by_store.length > 0' class='inner space-top-product'>
             <div class='gr-heading'>
-               <p class='heading'>Top products</p><span class='link'>See All</span>
+               <p class='heading'>Top products</p><span @click='gotoProductTop(product.categor)' class='link'>See All</span>
             </div>
             <div class='list-horizontal'>
                <ul>
@@ -380,11 +380,12 @@ createApp({
                this.totalPurchase = res.data;
             }
          }
-         console.log(r);
       },
 
 
       gotoProductDetail(product_id){window.gotoProductDetail(product_id)},
+      gotoProductTop( category_id){ window.gotoProductTop(category_id) },
+
       gotoStoreDetail(store_id){window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){window.gotoOrderProduct()},
       goBack(){window.goBack()},
