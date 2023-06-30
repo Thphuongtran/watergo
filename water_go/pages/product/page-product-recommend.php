@@ -53,10 +53,10 @@
                      <span v-if='has_discount(product) == true' class='price-sub'>
                         {{ common_get_product_price(product.price) }}
                      </span>
-                     <span class='demo-font'>
+                     <!-- <span class='demo-font'>
                         Rate {{ product.avg_rating }}<br>
                         Distance {{ product.distance }}
-                     </span>
+                     </span> -->
                   </div>
                </div>
             </div>
