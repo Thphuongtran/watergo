@@ -18,6 +18,7 @@ function atlantis_code_verification( $email, $event ){
 
    if( is_email( $email ) == false ){
       $json[ 'message' ] = 'email_is_not_correct_format';
+      return $json;
    }
 
    // EMAIL-EXSITS EMAIL-NON-EXISTS
@@ -25,10 +26,8 @@ function atlantis_code_verification( $email, $event ){
 
    if( $event == '' || $email == ''){
       $json['message'] = 'verify_code_error';
-   }
 
-   if ( ! is_email( $email ) ){
-      $json['message'] = 'error_email_format';
+      return $json;
    }
 
    // CHECK EMAIL EXIST IN DATABASE

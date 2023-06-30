@@ -140,7 +140,7 @@ function atlantis_reset_password(){
       }
       
       if( email_exists($email) == false ){
-         wp_send_json_error([ 'message' => 'email_is_not_exists']);
+         wp_send_json_error([ 'message' => 'email_non_exists']);
          wp_die();
       }
 

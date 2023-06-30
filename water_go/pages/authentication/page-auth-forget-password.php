@@ -182,7 +182,7 @@ createApp({
                } else if( res.message == 'email_is_not_correct_format' ){
                   this.loading = false;
                   this.res_text_sendcode = 'Email is not correct format.';
-               } else if( res.message == 'email_is_not_exists' ){
+               } else if( res.message == 'email_non_exists' ){
                   this.loading = false;
                   this.res_text_sendcode = 'Email is not exitst.';
                }else{
