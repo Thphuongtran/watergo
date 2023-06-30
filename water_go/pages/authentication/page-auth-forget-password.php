@@ -194,6 +194,8 @@ createApp({
                this.loading = false;
                this.res_text_sendcode = 'Get Code Verify Error.';
             }
+         }else{
+            this.res_text_sendcode = 'Email is not empty.';
          }
       },
 
