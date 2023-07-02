@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false' class='page-recommend' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
+   <div v-if='loading == false' ref='handleClickOutside' class='page-recommend' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
       <div class='appbar'>
          <div class='appbar-top'>
 
@@ -109,11 +109,13 @@ createApp({
       buttonSortFeatureSelected( index ){
          this.sortFeatureCurrentValue = index;
          this.sortFeatureOpen = false;
+         window.bodyScrollToggle('remove');
       },
 
-      buttonSortFeature(){  
+      buttonSortFeature(){
          if( this.sortFeatureOpen == false){
             this.sortFeatureOpen = true;
+            window.bodyScrollToggle('add');
          }else{
             this.sortFeatureOpen = false;
          }

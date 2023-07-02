@@ -2,6 +2,20 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+
+function bodyScrollToggle( check ){
+   var el = document.querySelector('body.stop-scroll');
+   if( el == null && check == 'add' ){
+      document.querySelector('body').classList.add('stop-scroll');
+   } if( el != null && check == 'remove'){
+      document.querySelector('body').classList.remove('stop-scroll');
+   }
+}
+
+function handleClickOutside(clickIn, clickOut){
+
+}
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
    var earthRadius = 6371; // Radius of the Earth in kilometers (from chat gpt)
    // var earthRadius = 6366; // Radius of the Earth in kilometers (from nasa)
