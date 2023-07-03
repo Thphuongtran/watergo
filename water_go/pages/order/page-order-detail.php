@@ -124,19 +124,16 @@
             v-if='order.order_status == "complete"'
             class='btn btn-outline btn-review-order'>Review Store</button>
 
-         <button @click='btn_cancel_order' v-if='order.order_status == "ordered" || order.order_status == "prepare"' 
+         <button @click='btn_cancel_order' v-if='order.order_status == "ordered" || order.order_status == "confirmed"' 
             class='btn btn-outline btn-cancel-order'>Cancel</button>
 
          <div class='product-detail-bottomsheet'
-            :class='[
-               order.order_repeat_id != 0 ? "t-right" : ""
-            ]'
+            :class='get_layout_text_price'
          >
             <p class='price-total' :class='order.order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
 
             <button 
-               v-if='order.order_repeat_id == 0 ? "t-right" : ""'
-               v-if='order.order_status == "complete" || order.order_status == "cancel"' 
+               v-if='order.order_repeat_id == 0 && ( order.order_status == "complete" || order.order_status == "cancel") '
                @click='buttonReOrder' 
                :class='[
                   order_is_out_of_stock == true ? "disabled" : ""
@@ -225,6 +222,8 @@ createApp({
 
    methods: {
 
+      
+
       addLeadingZeros(number) {
          if( number != undefined ){
             if (number <= 1000) return number.toString().padStart(4, '0');
@@ -279,10 +278,6 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'cancel_done' ) {
                // window.gotoOrder();
-               if( window.appBrigde ) {
-                  window.appBrigde.refresh();
-               }
-
                this.goBack();
 
             }else{
@@ -353,6 +348,31 @@ createApp({
    },
 
    computed: {
+      get_layout_text_price(){
+         // if( this.order.order_repeat_id != 0 &&
+         //    ( this.order.order_status == "ordered" || this.order.order_status == "confirmed" ) ){
+         //       return "t-right";
+         //    }else{
+         //       return "";
+         //    }
+
+         if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering"){
+            return "t-right";
+         }else{
+            
+            // IF CANCEL WITH repeat
+            if( this.order.order_status == "cancel" && this.order.order_repeat_id != 0 ){
+               return "t-right";
+            }
+
+            return "";
+
+         }
+
+
+
+      },
+
       count_total_product_in_order(){
          var _total = 0;
          this.order.order_products.some ( product => {
@@ -399,21 +419,23 @@ createApp({
       await this.findOrder(order_id);
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
-      if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
-         var _formCheckReorder = new FormData();
-         _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
-         _formCheckReorder.append('order_id', order_id);
+      if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
+         if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
+            var _formCheckReorder = new FormData();
+            _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
+            _formCheckReorder.append('order_id', order_id);
 
-         var _r = await window.request(_formCheckReorder);
-         if( _r != undefined ){
-            var _res = JSON.parse( JSON.stringify( _r ) );
+            var _r = await window.request(_formCheckReorder);
+            if( _r != undefined ){
+               var _res = JSON.parse( JSON.stringify( _r ) );
 
-            if( _res.message == 'reorder_out_of_stock' ){
-               this.order_is_out_of_stock = true;
-               this.popup_out_of_stock = true;
+               if( _res.message == 'reorder_out_of_stock' ){
+                  this.order_is_out_of_stock = true;
+                  this.popup_out_of_stock = true;
+               }
             }
-         }
 
+         }
       }
 
 

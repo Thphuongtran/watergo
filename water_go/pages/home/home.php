@@ -263,6 +263,13 @@ createApp({
 
       var form = new FormData();
       form.append('action', 'atlantis_load_product_recommend');
+      if(this.latitude == 0 || this.latitude == null || this.latitude == undefined ){
+         this.latitude = 10.780900239854994;
+      }
+      if(this.longitude == 0 || this.longitude == null || this.longitude == undefined ){
+         this.longitude = 106.7226271387539;
+      }
+      
       form.append('lat',this.latitude);
       form.append('lng',this.longitude);
       

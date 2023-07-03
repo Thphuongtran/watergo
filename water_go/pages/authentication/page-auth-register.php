@@ -147,24 +147,24 @@ createApp({
          if( this.inputEmail != ''){
             this.loading = true;
             var form = new FormData();
-            form.append('action', 'atlantis_code_verification');
+            form.append('action', 'atlantis_send_code_verification');
             form.append('email', this.inputEmail);
+            form.append('event', 'email_non_exists');
             var r = await window.request(form);
+            console.log(r);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
-
-               if( res.message == 'error_email_format' ){
-                  this.res_text_sendcode = 'Email format error.';
                   this.loading = false;
+
+               if( res.message == 'email_is_not_correct_format' ){
+                  this.res_text_sendcode = 'Email is not correct format.';
                }
                else if( res.message == 'email_already_exists' ){
                   this.res_text_sendcode = 'Email already register.';
-                  this.loading = false;
                }
                else if( res.message == 'sendcode_success' ){
                   this.res_text_sendcode = '';
                   this.isCodeSend = true;
-                  this.loading = false;
                }
 
             }else{
@@ -180,30 +180,36 @@ createApp({
 
       async btn_register(){
          var code = this.code01 + this.code02 + this.code03 + this.code04;
-         if( this.inputUsername != '' && this.inputEmail != '' && this.inputPassowrd != '' && code != '' ){
-            if( this.term_conditions == true){
-               this.loading = true;
-               var form = new FormData();
-               form.append('action', 'atlantis_register_user');
-               form.append('username', this.inputUsername);
-               form.append('email', this.inputEmail);
-               form.append('password', this.inputPassword);
-               form.append('code', code);
-               var r = await window.request(form);
+         if( this.inputUsername != '' && this.inputEmail != '' && this.inputPassowrd != '' ){
 
-               if(r != undefined ){
-                  var res = JSON.parse( JSON.stringify(r));
-                  if( res.message == 'register_ok'){
-                     this.banner_open = true;
-                     // this.gotoNotification('register-success');
-                  }
-                  else if( res.message == 'resgiter_error' ){
-                     this.res_text_sendcode = 'Register Error.'; 
+            if( this.term_conditions == true){
+               if( code != '' ){
+                  this.loading = true;
+                  var form = new FormData();
+                  form.append('action', 'atlantis_register_user');
+                  form.append('username', this.inputUsername);
+                  form.append('email', this.inputEmail);
+                  form.append('password', this.inputPassword);
+                  form.append('code', code);
+                  var r = await window.request(form);
+
+                  if(r != undefined ){
+                     var res = JSON.parse( JSON.stringify(r));
+                     if( res.message == 'register_ok'){
+                        this.banner_open = true;
+                        // this.gotoNotification('register-success');
+                     }
+                     else if( res.message == 'resgiter_error' ){
+                        this.res_text_sendcode = 'Register Error.'; 
+                        this.loading = false;
+                     }
+                  }else{
+                     this.res_text_sendcode = 'Register Error.';   
                      this.loading = false;
                   }
                }else{
-                  this.res_text_sendcode = 'Register Error.';   
                   this.loading = false;
+                  this.res_text_sendcode = 'Email is not verify.';
                }
             }else{
                this.loading = false;
