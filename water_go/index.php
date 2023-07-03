@@ -20,8 +20,12 @@ if( is_user_logged_in() == true ){
    if( is_page('nearby') ){
       get_template_part('pages/nearby/nearby');
    }
+
+   if ( is_page('schedule')) {
+      get_template_part('pages/schedule/schedule');
+   }
 }else{
-   if( is_page('user') || is_page('order') || is_page('nearby')){
+   if( is_page('user') || is_page('order') || is_page('nearby') || is_page('schedule')){
       get_template_part('pages/authentication/page-auth-login');
    }
 }
@@ -60,9 +64,6 @@ if( is_page('search') ){
 if( is_page('notification') ){
    get_template_part('pages/notification/notification');
 }
-
-
-
 
 get_footer();
 ?>
