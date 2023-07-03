@@ -129,6 +129,12 @@
                }
             }
          }
+         &.disable{
+            span{
+               opacity: 0.4;
+            }
+         }
+
          span{
             position: relative;
             z-index: 1;

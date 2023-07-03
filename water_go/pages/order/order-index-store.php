@@ -258,8 +258,7 @@ createApp({
          if( order_ids.length > 0 ){
             await this.btn_action_order_status(order_ids, 'confirmed');
          }
-         // this.popup_confirm_all_item = false;
-         location.reload();
+         this.popup_confirm_all_item = false;
       },
 
       async btn_submit_cancel_all(){
@@ -267,8 +266,7 @@ createApp({
          if( order_ids.length > 0 ){
             await this.btn_action_order_status(order_ids, 'cancel');
          }
-         // this.popup_cancel_all_item = false;
-         location.reload();
+         this.popup_cancel_all_item = false;
       },
 
       async btn_submit_delivering_all(){
@@ -277,8 +275,7 @@ createApp({
          if( order_ids.length > 0 ){
             await this.btn_action_order_status(order_ids, 'delivering');
          }
-         // this.popup_delivering_all_item = false;
-         location.reload();
+         this.popup_delivering_all_item = false;
       },
 
       async btn_submit_complete_all(){
@@ -286,8 +283,7 @@ createApp({
          if( order_ids.length > 0 ){
             await this.btn_action_order_status(order_ids, 'complete');
          }
-         // this.popup_complete_all_item = false;
-         location.reload();
+         this.popup_complete_all_item = false;
       },
 
       btn_modal_cancel_all(){ 
@@ -296,6 +292,7 @@ createApp({
          this.popup_delivering_all_item = false;
          this.popup_complete_all_item = false;
       },
+
       btn_action_confirm_all(){ if(this.is_select_all == true) this.popup_confirm_all_item = true; },
       btn_action_cancel_all(){ if(this.is_select_all == true) this.popup_cancel_all_item = true;},
       btn_action_delivery_all(){ if(this.is_select_all == true) this.popup_delivering_all_item = true;},
@@ -335,6 +332,7 @@ createApp({
             if( res.message == 'order_status_ok'){
                for(var i = 0; i < ods.length; i++ ){
                   var _getOrder = this.orders.find(item => item.order_id == ods[i] );
+
                   if( _getOrder ){
                      if(order_status == 'confirmed'){
                         _getOrder.order_status = 'confirmed';
@@ -351,6 +349,7 @@ createApp({
                      if(order_status == 'complete'){
                         _getOrder.order_status = 'complete';
                         _getOrder.order_time_completed = timestamp;
+                        
                         // callback order
                         if( _getOrder.order_delivery_type == 'weekly' ||
                            _getOrder.order_delivery_type == 'monthly'
@@ -372,14 +371,13 @@ createApp({
                               }
                            }
                         }
-
                      }
-                     
+
                   }
                }
                this.re_order_status();
             }
-            console.log(r);
+            
          }
       },
 
@@ -454,7 +452,9 @@ createApp({
          var _total = 0;
          this.orders.some( order => {
             if( order.order_id == order_id ){
-               _total += order.order_products.length;
+               order.order_products.some( product => {
+                  _total += parseInt( product.order_group_product_quantity_count );
+               });
             }
          });
          return _total;

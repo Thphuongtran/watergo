@@ -1,3 +1,4 @@
+
 <div id='app'>
 
    <component-delivery-address ref='component_delivery_address'></component-delivery-address>
@@ -102,7 +103,9 @@
             </div>
 
             <div v-show='deliverySelectType.timeOnce.selectDate' class='group-select-delivery-time'>
+
                <button class='btn-dropdown' @click='buttonSelectDate'>{{ deliveryTimeData.once.date == null ? "Select date" : deliveryTimeData.once.date }}</button>
+
                <button class='btn-dropdown' @click='buttonSelectTime'>
                   {{ deliveryTimeData.once.time == null ? "Select time" : deliveryTimeData.once.time }}
                </button>
@@ -110,7 +113,7 @@
 
             <div class='deliveryDisplay'>
                
-               <div v-if='datePickerDatePopup'>
+               <div v-show='datePickerDatePopup'>
                   <div class='date-table' v-for="(item, index ) in getCurrentMonthData" :key='index'>
                      <div class='date-table-head'>
                         <div class='heading'>{{ item.month }}, {{item.year}}</div>
@@ -125,8 +128,13 @@
                               <th v-for="day in daysOfWeek" :key="day">{{ day }}</th>
                            </tr>
                            <tr v-for="(week, index) in item.weeks" :key="index">
-                              <td @click='buttonTableDatePicker(item.year, item.month, dayOfWeek.day )' :class='dayOfWeek.active == true ? "active" : ""' v-for="dayOfWeek in week" :key="dayOfWeek.day">
-
+                              <td @click='buttonTableDatePicker(item.year, item.month, dayOfWeek.day, dayOfWeek.disabled )' 
+                                 v-for="dayOfWeek in week" :key="dayOfWeek.day"
+                                    :class="[
+                                       dayOfWeek.active == true ? 'active' : '',
+                                       dayOfWeek.disabled == true ? 'disable' : ''
+                                    ]"
+                                 >
                                  <span>{{ dayOfWeek.day }}</span>
                               </td>
                            </tr>
@@ -138,13 +146,16 @@
                   </div>
                </div>
 
-               <div class='time-table'>
-                  <div v-show='datePickerTimePopup' class='dropdown-order size-half style-time-table right'>
-                     <div class='dropdown-contents'>
-                        <div v-for="(item, index) in dropdownTime" :key="index"
-                           @click='button_get_data_delivery("once", null, "time", item.value)' 
-                           class='dropdown-item'>
-                              {{ item.label }}
+               <div v-show='datePickerTimePopup'>
+                  <div class='time-table'>
+                     <div class='dropdown-order size-half style-time-table right'>
+                        <div class='dropdown-contents'>
+                           <div 
+                              v-for="(item, index) in getDropdownTime" :key="index"
+                              @click='button_get_data_delivery("once", null, "time", item.value)' 
+                              class='dropdown-item'>
+                                 {{ item.label }}
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -245,10 +256,13 @@
                         <table>
                            <tr v-for="row in 5" :key="row">
                               <td v-for="col in 7" :key="col" 
-                                 :class='deliveryEverymonthOrder == countDayTable(row, col) && deliveryEverymonthOrder < 29 && deliveryEverymonthOrder != 0 ? "active" : ""'
-                                 :class='deliveryEverymonthOrder < 29 && deliveryEverymonthOrder != 0 ? "disabled" : "" '
+                                 :class="[
+                                    deliveryEverymonthOrder == countDayTable(row, col) && deliveryEverymonthOrder < 29 && deliveryEverymonthOrder != 0 ? 'active' : '',
+                                    countDayTable(row, col) > 28 ? 'disable' : '',
+                                    countDayTable(row, col) < currentDate.getDate() ? 'disable' : ''
+                                 ]"
                                  @click='button_get_data_delivery("monthly", deliveryMonthlyOrder, "date", countDayTable(row, col) )'>
-                                 <span>{{ countDayTable(row, col) }}</span>
+                                    <span>{{ countDayTable(row, col) }}</span>
                               </td>
                            </tr>
                         </table>
@@ -302,6 +316,7 @@
 <script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>
 <script type='module'>
 
+
 var { createApp } = Vue;
 
 createApp({
@@ -312,26 +327,26 @@ createApp({
          banner_open: false,
 
          dropdownTime: [
-            { label: '7:00  -  8:00', value: '7:00 - 8:00' },
-            { label: '8:00  -  9:00', value: '8:00 - 9:00' },
-            { label: '9:00  -  10:00', value: '9:00 - 10:00' },
-            { label: '10:00  -  11:00', value: '10:00 - 11:00' },
-            { label: '11:00  -  12:00', value: '11:00 - 12:00' },
-            { label: '12:00  -  13:00', value: '12:00 - 13:00' },
-            { label: '13:00  -  14:00', value: '13:00 - 14:00' },
-            { label: '14:00  -  15:00', value: '14:00 - 15:00' },
-            { label: '15:00  -  16:00', value: '15:00 - 16:00' },
-            { label: '16:00  -  17:00', value: '16:00 - 17:00' },
-            { label: '17:00  -  18:00', value: '17:00 - 18:00' },
-            { label: '18:00  -  19:00', value: '18:00 - 19:00' },
-            { label: '19:00  -  20:00', value: '19:00 - 20:00' },
-            { label: '20:00  -  21:00', value: '20:00 - 21:00' }
+            { label: '7:00  -  8:00', value: '7:00 - 8:00', time: 7,active: true },
+            { label: '8:00  -  9:00', value: '8:00 - 9:00', time: 8,active: true },
+            { label: '9:00  -  10:00', value: '9:00 - 10:00', time: 9,active: true },
+            { label: '10:00  -  11:00', value: '10:00 - 11:00', time: 10, active: true },
+            { label: '11:00  -  12:00', value: '11:00 - 12:00', time: 11, active: true },
+            { label: '12:00  -  13:00', value: '12:00 - 13:00', time: 12, active: true },
+            { label: '13:00  -  14:00', value: '13:00 - 14:00', time: 13, active: true },
+            { label: '14:00  -  15:00', value: '14:00 - 15:00', time: 14, active: true },
+            { label: '15:00  -  16:00', value: '15:00 - 16:00', time: 15, active: true },
+            { label: '16:00  -  17:00', value: '16:00 - 17:00', time: 16, active: true },
+            { label: '17:00  -  18:00', value: '17:00 - 18:00', time: 17, active: true },
+            { label: '18:00  -  19:00', value: '18:00 - 19:00', time: 18, active: true },
+            { label: '19:00  -  20:00', value: '19:00 - 20:00', time: 19, active: true },
+            { label: '20:00  -  21:00', value: '20:00 - 21:00', time: 20, active: true }
          ],
 
          delivery_address_primary: null,
          delivery_address_open: false,
 
-         dropdownDay: ['Monday','Tueday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+         dropdownDay: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
 
          datePickerDatePopup: false,
          datePickerTimePopup: false,
@@ -402,6 +417,7 @@ createApp({
       activeDayTable(row, col){ return (row - 1) * 7 + col - 1; },
 
       button_get_data_delivery( type, id, whichTable, data ){
+
          if( type == "once" ){
             if( whichTable == "time" ){
                this.deliveryTimeData.once.time = data;
@@ -409,6 +425,7 @@ createApp({
                this.datePickerTimePopup = false;
             }
          }
+
          if( type == "weekly"){
             //add new
             if( this.deliveryTimeData.weekly[id] == undefined || this.deliveryTimeData.weekly[id] == null ){
@@ -422,19 +439,30 @@ createApp({
                if( whichTable == "time" ){ this.deliveryTimeData.weekly[id].time = data; }
             }
          }
+
          // only 1 - 28 
          if( type == "monthly"){
             //add new
+
+            // privous from current day will disable
+            var _currentDate = this.currentDate.getDate();
+
+            // CHECK DATE
             if( this.deliveryTimeData.monthly[id] == undefined || this.deliveryTimeData.monthly[id] == null ){
                var obj = { id: id, type: type, date: null, time: null };
-               if( whichTable == "date" && data < 29 ){ obj.date = data; this.deliveryEverymonthOrder = data; }
+               if( data >= _currentDate){
+                  if( whichTable == "date" && data < 29 ){ obj.date = data; this.deliveryEverymonthOrder = data; }
+               }
                if( whichTable == "time" ){ obj.time = data; }
                this.deliveryTimeData.monthly[id] = obj;
             }else{
             // edit
-               if( whichTable == "date" && data < 29 ){ this.deliveryTimeData.monthly[id].date = data; this.deliveryEverymonthOrder = data; }
+               if( data >= _currentDate){
+                  if( whichTable == "date" && data < 29 ){ this.deliveryTimeData.monthly[id].date = data; this.deliveryEverymonthOrder = data; }
+               }
                if( whichTable == "time" ){ this.deliveryTimeData.monthly[id].time = data; }
             }
+            
             // HIDDEN OTHER CELL
             if( whichTable == 'time' ){
                this.popup_deliverySelect_monthly_time = false;
@@ -455,14 +483,21 @@ createApp({
       buttonDeliverySelectTypeTimeOnce( type ){
          this.resetDeliveryDataWeekly();
          this.resetDeliveryDataMonthly();
+
          if( type == 'immediately' ){
             this.deliverySelectType.timeOnce.immediately = !this.deliverySelectType.timeOnce.immediately;
             this.deliverySelectType.timeOnce.selectDate = false;
+
+            this.deliveryTimeData.once.date = null;
+            this.deliveryTimeData.once.time = null;
+            this.turn_off_all_select_date_once();
+
          }
          else if( type == 'selectDate'){
             this.deliverySelectType.timeOnce.selectDate = !this.deliverySelectType.timeOnce.selectDate;
             this.deliverySelectType.timeOnce.immediately = false;
          }
+
       },
 
       /**
@@ -472,6 +507,9 @@ createApp({
       // isPrevMonthDisabled() { return this.currentMonthIndex === 0; },
 
       generateCalendar(year, month) {
+
+         var today = new Date();
+         var currentDate = new Date(year, month, today.getDate());
          var firstDayOfMonth = new Date(year, month, 1).getDay();
          var lastDateOfMonth = new Date(year, month + 1, 0).getDate();
 
@@ -483,20 +521,33 @@ createApp({
          for (let i = 0; i < numWeeks; i++) {
             var week = [];
             for (let j = 0; j < 7; j++) {
-               if (i == 0 && j < firstDayOfMonth || date > lastDateOfMonth) {
-                  week.push({ day: '' });
+               if (i === 0 && j < firstDayOfMonth) {
+                  week.push({ day: '', active: false, disabled: true });
+               } else if (date > lastDateOfMonth || (date < today.getDate() && month === today.getMonth())) {
+
+                  if(date > lastDateOfMonth){
+                     week.push({ day: '', active: false, disabled: true });
+                  }else{
+                     week.push({ day: date, active: false, disabled: true });
+                  }
+                  date++;
+                  
                } else {
-                  week.push({ day: date, active: false });
+                  var currentDateOfMonth = new Date(year, month, date);
+                  var isActive = currentDateOfMonth.getTime() === currentDate.getTime();
+                  week.push({ day: date, active: isActive, disabled: false });
                   date++;
                }
             }
             weeks.push(week);
          }
+
+
          return {
             year: year,
             month: this.months[month],
             weeks: weeks
-         }; 
+         };
       },
       
       getCurrentMonth() { this.currentMonthName = this.calendarData[this.currentMonthIndex].month;},
@@ -515,6 +566,13 @@ createApp({
 
       buttonApplyDate(){this.datePickerDatePopup = false; },
 
+      turn_off_all_select_date_once(){
+         this.datePickerTimePopup = false;
+         this.datePickerDatePopup = false;
+      },
+
+
+
       buttonSelectDate(){
          this.datePickerDatePopup = !this.datePickerDatePopup;
          this.datePickerTimePopup = false;
@@ -525,8 +583,30 @@ createApp({
          this.datePickerTimePopup = !this.datePickerTimePopup;
       },
 
-      buttonTableDatePicker(year, month, day){
-         if( day != ''){
+      buttonTableDatePicker(year, month, day, isDayDisable ){
+         if( day != '' && isDayDisable == false ){
+            
+            // FILTER TIME SELECT 
+            var _isCurrentDay    = this.currentDate.getDate() == day ? true : false;
+            var _isCurrentMonth  = this.currentMonthName == month ? true : false;
+            var _getCurrentHours = this.currentDate.getHours();
+
+            // FILTER NEXT 2 HOUR
+            if(_isCurrentDay == true && _isCurrentMonth == true ){
+               var _timeCanOrder = _getCurrentHours + 2;
+               this.dropdownTime.forEach(item => {
+                  var _time = item.time;
+                  if(_time > _timeCanOrder  ){
+                     item.active = true;
+                  }else{
+                     item.active = false;
+                  }
+               });
+            }else{
+               this.dropdownTime.forEach(item => item.active = true );
+            }
+
+            //
             this.calendarData.forEach( ( date, keyDate ) => {
                if( year == date.year && month == date.month){
                   date.weeks.forEach( (week, keyWeek ) => {
@@ -540,6 +620,7 @@ createApp({
                   });
                }
             });
+
             // SAVE 
             var month = this.months.indexOf(month) + 1;
             this.deliveryTimeData.once.date = `${day}/${month}/${year}`;
@@ -562,6 +643,7 @@ createApp({
             this.deliverySelectType.weekly = true;
             this.resetDeliveryDataMonthly();
             this.resetDeliveryDataOnce();
+            this.turn_off_all_select_date_once();
             if( this.deliveryWeeklyDomIncrement < 1){
                this.deliveryWeeklyDomIncrement++;
             }
@@ -571,6 +653,7 @@ createApp({
             this.deliverySelectType.monthly = true;
             this.resetDeliveryDataWeekly();
             this.resetDeliveryDataOnce();
+            this.turn_off_all_select_date_once();
             if( this.deliveryMonthlyDomIncrement < 1 ){
                this.deliveryMonthlyDomIncrement++;
             }
@@ -642,6 +725,9 @@ createApp({
          this.deliveryTimeData.once.time = null;
          this.deliveryTimeData.once.immediately = false;
          this.deliveryTimeData.once.selectDate = false;
+         this.deliverySelectType.timeOnce.selectDate = false;
+         this.datePickerTimePopup = false;
+         this.datePickerDatePopup = false;
       },
 
       resetDeliveryDataWeekly(){
@@ -757,9 +843,16 @@ createApp({
       },
 
    },
+   
    computed: {
       isPrevMonthDisabled() {
          return this.currentMonthIndex === 0;
+      },
+
+      getDropdownTime(){
+         return this.dropdownTime.filter( item => {
+            return item.active == true;
+         });
       },
 
       getCurrentMonthData(){
@@ -868,7 +961,7 @@ createApp({
 
       if( _carts.length > 0 ){
          _carts.some( store => {
-            var selectedProducts = store.products.filter(product => product.product_select);
+            var selectedProducts = store.products.filter(product => product.product_select == true);
             if (selectedProducts.length > 0) {
                this.carts.push({
                   store_id: store.store_id,
@@ -887,7 +980,8 @@ createApp({
    },
    
    mounted(){
-   }
+     
+   },
 
 })
 .component('component-delivery-address', PageDeliveryAddress)

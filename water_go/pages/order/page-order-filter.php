@@ -37,8 +37,7 @@
             </div>
 
             <div 
-               v-for='(product, prodKey) in order.order_products' :key='prodKey'
-               @click='gotoOrderDetail(order.order_id)' class='order-prods'>
+               v-for='(product, prodKey) in order.order_products' :key='prodKey' class='order-prods'>
                <div class='leading'>
                   <img src="<?php echo THEME_URI . '/assets/images/demo-product04.png'; ?>">
                </div>
@@ -57,7 +56,9 @@
             <div class='order-delivery-time'>
                <table>
                   <tr v-for='( _delivery, _deliveryKey ) in order.order_delivery_data' :key='_deliveryKey'>
-                     <td>{{_delivery.day}}</td><td class='td-left'> | {{_delivery.time}}</td>
+                     <td v-if='order.order_delivery_type == "monthly" '>Date {{_delivery.day}}</td>
+                     <td v-if='order.order_delivery_type == "weekly" '>{{_delivery.day}}</td>
+                     <td class='td-left'> | {{_delivery.time}}</td>
                   </tr>
                </table>
             </div>
@@ -98,18 +99,36 @@ createApp({
          loading: false,
          filter: '',
          orders: [],
-         order_id_delete: 0
+         order_id_delete: null
       }
    },
 
    methods: {
 
-      buttonCloseModal_delete_confirm(){
+      async buttonCloseModal_delete_confirm(){
          this.loading = true;
-
-         setTimeout(() => {
-            this.gotoOrderFilter(this.filter);
-         }, 1000);
+         if(this.order_id_delete != null || this.order_id_delete != 0 ){
+            var form = new FormData();
+            form.append('action', 'atlantis_delete_order');
+            form.append('order_id', this.order_id_delete);
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r) );
+               if( res.message == 'order_delete_ok' ){
+                  this.loading = false;
+                  this.popup_delete_all_item = false;
+                  this.orders.forEach( (item, index ) => {
+                     if( item.order_id == this.order_id_delete ){
+                        this.orders.splice(index ,1);
+                     }
+                  });
+               }
+            }
+            console.log(this.order_id_delete);
+            console.log(r);
+            this.order_id_delete = null;
+         }
+         this.loading = false;
       },
 
       btn_delete_order(order_id){
@@ -182,7 +201,7 @@ createApp({
          }
       }
       this.loading = false;
-      // console.log(this.orders);
+      console.log(this.orders);
    },
 }).mount('#app');
 </script>

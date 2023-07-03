@@ -217,10 +217,10 @@ const PageDeliveryAddress = {
          form.append('action', 'atlantis_user_delivery_address');
          form.append('event', 'add');
          var _primary = this.delivery_address_primary == true ? 1 : 0;
+
          if( this.delivery_address_name != '' &&
             this.delivery_address_phone != '' &&
             this.delivery_address_location != ''){
-               console.log('PHONE NUMBER ' + this.delivery_address_phone);
                var _phoneNumberString = this.delivery_address_phone;
             if( this.validatePhoneNumber( _phoneNumberString) == false ){
                this.text_res = 'Phone numner is not invalid';
@@ -235,6 +235,10 @@ const PageDeliveryAddress = {
                if(r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'add_delivery_address_ok' ){
+                     // IF CHOOSE PRIMARY SET ALL TO FALS
+                     if( _primary == 1 ){
+                        this.delivery_address.some(item => item.primary = false);   
+                     }
                      this.delivery_address.push({
                         id: res.data,
                         name: this.delivery_address_name,

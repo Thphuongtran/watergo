@@ -24,6 +24,115 @@ add_action( 'wp_ajax_atlantis_get_user', 'atlantis_get_user' );
 add_action( 'wp_ajax_nopriv_atlantis_get_current_user_account', 'atlantis_get_current_user_account' );
 add_action( 'wp_ajax_atlantis_get_current_user_account', 'atlantis_get_current_user_account' );
 
+add_action( 'wp_ajax_nopriv_atlantis_user_delivery_address', 'atlantis_user_delivery_address' );
+add_action( 'wp_ajax_atlantis_user_delivery_address', 'atlantis_user_delivery_address' );
+
+
+function atlantis_user_delivery_address(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_user_delivery_address' ){
+      $name    = isset($_POST['name']) ? $_POST['name'] : '';
+      $phone   = isset($_POST['phone']) ? $_POST['phone'] : '';
+      $address = isset($_POST['address']) ? $_POST['address'] : '';
+      $primary = isset($_POST['primary']) ? $_POST['primary'] : '';
+      $id_delivery = isset($_POST['id_delivery']) ? $_POST['id_delivery'] : '';
+      $event   = isset($_POST['event']) ? $_POST['event'] : '';
+
+
+      if(is_user_logged_in() == true ){
+         $user_id = get_current_user_id();
+         $user = get_user_by('id', $user_id);
+         $prefix_user = 'user_' . $user->data->ID;
+      }else{
+         wp_send_json_error(['message' => 'no_login_invalid' ]);
+         wp_die();
+      }
+
+      $conditions = [
+         'id'        => $id_delivery,
+         'user_id'   => $user_id
+      ];
+
+      if( $event == '' ){
+         wp_send_json_error([ 'message' => 'delivery_address_service_error' ]);
+         wp_die();
+      }
+
+      global $wpdb;
+
+      // GET EVENT
+
+      if( $event == 'get' ){
+         $sql = "SELECT * FROM wp_delivery_address WHERE user_id={$user_id}";
+         $res = $wpdb->get_results($sql);
+         if( empty( $res )){
+            wp_send_json_error([ 'message' => 'no_delivery_address_service_found' ]);
+            wp_die();
+         }else{
+            wp_send_json_success([ 'message' => 'get_delivery_address_ok', 'data' => $res ]);
+            wp_die();  
+         }
+      }
+
+      // ADD EVENT
+      if( $event == 'add' ){
+         if( $name != '' && $phone != '' && $address != '' ){
+
+            // IF SET PRIMARY TO 1
+            if( $primary == 1 || $primary == "1" ){
+               $sql_set_primary_all_false = "UPDATE wp_delivery_address SET wp_delivery_address.primary = 0 WHERE user_id = {$user_id}";
+               $wpdb->query($sql_set_primary_all_false);
+            }
+
+            $args = [
+               'name' => $name,
+               'phone' => $phone,
+               'address' => $address,
+               'user_id' => $user_id,
+               'primary' => $primary 
+            ];
+            $add_id = $wpdb->insert('wp_delivery_address', $args);
+         }
+
+         wp_send_json_success([ 'message' => 'add_delivery_address_ok', 'data' => $add_id ]);
+         wp_die();
+      }
+
+      // UPDATE EVENT
+      if( $event == 'update' ){
+         if( $name != '' && $phone != '' && $address != '' ){
+            // IF SET PRIMARY TO 1
+            if( $primary == 1 || $primary == "1" ){
+               $sql_set_primary_all_false = "UPDATE wp_delivery_address SET wp_delivery_address.primary = 0 WHERE user_id = {$user_id}";
+               $wpdb->query($sql_set_primary_all_false);
+            }
+            $args = [
+               'name' => $name,
+               'phone' => $phone,
+               'address' => $address,
+               'primary' => $primary 
+            ];
+            $wpdb->update('wp_delivery_address', $args, $conditions );
+         }
+  
+         wp_send_json_success(['message' => 'update_delivery_address_ok', 'data' => $args ]);
+         wp_die();
+      }
+
+      // DELETE EVENT
+      if( $event == 'delete' ){
+         if( $id_delivery == '' ){
+            wp_send_json_error([ 'message' => 'delete_delivery_address_error' ]);
+            wp_die();
+         }
+         $wpdb->delete('wp_delivery_address', $conditions );
+         // DELETE
+         wp_send_json_success([ 'message' => 'delete_delivery_address_ok' ]);
+         wp_die();
+      }
+
+   }
+}
+
 
 function atlantis_get_user_by_field(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_user_by_field' ){

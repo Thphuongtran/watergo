@@ -16,7 +16,7 @@
       </div>
 
       <div class='inner'>
-         <p class='heading'>What ‘s your rate?</p>
+         <p class='heading'>What's your rate?</p>
          <div class='box-rating-star'>
             <span v-for='i in 5' @click='select_rating_star(i)'
                :class='rating_select >= i ? "active" :""'>

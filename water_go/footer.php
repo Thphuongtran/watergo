@@ -1,67 +1,53 @@
    
    <?php wp_footer(); ?>
 
-   <!-- <footer id='app-bugging'>
-      <div v-show='menuOpen' class='menu'>
-         <a href="<?php echo WATERGO_HOME; ?>">HOME</a>
-         <a href="<?php echo get_bloginfo('url'); ?>/nearby?nearby_page=nearby">NEAR BY</a>
-         <a href="<?php echo WATERGO_ORDER; ?>?order_page=order-index">ORDER</a>
-         <a href="<?php echo WATERGO_USER; ?>?user_page=user-profile">ME</a>
-      </div>
-      <button @click='menuToggle'>Bugging</button>
-   </footer> -->
    <script>
-      // var { createApp } = Vue;
-      // createApp({
-      //    data(){
-      //       return{
-      //          menuOpen: false,
-      //       }
-      //    },
+     
+   function callbackLoginSuccess(type, token, information){
+      //alert("ok");return;
+      jQuery.ajax({
+         url: get_ajaxadmin,
+         type: "post",
+         dataType: "text",
+         data: {           
+            action: 'atlantis_social_login',
+            token: token,  
+            type: type,
+            //web_token:jQuery("#login-token").val(),  
+            information:information,             
+         },
 
-      //    methods: {
-      //       menuToggle(){
-      //          if( this.menuOpen == true ){
-      //             this.menuOpen = false;
-      //          }else{
-      //             this.menuOpen = true;
-      //          }
-      //       }
-      //    },
+         success: function(output, textStatus, request) {
+            /**
+             {
+               
+             } 
+             */
+            //window.appBridge.loginSuccess(1)
+            var id = request.getResponseHeader('user_id');
+              if ( window.appBridge &&  window.appBridge.setUserToken && id){
+                  window.appBridge.loginSuccess(id);
+              }
+            // let result = jQuery.parseJSON(output);
+            // if(result[0] == "success"){ 
+            //    alert('login success');
+               // window.appBridge.setUserToken(result[1]);
+               // reload_in_current_tab();
+            // }
+         },
+         error: function(xhr, textStatus, errorThrown) {
+            alert('Error:', errorThrown);
+         }
+      });
+   }
 
-      // }).mount('#app-bugging');
+   function callbackLoginFail(message){
+      alert('Login Fail ' + message);
+   }
 
-   </script>
-   <style>
-       #app-bugging{
-         position: fixed;
-         z-index: 999;
-         bottom: 40px;
-         right: 0;
-         display: flex;
-         flex-flow: row nowrap;
-         align-items: center;
-         box-shadow: 0 0 4px 4px #EFEFF4;
-         background: white;
-      }
-      #app-bugging .menu{
-         display: flex;
-         flex-flow: row nowrap;
-         align-items: center;
-      }
-      #app-bugging button{
-         width: 85px;
-         background: #D9D9D9;
-         font-size: 12px;
-         margin: 0;
-      }
-      #app-bugging a{
-         font-size: 12px;
-         text-decoration: none;
-         background: #D9D9D9;
-         margin-right: 5px;
-      }
-   </style>
    
+   </script>
+
+
 </body>
 </html>

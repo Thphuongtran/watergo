@@ -17,23 +17,25 @@ function app_social_process_user_login($email, $name){
          'display_name'       =>  strip_tags($name),
          'role'               => 'subscriber'
       );
-      $id = wp_insert_user( $args );
+      $id_new_user = wp_insert_user( $args );
    }else{
-      $id = $check_user_name;
+      $id_new_user = $check_user_name;
    }
 
-   wp_clear_auth_cookie();
-   $user = wp_set_current_user($id);
-   wp_set_auth_cookie($id, true, is_ssl());
-   do_action('wp_login', $user->user_login, $user);
-   
-   // wp_send_json_success(['success]);
-   // ["success",$id_new_user."|||".bj_render_nonce($id_new_user)]
-   $token = 'woLYHdBOLNbDGY2UkE';
-   
-   echo json_decode(['success', $id."|||".$token]);
-   // wp_send_json_success([ 'message' => '' ])
-   wp_die();
+   if ( is_wp_error($id_new_user) ){
+        echo $id_new_user->get_error_message();
+    }else{
+      wp_clear_auth_cookie();
+        $user = wp_set_current_user($id_new_user);
+        wp_set_auth_cookie($id_new_user,true,is_ssl());
+        do_action('wp_login', $user->user_login, $user);
+      header('user_id: '.$id_new_user);
+      setcookie("USER_ID", $id_new_user,time() + 1209600, "/","", 0); 
+        setcookie("IS_LOGIN_BY_SN", "true",time()+1209600, "/","", 0);
+        setcookie("APP_LOGIN", "true",time()+1209600, "/","", 0);
+      if(is_user_logged_in()) echo 'success'; 
+      die();
+    }
 }
 
 function atlantis_social_login(){
@@ -41,23 +43,29 @@ function atlantis_social_login(){
 
       $type          = isset($_POST["type"]) ? $_POST['type'] : '';
       $accessToken   = isset($_POST['token']) ? $_POST['token'] : '';
-
       // GOOGLE
       if( $type == 'G' ){
          $request_url = 'https://oauth2.googleapis.com/tokeninfo?id_token='.$accessToken;
          $response_access = file_get_contents($request_url);
-         $response_access = json_decode( $response_access, true );
+         if ($response_access !== false) {
+             $data = json_decode($response_access, true);
+             if (isset($data['error'])) {
+                 echo 'Lỗi: ' . $data['error'];
+             } else {
+                 $email =  isset($data["email"]) ? $data["email"] : "";
+                 $name =  isset($data["name"]) ? $data["name"] : "";
 
-         $email =  isset($response_access["email"]) ? $response_access["email"] : "";
-         $name =  isset($response_access["name"]) ? $response_access["name"] : "";
+                 app_social_process_user_login($email, $name );
+             }
+         } else {
+             echo 'Có lỗi xảy ra khi gửi yêu cầu.';
+         }
          
          if( $email == "" or $name == "" ){
             // Can't login because of missing parameters
             wp_send_json_error(['message' => 'login_social_not_found' ]);
             wp_die();
          }
-
-         app_social_process_user_login($email, $name );
       }
 
       // APPLE

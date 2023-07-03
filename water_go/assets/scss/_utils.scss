@@ -1231,6 +1231,11 @@ p{
 					align-items: center;
 					
 				}
+
+            .store-container{
+               width: 100%;
+            }
+
 			}
 			
 			.cart-container{
@@ -1244,11 +1249,13 @@ p{
 					align-items: center;
 					width: 80px;
 					align-self: center;
+               margin-right: 15px;
 					
 					.product-image{
 						width: 60px;
 						height: 60px;
 						flex: 0 0 60px;
+                  margin-left: 10px;
 						img{
 							width: 100%;
 							max-width: 100%;
@@ -1434,6 +1441,19 @@ p{
 		transform: translateX(-50%);
       line-height: 40px;
       height: 40px;
+	}
+	.btn-review-order{
+		position: fixed;
+		bottom: 70px;
+		width: 90%;
+		left: 50%;
+		transform: translateX(-50%);
+      line-height: 40px;
+      height: 40px;
+      color: #FFC83A;
+      font-size: 16px;
+      font-weight: 700;
+      border: 1px solid #FFC83A;
 	}
 }
 

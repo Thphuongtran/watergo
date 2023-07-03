@@ -269,20 +269,10 @@ createApp({
       },
 
       get_image_upload( product_image ){ return window.get_image_upload( product_image ); },
-
       goBack(){ window.goBack(); },
+      gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
+      gotoOrderProduct(){ window.gotoOrderProduct()},
 
-      gotoStoreDetail(store_id){
-         window.location.href = '<?php echo WATERGO_STORE; ?>?store_id='+ store_id +'&appt=N';
-      },
-
-      gotoOrderProduct(product_id){
-         if( product_id != null || product_id != undefined ){
-            window.location.href = '<?php echo WATERGO_ORDER; ?>?order_page=order-product&product_id='+ product_id +'&appt=N';
-         }else{
-            window.location.href = '<?php echo WATERGO_ORDER; ?>?order_page=order-product&appt=N';
-         }
-      },
    },
 
    computed: {
@@ -302,7 +292,6 @@ createApp({
             });
          });
          this.cart_stream();
-         console.log(_checkout);
          return _checkout.length;
       },
    },
@@ -311,7 +300,9 @@ createApp({
       this.loading = true;
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
       if( _carts != undefined && _carts.length > 0 ){ 
-
+         _carts.forEach(item => {
+            item.products.forEach( product => product.product_select = false);
+         });
          for( var i = 0; i < _carts.length; i++ ){
             for( var x = 0; x < _carts[i].products.length; x++ ){
                var _product_id = _carts[i].products[x].product_id;

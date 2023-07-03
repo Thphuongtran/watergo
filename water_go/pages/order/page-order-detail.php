@@ -11,7 +11,9 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>Order #{{ addLeadingZeros(order.order_id)}}</p>
+               <!-- <p class='leading-title'>Order #{{ addLeadingZeros(order.order_id)}}</p> -->
+               <p v-if='order.order_repeat_id != 0' class='leading-title'>#{{ addLeadingZeros(order.order_repeat_id)}}-{{ order.order_repeat_count}}</p>
+               <p v-if='order.order_repeat_id == 0' class='leading-title'>#{{ addLeadingZeros(order.order_id)}}</p>
             </div>
             <div class='action'>
                <span class='badge-status'>{{ get_status_activity(order.order_status) }}</span>
@@ -93,10 +95,10 @@
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.date }}</div>
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.time }}</div>
 
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.date }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_shortname_day_of_week(date_time.day) }} - {{ date_time.fulldate }}</div>
                <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.time }}</div>
 
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ date_time.day }}</div>
+               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.day }} - {{ date_time.fulldate }}</div>
                <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ date_time.time }}</div>
          </div>
       </div>
@@ -120,15 +122,26 @@
          
          <button @click='gotoReview("review-store", order.store_id )'
             v-if='order.order_status == "complete"'
-            class='btn btn-outline btn-cancel-order'>Review Store</button>
+            class='btn btn-outline btn-review-order'>Review Store</button>
 
          <button @click='btn_cancel_order' v-if='order.order_status == "ordered" || order.order_status == "prepare"' 
             class='btn btn-outline btn-cancel-order'>Cancel</button>
 
-         <div class='product-detail-bottomsheet'>
+         <div class='product-detail-bottomsheet'
+            :class='[
+               order.order_repeat_id != 0 ? "t-right" : ""
+            ]'
+         >
             <p class='price-total' :class='order.order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
 
-            <button v-if='order.order_status == "complete" || order.order_status == "cancel"' @click='buttonReOrder' class='btn-primary'>Re-Order</button>
+            <button 
+               v-if='order.order_repeat_id == 0 ? "t-right" : ""'
+               v-if='order.order_status == "complete" || order.order_status == "cancel"' 
+               @click='buttonReOrder' 
+               :class='[
+                  order_is_out_of_stock == true ? "disabled" : ""
+               ]'
+               class='btn-primary'>Re-Order</button>
          </div>
          
       </div>
@@ -149,7 +162,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='buttonModalSubmit' class='btn btn-primary'>Submit</button>
+            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>Submit</button>
          </div>
       </div>
    </div>
@@ -157,6 +170,30 @@
    <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
+   </div>
+
+   
+   <div v-if='popup_out_of_stock == true' class='modal-popup open'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
+      </div>
+   </div>
+   
+
+   <div v-if='banner_open == true' class='banner'>
+      <div class='banner-head'>
+         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <circle cx="32" cy="32" r="32" fill="#2790F9"/>
+         <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
+         </svg>
+
+         <h3>Order Successfully</h3>
+      </div>
+
+      <div class='banner-footer'>
+         <button @click='goBack' >Exit</button>
       </div>
    </div>
 
@@ -170,6 +207,10 @@ createApp({
    data (){
       return {
          loading: false,
+         banner_open: false,
+         popup_out_of_stock: false,
+         order_is_out_of_stock: false,
+
          popup_confirm_cancel: false,
          reason_cancel: [
             {label: 'Reason 1', active: false},
@@ -191,6 +232,8 @@ createApp({
          }
       },
 
+      buttonCloseModal_store_out_of_stock(){ this.popup_out_of_stock = false; },
+
       get_product_quantity( product ){ return window.get_product_quantity(product); },
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
@@ -199,7 +242,7 @@ createApp({
       get_status_activity( status ){
          switch( status ){
             case 'ordered' : return 'Pending'; break;
-            case 'prepare' : return 'Confirmed'; break;
+            case 'confirmed' : return 'Confirmed'; break;
             case 'delivering' : return 'Delivering'; break;
             case 'complete' : return 'Complete'; break;
             case 'cancel' : return 'Cancel'; break;
@@ -208,20 +251,25 @@ createApp({
 
       timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp);},
 
+      get_fulldate_from_day(day ){ return window.get_fulldate_from_day(day) },
+      get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
+      get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
+
+      // PERFORM CANCEL ORDER
       btn_cancel_order(){this.popup_confirm_cancel = true;},
       btn_select_reason( key ){
-         this.reason_cancel.every(item => item.active = false);
+         // this.reason_cancel.every(item => item.active = false);
          this.reason_cancel.some( item => { 
             if( item.label == key ){
                item.active = true;
             }else{
-               item.false = true;
+               item.active = false;
             }
          });
       },
 
       buttonModalCancel(){ this.popup_confirm_cancel = false;},
-      async buttonModalSubmit(){
+      async buttonModalSubmit_cancel_order(){
          this.loading = true;
          var form = new FormData();
          form.append('action', 'atlantis_cancel_order');
@@ -230,7 +278,13 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'cancel_done' ) {
-               window.gotoOrder();
+               // window.gotoOrder();
+               if( window.appBrigde ) {
+                  window.appBrigde.refresh();
+               }
+
+               this.goBack();
+
             }else{
                this.loading = false;
             }
@@ -238,6 +292,8 @@ createApp({
             this.loading = false;
          }
       },
+
+      // END CANCEL ORDER
 
       async findOrder( order_id ){
          var form = new FormData();
@@ -247,49 +303,45 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
+               // CREATE FULL DATE FOR MONTHLY
+               if( res.data.order_delivery_type == 'monthly'){
+                  res.data.order_delivery_data.some( _deli => {
+                     _deli.fulldate = this.get_fulldate_from_day(_deli.day);
+                  });
+               }
+               // CREATE FULL DATE FOR WEEKLY
+               if( res.data.order_delivery_type == 'weekly'){
+                  res.data.order_delivery_data.some( _deli => {
+                     _deli.fulldate = this.get_fullday_form_dayOfWeek( _deli.day );
+                  });
+               }
                this.order = res.data;
             }
          }
       },
 
       async buttonReOrder(){
-         this.loading = true;
-         var _products = [
-            {
-               store_id: this.order.store_id,
-               store_name: this.order.store_name,
-               products: []
-            }
-         ];
 
-         this.order.order_products.forEach( product => {
-            _products[0].products.push({
-               product_name: product.order_group_product_name,
-               product_id: product.order_group_product_id,
-               product_quantity: product.order_group_product_quantity,
-               product_quantity_count: product.order_group_product_quantity_count,
-               product_price: product.order_group_product_price,
-               product_discount_percent: product.order_group_product_discount_percent,
-            });
-         });
-         
-         
-         var form = new FormData();
-         form.append('action', 'atlantis_add_order');
-         form.append('delivery_data', JSON.stringify(this.order.order_delivery_data) );
-         form.append('delivery_address', JSON.stringify(this.order.order_delivery_address) );
-         form.append('delivery_type', this.order.order_delivery_type );
-         form.append('productSelected', JSON.stringify( _products ) );
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'insert_order_ok' ){
-               this.gotoNotification('order-success');
+         if( this.order_is_out_of_stock == false ){
+            this.loading = true;
+            var form = new FormData();
+            form.append('action', 'atlantis_re_order');
+            form.append('order_id', this.order.order_id)
+            
+            var r = await window.request(form);
+            console.log(r);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r ));
+               if( res.message == 'reorder_ok' ){
+                  this.loading = false;
+                  this.banner_open == true;
+
+               }else{
+                  this.loading = false;
+               }
             }else{
                this.loading = false;
             }
-         }else{
-            this.loading = false;
          }
 
       },
@@ -297,7 +349,6 @@ createApp({
       goBack(){ window.goBack();},
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       gotoReview(review_page, related_id ){ window.gotoReview(review_page, related_id); },
-      gotoNotification(code){ window.gotoNotification(code);}
 
    },
 
@@ -338,15 +389,38 @@ createApp({
 
    async created(){
 
+      
+   },
+
+   async mounted(){
       this.loading = true;
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
+
+      // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
+      if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
+         var _formCheckReorder = new FormData();
+         _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
+         _formCheckReorder.append('order_id', order_id);
+
+         var _r = await window.request(_formCheckReorder);
+         if( _r != undefined ){
+            var _res = JSON.parse( JSON.stringify( _r ) );
+
+            if( _res.message == 'reorder_out_of_stock' ){
+               this.order_is_out_of_stock = true;
+               this.popup_out_of_stock = true;
+            }
+         }
+
+      }
+
+
+
+      
+
       setTimeout( () =>{ this.loading = false; }, 1000);
-   },
-
-   mounted(){
-
    }
 }).mount('#app');
 

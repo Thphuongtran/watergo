@@ -31,6 +31,9 @@ Tab Me [http://watergo.net/user/?user_page=user-profile]
    My Review
       Edit Review       [http://watergo.net/user/?user_page=user-review-edit]
 
+
+Order Store [http://watergo.net/order/?order_page=order-index-store]
+
 Store Detail [http://watergo.net/store/?store_page=store-detail]
 Product Detail [http://watergo.net/product/?product_page=product-detail]
 

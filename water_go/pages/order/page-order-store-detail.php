@@ -86,7 +86,7 @@
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item highlight'>{{ date_time.date }}</div>
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item highlight'>{{ date_time.time }}</div>
 
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>{{ this.get_shortname_day_of_week(date_time.day) }} - {{ date_time.fulldate }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>{{ get_shortname_day_of_week(date_time.day) }} - {{ date_time.fulldate }}</div>
                <div v-if='order.order_delivery_type == "weekly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>{{ date_time.time }}</div>
 
                <div v-if='order.order_delivery_type == "monthly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>Date {{ date_time.day }} - {{ date_time.fulldate }}</div>
@@ -325,6 +325,8 @@ createApp({
             res.data.order_delivery_data.some( _deli => {
                _deli.fulldate = this.get_fullday_form_dayOfWeek( _deli.day );
             });
+            console.log('create full day for weekly');
+            console.log(res.data.order_delivery_data);
          }
 
          var currentDate = new Date();
@@ -406,6 +408,8 @@ createApp({
       }
       
       this.loading = false;
+
+      console.log(this.order)
 
    },
 

@@ -12,10 +12,6 @@ function bodyScrollToggle( check ){
    }
 }
 
-function handleClickOutside(clickIn, clickOut){
-
-}
-
 function calculateDistance(lat1, lon1, lat2, lon2) {
    var earthRadius = 6371; // Radius of the Earth in kilometers (from chat gpt)
    // var earthRadius = 6366; // Radius of the Earth in kilometers (from nasa)
@@ -211,12 +207,15 @@ function count_product_total_price(){
 
    _cartItems.forEach( store => {
       store.products.forEach(product => {
-         if( product.product_discount_percent != null || product.product_discount_percent != 0 ){
-            gr_price.price_discount += ( product.product_price - ( product.product_price * ( product.product_discount_percent / 100)) ) * product.product_quantity_count;
-         }else{
-            gr_price.price_discount += product.product_price * product.product_quantity_count;
+         if( product.product_select == true ){
+            
+            if( product.product_discount_percent != null || product.product_discount_percent != 0 ){
+               gr_price.price_discount += ( product.product_price - ( product.product_price * ( product.product_discount_percent / 100)) ) * product.product_quantity_count;
+            }else{
+               gr_price.price_discount += product.product_price * product.product_quantity_count;
+            }
+            gr_price.price += product.product_price * product.product_quantity_count;
          }
-         gr_price.price += product.product_price * product.product_quantity_count;
       });
 
    });

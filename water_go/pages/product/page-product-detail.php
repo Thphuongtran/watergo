@@ -46,7 +46,7 @@
                <div class='entry-quantity'>
                   <p>Quantity</p>
                   <div class='quantity-event'>
-                     <span @click='minsQuantity()'>
+                     <span @click='minsQuantity'>
                         <svg width="20" height="3" viewBox="0 0 20 3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.5714 2.85714H1.42857C1.04969 2.85714 0.686328 2.70663 0.418419 2.43872C0.15051 2.17081 0 1.80745 0 1.42857C0 1.04969 0.15051 0.686328 0.418419 0.418419C0.686328 0.15051 1.04969 0 1.42857 0H18.5714C18.9503 0 19.3137 0.15051 19.5816 0.418419C19.8495 0.686328 20 1.04969 20 1.42857C20 1.80745 19.8495 2.17081 19.5816 2.43872C19.3137 2.70663 18.9503 2.85714 18.5714 2.85714Z" fill="#A2A2A2"/></svg>
                      </span>
                      <input type="number" v-model='product_quantity_count' :max='product.stock' disabled>
@@ -97,7 +97,7 @@
 
          <div v-if='product_by_store.length > 0' class='inner space-top-product'>
             <div class='gr-heading'>
-               <p class='heading'>Top products</p><span @click='gotoProductTop(product.categor)' class='link'>See All</span>
+               <p class='heading'>Top products</p><span @click='gotoProductTop(product.category)' class='link'>See All</span>
             </div>
             <div class='list-horizontal'>
                <ul>
@@ -210,7 +210,9 @@ createApp({
                         product_quantity: this.get_product_quantity(this.product), 
                         product_price: this.product.price,
                         product_discount_percent: this.has_discount(this.product) ? this.product.discount_percent : 0,
-                        product_select: true 
+                        // TEST WHEN USER GO TO ORDER PAGE
+                        product_select: false
+                        // product_select: true 
                      },
                   ]
                }
@@ -249,7 +251,23 @@ createApp({
       // GO TO PAGE ORDER
       gotoPageOrder(){
          this.addToCart();
+         // MAKE CURRENT PRODUCT IS SELECT IN THIS CASE
          var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+         _cartItems.forEach(item => {
+            if( item.store_id == this.product.store_id ){
+               if( item.products.length > 0  ){
+                  item.products.forEach( product => {
+                     if( product.product_id == this.product.id ){
+                        product.product_select = true;
+                     }else{
+                        product.product_select = false;
+                     }
+                  });
+               }
+            }
+         });
+         // Save the updated cart items back to Local Storage
+         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
          this.gotoOrderProduct();
       },
 
