@@ -101,7 +101,7 @@
                   </div>
                </div>
 
-               <div v-if='storeNearby.length > 0' class='list-product-recommend'>
+               <div v-if='storeNearby.length > 0' class='list-product-recommend more-space'>
                   <div class='gr-heading mt40'>
                      <p class='heading'>Nearby</p>
                      <span @click='gotoNearbyStore' class='link'>See All</span>
@@ -217,6 +217,7 @@ createApp({
       async get_store_nearby(){
          var form = new FormData();
          form.append('action', 'atlantis_get_store_location');
+
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
 
@@ -230,7 +231,6 @@ createApp({
       },
 
       get_current_location(){
-
          if( window.appBridge !== undefined ){
             window.appBridge.getLocation().then( (data) => {
                if (Object.keys(data).length === 0) {
@@ -238,8 +238,10 @@ createApp({
                }else{
                   let lat = data.lat;
                   let lng = data.lng;
-                  this.latitude = data.lat;
-                  this.longitude = data.lng;
+                  if( lat != 37.4226711 ){
+                     this.latitude = lat;
+                     this.longitude =lng;
+                  }
                }
             }).catch((e) => { alert(e); })
          }
@@ -263,16 +265,8 @@ createApp({
 
       var form = new FormData();
       form.append('action', 'atlantis_load_product_recommend');
-      if(this.latitude == 0 || this.latitude == null || this.latitude == undefined ){
-         this.latitude = 10.780900239854994;
-      }
-      if(this.longitude == 0 || this.longitude == null || this.longitude == undefined ){
-         this.longitude = 106.7226271387539;
-      }
-      
       form.append('lat',this.latitude);
       form.append('lng',this.longitude);
-      
       var r = await window.request(form);
 
       if( r != undefined ){

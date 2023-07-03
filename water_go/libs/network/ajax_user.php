@@ -62,7 +62,7 @@ function atlantis_user_delivery_address(){
       // GET EVENT
 
       if( $event == 'get' ){
-         $sql = "SELECT * FROM wp_delivery_address WHERE user_id={$user_id}";
+         $sql = "SELECT * FROM wp_delivery_address WHERE user_id= {$user_id}";
          $res = $wpdb->get_results($sql);
          if( empty( $res )){
             wp_send_json_error([ 'message' => 'no_delivery_address_service_found' ]);
@@ -176,9 +176,15 @@ function atlantis_get_user_login_data(){
          $first_name = get_user_meta($user->data->ID, 'first_name', true) != '' 
             ? get_user_meta($user->data->ID, 'first_name', true) 
             : '';
-         $avatar = get_field('user_avatar', $prefix_user, true);
-         if( $avatar == '' ){
-            $avatar = THEME_URI . '/assets/images/avatar-dummy.png';
+         
+
+         $sql_avatar = "SELECT * FROM wp_watergo_photo WHERE upload_by = $user_id AND kind_photo = 'user_avatar' ";
+         $avatar = $wpdb->get_results( $sql_avatar );
+
+         if( empty( $avatar ) ){
+            $avatar = 'avatar-dummy.png';
+         }else{
+            $avatar = $avatar[0]->url;
          }
 
          $delivery_address = $wpdb->get_results("SELECT * FROM wp_delivery_address WHERE user_id={$user_id}");
