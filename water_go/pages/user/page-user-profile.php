@@ -28,7 +28,7 @@
             <img class='avatar-circle' width='80' height='80' :src="get_image_upload(user.avatar)">
 
             <div class='user-prefs'>
-               <div class='username'>{{ user.user_login }}</div>
+               <div class='username'>{{ get_first_name_user }}</div>
                <button @click='gotoPageUserEditProfile' class='btn-text arrow-right'>Edit Profile
                   <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1 11L6 6L1 1" stroke="#2040AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -115,13 +115,13 @@
 
    </div>
 
-   <div v-if='loading == true'>
+   <div v-else>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
-   <div v-if='popup_delete_all_review == true' class='modal-popup open'>
+   <div v-if='popup_delete_all_review == true && user != null' class='modal-popup open'>
       <div class='modal-wrapper'>
          <p class='heading'>Do you want to delete this review?</p>
          <div class='actions'>
@@ -237,14 +237,27 @@ createApp({
       gotoSupport(){ window.gotoSupport();},
       gotoPageUserEditProfile(){ window.gotoPageUserEditProfile(); }
    },
-   
-   async mounted(){
+
+   computed: {
+      get_first_name_user(){
+         if( this.user.first_name != undefined || this.user.first_name != null || this.user.first_name != ''){
+            return this.user.first_name;
+         }else{
+            this.user.user_login
+         }
+      },
+   },
+
+   async created(){
       this.loading = true;
       await this.initReview();
       await this.initUser();
       this.loading = false;
-   }
 
+
+   },
+
+   
 
 }).mount('#app-user');
 </script>

@@ -50,6 +50,17 @@
       }
    }
 
+   &.page-welcome{
+		.banner-head{
+			height: auto;
+
+         img{
+            max-width: 180px;
+            width: 90%;
+         }
+		}
+	}   
+
 }
 
 .banner-fixed{

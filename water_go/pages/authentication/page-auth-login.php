@@ -1,10 +1,43 @@
 <div id='app'>
+
+   <div v-if='page_welcome == true' class='banner page-welcome'>
+      <div class='banner-head'>
+         <h3>WELCOME !</h3>
+         <p>Please login to explode more</p>
+
+         <div class='t-center mt30 mb30'>
+            <img src="<?php echo THEME_URI . '/assets/images/logo-vertical.png'; ?>">
+         </div>
+
+      </div>
+
+      <div class='banner-footer'>
+         <button @click='gotoLogin' class='btn btn-primary'>Login</button>
+      </div>
+   </div>
+
    <div v-if='loading == false' class='page-authentication'>
+
+      <div class='appbar'>
+         <div class='appbar-top'>
+            <div class='leading'>
+               <button @click='goBack' class='btn-action'>
+                  <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 7.44772 0.447715 7 1 7H18.5C19.0523 7 19.5 7.44772 19.5 8C19.5 8.55228 19.0523 9 18.5 9H1C0.447715 9 0 8.55228 0 8Z" fill="#252831"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
+                  </svg>
+               </button>
+
+            </div>
+            <div class='action'></div>
+         </div>
+      </div>
 
       <div class='inner style01'>
 
-         <div class='t-center mt50'>
-            <img width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
+
+         <div class='t-center'>
+            <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
          </div>
 
          <div class='heading-01 t-center'>Log In</div>
@@ -56,17 +89,24 @@
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
+
+   
+   
 </div>
 <script>
 var { createApp } = Vue;
 createApp({
    data (){
+
       return {
          loading: false,
          inputEmail: '',
          inputPassword: '',
          res_text_sendcode: '',
          term_conditions: false,
+         
+         page_welcome: true,
+
       }
    },
    
@@ -83,6 +123,11 @@ createApp({
       login_social_zalo(){
          try{ window.appBridge.socialLogin('Z'); // google
          }catch{}
+      },
+
+      goBack(){this.page_welcome = true;},
+      gotoLogin(){
+         this.page_welcome = false;
       },
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
@@ -106,7 +151,10 @@ createApp({
 
                      var _cookie = 'email:' + this.inputEmail;
 
-                     window.appBridge.loginSuccess(_cookie);
+                     if( window.appBridge != undefined ){
+                        window.appBridge.loginSuccess(_cookie);
+                        window.appBridge.refresh();
+                     }
                   }
                   else if(res.message == 'login_error' ){
                      this.res_text_sendcode = 'Login Error.';

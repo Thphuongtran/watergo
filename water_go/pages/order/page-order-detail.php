@@ -209,6 +209,9 @@ createApp({
          order_is_out_of_stock: false,
 
          popup_confirm_cancel: false,
+
+
+
          reason_cancel: [
             {label: 'Reason 1', active: false},
             {label: 'Reason 2', active: false},
@@ -257,34 +260,39 @@ createApp({
       // PERFORM CANCEL ORDER
       btn_cancel_order(){this.popup_confirm_cancel = true;},
       btn_select_reason( key ){
-         // this.reason_cancel.every(item => item.active = false);
          this.reason_cancel.some( item => { 
-            if( item.label == key ){
-               item.active = true;
-            }else{
-               item.active = false;
-            }
+            if( item.label == key ){ item.active = true;
+            }else{ item.active = false; }
          });
       },
 
-      buttonModalCancel(){ this.popup_confirm_cancel = false;},
+      buttonModalCancel(){ 
+         this.popup_confirm_cancel = false; 
+         this.reason_cancel.some(item => item.active = false ); 
+      },
+      
       async buttonModalSubmit_cancel_order(){
-         this.loading = true;
-         var form = new FormData();
-         form.append('action', 'atlantis_cancel_order');
-         form.append('order_id', this.order.order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'cancel_done' ) {
-               // window.gotoOrder();
-               this.goBack();
+         
+         var isCancel = this.reason_cancel.some(item => item.active == true ); 
 
+         if( isCancel == true ){
+            this.loading = true;
+            var form = new FormData();
+            form.append('action', 'atlantis_cancel_order');
+            form.append('order_id', this.order.order_id);
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'cancel_done' ) {
+                  // window.gotoOrder();
+                  this.goBack();
+
+               }else{
+                  this.loading = false;
+               }
             }else{
                this.loading = false;
             }
-         }else{
-            this.loading = false;
          }
       },
 

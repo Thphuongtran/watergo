@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-order'>
+   <div v-if='loading == false && orders.length > 0' class='page-order'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -34,7 +34,7 @@
             </div>
          </div>
          <div class='appbar-bottom'>
-            <ul class='navbar style02'>
+            <ul v-if='order_status_filter.length > 0' class='navbar style02'>
                <li @click='select_filter(filter.value)' v-for='(filter, index) in order_status_filter' :key='index' 
                   :class='filter.active == true ? "active" : ""'>{{ filter.label }}</li>
             </ul>
@@ -42,7 +42,7 @@
       </div>
 
 
-      <ul class='list-order'>
+      <ul v-if='order_filter' class='list-order'>
          <li v-for='(order, orderKey) in order_filter' :key='orderKey'>
 
             <div class='order-head'>
@@ -73,6 +73,7 @@
       </ul>
 
    </div>
+
    <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
@@ -88,6 +89,7 @@ createApp({
       return {
          loading: false,
          notification_count: 0,
+         isCancel: false,
 
          orders: [],
          order_status_filter: [ 
@@ -182,6 +184,7 @@ createApp({
 
    async created(){
       this.loading = true;
+      await setTimeout(() => {}, 700);
       await this.get_notification_count();
       var form = new FormData();
       form.append('action', 'atlantis_get_order');

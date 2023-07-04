@@ -10,6 +10,7 @@
    <!-- STEP 0  -->
    <div v-if='step_page == 0 && loading == false' class='page-step'>
       <div class='page-auth-forget-password'>
+
          <div class='appbar'>
             <div class='appbar-top'>
                <div class='leading'>
@@ -25,6 +26,7 @@
                </div>
             </div>
          </div>
+         
          <div class='inner'>
             <div class='heading-01 t-center mt100'>Forgot Password?</div>
             <p class='t-center'>Don’t worry when it happens <br> Reset your password</p>

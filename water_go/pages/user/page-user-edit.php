@@ -20,7 +20,7 @@
       <div class='inner'>
          <div class='avatar-header'>
             <label for='uploadAvatar' class='upload-avatar'>
-               <img v-if="previewAvatar == null" width='80' height='80' class='avatar-circle' :src="user.avatar" alt="Avatar">
+               <img v-if="previewAvatar == null" width='80' height='80' class='avatar-circle' :src="get_image_upload(user.avatar)" >
                <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
                <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar" width='80' height='80' >
             </label>
@@ -67,6 +67,8 @@ createApp({
       }
    },
    methods: {
+      get_image_upload(image){ return window.get_image_upload(image); },
+
       async btn_update_user(){
          this.loading = true;
          var formData = new FormData();
@@ -88,7 +90,7 @@ createApp({
             if(r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'update_user_ok' ){
-                  this.gotoPageUserProfile();
+                  this.goBack();
                }
             }
          }
@@ -119,12 +121,10 @@ createApp({
                this.name = this.user.first_name;
                this.email =  this.user.user_email;
             }
-            console.log(this.user);
          }
       },
 
       goBack(){ window.goBack(); },
-      gotoPageUserProfile(){ window.gotoPageUserProfile();}
    },
    computed: {
       

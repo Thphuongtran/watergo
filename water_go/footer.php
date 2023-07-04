@@ -1,5 +1,5 @@
    
-   <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script>
+   <!-- <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script> -->
    <?php wp_footer(); ?>
 
    <script>
@@ -49,6 +49,7 @@
       alert('Login Fail ' + message);
    }
 
+
    // (function($){
 
    //    $("body").on("click", ".share-btn", function(e) {
@@ -84,6 +85,7 @@
 
    
    </script>
+
 
 </body>
 </html>
