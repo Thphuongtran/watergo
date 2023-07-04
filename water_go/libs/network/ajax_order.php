@@ -60,6 +60,7 @@ function atlantis_is_product_out_of_stock_from_order(){
       
       $res = $wpdb->get_results($sql_check_stock_already_to_reorder);
 
+
       if( empty( $res ) ){
          wp_send_json_error(['message' => 'reorder_out_of_stock' ]);
          wp_die();
@@ -160,26 +161,50 @@ function atlantis_add_order(){
             $query_check_hash = $wpdb->prepare("SELECT COUNT(*) FROM wp_watergo_order_group WHERE hash_id = %s", (String) $hash_id);
             $check_hash = $wpdb->get_var($query_check_hash);
             $store_id = $cart->store_id;
+            $is_order_repeat = false;
+
+            $delivery_new = [];            
+
+            $delivery_data_convert = json_decode( stripslashes( $delivery_data));
+            $delivery_address = json_encode( stripslashes( $delivery_address), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
             if( $check_hash == 0 ){
-
-               $order_keep_repeat = 0;
-
-               if($delivery_type == 'weekly' || $delivery_type == 'monthly'){
-                  $order_keep_repeat = 1;
-               }
 
                $wpdb->insert('wp_watergo_order', [
                   'order_by' => $user_id,
                   'order_delivery_type' => $delivery_type,
-                  'order_delivery_data' => json_encode( stripslashes( $delivery_data), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                   'order_payment_method' => 'cash',
                   'order_status' => 'ordered',
-                  'order_delivery_address' => json_encode( stripslashes( $delivery_address), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                  'order_delivery_address' => $delivery_address,
                   'order_time_created' => time(),
                   'hash_id' => (String) $hash_id,
-                  'order_keep_repeat' => $order_keep_repeat
                ]);
+
+               $order_id = $wpdb->insert_id;
+
+               if($delivery_type == 'weekly' || $delivery_type == 'monthly'){
+                  $is_order_repeat = true;
+                  foreach($delivery_data_convert as $k => $vl ){
+
+                     $dt = new DateTime("@$vl->currentDate");
+                     
+                     $day     = $vl->day;
+                     $month   = $dt->format('m');
+                     $year    = $dt->format('y');
+
+                     $wpdb->insert('wp_watergo_order_time_shipping', [
+                        'order_time_shipping_day'        => $day,
+                        'order_time_shipping_month'      => $month,
+                        'order_time_shipping_year'       => $year,
+                        'order_time_shipping_time'       => $vl->time,
+                        'order_time_shipping_type'       => $delivery_type,
+                        'order_time_shipping_is_done'    => 0,
+                        'order_time_shipping_timestamp'  => $vl->currentDate,
+                        'order_time_shipping_order_id'   => $order_id,
+                     ]);
+
+                  }
+               }
 
                foreach( $cart->products as $k => $product ){
 
@@ -203,6 +228,23 @@ function atlantis_add_order(){
                      'stock' => $wpdb->get_var( $wpdb->prepare( "SELECT stock FROM wp_watergo_products WHERE id = %d", 1 ) ) - $product->product_quantity_count,
                   );
                   $wpdb->update( 'wp_watergo_products', $data, ['id' => $product->product_id]  );
+               }
+
+               // ADD DATE SHIPPING TO watergo_order_repeat
+               /**
+                  1. hash_id - delivery_type
+               */
+               if( $is_order_repeat == true ) {
+
+                  $wpdb->insert('wp_watergo_order_repeat', [
+                     'order_repeat_is_keep_repeat' => 1,
+                     'order_repeat_order_id'       => $order_id,
+                     'order_repeat_count'          => 0, // IT IS FIRST ORDER
+                     'order_repeat_type'           => $delivery_type,
+                     'order_hash_id'               => (String) $hash_id,
+                     'order_repeat_id_previous'    => 0, // THIS IS PREVIOUS ID WHEN RE-ORDER BEEN CREATED
+                  ]);
+                  
                }
 
             }
@@ -394,10 +436,6 @@ function atlantis_get_order(){
                'order_by'                 => $item->order_by,
                'store_name'               => $item->store_name,
                'store_id'                 => $item->order_group_store_id,
-               // REPEAT ORDER
-               'order_repeat_id'          => $item->order_repeat_id,
-               'order_repeat_count'       => $item->order_repeat_count,
-               'order_keep_repeat'        => $item->order_keep_repeat,
                'order_products' => [
                   [
                      'product_image'                        => $item->product_image,
@@ -502,7 +540,7 @@ function atlantis_get_order_filter(){
             $product_quantity = $item->weight . 'kg ' . $item->length_width . 'mm';
          }
 
-         if (isset($final['order_products'] )) {
+         if (isset($final[$key]['order_products'] )) {
             
             $final[$key]['order_products'][] = [
                'product_image'                        => $item->product_image,
@@ -536,10 +574,6 @@ function atlantis_get_order_filter(){
                'order_by'                 => $item->order_by,
                'store_name'               => $item->store_name,
                'store_id'                 => $item->order_group_store_id,
-               'order_keep_repeat'        => $item->order_keep_repeat,
-               'order_repeat_id'          => $item->order_repeat_id,
-               'order_repeat_count'       => $item->order_repeat_count,
-
                'order_products' => [
                   [
                      'product_image'                        => $item->product_image,
@@ -1003,9 +1037,6 @@ function atlantis_order_callback(){
                   'store_name'               => $item->store_name,
                   'store_id'                 => $item->order_group_store_id,
                   // REPEAT ORDER
-                  'order_repeat_id'          => $item->order_repeat_id,
-                  'order_repeat_count'       => $item->order_repeat_count,
-                  'order_keep_repeat'        => $item->order_keep_repeat,
                   'order_products' => [
                      [
                         'product_image'                        => $item->product_image,

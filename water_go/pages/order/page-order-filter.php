@@ -39,7 +39,7 @@
             <div 
                v-for='(product, prodKey) in order.order_products' :key='prodKey' class='order-prods'>
                <div class='leading'>
-                  <img src="<?php echo THEME_URI . '/assets/images/demo-product04.png'; ?>">
+                  <img :src="get_image_upload(product.product_image)">
                </div>
                <div class='prod-detail'>
                   <span class='prod-name'>{{ product.order_group_product_name }}</span>
@@ -159,7 +159,9 @@ createApp({
          var _total = 0;
          this.orders.some( order => {
             if( order.order_id == order_id ){
-               _total += order.order_products.length;
+               order.order_products.some( product => {
+                  _total += parseInt( product.order_group_product_quantity_count );
+               });
             }
          });
          return _total;
@@ -172,7 +174,8 @@ createApp({
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id); },
-      goBack(){ window.goBack(); }
+      goBack(){ window.goBack(); },
+      get_image_upload(image){ return window.get_image_upload(image); }
    },
 
    computed: {
