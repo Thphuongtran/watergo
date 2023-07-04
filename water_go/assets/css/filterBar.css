@@ -1,0 +1,13 @@
+.header-filter {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.header-filter li {
+  width: 100%;
+  text-align: center;
+}
+
+.header-filter .active {
+  border-bottom: 2px solid #2790F9;;
+}

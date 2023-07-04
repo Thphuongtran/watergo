@@ -1,0 +1,27 @@
+.search-box-container {
+  padding: 0 15px;
+}
+
+/* .search-box-container .input-container {
+  padding: 8px 5px;
+  background: #F5F5F5;
+  outline: none;
+} */
+
+.search-box-container .search-input {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  background: #F5F5F5;
+}
+
+.search-input input, .search-input input:focus, .search-input input:active {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 13px;
+}
+
