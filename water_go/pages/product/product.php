@@ -1,12 +1,9 @@
 <?php 
-
-
    $product_page = isset($_GET['product_page']) ? $_GET['product_page'] : '';
-
    $product_id = isset($_GET['product_id']) ? $_GET['product_id'] : '';
 
    if( $product_page == 'water' ){
-      get_template_part('pages/product/page-product-water');
+      return get_template_part('pages/product/page-create-water-product');
    }
 
    if( $product_page == 'ice' ){
@@ -25,4 +22,5 @@
       get_template_part('pages/product/page-product-top-related');
    }
 
+   return get_template_part('pages/product/page-products');
 ?>
