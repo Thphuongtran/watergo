@@ -25,8 +25,10 @@
              */
             //window.appBridge.loginSuccess(1)
             var id = request.getResponseHeader('user_id');
+
               if ( window.appBridge &&  window.appBridge.setUserToken && id){
                   window.appBridge.loginSuccess(id);
+                  // window.appBridge.refresh();
               }
             // let result = jQuery.parseJSON(output);
             // if(result[0] == "success"){ 
@@ -81,7 +83,6 @@
 
    
    </script>
-
 
 </body>
 </html>

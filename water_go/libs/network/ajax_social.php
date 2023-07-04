@@ -104,23 +104,24 @@ function atlantis_social_login(){
 
 function shorten_URL ($longUrl) {
     //$longUrl = "https://stylevook.com/login?role=shopmanager&email=abc@123.456";
+   //  efVXcyBHRwyYS83-zxLDvR:APA91bEB6c0UqQ36EbTiw6KSjUMQVdIQYiiInB9q7bzp1RTz-sqolQe1y73R34aLBQuqG5il81J6Xt7gtzgpTgBeCNDYNMdlVBb0GegmYzVjIOJF
     $key = 'AIzaSyDKpfx1zszLyDt0qmT436xylP3lngf9dTM';
     $url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=' . $key;
     $data = array(
       "dynamicLinkInfo" => array(
-         "dynamicLinkDomain" => "stylevook.page.link",
+         "dynamicLinkDomain" => "watergo.page.link",
          "link" => $longUrl,
          "socialMetaTagInfo" => array(
-            "socialTitle" => 'StyleVook',
+            "socialTitle" => 'WaterGo',
             "socialDescription" => '',
             "socialImageLink" => THEME_URL . 'assets/images/logo-watergo.png'
          ),
          "androidInfo" => array(
-            "androidPackageName" => "com.stylevook.business"
+            "androidPackageName" => "com.watergo.app"
          ),
 
          "iosInfo"=> array(
-            "iosBundleId"=> "com.stylevook.business"
+            "iosBundleId"=> "com.watergo.app"
          )
       )
     );

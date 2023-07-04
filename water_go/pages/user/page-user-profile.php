@@ -1,5 +1,6 @@
-<div id='app'>
-   <div v-if='loading == false' class='page-user-profile'>
+<div id='app-user'>
+
+   <div v-if='loading == false && user != null' class='page-user-profile'>
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
@@ -27,7 +28,7 @@
             <img class='avatar-circle' width='80' height='80' :src="get_image_upload(user.avatar)">
 
             <div class='user-prefs'>
-               <div class='username'>{{ this.user.user_login }}</div>
+               <div class='username'>{{ user.user_login }}</div>
                <button @click='gotoPageUserEditProfile' class='btn-text arrow-right'>Edit Profile
                   <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1 11L6 6L1 1" stroke="#2040AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -131,31 +132,43 @@
    </div>
 
 </div>
-<script type='module'>
+
+<script >
 
 var { createApp } = Vue;
 
+console.log(createApp);
+
 createApp({
    data (){
+
       return {
          loading: false,
          user: null,
-
          reviews: [],
          popup_delete_all_review: false,
-
          review_id: 0
 
       }
    },
+
    methods: {
       gotoCart(){ window.gotoCart(); },
       count_product_in_cart(){return window.count_product_in_cart(); },
       get_image_upload(image){ return window.get_image_upload(image); },
-
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
-
       btn_review_edit(review_id){ window.gotoPageUserReviewEdit(review_id);},
+      async request(formdata){ 
+        try{
+            return axios({ method: 'post', url: get_ajaxadmin, data: formdata
+            }).then(function (res) { 
+               return res.status == 200 ? res.data.data : null;
+            });
+         }catch(e){
+            console.log(e);
+            return null;
+         } 
+      },
 
       async btn_popup_delete(){
          this.loading = true;
@@ -198,11 +211,12 @@ createApp({
       async initUser(){
          var form = new FormData();
          form.append('action', 'atlantis_get_user_login_data');
-         var r = await window.request(form);
+         var r = await this.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'user_found'){
                this.user = res.data;
+
             }
          }
       },
@@ -226,17 +240,13 @@ createApp({
       gotoPageUserEditProfile(){ window.gotoPageUserEditProfile(); }
    },
    
-   computed: {
-      
-   },
-
-
-   async created(){
+   async mounted(){
       this.loading = true;
-      await this.initUser();
       await this.initReview();
+      await this.initUser();
       this.loading = false;
-
    }
-}).mount('#app');
+
+
+}).mount('#app-user');
 </script>

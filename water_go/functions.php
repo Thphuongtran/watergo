@@ -7,7 +7,7 @@ function stylesheet(){
   if (is_page('schedule')) {
     wp_enqueue_style('styles-schedule', THEME_URI .'/assets/css/schedule.css');
   }
-   // wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.esm-browser.js');
+   // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js', ['jquery']);
    // wp_script_add_data( 'common-js', 'defer', true );
@@ -139,3 +139,37 @@ function common_js(){
    wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js', ['jquery']);
 }
 add_action('wp_footer', 'common_js');
+
+
+/**
+ * 
+   WHEN LOGIN SOCIAL NETWORK WITH USER TOKEN | FUNCTION IS TESTING
+ */
+
+// add_action('init', 'callback_from_login_social');
+function callback_from_login_social(){
+   $headers = getallheaders();
+
+   if( !empty($headers['app_name'] ) ){
+
+      // SET LOGIN USER BY TOKEN FROM LOGIN SOCIAL 
+      
+      $user_token = "";
+      if( !empty($headers['user_token']) && $headers['user_token'] != "Token not found" ){
+
+         $user_token = $headers['user_token'];
+         $user_token_arr = explode(":", 'user_id');
+         if( is_array($user_token_arr )){
+            $user_id = $user_token_arr[1];
+            wp_clear_auth_cookie();
+            $user = wp_set_current_user($user_id);
+            wp_set_auth_cookie($user_id,true,is_ssl());
+            do_action('wp_login', $user->user_login, $user);
+
+         }
+
+
+      }
+   }
+
+}

@@ -11,11 +11,6 @@
    // print_r(getallheaders());
    // echo '</pre>';
 
-   $language   = isset( getallheaders()['app_language'] ) != '' ? getallheaders()['app_language'] : '';
-   $latitude   = isset( getallheaders()['app_latitude'] ) != '' ? getallheaders()['app_latitude'] : '';
-   $longitude  = isset( getallheaders()['app_longitude'] ) != '' ? getallheaders()['app_longitude'] : '';
-   $user_token  = isset( getallheaders()['user_token'] ) != '' ? getallheaders()['user_token'] : '';
-
 ?>
 <!DOCTYPE html>
 <html lang="">
@@ -23,7 +18,7 @@
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-   <title>Document</title>
+   <title>WaterGo</title>
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -35,7 +30,6 @@
       type="text/javascript" charset="utf-8"></script>
    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
-
         
    <?php wp_head(); ?>
 </head>
