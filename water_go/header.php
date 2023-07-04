@@ -24,12 +24,16 @@
 
    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
-   <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
-      type="text/javascript" charset="utf-8"></script>
-   <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
-      type="text/javascript" charset="utf-8"></script>
-   <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
-   <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+   <?php if( is_page('nearby') && $_GET['nearby_page'] == 'nearby' ){ ?>
+
+      <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
+         type="text/javascript" charset="utf-8"></script>
+      <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
+         type="text/javascript" charset="utf-8"></script>
+      <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+      <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+
+   <?php } ?>
         
    <?php wp_head(); ?>
 </head>

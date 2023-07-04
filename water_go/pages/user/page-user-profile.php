@@ -133,11 +133,9 @@
 
 </div>
 
-<script >
+<script type='module'>
 
 var { createApp } = Vue;
-
-console.log(createApp);
 
 createApp({
    data (){
@@ -224,7 +222,7 @@ createApp({
       async initReview(){
          var form = new FormData();
          form.append('action', 'atlantis_get_user_review');
-         var r = await window.request(form);
+         var r = await this.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'review_found'){

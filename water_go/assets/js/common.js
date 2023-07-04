@@ -508,44 +508,44 @@ function gotoChatMessenger( args ){
 
 
 
-function callbackLoginSuccess(type, token, information){
-   //alert("ok");return;
+// function callbackLoginSuccess(type, token, information){
+//    //alert("ok");return;
 
-   jQuery.ajax({
-      url: define.ajax_url,
-      type: "post",
-      dataType: "text",
-      data: {           
-         action: 'atlantis_social_login',
-         token: token,  
-         type: type,
-         web_token:jQuery("#login-token").val(),  
-         information:information,             
-      },
+//    jQuery.ajax({
+//       url: define.ajax_url,
+//       type: "post",
+//       dataType: "text",
+//       data: {           
+//          action: 'atlantis_social_login',
+//          token: token,  
+//          type: type,
+//          web_token:jQuery("#login-token").val(),  
+//          information:information,             
+//       },
 
-      success: function(output) { 
-         /**
-          {
+//       success: function(output) { 
+//          /**
+//           {
             
-          } 
-          */
-            window.appBridge.loginSuccess(1)
-         // let result = jQuery.parseJSON(output);
-         // if(result[0] == "success"){ 
-         //    alert('login success');
-            // window.appBridge.setUserToken(result[1]);
-            // reload_in_current_tab();
-         // }
-      },
-      error: function() {
-         alert('error');
-      }
-   });
-}
+//           } 
+//           */
+//             window.appBridge.loginSuccess(1)
+//          // let result = jQuery.parseJSON(output);
+//          // if(result[0] == "success"){ 
+//          //    alert('login success');
+//             // window.appBridge.setUserToken(result[1]);
+//             // reload_in_current_tab();
+//          // }
+//       },
+//       error: function() {
+//          alert('error');
+//       }
+//    });
+// }
 
-function callbackLoginFail(message){
-   alert('Login Fail ' + message);
-}
+// function callbackLoginFail(message){
+//    alert('Login Fail ' + message);
+// }
 
 
 

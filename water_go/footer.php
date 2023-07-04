@@ -1,4 +1,5 @@
    
+   <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script>
    <?php wp_footer(); ?>
 
    <script>
@@ -48,36 +49,36 @@
       alert('Login Fail ' + message);
    }
 
-   (function($){
+   // (function($){
 
-      $("body").on("click", ".share-btn", function(e) {
-         let linkShare = $(this).data("link") ;
-         $("body").addClass("loading");
-         $.ajax({
-            url: define.ajax_url,
-            type: "post",
-            dataType: "text",
-            data: {                  
-               action: 'get_short_link_to_share',
-               link: linkShare,
-               token: $("#verify-token").val(),                                                         
-            },
-            success: function(link) {
-               let shareData = {
-                  title: 'Table On',
-                  text: '',
-                  url: link,
-               }
-               $("body").removeClass("loading");
-               navigator.share(shareData);
-            },
-            error: function () {
-               alert('error')
-            }
+   //    $("body").on("click", ".share-btn", function(e) {
+   //       let linkShare = $(this).data("link") ;
+   //       $("body").addClass("loading");
+   //       $.ajax({
+   //          url: define.ajax_url,
+   //          type: "post",
+   //          dataType: "text",
+   //          data: {                  
+   //             action: 'get_short_link_to_share',
+   //             link: linkShare,
+   //             token: $("#verify-token").val(),                                                         
+   //          },
+   //          success: function(link) {
+   //             let shareData = {
+   //                title: 'Table On',
+   //                text: '',
+   //                url: link,
+   //             }
+   //             $("body").removeClass("loading");
+   //             navigator.share(shareData);
+   //          },
+   //          error: function () {
+   //             alert('error')
+   //          }
 
-         });
-      });
-   })(jQuery);
+   //       });
+   //    });
+   // })(jQuery);
 
    
 

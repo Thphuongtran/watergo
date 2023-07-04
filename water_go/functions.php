@@ -9,7 +9,7 @@ function stylesheet(){
   }
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
-   // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js', ['jquery']);
+   // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js', ['jQuery']);
    // wp_script_add_data( 'common-js', 'defer', true );
 
    // <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -53,7 +53,6 @@ function atlantis_check_login_by_tokens(){
 
    return $get_tokens;
 }
-
 
 function convertToShortNumber($num) {
   if ($num >= 1000 && $num < 1000000) {
@@ -136,9 +135,11 @@ add_action('wp_head', 'loadDirectory');
 
 
 function common_js(){
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js', ['jquery']);
+   // wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
+   // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js', ['jQuery']);
 }
-add_action('wp_footer', 'common_js');
+
+// add_action('wp_enqueue_scripts', 'common_js');
 
 
 /**
