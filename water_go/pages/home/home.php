@@ -1,5 +1,4 @@
 <div id='app'>
-
    <div v-if='loading == false'>
       <div class='page-home'>
          <div class='appbar'>

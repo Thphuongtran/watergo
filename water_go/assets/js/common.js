@@ -70,6 +70,10 @@ function common_get_product_price( price, discount_percent ){
    return parseInt(_price).toLocaleString('vi-VN') + ' đ';
 }
 
+function priceFormat(price) {
+   return price === 0 ? 0 + "đ" : parseInt(price).toLocaleString('vi-VN') + "đ";
+}
+
 
 function get_fulldate_from_day( day ){
    const currentDate = new Date(); // Get the current date

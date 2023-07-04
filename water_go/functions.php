@@ -3,11 +3,22 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css');
+  wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css');
+  wp_enqueue_style('styles-common', THEME_URI .'/assets/css/common.css');
+  wp_enqueue_style('styles-filterBar', THEME_URI .'/assets/css/filterBar.css');
+  wp_enqueue_style('styles-searchBox', THEME_URI .'/assets/css/searchBox.css');
+
   if (is_page('schedule')) {
     wp_enqueue_style('styles-schedule', THEME_URI .'/assets/css/schedule.css');
   }
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
+
+  if (is_page('product')) {
+    wp_enqueue_style('styles-productPage', THEME_URI .'/assets/css/productPage.css');
+  }
+
+
+   // wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.esm-browser.js');
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
    // wp_script_add_data( 'common-js', 'defer', true );
