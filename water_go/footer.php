@@ -36,7 +36,7 @@
             // }
          },
          error: function(xhr, textStatus, errorThrown) {
-            alert('Error:', errorThrown);
+            //alert('Error:', errorThrown);
          }
       });
    }
