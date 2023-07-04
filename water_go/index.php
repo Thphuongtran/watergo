@@ -31,7 +31,10 @@ if( is_user_logged_in() == true ){
       get_template_part('pages/authentication/page-auth-login');
    }
 }
-   
+
+if( is_page('nearby') && $_GET['nearby_page'] == 'nearby-store' ){
+   get_template_part('pages/nearby/nearby');
+}
 
 
 if( is_page('product') ){
