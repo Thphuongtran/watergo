@@ -17,25 +17,18 @@ if( is_user_logged_in() == true ){
    if( is_page('order') ){
       get_template_part('pages/order/order');
    }
-   if( is_page('nearby') && $_GET['nearby_page'] == 'nearby' ){
-      get_template_part('pages/nearby/nearby');
-   }
-
    if ( is_page('schedule')) {
       get_template_part('pages/schedule/schedule');
    }
 }else{
-   if( is_page('user') || is_page('order') || 
-      ( is_page('nearby') && $_GET['nearby_page'] == 'nearby') || 
-      is_page('schedule')){
+   if( is_page('user') || is_page('order') || is_page('schedule')){
       get_template_part('pages/authentication/page-auth-login');
    }
 }
 
-if( is_page('nearby') && $_GET['nearby_page'] == 'nearby-store' ){
+if( is_page('nearby')){
    get_template_part('pages/nearby/nearby');
 }
-
 
 if( is_page('product') ){
    get_template_part('pages/product/product');

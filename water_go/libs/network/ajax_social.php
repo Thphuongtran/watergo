@@ -101,3 +101,47 @@ function atlantis_social_login(){
 
    }
 }
+
+function shorten_URL ($longUrl) {
+    //$longUrl = "https://stylevook.com/login?role=shopmanager&email=abc@123.456";
+    $key = 'AIzaSyDKpfx1zszLyDt0qmT436xylP3lngf9dTM';
+    $url = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=' . $key;
+    $data = array(
+      "dynamicLinkInfo" => array(
+         "dynamicLinkDomain" => "stylevook.page.link",
+         "link" => $longUrl,
+         "socialMetaTagInfo" => array(
+            "socialTitle" => 'StyleVook',
+            "socialDescription" => '',
+            "socialImageLink" => THEME_URL . 'assets/images/logo-watergo.png'
+         ),
+         "androidInfo" => array(
+            "androidPackageName" => "com.stylevook.business"
+         ),
+
+         "iosInfo"=> array(
+            "iosBundleId"=> "com.stylevook.business"
+         )
+      )
+    );
+
+    $headers = array('Content-Type: application/json');
+  
+    $ch = curl_init ();
+    curl_setopt ( $ch, CURLOPT_URL, $url );
+    curl_setopt ( $ch, CURLOPT_POST, true );
+    curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+    curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+  
+    $data = curl_exec ( $ch );
+    curl_close ( $ch );
+  
+    $short_url = json_decode($data);
+    if(isset($short_url->error)){
+        return $short_url->error->message;
+    } else {
+        return $short_url->shortLink;
+    }
+  
+}

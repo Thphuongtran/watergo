@@ -45,6 +45,39 @@
       alert('Login Fail ' + message);
    }
 
+   (function($){
+
+      $("body").on("click", ".share-btn", function(e) {
+         let linkShare = $(this).data("link") ;
+         $("body").addClass("loading");
+         $.ajax({
+            url: define.ajax_url,
+            type: "post",
+            dataType: "text",
+            data: {                  
+               action: 'get_short_link_to_share',
+               link: linkShare,
+               token: $("#verify-token").val(),                                                         
+            },
+            success: function(link) {
+               let shareData = {
+                  title: 'Table On',
+                  text: '',
+                  url: link,
+               }
+               $("body").removeClass("loading");
+               navigator.share(shareData);
+            },
+            error: function () {
+               alert('error')
+            }
+
+         });
+      });
+   })(jQuery);
+
+   
+
    
    </script>
 
