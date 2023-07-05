@@ -135,8 +135,8 @@ add_action('wp_head', 'loadDirectory');
 
 
 function common_js(){
-   // wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' );
+   wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js?ver=1.0.2' );
 }
 
 add_action('wp_enqueue_scripts', 'common_js');
@@ -173,4 +173,20 @@ function callback_from_login_social(){
       }
    }
 
+}
+
+add_action('init', 'language_custom');
+function language_custom($locale) {
+  $locale = "vi";
+  $headers = array_change_key_case(getallheaders(),CASE_LOWER);
+  if (isset($headers["app_language"]) && !empty($headers["app_language"])) {  
+    $locale = $headers["app_language"];
+    
+  } else if(isset($_COOKIE['site_lang'])){
+    $locale = $_COOKIE['site_lang'];
+  }
+
+  if($locale == "en") $locale = "en_US";
+
+  switch_to_locale($locale);
 }

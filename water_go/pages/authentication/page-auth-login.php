@@ -1,3 +1,62 @@
+<style>
+   .heading-01 {
+      position: relative;
+   }
+   .dropdown-language {
+     position: absolute;
+     right: 0;
+     display: inline-block;
+     top: 10px;
+   }
+
+   .dropdown-language img {
+      width: 28px;
+      margin-right: 10px;
+   }
+
+   .dropdown-toggle {
+     cursor: pointer;
+   }
+
+   .selected-option {
+     display: flex;
+     align-items: center;
+     padding: 0;
+   }
+
+   .dropdown-menu {
+     position: absolute;
+     top: 100%;
+     right: 0;
+     margin-top: 8px;
+     padding: 0;
+     list-style: none;
+     background-color: #fff;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+     min-width: 150px;
+     z-index: 1;
+     display: none;
+   }
+
+   .dropdown-menu.show {
+     display: block;
+   }
+
+   .dropdown-menu li {
+      display: flex;
+      font-size: 13px;
+      font-weight: normal;
+     padding: 8px 16px;
+     cursor: pointer;
+   }
+
+   .dropdown-menu li.selected {
+     background-color: #f0f0f0;
+   }
+</style>
+
 <div id='app'>
 
    <div v-if='page_welcome == true' class='banner page-welcome'>
@@ -40,8 +99,26 @@
             <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
          </div>
 
-         <div class='heading-01 t-center'>Log In</div>
-
+         <div class='heading-01 t-center'>
+               <span>Log In</span>
+               <div class="dropdown dropdown-language">
+                <div class="dropdown-toggle" @click="toggleDropdown">
+                  <div class="selected-option">
+                    <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </div>
+                  <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
+                    <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
+                      <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
+                      {{ language.name }}
+                    </li>
+                  </ul>
+                </div>
+               </div>
+         </div>
+           
          <div class='form-group'>
             <span>Email</span>
             <input v-model='inputEmail' type="email" placeholder='Enter your email'>
@@ -89,8 +166,6 @@
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
-
-   
    
 </div>
 <script>
@@ -103,15 +178,70 @@ createApp({
          inputEmail: '',
          inputPassword: '',
          res_text_sendcode: '',
-         term_conditions: false,
-         
+         term_conditions: true,  
          page_welcome: true,
-
+         languages: [
+           { id: 'en_US', name: 'English'},
+           { id: 'vi', name: 'Vietnamese'},
+           { id: 'ko_KR', name: 'Korean'},
+         ],
+         selectedLanguage: {},
+         currentLocale: '',
+         showDropdown: false
       }
    },
-   
+   created() {
+     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+   },
+   mounted() {
+      this.getLocale();
+   },
    methods: {
-      
+      toggleDropdown() {
+         this.showDropdown = !this.showDropdown;
+      },
+      selectLanguage(language) {
+         this.selectedLanguage = language;
+         this.changeLanguage(language.id);
+         this.showDropdown = false;
+         this.toggleDropdown();
+      },
+      changeLanguage(language){
+         var form = new FormData();
+         form.append('action', 'app_change_language');
+         form.append('language', language);
+         var r = window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'change_language_successfully' && window.appBridge ){
+               window.appBridge.setLanguage(res.lang);
+               window.appBridge.close('refresh');
+            }
+         }
+      },
+      getFlagImage(languageId) {
+         if (languageId === 'en_US') {
+           return get_template_directory_uri + '/assets/images/flag-us.svg';
+         } else if (languageId === 'vi') {
+           return get_template_directory_uri + '/assets/images/flag-vi.svg';
+         } else if (languageId === 'ko_KR') {
+           return get_template_directory_uri + '/assets/images/flag-kr.svg';
+         }
+         return '';
+      },
+      async getLocale(){
+         var form = new FormData();
+         form.append('action', 'get_current_locale');
+
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'current_locale_found' ){
+               this.currentLocale = res.data;
+               //this.selectLanguage(this.languages.find(language => language.id === this.currentLocale) || this.languages[0]);
+            }
+         }
+      },
       login_social_apple(){
          try{ window.appBridge.socialLogin('A'); // google
          }catch{}
@@ -189,7 +319,7 @@ createApp({
          }
 
       },
-   },
+   }
 
 }).mount('#app');
 
