@@ -1,9 +1,9 @@
 <div id='app'>
   <div v-if='loading == false' class='product-page'>
-    <?php get_template_part('pages/product/appBar') ?>
-    <?php get_template_part('pages/product/filterBar') ?>
+    <?php get_template_part('pages/business/product/appBar') ?>
+    <?php get_template_part('pages/business/product/filterBar') ?>
     <div style='height: 10px;'></div>
-    <?php get_template_part('pages/product/searchBox') ?>
+    <?php get_template_part('pages/business/product/searchBox') ?>
     <div class='action-bar'>
       <div class='filter-dropdown'>
         <button
@@ -48,7 +48,7 @@
             </span>
             <span v-if='item.discountPercent > 0' class='product-price'>{{setDiscountPrice(item.price)}}</span>
           </div>
-          <button class="active">View</button>
+          <button class="active" @click='handleGoToProductDetail(item.id)'>View</button>
         </div>
         <div class='product-item-state'>
           <div>
@@ -132,17 +132,28 @@
         return window.priceFormat(price - (price * discountPercent / 100));
       },
       handleGoToAddNewProduct() {
-        console.log("haha");
-        var productTabSelected = this.header_filter.find(function (item) {
+        const productTabSelected = this.header_filter.find(function (item) {
           return item.active;
         });
-        console.log("productTabSelected::", productTabSelected);
 
-        if (productTabSelected && productTabSelected.label === "Water") {
-          window.location.href = window.watergo_domain + "product?product_page=water";
-          return;
+        if (productTabSelected && productTabSelected.label === "Ice") {
+          return window.location.href = window.watergo_domain + "business?business_page=products&product_page=ice";
         }
+
+        return window.location.href = window.watergo_domain + "business?business_page=products&product_page=water";
       },
+      handleGoToProductDetail(productId) {
+        // return window.location.href = window.watergo_domain + "business?business_page=products&product_page=product-detail" + "&" + "product_id=" + productId;
+        const productTabSelected = this.header_filter.find(function (item) {
+          return item.active;
+        });
+
+        if (productTabSelected && productTabSelected.label === "Ice") {
+          return window.location.href = window.watergo_domain + "business?business_page=products&product_page=ice" + "&" + "product_id=" + productId;
+        }
+
+        return window.location.href = window.watergo_domain + "business?business_page=products&product_page=water" + "&" + "product_id=" + productId;
+      }
     },
     computed: {},
     async created() {
@@ -150,6 +161,7 @@
       this.get_current_location();
       this.products = [
         {
+          id: 1,
           productName: "Product 1",
           description: "Thùng 24 chai 1L",
           price: 250000,
@@ -160,6 +172,7 @@
           image: "/assets/images/demo-product01.png",
         },
         {
+          id: 2,
           productName: "Product 2",
           description: "Thùng 24 chai 1L",
           price: 250000,
@@ -168,8 +181,8 @@
           stock: 0,
           state: "Out of Stock",
           image: "/assets/images/demo-product02.png",
-        }
-      ]
+        },
+      ];
       this.loading = false;
     }
   }).mount('#app');

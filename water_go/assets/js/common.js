@@ -529,3 +529,17 @@ async function is_conversation_created_or_create( user_id, store_id){
 
    }
 }  
+
+// format date in product form
+function formatDate(dateString) {
+   const date = new Date(dateString);
+   if (date instanceof Date && !isNaN(date)) {
+     const days = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+     const months = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+     const years = date.getFullYear();
+     return days + "/" + months + "/" + years;
+     
+   }
+
+   return "00/00/0000";
+ }
