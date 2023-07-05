@@ -6,8 +6,8 @@
 add_action( 'wp_ajax_nopriv_atlantis_add_order', 'atlantis_add_order' );
 add_action( 'wp_ajax_atlantis_add_order', 'atlantis_add_order' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_order', 'atlantis_get_order' );
-add_action( 'wp_ajax_atlantis_get_order', 'atlantis_get_order' );
+add_action( 'wp_ajax_nopriv_atlantis_get_order_detail', 'atlantis_get_order_detail' );
+add_action( 'wp_ajax_atlantis_get_order_detail', 'atlantis_get_order_detail' );
 
 add_action( 'wp_ajax_nopriv_atlantis_get_order_filter', 'atlantis_get_order_filter' );
 add_action( 'wp_ajax_atlantis_get_order_filter', 'atlantis_get_order_filter' );
@@ -27,10 +27,108 @@ add_action( 'wp_ajax_atlantis_order_callback', 'atlantis_order_callback' );
 add_action( 'wp_ajax_nopriv_atlantis_re_order', 'atlantis_re_order' );
 add_action( 'wp_ajax_atlantis_re_order', 'atlantis_re_order' );
 
-
 add_action( 'wp_ajax_nopriv_atlantis_is_product_out_of_stock_from_order', 'atlantis_is_product_out_of_stock_from_order' );
 add_action( 'wp_ajax_atlantis_is_product_out_of_stock_from_order', 'atlantis_is_product_out_of_stock_from_order' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_order_user', 'atlantis_get_order_user' );
+add_action( 'wp_ajax_atlantis_get_order_user', 'atlantis_get_order_user' );
+
+add_action( 'wp_ajax_nopriv_atlantis_get_order_time_shipping', 'atlantis_get_order_time_shipping' );
+add_action( 'wp_ajax_atlantis_get_order_time_shipping', 'atlantis_get_order_time_shipping' );
+
+// FOR ORDER REPEAT
+add_action( 'wp_ajax_nopriv_atlantis_get_order_number', 'atlantis_get_order_number' );
+add_action( 'wp_ajax_atlantis_get_order_number', 'atlantis_get_order_number' );
+
+function atlantis_get_order_number(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_number' ){
+      $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
+      $sql = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id";
+      global $wpdb;
+      $res = $wpdb->get_results($sql);
+
+      if ( empty( $res ) ) {
+         wp_send_json_error( array( 'message' => 'order_number_not_found' ) );
+      } else {
+         $number_repeat = '';
+
+         if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
+            $number_repeat = '-' . $res[0]->order_repeat_count;
+         }
+
+         $numberWithZeros = str_pad( $res[0]->order_repeat_order_id, 4, "0", STR_PAD_LEFT) . $number_repeat;
+         wp_send_json_success( array( 'message' => 'get_order_number_ok', 'data' => $numberWithZeros ) );
+         wp_die();
+      }
+
+      $numberWithZeros = str_pad( $order_id, 4, "0", STR_PAD_LEFT);
+      wp_send_json_success( array( 'message' => 'get_order_number_ok', 'data' => $numberWithZeros ) );
+      wp_die();
+      
+   }
+}
+
+function return_order_with_group_products( $array_orders ){
+   $final = [];
+   foreach ($array_orders as $k => $item) {
+      $key = $item->hash_id;
+
+      $product_quantity = '';
+      if( $item->product_type == 'water'){
+         $product_quantity = $item->quantity;
+      }else if($item->product_type == 'ice'){
+         $product_quantity = $item->weight . 'kg ' . $item->length_width . 'mm';
+      }
+
+      if (isset($final[$key]['order_products'] )) {
+         
+         $final[$key]['order_products'][] = [
+            'product_image'                        => $item->product_image,
+            'order_group_id'                       => $item->order_group_id,
+            'order_group_product_id'               => $item->order_group_product_id,
+            'order_group_product_name'             => $item->product_name,
+            'order_group_product_quantity'         => $product_quantity,
+            'order_group_product_quantity_count'   => $item->order_group_product_quantity_count,
+            'order_group_product_price'            => $item->order_group_product_price,
+            'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
+            'order_group_store_id'                 => $item->order_group_store_id,
+         ];
+
+
+      } else {
+         // Item with the order_id or hash_id does not exist, create a new entry
+         $final[$key] = [
+            'order_id'                 => $item->order_id,
+            'order_delivery_type'      => $item->order_delivery_type,
+            'order_payment_method'     => $item->order_payment_method,
+            'order_status'             => $item->order_status,
+            'order_delivery_address'   => json_decode( json_decode( $item->order_delivery_address, true ), true ),
+            'order_time_created'       => $item->order_time_created,
+            'order_time_confirmed'     => $item->order_time_confirmed,
+            'order_time_cancel'        => $item->order_time_cancel,
+            'order_time_completed'     => $item->order_time_completed,
+            'order_time_delivery'      => $item->order_time_delivery,
+            'order_by'                 => $item->order_by,
+            'store_name'               => $item->store_name,
+            'store_id'                 => $item->order_group_store_id,
+            'order_products' => [
+               [
+                  'product_image'                        => $item->product_image,
+                  'order_group_id'                       => $item->order_group_id,
+                  'order_group_product_id'               => $item->order_group_product_id,
+                  'order_group_product_name'             => $item->product_name,
+                  'order_group_product_quantity'         => $product_quantity,
+                  'order_group_product_quantity_count'   => $item->order_group_product_quantity_count,
+                  'order_group_product_price'            => $item->order_group_product_price,
+                  'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
+                  'order_group_store_id'                 => $item->order_group_store_id,
+               ]
+            ]
+         ];
+      }
+   }
+   return $final;
+}
 
 function atlantis_is_product_out_of_stock_from_order(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_is_product_out_of_stock_from_order' ){
@@ -161,12 +259,13 @@ function atlantis_add_order(){
             $query_check_hash = $wpdb->prepare("SELECT COUNT(*) FROM wp_watergo_order_group WHERE hash_id = %s", (String) $hash_id);
             $check_hash = $wpdb->get_var($query_check_hash);
             $store_id = $cart->store_id;
-            $is_order_repeat = false;
 
             $delivery_new = [];            
 
             $delivery_data_convert = json_decode( stripslashes( $delivery_data));
             $delivery_address = json_encode( stripslashes( $delivery_address), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            $dayOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
             if( $check_hash == 0 ){
 
@@ -182,15 +281,23 @@ function atlantis_add_order(){
 
                $order_id = $wpdb->insert_id;
 
+               /**
+                * @access FIND ORDER EXISTS IN REPEAT OR NOT?
+                */
+               $is_order_parent_exists = false;
+
+               $sql = "";
+
                if($delivery_type == 'weekly' || $delivery_type == 'monthly'){
-                  $is_order_repeat = true;
+                  $date_array = [];
+
                   foreach($delivery_data_convert as $k => $vl ){
 
                      $dt = new DateTime("@$vl->currentDate");
                      
                      $day     = $vl->day;
                      $month   = $dt->format('m');
-                     $year    = $dt->format('y');
+                     $year    = $dt->format('Y');
 
                      $wpdb->insert('wp_watergo_order_time_shipping', [
                         'order_time_shipping_day'        => $day,
@@ -203,8 +310,54 @@ function atlantis_add_order(){
                         'order_time_shipping_order_id'   => $order_id,
                      ]);
 
+                     $date_array[] = $day;
+                     
                   }
+
+                  if( $delivery_type == 'monthly' ){
+                     $currentDay = date('j'); // Get the current day (1-31)
+                     $closestDay = array_reduce($date_array, function ($closest, $entry) use ($currentDay) {
+                        $entryDay = $entry;
+                        $closestDay = $closest;
+                        // Calculate the absolute difference between the entry day and the current day
+                        $entryDiff = abs($entryDay - $currentDay);
+                        $closestDiff = abs($closestDay - $currentDay);
+                        // Update the closest entry if the current entry is closer
+                        if ($entryDiff < $closestDiff) {
+                           return $entry;
+                        }
+                        return $closest;
+                     });
+
+                     $get_order_time_shipping_id = $wpdb->get_results("SELECT * FROM wp_watergo_order_time_shipping 
+                        WHERE order_time_shipping_day = $closestDay
+                        AND order_time_shipping_order_id = $order_id
+                        LIMIT 1
+                     ");
+
+                     if( !empty( $get_order_time_shipping_id )){
+                        $wpdb->update('wp_watergo_order', [
+                           'order_time_shipping_id' => $get_order_time_shipping_id[0]->order_time_shipping_id
+                        ], [ 'order_id' => $order_id ]);
+                     }
+
+                  }
+
+                  
+
+                  $wpdb->insert('wp_watergo_order_repeat', [
+                     'order_repeat_is_keep_repeat'    => 1,
+                     'order_repeat_order_id'          => $order_id,
+                     'order_repeat_count'             => 0, // IT IS FIRST ORDER
+                     'order_repeat_type'              => $delivery_type,
+                     'order_hash_id'                  => (String) $hash_id,
+                     'order_repeat_order_id_parent'   => $order_id // THIS IS PARENT OF ORDER_ID
+                  ]);
+                  
+               }else{
+                  // FOR IMMIDEALY AND PICK DATE
                }
+
 
                foreach( $cart->products as $k => $product ){
 
@@ -230,29 +383,14 @@ function atlantis_add_order(){
                   $wpdb->update( 'wp_watergo_products', $data, ['id' => $product->product_id]  );
                }
 
-               // ADD DATE SHIPPING TO watergo_order_repeat
-               /**
-                  1. hash_id - delivery_type
-               */
-               if( $is_order_repeat == true ) {
-
-                  $wpdb->insert('wp_watergo_order_repeat', [
-                     'order_repeat_is_keep_repeat' => 1,
-                     'order_repeat_order_id'       => $order_id,
-                     'order_repeat_count'          => 0, // IT IS FIRST ORDER
-                     'order_repeat_type'           => $delivery_type,
-                     'order_hash_id'               => (String) $hash_id,
-                     'order_repeat_id_previous'    => 0, // THIS IS PREVIOUS ID WHEN RE-ORDER BEEN CREATED
-                  ]);
-                  
-               }
+               
 
             }
          }
 
          
 
-         wp_send_json_success(['message' => 'insert_order_ok']);
+         wp_send_json_success(['message' => 'insert_order_ok', 'test' => $id_ship, 'date' => $get_order_time_shipping_id]);
          wp_die();
       } else {
          wp_send_json_success(['message' => 'hash_exists' ]);
@@ -264,10 +402,12 @@ function atlantis_add_order(){
 }
 
 
-function atlantis_get_order(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order' ){
-      $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
-      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+/**
+ * @access THIS IS GET ORDER VERSION 2
+ */
+
+function atlantis_get_order_user(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_user' ){
 
       if(is_user_logged_in() == true ){
          $user_id = get_current_user_id();
@@ -278,199 +418,129 @@ function atlantis_get_order(){
          wp_die();
       }
 
-      $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
-         ? (int) get_user_meta($user_id , 'user_store', true) 
-         : null;
-
       global $wpdb;
 
-      // GET ORDER FOR USER
-      if( $is_user_store == null || $is_user_store == 0 ){
-         $sql = "SELECT *,
-            wp_watergo_store.name as store_name,
-            wp_watergo_products.name as product_name,
-
-            wp_watergo_photo.url as product_image
-            
-            FROM wp_watergo_order
-            LEFT JOIN wp_watergo_order_group 
-               ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
-            LEFT JOIN wp_watergo_store
-               ON wp_watergo_store.id = wp_watergo_order_group.order_group_store_id
-            LEFT JOIN wp_watergo_products 
-               ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
-
-            LEFT JOIN wp_watergo_photo
-               ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
-
-            WHERE
-               wp_watergo_order.order_by = $user_id
-         ";
-      }
-
-      // GET ORDER FOR STORE
-      if( $is_user_store != null && $is_user_store == 1 ){
-         $sql = "SELECT *,
-            wp_watergo_store.name as store_name,
-            wp_watergo_products.name as product_name,
-
-            wp_watergo_photo.url as product_image
-            FROM wp_watergo_order
-            LEFT JOIN wp_watergo_order_group 
+      $sql = "SELECT *,
+         wp_watergo_store.name as store_name,
+         wp_watergo_products.name as product_name,
+         wp_watergo_photo.url as product_image
+         
+         FROM wp_watergo_order
+         LEFT JOIN wp_watergo_order_group 
             ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
-
-            LEFT JOIN wp_watergo_store
+         LEFT JOIN wp_watergo_store
             ON wp_watergo_store.id = wp_watergo_order_group.order_group_store_id
-
-            LEFT JOIN wp_watergo_products 
+         LEFT JOIN wp_watergo_products 
             ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
+         LEFT JOIN wp_watergo_photo
+         ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
 
-            LEFT JOIN wp_watergo_photo
-            ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
-
-            WHERE 
-               wp_watergo_order_group.order_group_store_id = $user_id
-            ORDER BY wp_watergo_order.order_time_created ASC
-         ";
-      }
-
-      // ORDER FOR USER
-      if( $order_id != 0 && ($is_user_store == null || $is_user_store == 0) ){
-      
-         $sql = "SELECT *,
-            wp_watergo_store.name as store_name,
-            wp_watergo_products.name as product_name,
-
-            wp_watergo_photo.url as product_image
-            
-            FROM wp_watergo_order
-            LEFT JOIN wp_watergo_order_group 
-               ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
-            LEFT JOIN wp_watergo_store
-               ON wp_watergo_store.id = wp_watergo_order_group.order_group_store_id
-            LEFT JOIN wp_watergo_products 
-               ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
-
-            LEFT JOIN wp_watergo_photo
-            ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
-
-            WHERE
-               wp_watergo_order.order_by = $user_id
-            AND 
-               wp_watergo_order.order_id = $order_id
-         ";
-      }
-      // ORDER FOR STORE
-      if( $order_id != 0 && ($is_user_store != null && $is_user_store == 1) ){
-         $sql = "SELECT *,
-            wp_watergo_store.name as store_name,
-            wp_watergo_products.name as product_name,
-
-            wp_watergo_photo.url as product_image
-            
-            FROM wp_watergo_order
-            LEFT JOIN wp_watergo_order_group 
-               ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
-            LEFT JOIN wp_watergo_store
-               ON wp_watergo_store.id = wp_watergo_order_group.order_group_store_id
-            LEFT JOIN wp_watergo_products 
-               ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
-
-            LEFT JOIN wp_watergo_photo
-               ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
-
-            WHERE
-               wp_watergo_store.id = $user_id
-            AND 
-               wp_watergo_order.order_id = $order_id ";
-      }
-
+         WHERE
+            wp_watergo_order.order_by = $user_id
+      ";
 
       $res = $wpdb->get_results($sql);
 
       if( empty( $res ) ){
-         wp_send_json_error(['message' => 'no_order_found 1 ' ]);
-         wp_die();
-      }
-      $final = [];
-
-      foreach ($res as $k => $item) {
-         $key = $item->hash_id;
-
-         $product_quantity = '';
-         if( $item->product_type == 'water'){
-            $product_quantity = $item->quantity;
-         }else if($item->product_type == 'ice'){
-            $product_quantity = $item->weight . 'kg ' . $item->length_width . 'mm';
-         }
-
-         if (isset($final[$key]['order_products'] )) {
-            
-            $final[$key]['order_products'][] = [
-               'product_image'                        => $item->product_image,
-               'order_group_id'                       => $item->order_group_id,
-               'order_group_product_id'               => $item->order_group_product_id,
-               'order_group_product_name'             => $item->product_name,
-               'order_group_product_quantity'         => $product_quantity,
-               'order_group_product_quantity_count'   => $item->order_group_product_quantity_count,
-               'order_group_product_price'            => $item->order_group_product_price,
-               'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
-               'order_group_store_id'                 => $item->order_group_store_id,
-            ];
-
-
-         } else {
-            // Item with the order_id or hash_id does not exist, create a new entry
-            $final[$key] = [
-               'order_id'                 => $item->order_id,
-               'order_delivery_type'      => $item->order_delivery_type,
-               'order_delivery_data'      => json_decode( json_decode( $item->order_delivery_data, true), true ) ,
-               'order_payment_method'     => $item->order_payment_method,
-               'order_status'             => $item->order_status,
-               'order_delivery_address'   => json_decode( json_decode( $item->order_delivery_address, true ), true ),
-               'order_time_created'       => $item->order_time_created,
-               'order_time_confirmed'     => $item->order_time_confirmed,
-               'order_time_cancel'        => $item->order_time_cancel,
-               'order_time_completed'     => $item->order_time_completed,
-               'order_time_delivery'      => $item->order_time_delivery,
-               'order_by'                 => $item->order_by,
-               'store_name'               => $item->store_name,
-               'store_id'                 => $item->order_group_store_id,
-               'order_products' => [
-                  [
-                     'product_image'                        => $item->product_image,
-                     'order_group_id'                       => $item->order_group_id,
-                     'order_group_product_id'               => $item->order_group_product_id,
-                     'order_group_product_name'             => $item->product_name,
-                     'order_group_product_quantity'         => $product_quantity,
-                     'order_group_product_quantity_count'   => $item->order_group_product_quantity_count,
-                     'order_group_product_price'            => $item->order_group_product_price,
-                     'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
-                     'order_group_store_id'                 => $item->order_group_store_id,
-                  ]
-               ]
-            ];
-         }
-      }
-
-      if( ! empty( $final ) ){
-         sort($final);
-         if( $order_id == 0 ){
-            wp_send_json_success(['message' => 'get_order_ok', 'data' => $final]);
-         }else{
-            wp_send_json_success(['message' => 'get_order_ok', 'data' => $final[0]]);
-         }
+         wp_send_json_error(['message' => 'no_order_found 1' ]);
          wp_die();
       }
 
+      $orders = return_order_with_group_products( $res );
+
+      if( ! empty( $orders ) ){
+         sort($orders);
+         wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders]);
+         wp_die();
+      }
 
       wp_send_json_error(['message' => 'no_order_found 2' ]);
       wp_die();
 
+   }
+}
 
+/**
+ * @access END ORDER VERSION 2
+ */
+
+
+/**
+ * @access GET ORDER from [user - store]
+ */
+function atlantis_get_order_detail(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_detail' ){
+      $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
+
+      // if(is_user_logged_in() == true ){
+      //    $user_id = get_current_user_id();
+      //    $user = get_user_by('id', $user_id);
+      //    $prefix_user = 'user_' . $user->data->ID;
+      // }else{
+      //    wp_send_json_error(['message' => 'no_login_invalid' ]);
+      //    wp_die();
+      // }
+
+      global $wpdb;
+
+      $sql = "SELECT *,
+      wp_watergo_store.name as store_name,
+      wp_watergo_products.name as product_name,
+      wp_watergo_photo.url as product_image
+      
+      FROM wp_watergo_order
+      LEFT JOIN wp_watergo_order_group 
+         ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
+      LEFT JOIN wp_watergo_store
+         ON wp_watergo_store.id = wp_watergo_order_group.order_group_store_id
+      LEFT JOIN wp_watergo_products 
+         ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
+      LEFT JOIN wp_watergo_photo
+         ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
+      WHERE wp_watergo_order.order_id = $order_id
+      ";
+
+      // STORE ACCOUNT
+      // if( $is_user_store == 1 || $is_user_store == true){
+      //    $sql .= "WHERE 
+            // wp_watergo_order_group.order_group_store_id = $user_id
+            // ORDER BY wp_watergo_order.order_time_created ASC
+      //    ";
+      // }else{
+      //    $sql .= "WHERE wp_watergo_order.order_id = {$order_id}";
+      // }
+
+      $res = $wpdb->get_results($sql);
+      if( empty( $res ) ){
+         wp_send_json_error(['message' => 'no_order_found 1' ]);
+         wp_die();
+      }
+      $order = return_order_with_group_products( $res );
+      sort($order);
+      wp_send_json_success(['message' => 'get_order_ok', 'data' => $order[0] ]);
+      wp_die();
 
    }
 }
+
+function atlantis_get_order_time_shipping(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_time_shipping' ){
+      $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
+      $sql = "SELECT * FROM wp_watergo_order_time_shipping 
+         WHERE order_time_shipping_order_id = $order_id
+         ORDER BY 
+      ";
+      global $wpdb;
+      $res = $wpdb->get_results($sql);
+      if( !empty($res)){
+         wp_send_json_success(['message' => 'order_time_found', 'data' => $res ]);
+         wp_die();
+      }
+      wp_send_json_error(['message' => 'no_order_time_found' ]);
+      wp_die();
+   }
+}
+
 
 /**
  * @access ORDER FROM USER FILTER BY [WEEKLY | MONTHLY]
@@ -511,13 +581,14 @@ function atlantis_get_order_filter(){
                ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
             LEFT JOIN wp_watergo_photo
                ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
-
+            LEFT JOIN wp_watergo_order_repeat
+               ON wp_watergo_order_repeat.order_repeat_order_id = wp_watergo_order.order_id
             WHERE
                wp_watergo_order.order_by = $user_id
             AND 
                wp_watergo_order.order_delivery_type = '$filter'
-            AND
-               wp_watergo_order.order_keep_repeat = 1
+            AND 
+               wp_watergo_order_repeat.order_repeat_is_keep_repeat = 1
             AND 
                wp_watergo_order.order_status IN ('ordered', 'confirmed')
       ";
@@ -528,74 +599,12 @@ function atlantis_get_order_filter(){
          wp_send_json_error(['message' => 'no_order_found 1 ' ]);
          wp_die();
       }
-      $final = [];
+      
+      $orders = return_order_with_group_products( $res );
 
-      foreach ($res as $k => $item) {
-         $key = $item->order_id ?: $item->hash_id;
-
-         $product_quantity = '';
-         if( $item->product_type == 'water'){
-            $product_quantity = $item->quantity;
-         }else if($item->product_type == 'ice'){
-            $product_quantity = $item->weight . 'kg ' . $item->length_width . 'mm';
-         }
-
-         if (isset($final[$key]['order_products'] )) {
-            
-            $final[$key]['order_products'][] = [
-               'product_image'                        => $item->product_image,
-               'order_group_hash_id'                  => $item->hash_id,
-               'order_group_id'                       => $item->order_group_id,
-               'order_group_product_id'               => $item->order_group_product_id,
-               'order_group_product_name'             => $item->product_name,
-               'order_group_product_quantity'         => $product_quantity,
-               'order_group_product_quantity_count'   => $item->order_group_product_quantity_count,
-               'order_group_product_price'            => $item->order_group_product_price,
-               'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
-               'order_group_store_id'                 => $item->order_group_store_id,
-               'order_group_repeat'                   => $item->order_group_repeat
-            ];
-
-
-         } else {
-            // Item with the order_id or hash_id does not exist, create a new entry
-            $final[$key] = [
-               'order_hash_id'                        => $item->hash_id,
-               'order_id'                 => $item->order_id,
-               'order_delivery_type'      => $item->order_delivery_type,
-               'order_delivery_data'      => json_decode( json_decode( $item->order_delivery_data, true), true ) ,
-               'order_payment_method'     => $item->order_payment_method,
-               'order_status'             => $item->order_status,
-               'order_delivery_address'   => json_decode( json_decode( $item->order_delivery_address, true ), true ),
-               'order_time_created'       => $item->order_time_created,
-               'order_time_cancel'        => $item->order_time_cancel,
-               'order_time_completed'     => $item->order_time_completed,
-               'order_time_delivery'      => $item->order_time_delivery,
-               'order_by'                 => $item->order_by,
-               'store_name'               => $item->store_name,
-               'store_id'                 => $item->order_group_store_id,
-               'order_products' => [
-                  [
-                     'product_image'                        => $item->product_image,
-                     'order_group_hash_id'                  => $item->hash_id,
-                     'order_group_id'                       => $item->order_group_id,
-                     'order_group_product_id'               => $item->order_group_product_id,
-                     'order_group_product_name'             => $item->product_name,
-                     'order_group_product_quantity'         => $product_quantity,
-                     'order_group_product_quantity_count'   => $item->order_group_product_quantity_count,
-                     'order_group_product_price'            => $item->order_group_product_price,
-                     'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
-                     'order_group_store_id'                 => $item->order_group_store_id,
-                     'order_group_repeat'                   => $item->order_group_repeat
-                  ]
-               ]
-            ];
-         }
-      }
-
-      if( ! empty( $final ) ){
-         sort($final);
-         wp_send_json_success(['message' => 'get_order_ok', 'data' => $final]);
+      if( ! empty( $orders ) ){
+         sort($orders);
+         wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders]);
          wp_die();
       }
 
@@ -661,23 +670,21 @@ function atlantis_delete_order(){
 function atlantis_cancel_order(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_cancel_order' ){
       $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
+      // weekly | monthly 
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
+      $order_type = isset($_POST['order_type']) ? $_POST['order_type'] : '';
 
       global $wpdb;
-      
-      $d = $wpdb->update('wp_watergo_order', [
+      $wpdb->update('wp_watergo_order', [
          'order_status' => 'cancel',
-         'order_keep_repeat' => 0,
          'order_time_cancel' => time()
       ],[ 'order_id' => $order_id ]);
+
+      if( $order_type == 'weekly' || $order_type == 'monthly' ){
+         $wpdb->update('wp_watergo_order_repeat',[
+            'order_repeat_is_keep_repeat' => 0
+         ], ['order_repeat_order_id_parent' => $order_id]);
+      }
 
       wp_send_json_success(['message' => 'cancel_done']);
       wp_die();
@@ -702,7 +709,6 @@ function atlantis_clone_order( $order_id, $order_repeat_count, $order_keep_repea
       hash_id,
       order_by,
       order_delivery_type,
-      order_delivery_data,
       order_payment_method,
       order_status,
       order_delivery_address,
@@ -710,16 +716,12 @@ function atlantis_clone_order( $order_id, $order_repeat_count, $order_keep_repea
       order_time_confirmed,
       order_time_cancel,
       order_time_completed,
-      order_time_delivery,
-      order_repeat_count,
-      order_repeat_id,
-      order_keep_repeat
+      order_time_delivery
    )
    SELECT 
       '$hash_id',
       order_by,
       order_delivery_type,
-      order_delivery_data,
       order_payment_method,
       'ordered',
       order_delivery_address,
@@ -727,10 +729,7 @@ function atlantis_clone_order( $order_id, $order_repeat_count, $order_keep_repea
       0,
       0,
       0,
-      0,
-      $order_repeat_count,
-      $order_id,
-      $order_keep_repeat
+      0
    FROM wp_watergo_order
    WHERE  order_id = $order_id";
 
@@ -776,12 +775,7 @@ function atlantis_order_status(){
 
       $status = isset($_POST['status']) ? $_POST['status'] : '';
 
-      if($order_id == ''){
-         wp_send_json_error(['message' => 'order_not_found' ]);
-         wp_die();
-      }
-
-      if($status == ''){
+      if($order_id == '' || $status == ''){
          wp_send_json_error(['message' => 'order_not_found' ]);
          wp_die();
       }
@@ -1024,7 +1018,6 @@ function atlantis_order_callback(){
                $final[$key] = [
                   'order_id'                 => $item->order_id,
                   'order_delivery_type'      => $item->order_delivery_type,
-                  'order_delivery_data'      => json_decode( json_decode( $item->order_delivery_data, true), true ) ,
                   'order_payment_method'     => $item->order_payment_method,
                   'order_status'             => $item->order_status,
                   'order_delivery_address'   => json_decode( json_decode( $item->order_delivery_address, true ), true ),

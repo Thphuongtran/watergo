@@ -14,8 +14,7 @@
                </button>
                
                <!-- <p class='leading-title'>Order #{{ addLeadingZeros(order.order_id)}}</p> -->
-               <p v-if='order.order_repeat_id != 0' class='leading-title'>#{{ addLeadingZeros(order.order_repeat_id)}}-{{ order.order_repeat_count}}</p>
-               <p v-if='order.order_repeat_id == 0' class='leading-title'>#{{ addLeadingZeros(order.order_id)}}</p>
+               <p class='leading-title'>#{{ order_numer }}</p>
             </div>
             <div class='action'>
                <span class='badge-status'>{{ get_status_activity(order.order_status) }}</span>
@@ -30,7 +29,7 @@
             <div class='content'>
                <p class='tt01'>Delivery address</p>
                <p class='tt03'>{{ order.order_delivery_address.address }}</p>
-                  <p class='tt02'>{{ order.order_delivery_address.name }} | (+84) {{ order.order_delivery_address.phone }}</p>
+               <p class='tt02'>{{ order.order_delivery_address.name }} | (+84) {{ order.order_delivery_address.phone }}</p>
             </div>
          </div>
       </div>
@@ -91,17 +90,17 @@
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
                '
-            v-for='( date_time, date_time_key ) in order.order_delivery_data' :key='date_time_key'
+            v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
             class='display_delivery_time'>
                 
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.date }}</div>
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.time }}</div>
+               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
 
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.day }}</div>
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.time }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
 
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.day }}</div>
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ date_time.time }}</div>
+               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
          </div>
       </div>
 
@@ -210,8 +209,11 @@ createApp({
          popup_out_of_stock: false,
          order_is_out_of_stock: false,
 
+         order_time_shipping: [],
+
          popup_confirm_cancel: false,
 
+         order_numer: null,
 
 
          reason_cancel: [
@@ -227,14 +229,6 @@ createApp({
 
    methods: {
 
-      
-
-      addLeadingZeros(number) {
-         if( number != undefined ){
-            if (number <= 1000) return number.toString().padStart(4, '0');
-            return number.toString();
-         }
-      },
 
       buttonCloseModal_store_out_of_stock(){ this.popup_out_of_stock = false; },
 
@@ -282,13 +276,12 @@ createApp({
             var form = new FormData();
             form.append('action', 'atlantis_cancel_order');
             form.append('order_id', this.order.order_id);
+            form.append('order_type', this.order.order_delivery_type);
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'cancel_done' ) {
-                  // window.gotoOrder();
                   this.goBack();
-
                }else{
                   this.loading = false;
                }
@@ -300,27 +293,41 @@ createApp({
 
       // END CANCEL ORDER
 
+      async getOrderTimeShipping( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_time_shipping');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'order_time_found'){
+               this.order_time_shipping.push(...res.data);
+            }
+         }
+      },
+
       async findOrder( order_id ){
          var form = new FormData();
-         form.append('action', 'atlantis_get_order');
+         form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
-               // CREATE FULL DATE FOR MONTHLY
-               if( res.data.order_delivery_type == 'monthly'){
-                  res.data.order_delivery_data.some( _deli => {
-                     _deli.fulldate = this.get_fulldate_from_day(_deli.day);
-                  });
-               }
-               // CREATE FULL DATE FOR WEEKLY
-               if( res.data.order_delivery_type == 'weekly'){
-                  res.data.order_delivery_data.some( _deli => {
-                     _deli.fulldate = this.get_fullday_form_dayOfWeek( _deli.day );
-                  });
-               }
                this.order = res.data;
+            }
+         }
+      },
+
+      async getOrderNumber( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_number');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_number_ok'){
+               this.order_numer = res.data;
             }
          }
       },
@@ -417,36 +424,34 @@ createApp({
       },
    },
 
+
    async created(){
-
-      
-   },
-
-   async mounted(){
       this.loading = true;
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
+      await this.getOrderTimeShipping(order_id);
+      await this.getOrderNumber(order_id);
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
-      if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
-         if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
-            var _formCheckReorder = new FormData();
-            _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
-            _formCheckReorder.append('order_id', order_id);
+      // if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
+      //    if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
+      //       var _formCheckReorder = new FormData();
+      //       _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
+      //       _formCheckReorder.append('order_id', order_id);
 
-            var _r = await window.request(_formCheckReorder);
-            if( _r != undefined ){
-               var _res = JSON.parse( JSON.stringify( _r ) );
+      //       var _r = await window.request(_formCheckReorder);
+      //       if( _r != undefined ){
+      //          var _res = JSON.parse( JSON.stringify( _r ) );
 
-               if( _res.message == 'reorder_out_of_stock' ){
-                  this.order_is_out_of_stock = true;
-                  this.popup_out_of_stock = true;
-               }
-            }
+      //          if( _res.message == 'reorder_out_of_stock' ){
+      //             this.order_is_out_of_stock = true;
+      //             this.popup_out_of_stock = true;
+      //          }
+      //       }
 
-         }
-      }
+      //    }
+      // }
 
 
 

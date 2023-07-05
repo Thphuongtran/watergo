@@ -1,12 +1,11 @@
-   
-   <!-- <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script> -->
+ <!-- <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script> -->
    <?php wp_footer(); ?>
 
    <script>
      
    function callbackLoginSuccess(type, token, information){
-      //alert("ok");return;
-      jQuery.ajax({
+      // alert("ok");return;
+      $.ajax({
          url: get_ajaxadmin,
          type: "post",
          dataType: "text",
@@ -17,26 +16,19 @@
             //web_token:jQuery("#login-token").val(),  
             information:information,             
          },
-
+         beforeSend: function() {
+            //alert('Hieu dep trai');
+         },
          success: function(output, textStatus, request) {
-            /**
-             {
-               
-             } 
-             */
-            //window.appBridge.loginSuccess(1)
+
             var id = request.getResponseHeader('user_id');
 
-              if ( window.appBridge &&  window.appBridge.setUserToken && id){
-                  window.appBridge.loginSuccess(id);
-                  // window.appBridge.refresh();
-              }
-            // let result = jQuery.parseJSON(output);
-            // if(result[0] == "success"){ 
-            //    alert('login success');
-               // window.appBridge.setUserToken(result[1]);
-               // reload_in_current_tab();
-            // }
+            if ( window.appBridge &&  window.appBridge.setUserToken && id){
+               window.appBridge.loginSuccess(id);
+               window.appBridge.close('refresh');
+               // window.appBridge.refresh();
+            }
+
          },
          error: function(xhr, textStatus, errorThrown) {
             //alert('Error:', errorThrown);
@@ -46,7 +38,7 @@
    }
 
    function callbackLoginFail(message){
-      alert('Login Fail ' + message);
+      console.log('Login Fail ' + message);
    }
 
 

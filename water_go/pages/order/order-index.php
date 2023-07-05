@@ -187,8 +187,7 @@ createApp({
       await setTimeout(() => {}, 700);
       await this.get_notification_count();
       var form = new FormData();
-      form.append('action', 'atlantis_get_order');
-      form.append('order_id', 0);
+      form.append('action', 'atlantis_get_order_user');
       var r = await window.request(form);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r ));
