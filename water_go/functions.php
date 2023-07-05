@@ -136,10 +136,11 @@ add_action('wp_head', 'loadDirectory');
 
 function common_js(){
    wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js?ver=1.0.2' );
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' );
 }
 
 add_action('wp_enqueue_scripts', 'common_js');
+
 
 
 /**
@@ -174,6 +175,7 @@ function callback_from_login_social(){
    }
 
 }
+
 
 add_action('init', 'language_custom');
 function language_custom($locale) {

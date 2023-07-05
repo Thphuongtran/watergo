@@ -813,6 +813,7 @@ createApp({
             form.append('delivery_type', _delivery_data.delivery_type );
             form.append('productSelected', JSON.stringify( _productSelected ) );
             var r = await window.request(form);
+                  console.log(r)
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'insert_order_ok' ){

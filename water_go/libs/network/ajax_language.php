@@ -5,7 +5,7 @@ add_action( 'wp_ajax_get_current_locale', 'get_current_locale_callback' );
 function get_current_locale_callback(){
 	if( isset( $_POST['action'] ) && $_POST['action'] == 'get_current_locale' ){
 		$current_lang =  get_locale();
-		
+
 		wp_send_json_error([ 'message' => 'current_locale_found', 'data' => $current_lang ]);
 		wp_die();
 	}
@@ -25,4 +25,3 @@ function app_change_language_callback(){
 		wp_die();
 	}
 }
-

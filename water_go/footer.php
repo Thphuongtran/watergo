@@ -1,5 +1,4 @@
-   
-   <!-- <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script> -->
+ <!-- <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script> -->
    <?php wp_footer(); ?>
 
    <script>
@@ -26,7 +25,7 @@
 
             if ( window.appBridge &&  window.appBridge.setUserToken && id){
                window.appBridge.loginSuccess(id);
-               window.appBridge.close('refresh');
+               window.appBridge.startMain();
                // window.appBridge.refresh();
             }
 
