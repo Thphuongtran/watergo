@@ -25,15 +25,6 @@
   align-items: center;
 }
 
-.overlay-popup {
-  background-color: rgba(0, 0, 0, 0.2);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-}
-
 .date-picker-popup {
   margin: 0 20px;
   position: relative;

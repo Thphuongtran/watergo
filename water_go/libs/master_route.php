@@ -36,3 +36,6 @@ define('WATERGO_BACK', get_bloginfo('url') . '/home?appt=X' );
 
 // NOTIFICATION
 define('WATERGO_NOTIFICATION', get_bloginfo('url') . '/notification' );
+
+// BUSINESS
+define('WATERGO_BUSINESS', get_bloginfo('url') . '/business');
