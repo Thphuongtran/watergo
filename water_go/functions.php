@@ -13,7 +13,7 @@ function stylesheet(){
   }
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
 
-  if (is_page('product')) {
+  if (is_page('business')) {
     wp_enqueue_style('styles-productPage', THEME_URI .'/assets/css/productPage.css');
   }
 

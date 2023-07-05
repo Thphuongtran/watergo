@@ -59,7 +59,7 @@
 .product-page .product-item-container {
   padding: 15px 10px;
   display: flex;
-  column-gap: 5px;
+  column-gap: 8px;
   border-bottom: 6px solid var(--primary-gray);
 }
 
@@ -90,11 +90,10 @@
 }
 
 .product-item-content {
-  width: 100%;
+  flex-grow: 1;
   color: var(--primary-black);
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
 }
 
 .product-item-content h2 {
@@ -138,6 +137,7 @@
 .product-item-content .product-item-state {
   display: flex;
   justify-content: space-between;
+  align-items: end;
 }
 
 .product-item-state div:first-child {
@@ -175,21 +175,25 @@
 }
 
 /* create product page */
-.create-water-page button, .create-water-page button:focus, .create-water-page button:active {
+div.create-product-page {
+  position: relative;
+}
+
+.create-product-page button, .create-product-page button:focus, .create-product-page button:active {
   border: none;
   outline: none;
   background: transparent;
 }
 
-.create-water-page form.product-form {
+.create-product-page form.product-form {
   padding: 0 15px;
   display: flex;
   flex-direction: column;
   row-gap: 25px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
 }
 
-.create-water-page form.product-form label {
+.create-product-page form.product-form label {
   font-weight: 500;
   font-size: 16px;
   line-height: 16px;
@@ -337,8 +341,19 @@ form.product-form .size-input-section {
   row-gap: 15px;
 }
 
-form.product-form .size-input-section div div.select-input {
-  margin-top: 0;
+form.product-form .size-input-section div label {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--primary-black);
+}
+
+/* ice page */
+form.product-form .size-input-section div input.length-input {
+  padding: 13px;
+  background-color: var(--primary-gray);
+  border-radius: 8px;
+  margin-top: 5px;
 }
 
 form.product-form .description-section {
@@ -421,7 +436,7 @@ form.product-form div.btn-submit {
   padding: 0 15px;
 }
 
-form.product-form div.btn-submit button {
+form.product-form div.btn-submit button:first-child {
   padding: 12px 0;
   width: 100%;
   font-weight: 700;
@@ -431,9 +446,21 @@ form.product-form div.btn-submit button {
   color: var(--primary-white);
   background-color: var(--primary-blue);
   border-radius: 8px;
+  margin-bottom: 6px;
 }
 
-
+form.product-form div.btn-submit button:last-child {
+  padding: 12px 0;
+  width: 100%;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 14px;
+  text-align: center;
+  color: var(--primary-blue);
+  background-color: var(--primary-white);
+  border: 1px solid var(--primary-blue);
+  border-radius: 8px;
+}
 
 
 
