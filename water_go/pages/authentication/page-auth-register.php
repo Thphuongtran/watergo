@@ -73,9 +73,9 @@
          <p class='t-second t-center mt25'>Or log in with</p>
 
          <div class='form-group mt20'>
-            <button class='btn-icon' ref='button-signup'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'>Log in with Apple</span></button>
-            <button class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'>Log in with Google</span></button>
-            <button class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'>Log in with Zalo</span></button>
+            <button @click='login_social_apple' class='btn-icon' ref='button-signup'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'>Log in with Apple</span></button>
+            <button @click='login_social_google' class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'>Log in with Google</span></button>
+            <button @click='login_social_zalo' class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'>Log in with Zalo</span></button>
          </div>
 
       </div>
@@ -138,6 +138,19 @@ createApp({
       gotoNotification(code){ window.gotoNotification(code)},
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
+      
+      login_social_apple(){
+         try{ window.appBridge.socialLogin('A'); // google
+         }catch{}
+      },
+      login_social_google(){
+         try{ window.appBridge.socialLogin('G'); // google
+         }catch{}
+      },
+      login_social_zalo(){
+         try{ window.appBridge.socialLogin('Z'); // google
+         }catch{}
+      },
 
       moveFocus(event, nextInput){
          var input = event.target;

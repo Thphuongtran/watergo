@@ -24,7 +24,8 @@
 
             if ( window.appBridge &&  window.appBridge.setUserToken && id){
                window.appBridge.loginSuccess(id);
-               window.appBridge.close('refresh');
+               window.appBridge.startMain();
+               // window.appBridge.close('refresh');
                // window.appBridge.refresh();
             }
 

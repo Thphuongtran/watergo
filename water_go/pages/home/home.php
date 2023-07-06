@@ -138,10 +138,12 @@
       </div>
    </div>
 
+   <component-location-modal ref='component_location_modal'></component-location-modal>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue-slick-carousel@1.0.6/dist/vue-slick-carousel.umd.min.js"></script>
+<script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
 
 <script type='module'>
 
@@ -228,26 +230,7 @@ createApp({
                this.storeNearby.push( ...res.data );
             }
          }
-      },
-
-      get_current_location(){
-         if( window.appBridge !== undefined ){
-            window.appBridge.getLocation().then( (data) => {
-               if (Object.keys(data).length === 0) {
-                  alert("Error-1 :Không thể truy cập vị trí");
-               }else{
-                  let lat = data.lat;
-                  let lng = data.lng;
-                  if( lat != 37.4226711 ){
-                     this.latitude = lat;
-                     this.longitude =lng;
-                  }
-               }
-            }).catch((e) => { alert(e); })
-         }
-      },
-
-      
+      },      
 
 
    },
@@ -259,7 +242,6 @@ createApp({
    async mounted(){
       this.loading = true;
       
-      this.get_current_location();      
       await this.get_messages_count();
       await this.get_store_nearby();
 
@@ -281,6 +263,6 @@ createApp({
    }
 
 })
-
+.component('component-location-modal', LocationModal)
 .mount('#app');
 </script>

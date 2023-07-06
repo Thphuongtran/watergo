@@ -93,8 +93,12 @@
       </div>
    </div>
 
+   <component-location-modal ref='component_location_modal'></component-location-modal>
+
    
 </div>
+
+<script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
 
 <script type='module'>
 
@@ -190,26 +194,6 @@ createApp({
          });
          this.map.removeObjects(this.map.getObjects());
          this.fill_maker_to_map();
-
-      },
-
-      get_current_location_per_second(){
-         if( window.appBridge != undefined ){
-
-            window.appBridge.getLocation().then( (data) => {
-               if (Object.keys(data).length === 0) {
-                  alert("Error-1 :Không thể truy cập vị trí");
-               }else{
-
-                  let lat = data.lat;
-                  let lng = data.lng;
-                  this.latitude = data.lat;
-                  this.longitude = data.lng;
-               }
-               
-            }).catch((e) => { alert(e); });
-
-         }
 
       },
 
@@ -404,5 +388,7 @@ createApp({
 
    }
 
-}).mount('#app');
+})
+.component('component-location-modal', LocationModal)
+.mount('#app');
 </script>
