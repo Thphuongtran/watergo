@@ -202,6 +202,7 @@ createApp({
       common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
 
       addToCart( isJustShowModal ){
+
          if(isJustShowModal == true ){
             this.show_add_cart = true;
             setTimeout(() => {

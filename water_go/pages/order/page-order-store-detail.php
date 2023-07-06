@@ -11,9 +11,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <!--  -->
-               <p v-if='order.order_repeat_id != 0' class='leading-title'>#{{ addLeadingZeros(order.order_repeat_id)}}-{{ order.order_repeat_count}}</p>
-               <p v-if='order.order_repeat_id == 0' class='leading-title'>#{{ addLeadingZeros(order.order_id)}}</p>
+               <p class='leading-title'>#{{ order_number }}</p>
                <!--  -->
             </div>
          </div>
@@ -79,18 +77,17 @@
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
                '
-            v-for='( date_time, date_time_key ) in order.order_delivery_data' :key='date_time_key'
-            class='display_delivery_time'
-         >
-                
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item highlight'>{{ date_time.date }}</div>
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item highlight'>{{ date_time.time }}</div>
+            v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
+            class='display_delivery_time'>
 
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>{{ get_shortname_day_of_week(date_time.day) }} - {{ date_time.fulldate }}</div>
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>{{ date_time.time }}</div>
+               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
 
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>Date {{ date_time.day }} - {{ date_time.fulldate }}</div>
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item' :class='date_time.highlight == true ? "highlight" : ""'>{{ date_time.time }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
+
+               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
          </div>
       </div>
 
@@ -197,6 +194,8 @@ createApp({
          loading: false,
          popup_confirm_cancel: false,
          address_kilometer: 0.0,
+
+         order_number: null,
          
          reason_cancel: [
             {label: 'Reason 1', active: false},
@@ -232,6 +231,8 @@ createApp({
       },
 
 
+
+
       get_product_quantity( product ){ return window.get_product_quantity(product); },
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
@@ -242,6 +243,19 @@ createApp({
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
 
       goBack(){ window.goBack() },
+
+      async getOrderNumber( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_number');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_number_ok'){
+               this.order_number = res.data;
+            }
+         }
+      },
 
       async btn_order_status( order_status ){
 
@@ -303,74 +317,11 @@ createApp({
       const order_id = urlParams.get('order_id');
 
       var form = new FormData();
-      form.append('action', 'atlantis_get_order');
+      form.append('action', 'atlantis_get_order_detail');
       form.append('order_id', parseInt(order_id));
       var r = await window.request(form);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify(r));
-         res.data.order_repeat_id = parseInt(res.data.order_repeat_id);
-         res.data.order_repeat_count = parseInt(res.data.order_repeat_count);
-
-         // set highlight false
-         
-
-         // CREATE FULL DATE FOR MONTHLY
-         if( res.data.order_delivery_type == 'monthly'){
-            res.data.order_delivery_data.some( _deli => {
-               _deli.fulldate = this.get_fulldate_from_day(_deli.day);
-            });
-         }
-         // CREATE FULL DATE FOR WEEKLY
-         if( res.data.order_delivery_type == 'weekly'){
-            res.data.order_delivery_data.some( _deli => {
-               _deli.fulldate = this.get_fullday_form_dayOfWeek( _deli.day );
-            });
-            console.log('create full day for weekly');
-            console.log(res.data.order_delivery_data);
-         }
-
-         var currentDate = new Date();
-
-         /**
-          * @access MAKE HIGHLIGHT ITEM FOR USER KNOW WHAT TO DO
-          */
-         if( res.data.order_delivery_type == 'monthly' || res.data.order_delivery_type == 'weekly' ){
-            res.data.order_delivery_data.some(item => item.highlight = false );
-
-            // sort data first
-            res.data.order_delivery_data.sort((a, b) => {
-               var AdateParts = a.fulldate.split('/');
-               var BdateParts = b.fulldate.split('/');
-               var _Aday = AdateParts[0];
-               var _Bday = BdateParts[0];
-               return _Aday - _Bday; // ASC
-               // return _Bday - _Aday; // DESC
-            });
-            
-            var futureDeliveryDates = res.data.order_delivery_data.filter(item => {
-               var dateParts = item.fulldate.split('/');
-               var day = dateParts[0];
-               var fulldate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-               return fulldate >= currentDate;
-            });
-
-            var closestDeliveryDate = null;
-            for (let i = 0; i < futureDeliveryDates.length; i++) {
-               var dateParts = futureDeliveryDates[i].fulldate.split('/');
-               var fulldate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-               var diffInDays = fulldate.getDate() - currentDate.getDate();
-            
-               if (diffInDays >= 0) {
-                  closestDeliveryDate = futureDeliveryDates[i];
-                  break;
-               }
-            }
-            
-            if( closestDeliveryDate != null ){
-               closestDeliveryDate.highlight = true;
-            }
-            
-         }
 
          this.order = res.data;
 
@@ -406,6 +357,8 @@ createApp({
          }
 
       }
+
+      await this.getOrderNumber(order_id);
       
       this.loading = false;
 

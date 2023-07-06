@@ -812,8 +812,12 @@ createApp({
             form.append('delivery_address', JSON.stringify(this.delivery_address_primary) );
             form.append('delivery_type', _delivery_data.delivery_type );
             form.append('productSelected', JSON.stringify( _productSelected ) );
+
             var r = await window.request(form);
-                  console.log(r)
+            console.log(_delivery_data);
+            console.log(r);
+
+
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'insert_order_ok' ){
@@ -832,6 +836,7 @@ createApp({
                   localStorage.setItem('watergo_carts', JSON.stringify(_watergo_carts));
                   // 
                   this.banner_open = true;
+                  
 
                }else{
                   this.loading = false;

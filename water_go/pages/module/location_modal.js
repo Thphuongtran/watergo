@@ -4,9 +4,9 @@ const LocationModal = {
       <div v-if='modal_location_turned_off == true' class='modal-popup open'>
          <div class='modal-wrapper'>
             <div class='modal-close'><div @click='buttonCloseModal' class='close-button'><span></span><span></span></div></div>
-            <p class='heading'>Location information is not available</p>
+            <p class='heading pt20'>Location information is not available</p>
             <p>Please share your location for a better experience on Watergo</p>
-            <button @click='open_app_setting' class='btn btn-primary'>Allow Access</button>
+            <button @click='open_app_setting' class='btn btn-primary mt20'>Allow Access</button>
          </div>
       </div>
    `,

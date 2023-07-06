@@ -13,8 +13,7 @@
                   </svg>
                </button>
                
-               <!-- <p class='leading-title'>Order #{{ addLeadingZeros(order.order_id)}}</p> -->
-               <p class='leading-title'>#{{ order_numer }}</p>
+               <p class='leading-title'>#{{ order_number }}</p>
             </div>
             <div class='action'>
                <span class='badge-status'>{{ get_status_activity(order.order_status) }}</span>
@@ -92,7 +91,7 @@
                '
             v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
             class='display_delivery_time'>
-                
+
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
 
@@ -213,7 +212,7 @@ createApp({
 
          popup_confirm_cancel: false,
 
-         order_numer: null,
+         order_number: null,
 
 
          reason_cancel: [
@@ -327,7 +326,7 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_number_ok'){
-               this.order_numer = res.data;
+               this.order_number = res.data;
             }
          }
       },
