@@ -326,7 +326,6 @@ function atlantis_add_order(){
                         'order_time_shipping_year'       => $year,
                         'order_time_shipping_time'       => $vl->time,
                         'order_time_shipping_type'       => $delivery_type,
-                        'order_time_shipping_is_done'    => 0,
                         'order_time_shipping_timestamp'  => $vl->currentDate,
                         'order_time_shipping_order_id'   => $order_id,
                      ]);
@@ -336,6 +335,7 @@ function atlantis_add_order(){
                   }
 
                   if( $delivery_type == 'monthly' ){
+                     
                      $currentDay = date('j'); // Get the current day (1-31)
                      $closestDay = array_reduce($date_array, function ($closest, $entry) use ($currentDay) {
                         $entryDay = $entry;
@@ -357,7 +357,7 @@ function atlantis_add_order(){
                      ");
 
                      if( !empty( $get_order_time_shipping_id )){
-                        $wpdb->update('wp_watergo_order', [
+                        $update_time_shipping = $wpdb->update('wp_watergo_order', [
                            'order_time_shipping_id' => $get_order_time_shipping_id[0]->order_time_shipping_id
                         ], [ 'order_id' => $order_id ]);
                      }
@@ -409,7 +409,7 @@ function atlantis_add_order(){
 
          
 
-         wp_send_json_success(['message' => 'insert_order_ok', 'test' => $id_ship, 'date' => $get_order_time_shipping_id]);
+         wp_send_json_success(['message' => 'insert_order_ok', 'insert_id' => $order_id , 'test' => $id_ship, 'delivery_data_convert' => $delivery_data_convert, 'update_time_shipping' => $update_time_shipping, 'date' => $get_order_time_shipping_id]);
          wp_die();
       } else {
          wp_send_json_success(['message' => 'hash_exists' ]);
@@ -984,8 +984,6 @@ function atlantis_order_status(){
                   // CLONE ORDER
 
 
-
-
                   
                   /**
                    *  @access  END SHIPPING LIST
@@ -1030,7 +1028,7 @@ function atlantis_order_status(){
 
         if ( $updated ) {
             $insert_id = $wpdb->insert_id;
-            wp_send_json_success( array( 'message' => 'order_status_ok', 'data' => $updated ) );
+            wp_send_json_success( array( 'message' => 'order_status_ok', 'data' => $updated, $get_day ) );
          } else {
             wp_send_json_error( array( 'message' => 'order_not_found', 'data' => $updated ) );
          }
