@@ -146,7 +146,7 @@
 
    </div>
 
-   <div v-show='popup_confirm_cancel' class='modal-popup style01 open'>
+   <div v-show='popup_confirm_cancel == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
          <p class='tt01'>Select Cancellation Reason</p>
@@ -180,7 +180,7 @@
    </div>
    
 
-   <div v-if='banner_open == true' class='banner'>
+   <div v-if='banner_open == true && order != null' class='banner'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>

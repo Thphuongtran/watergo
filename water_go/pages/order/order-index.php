@@ -42,7 +42,7 @@
       </div>
 
 
-      <ul v-if='order_filter' class='list-order'>
+      <ul v-if='order_filter.length > 0' class='list-order'>
          <li v-for='(order, orderKey) in order_filter' :key='orderKey'>
 
             <div class='order-head'>
@@ -192,7 +192,6 @@ createApp({
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r ));
          if( res.message == 'get_order_ok' ){
-            // GROUP PRODUCT 
             this.orders.push(...res.data);
          }
          if( res.message == 'no_order_found'){

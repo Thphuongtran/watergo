@@ -80,10 +80,7 @@
             <label @click='select_item(order.order_id)' class='order-head'>
                <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check'><input disabled type='checkbox' :checked='order.is_select'></div>
                <!--  -->
-               <span v-if='order.order_repeat_id == 0' class='text-order-number'>#{{ addLeadingZeros(order.order_id)}}</span>
-               <!--  -->
-               <span v-if='order.order_repeat_id != 0' class='text-order-number'>#{{ addLeadingZeros(order.order_repeat_id)}}-{{ order.order_repeat_count}}</span>
-               <!--  -->
+               <span class='text-order-number'>#{{ order.order_number }}</span>
 
                <span class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</span>
             </label>
@@ -552,14 +549,15 @@ createApp({
    async created(){
       this.loading = true;
       var form = new FormData();
-      form.append('action', 'atlantis_get_order');
+      form.append('action', 'atlantis_get_order_store');
       var r = window.request(form);
       var r = await window.request(form);
+      console.log(r);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r ));
          if( res.message == 'get_order_ok' ){
             // GROUP PRODUCT 
-            res.data.some(item => {
+            res.data.some( item => {
                item.is_select = false;
                if(item.order_status == 'ordered'){
                   this.order_status_filter[0].count++;
@@ -576,16 +574,16 @@ createApp({
                if(item.order_status == 'cancel'){
                   this.order_status_filter[4].count++;
                }
-            });
 
+            });
+            
             this.orders.push(...res.data);
+
          }
          if( res.message == 'no_order_found'){
             this.loading = true;
          }
       }
-
-      console.log(this.orders);
       
       this.loading = false;
    },

@@ -211,11 +211,14 @@ createApp({
          form.append('action', 'app_change_language');
          form.append('language', language);
          var r = window.request(form);
+         console.log('get current locale')
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
-            if( res.message == 'change_language_successfully' && window.appBridge ){
-               window.appBridge.setLanguage(res.lang);
-               window.appBridge.close('refresh');
+            if( res.message == 'change_language_successfully' && window.appBridge != undefined ){
+               if( window.appBridge != undefined ){
+                  window.appBridge.setLanguage(res.lang);
+                  window.appBridge.close('refresh');
+               }
             }
          }
       },
@@ -232,7 +235,6 @@ createApp({
       async getLocale(){
          var form = new FormData();
          form.append('action', 'get_current_locale');
-
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
@@ -256,9 +258,7 @@ createApp({
       },
 
       goBack(){this.page_welcome = true;},
-      gotoLogin(){
-         this.page_welcome = false;
-      },
+      gotoLogin(){this.page_welcome = false;},
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
 
@@ -267,7 +267,7 @@ createApp({
 
       async btn_login(){
          if( this.inputEmail != '' && this.inputPassword != ''){
-            if( this.term_conditions == true){
+            if( this.term_conditions == true ){
                this.loading = true;
                var form = new FormData();
                form.append('action', 'atlantis_login');
@@ -285,6 +285,7 @@ createApp({
                         window.appBridge.loginSuccess(_cookie);
                         window.appBridge.refresh();
                      }
+                     
                   }
                   else if(res.message == 'login_error' ){
                      this.res_text_sendcode = 'Login Error.';

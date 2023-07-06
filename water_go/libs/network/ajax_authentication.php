@@ -31,6 +31,12 @@ function atlantis_login(){
          'remember'      => true
       ]);
 
+      // if(is_user_logged_in() == true ){
+      //    $user_id = get_current_user_id();
+      //    $user = get_user_by('id', $user_id);
+      //    $prefix_user = 'user_' . $user->data->ID;
+      // }
+
       if ( is_wp_error( $user_login ) ) {
          // authentication failed, display error message
          // $error_message = $user_login->get_error_message();
@@ -38,7 +44,7 @@ function atlantis_login(){
          wp_die();
       } else {
          // authentication succeeded, redirect to home page
-         wp_send_json_success([ 'message' => 'login_ok']);
+         wp_send_json_success([ 'message' => 'login_ok' ]);
          wp_die();
       }
 

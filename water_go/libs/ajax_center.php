@@ -27,6 +27,7 @@ require_once THEME_DIR . '/libs/network/ajax_chat.php';
 require_once THEME_DIR . '/libs/network/ajax_search.php';
 require_once THEME_DIR . '/libs/network/ajax_social.php';
 require_once THEME_DIR . '/libs/network/ajax_upload.php';
+require_once THEME_DIR . '/libs/network/ajax_language.php';
 
 function atlantis_get_total_posts(){
    $query = new WP_Query([

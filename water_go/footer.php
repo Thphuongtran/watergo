@@ -1,4 +1,3 @@
- <!-- <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script> -->
    <?php wp_footer(); ?>
 
    <script>
