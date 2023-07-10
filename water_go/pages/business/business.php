@@ -10,5 +10,9 @@
     return get_template_part('pages/business/report/report');
   }
 
+  if ($business_page == 'store') {
+    return get_template_part('pages/business/store/store');
+  }
+
   return get_template_part('pages/business/product/product');
 ?>
