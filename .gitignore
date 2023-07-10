@@ -1,6 +1,7 @@
 *.yml
 *.yaml
-*.DS_Store
+**/*.DS_Store
 
 /db
 /wordpress
+/.vscode

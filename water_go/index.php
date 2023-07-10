@@ -1,6 +1,10 @@
 <?php 
 get_header();
 
+if (is_page('business')) {
+   return get_template_part('pages/business/business');
+}
+
 if( is_page( 'authentication') ){
    get_template_part('pages/authentication/authentication');
 }
