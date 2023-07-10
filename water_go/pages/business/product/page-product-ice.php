@@ -1,6 +1,6 @@
 <div id='app'>
   <div v-if='!loading' class="create-product-page">
-    <?php get_template_part('pages/business/product/detailBar') ?>
+    <?php get_template_part('pages/business/components/detailBar') ?>
     <div>
       <form action="" class="product-form" v-on:submit.prevent>
         <div>

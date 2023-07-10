@@ -1,13 +1,25 @@
 :root {
-  --primary-blue: #2790F9;
-  --primary-red: #FF4848;
-  --primary-black: #252831;
   --primary-gray: #F1F1F1;
   --secondary-gray: #7B7D83;
-  --primary-white: #FFFFFF;
+  --tertiary-gray: #F9F9F9;
+  --quaternary-gray: #E1E1E1;
+
+  --primary-blue: #2790F9;
+
+  --primary-red: #FF4848;
+  --secondary-red: #FF5656;
+
+  --primary-green: #13E800;
+
+  --primary-black: #252831;
   --secondary-black: #00000029;
+  --tertiary-black: #252831;
+  
+  --primary-white: #FFFFFF;
+
   --primary-border: #DADADA;
   --secondary-border: #A2A2A2;
+  
 }
 
 .overlay-popup {
@@ -18,6 +30,18 @@
   width: 100%;
   height: 100%;
   z-index: 99;
+}
+
+.overlay-popup .date-picker-popup {
+  width: 90%;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.overlay-popup .date-picker-popup button.button {
+  padding: inherit;
 }
 
 .overlay-popup .confirm-model {

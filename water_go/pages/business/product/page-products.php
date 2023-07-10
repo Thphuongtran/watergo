@@ -1,9 +1,9 @@
 <div id='app'>
   <div v-if='loading == false' class='product-page'>
-    <?php get_template_part('pages/business/product/appBar') ?>
-    <?php get_template_part('pages/business/product/filterBar') ?>
+    <?php get_template_part('pages/business/components/appBar') ?>
+    <?php get_template_part('pages/business/components/filterBar') ?>
     <div style='height: 10px;'></div>
-    <?php get_template_part('pages/business/product/searchBox') ?>
+    <?php get_template_part('pages/business/components/searchBox') ?>
     <div class='action-bar'>
       <div class='filter-dropdown'>
         <button
