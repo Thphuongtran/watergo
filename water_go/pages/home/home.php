@@ -57,6 +57,8 @@
          <div class='slider-container'>
             <ul class='sliders'>
                <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
+               <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
+               <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
             </ul>
          </div>
 
@@ -77,7 +79,7 @@
                   <div class='list-horizontal'>
                      <ul>
                         <li 
-                           @click='gotoProductDetail(product.product_id)'
+                           @click='gotoProductDetail(product.id)'
                            v-for='(product, index) in productRecommend' :key='index' class='product-design'>
                            <div class='img'>
                               <img :src='get_image_upload(product.product_image)'>
@@ -142,7 +144,9 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue-slick-carousel@1.0.6/dist/vue-slick-carousel.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
 
 <script type='module'>
@@ -192,6 +196,22 @@ createApp({
       gotoCart(){ window.gotoCart() },
       gotoChat(){ window.gotoChat() },
 
+      get_current_location(){
+
+         if( window.appBridge != undefined ){
+            window.appBridge.getLocation().then( (data) => {
+               if (Object.keys(data).length === 0) {
+                  alert("Error-1 :Không thể truy cập vị trí");
+               }else{
+                  let lat = data.lat;
+                  let lng = data.lng;
+                  this.latitude = data.lat;
+                  this.longitude = data.lng;
+               }
+            }).catch((e) => { alert(e); })
+         }
+      },
+
       async get_notification_count(){
          var form = new FormData();
          form.append('action', 'atlantis_notification_count');
@@ -219,7 +239,6 @@ createApp({
       async get_store_nearby(){
          var form = new FormData();
          form.append('action', 'atlantis_get_store_location');
-
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
 
@@ -238,10 +257,12 @@ createApp({
    computed: {
       count_product_in_cart(){ return window.count_product_in_cart(); }
    },
-   
-   async mounted(){
+
+   async created(){
+
       this.loading = true;
-      
+
+      this.get_current_location();
       await this.get_messages_count();
       await this.get_store_nearby();
 
@@ -249,6 +270,9 @@ createApp({
       form.append('action', 'atlantis_load_product_recommend');
       form.append('lat',this.latitude);
       form.append('lng',this.longitude);
+      form.append('product_id_already_exists',[0]);
+      form.append('filter', 'nearest');
+
       var r = await window.request(form);
 
       if( r != undefined ){
@@ -259,6 +283,26 @@ createApp({
       }
 
       this.loading = false;
+
+      (function($){
+         $(document).ready(function(){
+            $('.slider-container .sliders').slick({
+               dots: false,
+               arrows: false,
+               infinite: false,
+               speed: 300,
+               slidesToShow: 1,
+               slidesToScroll: 1,
+            })
+         });
+      })(jQuery);
+
+      window.appbar_fixed();
+   },
+   
+   mounted(){
+
+      
 
    }
 

@@ -1,7 +1,7 @@
 <div id='app'>
 
-   <div v-if='loading == false' ref='handleClickOutside' class='page-recommend' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
-      <div class='appbar'>
+   <div v-if='loading == false' class='page-recommend' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
+      <div class='appbar style01'>
          <div class='appbar-top'>
 
             <div class='leading'>
@@ -21,15 +21,18 @@
                </div>
             </div>
          </div>
+         <div class='appbar-bottom'>
+            <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
+               <ul>
+                  <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""'>Nearest</li>
+                  <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""'>Cheapest</li>
+                  <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""'>Top Rated</li>
+               </ul>
+            </div>
+         </div>
       </div>
 
-      <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
-         <ul>
-            <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""'>Nearest</li>
-            <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""'>Cheapest</li>
-            <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""'>Top Rated</li>
-         </ul>
-      </div>
+      
 
       <div v-if='products.length > 0 && loading == false ' class='inner'>
          <div class='grid-masonry'>
@@ -53,10 +56,12 @@
                      <span v-if='has_discount(product) == true' class='price-sub'>
                         {{ common_get_product_price(product.price) }}
                      </span>
+
                      <!-- <span class='demo-font'>
                         Rate {{ product.avg_rating }}<br>
                         Distance {{ product.distance }}
                      </span> -->
+
                   </div>
                </div>
             </div>
@@ -83,8 +88,7 @@ createApp({
          sortFeatureCurrentValue: 0,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
-         limit: 10,
-         page: 0,
+
       }
    },
 
@@ -113,73 +117,150 @@ createApp({
       },
 
       buttonSortFeature(){
-         if( this.sortFeatureOpen == false){
-            this.sortFeatureOpen = true;
-            window.bodyScrollToggle('add');
-         }else{
-            this.sortFeatureOpen = false;
-         }
+         this.sortFeatureOpen = !this.sortFeatureOpen;
+         window.bodyScrollToggle();
       },
 
       get_image_upload( i ){ return window.get_image_upload( i ) },
-
       has_discount( product ){ return window.has_discount(product); },
       get_product_quantity( product ) { return window.get_product_quantity(product) },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
-      
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id);},
       goBack(){ window.goBack(); },
+
+      get_text_filter(  ){
+         switch( this.sortFeatureCurrentValue ){
+            case 0: return 'nearest'; break;
+            case 1: return 'cheapest'; break;
+            case 2: return 'cheapest'; break;
+         }
+      },
+
+      async handleScroll() {
+         const windowTop            = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold   = 50; // Adjust this value as needed
+         const scrollPosition       = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight         = window.innerHeight;
+         const documentHeight       = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            
+            var product_id_already_exists = [];
+            
+            this.products.forEach(item => {
+               product_id_already_exists.push( parseInt( item.id ) );
+            });
+            await this.load_product_sort( this.get_text_filter(), product_id_already_exists);
+         }
+      },
+
+      async load_product_sort( filter, product_id_already_exists ){
+
+         if( product_id_already_exists == undefined || product_id_already_exists == null ){
+            product_id_already_exists = [0];
+         }
+
+         var form = new FormData();
+         form.append('action', 'atlantis_load_product_recommend');
+         form.append('lat', this.latitude);
+         form.append('lng', this.longitude);
+         form.append('filter', filter );
+         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
+         
+         var r = await window.request(form);
+         console.log(r);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'product_found' ){
+               // this.products.push(...res.data );
+               res.data.forEach(item => {
+                  if (! this.products.some(existingItem => existingItem.id === item.id)) {
+                     this.products.push(item);
+                  }
+               });
+            }
+
+         }
+         console.log(this.products)
+         
+      }
 
    },
 
    computed: {
       filter_products(){
          var _filter = this.products;
-         // nearest 0 
-         // cheapest 1
-         // top rated 2
 
          if(this.sortFeatureCurrentValue == 2 ){
             // console.log('Top Rated Filter');
             _filter.sort((a, b) => b.avg_rating - a.avg_rating);
          }
-         
-         // Sort products by price in ascending order (cheapest first)
          else if(this.sortFeatureCurrentValue == 1 ){
             // console.log('Top Cheapest');
             _filter.sort((a, b) => a.price - b.price);
          }
-
-         // Filter products by distance (assuming you have access to user's location)
          else if(this.sortFeatureCurrentValue == 0 ){
             // console.log('Nearest');
             _filter.sort((a, b) => a.distance - b.distance);
          }
 
          return _filter;
+
       }
+   },
+
+   // STREAM 
+   watch: {
+
+      products: function ( product ){
+         console.log('stream product');
+      },
+
+      sortFeatureCurrentValue: async function( val ){
+
+         if( val == 0 ){
+            this.products = [];
+            this.loading = true;
+            await this.load_product_sort(this.get_text_filter(), [0] );
+            this.loading = false;
+            window.appbar_fixed();
+         }
+         if( val == 1 ){
+            this.products = [];
+            this.loading = true;
+            await this.load_product_sort(this.get_text_filter(), [0] );
+            this.loading = false;
+            window.appbar_fixed();
+         }
+         if( val == 2 ){
+            this.products = [];
+            this.loading = true;
+            await this.load_product_sort(this.get_text_filter(), [0] );
+            this.loading = false;
+            window.appbar_fixed();
+         }
+      }
+   },
+
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
    },
 
    async created() {
       this.get_current_location();
       this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_load_product_recommend');
-      form.append('lat', this.latitude);
-      form.append('lng', this.longitude);
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify( r));
-         if( res.message == 'product_found' ){
-            this.type = res.type;
-            this.products.push(...res.data );
-         }
-      }
+      await this.load_product_sort('nearest', [0]);
+      
       this.loading = false;
+      window.appbar_fixed();
 
    },
-   mounted(){
-      
-   }
+
 }).mount('#app');
 </script>

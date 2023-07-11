@@ -72,6 +72,8 @@ createApp({
       var r = await window.request(form2);
 
       this.loading = false;
+
+      window.appbar_fixed();
    }
 }).mount('#app');
 </script>

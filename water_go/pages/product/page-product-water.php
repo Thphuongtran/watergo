@@ -1,6 +1,6 @@
 <div id='app'>
    <div v-if='loading == false' class='page-product-water' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
-      <div class='appbar'>
+      <div class='appbar style01'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBack' class='btn-action'>
@@ -19,32 +19,32 @@
                </div>
             </div>
          </div>
-      </div>
 
-      <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
-         <ul>
-            <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""'>Nearest</li>
-            <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""'>Cheapest</li>
-            <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""'>Top Rated</li>
-         </ul>
-      </div>
+         <div class='appbar-bottom'>
+            <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
+               <ul>
+                  <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""'>Nearest</li>
+                  <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""'>Cheapest</li>
+                  <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""'>Top Rated</li>
+               </ul>
+            </div>
 
-      <div class='overlay-layer' :class='sortFeatureOpen == true ? "active" : ""'>
+            <ul class='navbar'>
+               <li @click='select_category(cat.id)' 
+                  v-for='(cat, index) in categoryWater' :key='index' 
+                  :class='cat.active == true ? "active" : ""'>
+                  {{ cat.name }}
+               </li>
+            </ul>
+            <ul class='navbar style01'>
+               <li @click='select_brand(brand.id)' 
+                  v-for='(brand, index) in brandWater' :key='index'
+                  :class='brand.active == true ? "active" : ""'>
+                  {{ brand.name }}
+               </li>
+            </ul>
 
-         <ul class='navbar'>
-            <li @click='select_category(cat.id)' 
-               v-for='(cat, index) in categoryWater' :key='index' 
-               :class='cat.active == true ? "active" : ""'>
-               {{ cat.name }}
-            </li>
-         </ul>
-         <ul class='navbar style01'>
-            <li @click='select_brand(brand.id)' 
-               v-for='(brand, index) in brandWater' :key='index'
-               :class='brand.active == true ? "active" : ""'>
-               {{ brand.name }}
-            </li>
-         </ul>
+         </div>
       </div>
 
       <div class='inner'>
@@ -106,10 +106,14 @@ createApp({
          products: [],
          categoryWater: [],
          brandWater: [],
+
+         arg_get_product: null,
+         
       }
    },
 
    methods: {
+
       get_current_location(){
 
          if( window.appBridge !== undefined ){
@@ -135,14 +139,12 @@ createApp({
       buttonSortFeatureSelected( index ){
          this.sortFeatureCurrentValue = index;
          this.sortFeatureOpen = false;
+         window.bodyScrollToggle('remove');
       },
 
-      buttonSortFeature(){  
-         if( this.sortFeatureOpen == false){
-            this.sortFeatureOpen = true;
-         }else{
-            this.sortFeatureOpen = false;
-         }
+      buttonSortFeature(){
+         this.sortFeatureOpen = !this.sortFeatureOpen;
+         window.bodyScrollToggle();
       },
 
       select_category(cat_id){
@@ -164,32 +166,12 @@ createApp({
          });
       },
 
-      // INIT
-      async load_product(){
-         var form = new FormData();
-         form.append('action', 'atlantis_load_products');
-         form.append('type', 'water');
-         form.append('lat', this.latitude);
-         form.append('lng', this.longitude);
-         form.append('limit', this.limit);
-         form.append('page', this.page);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               res.data.some(item => {
-                  var _avg_rating = (Math.random() * 4.9) + 0.1;
-                  var _distance = (Math.random() * 4.9) + 0.1;
+      get_text_filter(  ){
 
-                  item.price = parseInt(item.price);
-                  item.avg_rating = parseFloat(_avg_rating).toFixed(1);
-                  item.distance = parseFloat(_distance).toFixed(2);
-                  item.category_id = parseInt(item.category_id);
-                  item.brand_id = parseInt(item.brand_id);
-
-               });
-               this.products.push( ...res.data);
-            }
+         switch( this.sortFeatureCurrentValue ){
+            case 0: return 'nearest'; break;
+            case 1: return 'cheapest'; break;
+            case 2: return 'cheapest'; break;
          }
       },
 
@@ -222,14 +204,72 @@ createApp({
          }
       },
 
-      calculateDistance(lat1, lon1, lat2, lon2 ){ return window.calculateDistance(lat1, lon1, lat2, lon2 )},
+      async handleScroll() {
+         const windowTop            = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold   = 50; // Adjust this value as needed
+         const scrollPosition       = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight         = window.innerHeight;
+         const documentHeight       = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            
+            var product_id_already_exists = [];
+            
+            this.products.forEach(item => {
+               product_id_already_exists.push( parseInt( item.id ) );
+            });
+
+            await this.load_product_sort( this.get_text_filter(), product_id_already_exists);
+
+         }
+      },
+
 
       goBack(){ window.goBack(); },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id)},
+
+      async load_product_sort( filter, product_id_already_exists ){
+
+         if( product_id_already_exists == undefined || product_id_already_exists == null ){
+            product_id_already_exists = [0];
+         }
+            
+         var form = new FormData();
+         form.append('action', 'atlantis_get_product_sort');
+         form.append('product_type', 'water');
+         form.append('filter', filter);
+         form.append('lat', this.latitude);
+         form.append('lng', this.longitude);
+         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
+
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'product_found' ){
+               // this.products.push( ...res.data);
+               res.data.forEach(item => {
+                  if (!this.products.some(existingItem => existingItem.id === item.id)) {
+                     this.products.push(item);
+                  }
+               });
+            }
+         }
+      }
    },
+
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
+   },
+
    computed: {
       filter_products(){
-         var _filter = this.products.filter( product => {
+         return this.products.filter( product => {
             // Filter products based on category and brand
             var cat = this.categoryWater.find(c => c.active == true);
             var brand = this.brandWater.find(b => b.active == true);
@@ -243,39 +283,48 @@ createApp({
                return product;
             }
          });
-
-         // nearest 0 
-         // cheapest 1
-         // top rated 2
-
-         if(this.sortFeatureCurrentValue == 2 ){
-            // console.log('Top Rated Filter');
-            _filter.sort((a, b) => b.avg_rating - a.avg_rating);
-         }
-         
-         // Sort products by price in ascending order (cheapest first)
-         else if(this.sortFeatureCurrentValue == 1 ){
-            // console.log('Top Cheapest');
-            _filter.sort((a, b) => a.price - b.price);
-         }
-
-         // Filter products by distance (assuming you have access to user's location)
-         else if(this.sortFeatureCurrentValue == 0 ){
-            // console.log('Nearest');
-            _filter.sort((a, b) => a.distance - b.distance);
-         }
-
-         return _filter;
-
       }
    },
+
+   // STREAM 
+   watch: {
+      sortFeatureCurrentValue: async function( val ){
+
+         if( val == 0 ){
+            this.products = [];
+            this.loading = true;
+            await this.load_product_sort(this.get_text_filter(), [0] );
+            this.loading = false;
+            window.appbar_fixed();
+         }
+         if( val == 1 ){
+            this.products = [];
+            this.loading = true;
+            await this.load_product_sort(this.get_text_filter(), [0] );
+            this.loading = false;
+            window.appbar_fixed();
+         }
+         if( val == 2 ){
+            this.products = [];
+            this.loading = true;
+            await this.load_product_sort(this.get_text_filter(), [0] );
+            this.loading = false;
+            window.appbar_fixed();
+         }
+      }
+   },
+
    async created(){
+         
       this.get_current_location();
       this.loading = true;
-      await this.load_product();
+      await this.load_product_sort('nearest', [0]);
+
       await this.load_category();
       await this.load_brand();
       this.loading = false;
+
+      window.appbar_fixed();
 
 
    },

@@ -12,22 +12,6 @@ add_action( 'wp_ajax_atlantis_user_notification', 'atlantis_user_notification' )
 add_action( 'wp_ajax_nopriv_atlantis_testing', 'atlantis_testing' );
 add_action( 'wp_ajax_atlantis_testing', 'atlantis_testing' );
 
-require_once THEME_DIR . '/libs/network/ajax_product.php';
-require_once THEME_DIR . '/libs/network/ajax_store.php';
-require_once THEME_DIR . '/libs/network/ajax_change_password.php';
-require_once THEME_DIR . '/libs/network/ajax_user.php';
-require_once THEME_DIR . '/libs/network/ajax_authentication.php';
-require_once THEME_DIR . '/libs/network/ajax_sendcode.php';
-require_once THEME_DIR . '/libs/network/ajax_support.php';
-require_once THEME_DIR . '/libs/network/ajax_reviews.php';
-require_once THEME_DIR . '/libs/network/ajax_category.php';
-require_once THEME_DIR . '/libs/network/ajax_order.php';
-require_once THEME_DIR . '/libs/network/ajax_notification.php';
-require_once THEME_DIR . '/libs/network/ajax_chat.php';
-require_once THEME_DIR . '/libs/network/ajax_search.php';
-require_once THEME_DIR . '/libs/network/ajax_social.php';
-require_once THEME_DIR . '/libs/network/ajax_upload.php';
-require_once THEME_DIR . '/libs/network/ajax_language.php';
 
 function atlantis_get_total_posts(){
    $query = new WP_Query([
@@ -121,11 +105,6 @@ function atlantis_fetch_category(){
 
 
 
-
-
-
-
-
 function atlantis_user_notification(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_user_notification' ){
 
@@ -148,8 +127,31 @@ function atlantis_user_notification(){
 
 function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
-      
-      wp_send_json_success([ 'message' => 'THIS IS TESING AJAX']);
-      wp_die();
+
+      $wheres = [1,2,3,4,5,6,7];
+
+      $placeholders = implode(',', $wheres); 
+
+      wp_send_json_success(['message' => 'ok' , 'placeholders' => $placeholders]);
+
+
+
    }
 }
+
+require_once THEME_DIR . '/libs/network/ajax_product.php';
+require_once THEME_DIR . '/libs/network/ajax_store.php';
+require_once THEME_DIR . '/libs/network/ajax_change_password.php';
+require_once THEME_DIR . '/libs/network/ajax_user.php';
+require_once THEME_DIR . '/libs/network/ajax_authentication.php';
+require_once THEME_DIR . '/libs/network/ajax_sendcode.php';
+require_once THEME_DIR . '/libs/network/ajax_support.php';
+require_once THEME_DIR . '/libs/network/ajax_reviews.php';
+require_once THEME_DIR . '/libs/network/ajax_category.php';
+require_once THEME_DIR . '/libs/network/ajax_order.php';
+require_once THEME_DIR . '/libs/network/ajax_notification.php';
+require_once THEME_DIR . '/libs/network/ajax_chat.php';
+require_once THEME_DIR . '/libs/network/ajax_search.php';
+require_once THEME_DIR . '/libs/network/ajax_social.php';
+require_once THEME_DIR . '/libs/network/ajax_upload.php';
+require_once THEME_DIR . '/libs/network/ajax_language.php';

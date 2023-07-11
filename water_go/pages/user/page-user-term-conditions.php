@@ -35,6 +35,10 @@ createApp({
    },
    methods: {
       goBack(){window.goBack(); }
+   },
+
+   created(){
+      window.appbar_fixed();
    }
    
 }).mount('#app');

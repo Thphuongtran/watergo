@@ -254,6 +254,7 @@ createApp({
       await this.initUser();
       this.loading = false;
 
+      window.appbar_fixed();
 
    },
 

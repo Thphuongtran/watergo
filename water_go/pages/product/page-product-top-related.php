@@ -176,9 +176,8 @@ createApp({
 
       this.loading = false;
 
-   },
-   mounted(){
-      
+      window.appbar_fixed();
    }
+
 }).mount('#app');
 </script>

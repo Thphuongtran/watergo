@@ -70,6 +70,8 @@ createApp({
          }
       }
       this.loading = false;
+
+      window.appbar_fixed();
    }
 
 }).mount('#app');

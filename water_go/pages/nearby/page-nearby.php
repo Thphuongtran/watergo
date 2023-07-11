@@ -1,4 +1,3 @@
-
 <div id='app'>
 
    <div v-if='loading == false' class='page-nearby'>
@@ -111,11 +110,8 @@ createApp({
          keyID: 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k',
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
-
          isToggle: false,
-
          map: null,
-
          stores: [],
          searchType: [
             {label: 'Water', value: 'water', active: true},
@@ -386,6 +382,7 @@ createApp({
 
       this.map = map;
 
+      window.appbar_fixed();
    }
 
 })

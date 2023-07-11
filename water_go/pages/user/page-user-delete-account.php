@@ -95,6 +95,8 @@ createApp({
    },
 
    async created(){
+
+      window.appbar_fixed();
       
    }
 

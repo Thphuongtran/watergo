@@ -104,10 +104,9 @@ createApp({
          }
       }
       this.loading = false;
+
+      window.appbar_fixed();
    },
 
-   mounted(){
-      
-   }
 }).mount('#app');
 </script>

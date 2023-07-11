@@ -18,6 +18,9 @@ add_action( 'wp_ajax_atlantis_find_product_newest', 'atlantis_find_product_newes
 add_action( 'wp_ajax_nopriv_atlantis_get_product_image', 'atlantis_get_product_image' );
 add_action( 'wp_ajax_atlantis_get_product_image', 'atlantis_get_product_image' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_product_sort', 'atlantis_get_product_sort' );
+add_action( 'wp_ajax_atlantis_get_product_sort', 'atlantis_get_product_sort' );
+
 /**
  * @access GET PRODUCT + DISCOUNT + PHOTO
  */
@@ -142,14 +145,31 @@ function atlantis_load_products(){
 function atlantis_load_product_recommend(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_product_recommend' ){
 
-      $page = isset($_POST['page']) ? $_POST['page'] : 0;
-      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
-
       global $wpdb;
       $sql_type = '';
 
-      $lat = isset($_POST['lat']) ? $_POST['lat'] : 0.0;
-      $lng = isset($_POST['lng']) ? $_POST['lng'] : 0.0;
+      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
+      $filter = isset($_POST['filter']) ? $_POST['filter'] : 'nearest';
+      $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
+
+      if( $filter == '' || $filter == null ){
+         wp_send_json_error(['message' => 'product_not_found 2' ]);
+         wp_die();
+      }
+
+      $product_id_already_exists = json_decode( $product_id_already_exists );
+      $placeholders = 0;
+
+      $wheres = [];
+
+      if( is_array($product_id_already_exists) && ! empty($product_id_already_exists) ){
+         foreach( $product_id_already_exists as $ids ){
+            $wheres[] = $ids;
+         }
+         $placeholders = implode(',', $wheres);
+      }
 
       // UPDATE LATER
       // $sql_order_success = "SELECT 
@@ -162,83 +182,78 @@ function atlantis_load_product_recommend(){
       //    ON wp_watergo_order.hash_id = wp_watergo_order_group.hash_id
       //    WHERE wp_watergo_order.order_status = 'complete'
       // ";
+
       $sql_order_success = "SELECT 
-            wp_watergo_order_group.order_group_store_id as store_id,
-            wp_watergo_order_group.order_group_product_id as product_id,
-            wp_watergo_products.*,
-            discount.id as discount_id,
-            discount.product_id as discount_product_id,
-            discount.discount as discount_percent,
-            discount.from as discount_from,
-            discount.to as discount_to,
-            -- 
-            wp_watergo_store.latitude as lat,
-            wp_watergo_store.longitude as lng,
+         wp_watergo_order_group.order_group_store_id as store_id,
+         wp_watergo_order_group.order_group_product_id as product_id,
+         wp_watergo_products.*,
+         -- 
 
-            AVG(wp_watergo_reviews.rating) AS avg_rating,
+         wp_watergo_photo.url as product_image,
 
-            (6371 * acos(
-               cos(radians($lat)) * cos(radians(wp_watergo_store.latitude)) * cos(radians(wp_watergo_store.longitude) - radians($lng)) +
-               sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
-            )) AS distance,
+         AVG(wp_watergo_reviews.rating) AS avg_rating,
 
-            wp_watergo_photo.url as product_image
+         (6371 * acos(
+            cos(radians($lat)) * cos(radians(wp_watergo_store.latitude)) * cos(radians(wp_watergo_store.longitude) - radians($lng)) +
+            sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+         )) AS distance
+      
+      FROM wp_watergo_order
+      
+      LEFT JOIN wp_watergo_order_group
+      ON wp_watergo_order.hash_id = wp_watergo_order_group.hash_id
 
-            
-         FROM wp_watergo_order
-         
+      LEFT JOIN wp_watergo_products
+      ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
 
-         LEFT JOIN wp_watergo_order_group
-         ON wp_watergo_order.hash_id = wp_watergo_order_group.hash_id
+      LEFT JOIN wp_watergo_store
+      ON wp_watergo_store.id = wp_watergo_products.store_id
 
-         LEFT JOIN wp_watergo_products
-         ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
+      LEFT JOIN wp_watergo_photo
+      ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
 
-         LEFT JOIN wp_watergo_discounts as discount
-         ON discount.product_id = wp_watergo_products.id
+      LEFT JOIN wp_watergo_reviews
+      ON wp_watergo_reviews.related_id = wp_watergo_store.id 
 
-         LEFT JOIN wp_watergo_store
-         ON wp_watergo_store.id = wp_watergo_products.store_id
+      WHERE wp_watergo_order.order_status = 'complete'
+      AND wp_watergo_products.id NOT IN ($placeholders) -- FAKE LIMIT
 
-         LEFT JOIN wp_watergo_reviews
-         ON wp_watergo_reviews.related_id = wp_watergo_store.id 
+      GROUP BY 
+         wp_watergo_order_group.order_group_store_id,
+         wp_watergo_order_group.order_group_product_id,
+         wp_watergo_products.id,
 
-         LEFT JOIN wp_watergo_photo
-         ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
+         watergo.wp_watergo_store.latitude,
+         watergo.wp_watergo_store.longitude,
+                        
+         wp_watergo_products.store_id,
+         wp_watergo_products.name,
+         wp_watergo_products.product_type,
+         wp_watergo_products.description,
+         wp_watergo_products.category,
+         wp_watergo_products.brand,
+         wp_watergo_products.price,
+         wp_watergo_products.stock,
+         wp_watergo_products.quantity,
+         wp_watergo_products.volume,
+         wp_watergo_products.weight,
+         wp_watergo_products.length_width,
+         wp_watergo_products.mark_out_of_stock,
 
-         WHERE wp_watergo_order.order_status = 'complete'
-
-         GROUP BY 
-            wp_watergo_order_group.order_group_store_id,
-            wp_watergo_order_group.order_group_product_id,
-            wp_watergo_products.id,
-
-            watergo.wp_watergo_store.latitude,
-            watergo.wp_watergo_store.longitude,
-                           
-            wp_watergo_products.store_id,
-            wp_watergo_products.name,
-            wp_watergo_products.description,
-            wp_watergo_products.category,
-            wp_watergo_products.brand,
-            wp_watergo_products.price,
-            wp_watergo_products.stock,
-            wp_watergo_products.quantity,
-            wp_watergo_products.volume,
-            wp_watergo_products.weight,
-            wp_watergo_products.length_width,
-            wp_watergo_products.mark_out_of_stock,
-
-            discount.id,
-            discount.product_id,
-            discount.discount,
-            discount.from,
-            discount.to,
-
-            wp_watergo_photo.url
-
-         LIMIT {$page},{$limit}
+         wp_watergo_photo.url
       ";
+
+      if( $filter == 'nearest' ){
+         $sql_order_success .= " ORDER BY distance ASC ";
+      }
+      if( $filter == 'cheapest' ){
+         $sql_order_success .= " ORDER BY wp_watergo_products.price ASC ";
+      }
+      if( $filter == 'top_rated' ){
+         $sql_order_success .= " ORDER BY avg_rating DESC ";
+      }
+
+      $sql_order_success .= ' LIMIT 10 ';
 
       $res = $wpdb->get_results($sql_order_success);
 
@@ -247,45 +262,11 @@ function atlantis_load_product_recommend(){
          wp_die();
       }
       
-      $sql_discount = "SELECT 
-         wp_watergo_products.id as product_id,
-         wp_watergo_products.store_id,
-         wp_watergo_products.name,
-         wp_watergo_products.description,
-         wp_watergo_products.category,
-         wp_watergo_products.brand,
-         wp_watergo_products.price,
-         wp_watergo_products.stock,
-         wp_watergo_products.quantity,
-         wp_watergo_products.volume,
-         wp_watergo_products.weight,
-         wp_watergo_products.length_width,
-         wp_watergo_products.mark_out_of_stock,
-
-         discount.id as discount_id,
-         discount.product_id as discount_product_id,
-         discount.discount as discount_percent,
-         discount.from as discount_from,
-         discount.to as discount_to,
-
-         p1.url as product_image,
-                     
-         FROM wp_watergo_products 
-
-         LEFT JOIN wp_watergo_discounts as discount
-         ON discount.product_id = wp_watergo_products.id
-
-         LEFT JOIN wp_watergo_photo as p1
-         ON p1.upload_by = wp_watergo_products.id AND p1.kind_photo = 'product' 
-
-         ORDER BY discount_percent DESC
-
-         LIMIT {$page},{$limit}
-      ";
 
       $sql_unique = "SELECT
-         wp_watergo_products.id as product_id,
+         wp_watergo_products.id,
          wp_watergo_products.store_id,
+         wp_watergo_products.product_type,
          wp_watergo_products.name,
          wp_watergo_products.description,
          wp_watergo_products.category,
@@ -297,38 +278,63 @@ function atlantis_load_product_recommend(){
          wp_watergo_products.weight,
          wp_watergo_products.length_width,
          wp_watergo_products.mark_out_of_stock,
+         wp_watergo_store.latitude,
+         wp_watergo_store.longitude,
+         p1.url as product_image,
+         AVG(wp_watergo_reviews.rating) AS avg_rating,
+         (6371 * acos(
+            cos(radians($lat)) * cos(radians(wp_watergo_store.latitude)) * 
+            cos(radians(wp_watergo_store.longitude) - radians($lng)) + 
+            sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+         )) AS distance
+      FROM wp_watergo_products
+      LEFT JOIN wp_watergo_photo as p1 ON p1.upload_by = wp_watergo_products.id AND p1.kind_photo = 'product'
+      LEFT JOIN wp_watergo_store ON wp_watergo_store.id = wp_watergo_products.store_id
+      LEFT JOIN wp_watergo_reviews ON wp_watergo_reviews.related_id = wp_watergo_products.id
+      WHERE wp_watergo_products.id NOT IN ($placeholders) -- FAKE LIMIT
+      GROUP BY
+         wp_watergo_products.id,
+         wp_watergo_products.store_id,
+         wp_watergo_products.product_type,
+         wp_watergo_products.name,
+         wp_watergo_products.description,
+         wp_watergo_products.category,
+         wp_watergo_products.brand,
+         wp_watergo_products.price,
+         wp_watergo_products.stock,
+         wp_watergo_products.quantity,
+         wp_watergo_products.volume,
+         wp_watergo_products.weight,
+         wp_watergo_products.length_width,
+         wp_watergo_products.mark_out_of_stock,
+         wp_watergo_store.latitude,
+         wp_watergo_store.longitude,
+         p1.url
+      ORDER BY RAND() DESC,
 
-         discount.id as discount_id,
-         discount.product_id as discount_product_id,
-         discount.discount as discount_percent,
-         discount.from as discount_from,
-         discount.to as discount_to,
-
-         p1.url as product_image
-                  
-         FROM wp_watergo_products 
-
-         LEFT JOIN wp_watergo_discounts as discount
-         ON discount.product_id = wp_watergo_products.id
-
-         LEFT JOIN wp_watergo_photo as p1
-         ON p1.upload_by = wp_watergo_products.id AND p1.kind_photo = 'product' 
-
-         ORDER BY RAND() DESC LIMIT {$page},{$limit}
       ";
 
-      $res = $wpdb->get_results($sql_discount);
-
-      if( empty( $res ) ){
-         $res = $wpdb->get_results($sql_unique);
-
-         if( empty( $res ) ){
-            wp_send_json_error(['message' => 'product_not_found']);
-            wp_die();
-         }
+      if( $filter == 'nearest' ){
+         $sql_unique .= " distance ASC ";
+      }
+      if( $filter == 'cheapest' ){
+         $sql_unique .= " wp_watergo_products.price ASC ";
+      }
+      if( $filter == 'top_rated' ){
+         $sql_unique .= " avg_rating DESC ";
       }
 
-      wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
+      $sql_unique .= ' LIMIT 10 ';
+
+
+      $res = $wpdb->get_results($sql_unique);
+
+      if( empty( $res ) ){
+         wp_send_json_error(['message' => 'product_not_found 1' ]);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $res, 'test' => $sql_unique ]);
       wp_die();
 
 
@@ -374,8 +380,6 @@ function atlantis_find_product(){
       wp_die();
    }
 }
-
-
 
 
 function atlantis_find_product_newest(){
@@ -444,7 +448,7 @@ function atlantis_get_product_image(){
 }
 
 
-//
+// get product rated by category [ water | ice ]
 function atlantis_load_product_top_related(){
    if(isset($_POST['action']) && $_POST['action'] == 'atlantis_load_product_top_related' ){
       
@@ -489,5 +493,137 @@ function atlantis_load_product_top_related(){
 
       wp_send_json_success(['message' => 'product_found' , 'data' => $res ]);
       wp_die();
+   }
+}
+
+function atlantis_get_product_sort(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_product_sort' ){
+
+      // nearest | cheapest | top_rated
+      $filter        = isset($_POST['filter'])        ? $_POST['filter'] : 'nearest';
+      $paged         = isset($_POST['paged'] )        ? (int) $_POST['paged'] : 0;
+      $perPage       = isset($_POST['perPage'] )      ? $_POST['perPage'] : 10;
+      $product_type  = isset($_POST['product_type'] ) ? $_POST['product_type'] : '';
+
+      $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
+
+      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
+      if( $filter == '' || $filter == null ){
+         wp_send_json_error(['message' => 'product_not_found' ]);
+         wp_die();
+      }
+
+      $product_id_already_exists = json_decode( $product_id_already_exists );
+      $placeholders = 0;
+
+      $wheres = [];
+
+      if( is_array($product_id_already_exists) && ! empty($product_id_already_exists) ){
+         foreach( $product_id_already_exists as $ids ){
+            $wheres[] = $ids;
+         }
+         $placeholders = implode(',', $wheres);
+      }
+
+
+      global $wpdb;
+
+      $sql = "SELECT 
+            -- 
+            wp_watergo_products.*,
+            category.id as category_id,
+            category.name as category_name,
+            category.category as category_group,
+            brand.id as brand_id,
+            brand.name as brand_name,
+            brand.category as brand_group,
+            -- 
+            wp_watergo_store.latitude as lat,
+            wp_watergo_store.longitude as lng,
+
+            AVG(wp_watergo_reviews.rating) AS avg_rating,
+
+            (6371 * acos(
+               cos(
+                  radians($lat)) * cos(radians(wp_watergo_store.latitude)) * 
+                  cos(radians(wp_watergo_store.longitude) - radians($lng)
+               ) + sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+            )) AS distance,
+
+            --
+            wp_watergo_photo.url as product_image
+
+         FROM wp_watergo_products 
+
+         LEFT JOIN wp_watergo_store
+         ON wp_watergo_store.id = wp_watergo_products.store_id
+
+         LEFT JOIN wp_watergo_reviews
+         ON wp_watergo_reviews.related_id = wp_watergo_store.id 
+
+         LEFT JOIN wp_watergo_product_category as category
+         ON category.id = wp_watergo_products.category
+
+         LEFT JOIN wp_watergo_product_category as brand
+         ON brand.id = wp_watergo_products.brand
+
+         LEFT JOIN wp_watergo_photo
+         ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
+
+         WHERE wp_watergo_products.product_type = '$product_type'
+         AND wp_watergo_products.id NOT IN ($placeholders) -- FAKE LIMIT
+         GROUP BY
+            -- 
+            wp_watergo_products.id,
+            wp_watergo_products.store_id,
+            wp_watergo_products.name,
+            wp_watergo_products.description,
+            wp_watergo_products.category,
+            wp_watergo_products.brand,
+            wp_watergo_products.price,
+            wp_watergo_products.stock,
+            wp_watergo_products.quantity,
+            wp_watergo_products.volume,
+            wp_watergo_products.weight,
+            wp_watergo_products.length_width,
+            wp_watergo_products.mark_out_of_stock,
+            -- 
+            category.name,
+            category.category,
+            brand.id,
+            brand.name,
+            brand.category,
+            -- 
+            wp_watergo_store.latitude,
+            wp_watergo_store.longitude,
+            -- 
+            wp_watergo_photo.url
+      ";
+
+
+      if( $filter == 'nearest' ){
+         $sql .= " ORDER BY distance ASC ";
+      }
+      if( $filter == 'cheapest' ){
+         $sql .= " ORDER BY wp_watergo_products.price ASC ";
+      }
+      if( $filter == 'top_rated' ){
+         $sql .= " ORDER BY avg_rating DESC ";
+      }
+
+      $sql .= " LIMIT 10 ";
+      
+      $res = $wpdb->get_results($sql);
+
+      if( empty( $res ) ){
+         wp_send_json_error(['message' => 'product_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
+      wp_die();
+
    }
 }

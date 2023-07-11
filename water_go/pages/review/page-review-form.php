@@ -142,6 +142,8 @@ createApp({
       this.review_page = review_page;
       this.related_id = related_id;
 
+      window.appbar_fixed();
+
    }
 }).mount('#app');
 </script>

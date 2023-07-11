@@ -37,6 +37,9 @@ function atlantis_user_delivery_address(){
       $id_delivery = isset($_POST['id_delivery']) ? $_POST['id_delivery'] : '';
       $event   = isset($_POST['event']) ? $_POST['event'] : '';
 
+      $latitude = isset($_POST['latitude']) ? $_POST['latitude'] : 0;
+      $longitude = isset($_POST['longitude']) ? $_POST['longitude'] : 0;
+
 
       if(is_user_logged_in() == true ){
          $user_id = get_current_user_id();
@@ -88,7 +91,9 @@ function atlantis_user_delivery_address(){
                'phone' => $phone,
                'address' => $address,
                'user_id' => $user_id,
-               'primary' => $primary 
+               'primary' => $primary,
+               'latitude' => $latitude,
+               'longitude' => $longitude
             ];
             $add_id = $wpdb->insert('wp_delivery_address', $args);
          }
@@ -109,7 +114,9 @@ function atlantis_user_delivery_address(){
                'name' => $name,
                'phone' => $phone,
                'address' => $address,
-               'primary' => $primary 
+               'primary' => $primary,
+               'latitude' => $latitude,
+               'longitude' => $longitude
             ];
             $wpdb->update('wp_delivery_address', $args, $conditions );
          }

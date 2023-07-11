@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false && orders.length > 0' class='page-order'>
+   <div v-if='loading == false' class='page-order'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -189,8 +189,10 @@ createApp({
       var form = new FormData();
       form.append('action', 'atlantis_get_order_user');
       var r = await window.request(form);
+      console.log(r);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r ));
+
          if( res.message == 'get_order_ok' ){
             this.orders.push(...res.data);
          }
@@ -198,8 +200,9 @@ createApp({
             this.loading = true;
          }
       }
-      console.log(this.orders);
       this.loading = false;
+
+      window.appbar_fixed();
    },
    
 }).mount('#app');

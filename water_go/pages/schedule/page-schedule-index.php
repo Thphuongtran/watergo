@@ -1,3 +1,11 @@
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightpick@1.6.2/lightpick.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/lightpick@1.6.2/css/lightpick.min.css" rel="stylesheet"> -->
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+
 <div id='app'>
 
    <div v-if='loading == false'>
@@ -35,81 +43,58 @@
                </div>
             </div>
             <div class='appbar-bottom'>
-               <ul class='navbar style02 schedule-bar' id='test-1'>
+               <ul id='schedule-bar' class='navbar style02 schedule-bar'>
                   <li @click='select_schedule_status_filter(filter.label)' v-for='(filter, index) in schedule_status_filter' 
                      :key='index' 
                      :class='filter.active == true ? "active" : ""'>{{ filter.label }}</li>
                </ul>
+               
+               <div class='order-store-header style01 border-bottom-large ' stlye=''>
+                  <div class='datepicker-wrapper'>
+                     <input @click='datePicker' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' disable>
+                     <span class='icon-dropdown'></span>
+                  </div>
+                  <div class='count-order'>Total order: <span>{{ get_total_orders_count }}</span></div>
+               </div>
+
             </div>
          </div>
 
-         <div class='order-store-header style01 border-bottom-large ' stlye=''>
-            <button class='btn-filter-date-picker' @click="setOpenDatePickerPopup">
-               <span class='filter-text'>{{ dateSelected }}</span>
-               <span class='filter-icon'>
-                  <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1.5 1L5.5 5L9.5 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </button>
-            <div class='count-order'>Total order: <span>{{total_order}}</span></div>
-         </div>
          <div
             class='order-item-container'
-            v-for='(order, index) in orders'
+            v-for='(order, index) in filter_orders'
             :key='index'
             @click='gotoOrderDetailPage(order.order_id)'
          >
             <div class='order-item-title-container'>
                <div>
-                  <h3 class='order-title'>Order #{{order.id}}</h3>
-                  <p class='text-xsm'>Delivery on {{order.deliveryTime}}</p>
+                  <h3 class='order-title'>Order #{{ order.order_number}}</h3>
+
+                  <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>Delivery Immediately </p>
+
+                  <p 
+                     v-if="order.order_delivery_type == 'once_date_time'"
+                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_time}}</p>
+                  <p 
+                     v-if="order.order_delivery_type == 'weekly'"
+                     class='text-xsm'>Delivery on {{ get_day_from_weekly_time_shipping(order.order_time_shipping) }}</p>
+                  <p 
+                     v-if="order.order_delivery_type == 'monthly'"
+                     class='text-xsm'>Delivery on {{ get_day_from_monthly_time_shipping(order.order_time_shipping) }}</p>
+
                </div>
-               <h3 class='order-type text-order-type' :class=''>{{order.type}}</h3>
+               <h3 class='order-type text-order-type' 
+                  :class="get_type_order(order.order_delivery_type)"
+               >{{print_type_order_text(order.order_delivery_type)}}</h3>
             </div>
             <div class='order-item-discount text-sm'>
-               <p>{{order.totalProducts}} products</p>
-               <p>Total: <span class='text-price'>{{order.totalPrice}}đ</span></p>
-               <p>{{order.distance}}</p>
+               <p>{{ total_product_in_order( order )}} products</p>
+               <p>Total: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
+               <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p>
             </div>
          </div>
       </div>
 
-      <!-- overlay popup -->
-      <div
-         v-if='isOpenDatePickerPopup'
-         class='overlay-popup'
-         @click="setOpenDatePickerPopup"
-      >
-         <div v-if='isOpenDatePickerPopup' class='date-picker-popup'>
-            <div class='date-table' v-for="(item, index ) in getCurrentMonthData" :key='index'>
-               <div class='date-table-head'>
-                  <div class='heading'>{{ item.month }}, {{item.year}}</div>
-                  <div class='date-actions'>
-                     <button class='prevMonth' @click="prevMonth" :disabled="isPrevMonthDisabled"></button>
-                     <button class='nextMonth' @click="nextMonth"></button>
-                  </div>
-               </div>
-               <div class='date-table-contents'>
-                  <table>
-                     <tr>
-                        <th v-for="day in daysOfWeek" :key="day">{{ day }}</th>
-                     </tr>
-                     <tr v-for="(week, index) in item.weeks" :key="index">
-                        <td @click='buttonTableDatePicker(item.year, item.month, dayOfWeek.day )' :class='dayOfWeek.active == true ? "active" : ""' v-for="dayOfWeek in week" :key="dayOfWeek.day">
-
-                           <span>{{ dayOfWeek.day }}</span>
-                        </td>
-                     </tr>
-                  </table>
-               </div>
-               <div class='btn-getdate'>
-                  <button @click='buttonApplyDate' class='button'>Apply</button>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!-- end overlay popup -->
    </div>
 
    <div v-if='loading == true'>
@@ -119,7 +104,7 @@
    </div>
 </div>
 
-<script type='module'>
+<script setup>
 
 var { createApp } = Vue;
 
@@ -128,45 +113,47 @@ createApp({
       return {
 
          loading: false,
-         inputSearch: '',
-         latitude: 10.780900239854994,
-         longitude: 106.7226271387539,
          message_count: 0,
          notification_count: 0,
-         total_order: 0,
+         currentDate: new Date(),
+
          schedule_status_filter: [
-            { label: 'All', active: true, count: 0 },
-            { label: 'Delivery Once', active: false, count: 0 },
-            { label: 'Delivery Weekly', active: false, count: 0 },
-            { label: 'Delivery Monthly', active: false, count: 0 },
+            { label: 'All', value: 'all', active: true, count: 0 },
+            { label: 'Delivery Once', value: 'once', active: false, count: 0 },
+            { label: 'Delivery Weekly', value: 'weekly', active: false, count: 0 },
+            { label: 'Delivery Monthly', value: 'monthly', active: false, count: 0 },
          ],
 
-         isOpenDatePickerPopup: false,
-         datePickerDatePopup: true,
-         dateSelected: "",
+         orders: [],
 
-         currentDate: new Date(),
-         currentMonthIndex: 0,
-         currentMonthName: '',
-         months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-         daysOfWeek: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-         calendarData: [],
-
-         orders: []
+         datePickerValue: null
 
       }
    },
 
    methods: {
 
-      // ratingNumber(rating){ return parseFloat(rating).toFixed(1); },
-      // mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },
-
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoChat(){ window.gotoChat() },
-      gotoOrderDetailPage() { },
-      
+      gotoOrderDetailPage( id) { window.gotoOrderDetailPage(id) },
+      common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_image_upload(i){ return window.get_image_upload(i) },
+      get_type_order(order_type){ return window.get_type_order(order_type)},
+      print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
+
+      // get weekly time shipping
+      get_day_from_weekly_time_shipping( time_shipping ){
+         var date = new Date( time_shipping.order_time_shipping_timestamp * 1000 );
+         var fullday = `${date.getDate()}/${time_shipping.order_time_shipping_month}/${time_shipping.order_time_shipping_year}`;
+         return time_shipping.order_time_shipping_day + ' | ' + fullday + ' | ' + time_shipping.order_time_shipping_time;
+      },
+
+      // get monthly time shipping
+      get_day_from_monthly_time_shipping( time_shipping ){
+         var fullday = `${time_shipping.order_time_shipping_day}/${time_shipping.order_time_shipping_month}/${time_shipping.order_time_shipping_year}`;
+         return fullday + ' | ' + time_shipping.order_time_shipping_time;
+      },
+      
 
       async get_notification_count(){
          var form = new FormData();
@@ -192,19 +179,39 @@ createApp({
          }
       },
 
-      get_current_location(){
-         if( window.appBridge !== undefined ){
-            window.appBridge.getLocation().then( (data) => {
-               if (Object.keys(data).length === 0) {
-                  alert("Error-1 :Không thể truy cập vị trí");
-               }else{
-                  let lat = data.lat;
-                  let lng = data.lng;
-                  this.latitude = data.lat;
-                  this.longitude = data.lng;
-               }
-            }).catch((e) => { alert(e); })
+      async getOrderNumber( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_number');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_number_ok'){
+               return res.data;
+            }
          }
+      },
+
+      total_product_in_order( order ){
+         return order.order_products != undefined && order.order_products.length > 0 ? order.order_products.length : 0;
+      },
+
+      total_product_price_in_order( order ){
+         var _total_price = 0;
+         order.order_products.forEach( product => {
+            var discount_percent = parseInt(product.order_group_product_discount_percent);
+            var price            = parseInt(product.order_group_product_price);
+            var quantity         = parseInt(product.order_group_product_quantity_count);
+
+            if( discount_percent == undefined || discount_percent == null || discount_percent == 0){
+               _total_price += price;
+            }else{
+               discount_percent = 10; // vi du 10%
+               _total_price += price - ( price * ( discount_percent / 100 ) );
+            }
+            _total_price = _total_price * quantity;
+         });
+         return _total_price.toLocaleString('vi-VN') + ' đ';;
       },
 
       force_all_schedule_status_filter_to_inactive() {
@@ -217,157 +224,166 @@ createApp({
                this.force_all_schedule_status_filter_to_inactive()
                item.active = true
             }
-         })
+         });
       },
 
-      getCurrentMonth() { this.currentMonthName = this.calendarData[this.currentMonthIndex].month;},
-      nextMonth() {          
-         this.getCurrentMonth();
-         var _lastIndex = this.calendarData.length - 1;
-         if( this.currentMonthIndex != _lastIndex ){
-            this.currentMonthIndex++; 
-         }else{
-            var currentYear = this.currentDate.getFullYear();
-            var currentMonth = this.currentDate.getMonth();
-         }
-      },
+      datePicker(){
+         (function($){
 
-      prevMonth() { this.currentMonthIndex--; this.getCurrentMonth(); },
+            $(document).ready(function(){
 
-      buttonApplyDate(){this.datePickerDatePopup = false; },
+               $('.ui-date-picker-wrapper').addClass('active');
+               
+               $('#datepicker').datepicker({
+                  dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                  onSelect: function(dateText, inst){
+                     if(dateText != undefined || dateText != '' || dateText != null){
+                        $('#datepicker').attr('value', dateText); 
+                     }
+                  },
+                  onClose: function(dateText, inst){
+                     $('.ui-date-picker-wrapper').removeClass('active');
+                  }
+               });
 
-      buttonSelectDate(){
-         this.datePickerDatePopup = !this.datePickerDatePopup;
-         this.datePickerTimePopup = false;
-      },
-
-      generateCalendar(year, month) {
-         var firstDayOfMonth = new Date(year, month, 1).getDay();
-         var lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-
-         firstDayOfMonth = (firstDayOfMonth === 0 ? 7 : firstDayOfMonth) - 1;
-
-         let date = 1;
-         var weeks = [];
-         var numWeeks = Math.ceil((lastDateOfMonth + firstDayOfMonth) / 7);
-         for (let i = 0; i < numWeeks; i++) {
-            var week = [];
-            for (let j = 0; j < 7; j++) {
-               if (i == 0 && j < firstDayOfMonth || date > lastDateOfMonth) {
-                  week.push({ day: '' });
-               } else {
-                  week.push({ day: date, active: false });
-                  date++;
+               if( $('#datepicker').val().length == 0 ){
+                  $('#datepicker').datepicker('setDate', new Date() );
                }
-            }
-            weeks.push(week);
+
+               // add wrapper for picker
+               if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+                  $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+               }
+            });
+
+         })(jQuery);
+
+         
+         if( this.$refs.datepicker.value !== undefined ){
+            this.datePickerValue = this.$refs.datepicker.value;
+
+            var dateStr = this.datePickerValue;
+            var [day, month, year] = dateStr.split('/');
+            var timestamp = Date.parse(`${month}/${day}/${year}`) / 1000;
+
+            // window.count_howmany_timestamp_left_to_nextday(timestamp)
+
          }
-         return {
-            year: year,
-            month: this.months[month],
-            weeks: weeks
-         }; 
+
       },
 
-      setOpenDatePickerPopup() {
-         this.isOpenDatePickerPopup = !this.isOpenDatePickerPopup;
-      },
 
-      dateFormatter(date) {
-         const days = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-         const months = date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth();
-         const years = date.getFullYear();
-         return `${days}/${months}/${years}`;
-      },
+      re_count_total_order(){
+         this.schedule_status_filter.some(item => item.count = 0);
+         this.schedule_status_filter[0].count = this.orders.length;
+         this.orders.some( item => {
+            if( item.order_delivery_type == 'once_immediately' || item.order_delivery_type == 'once_date_time'  ){
+               this.schedule_status_filter[1].count++;
+            }
+            if( item.order_delivery_type == 'weekly' ){
+               this.schedule_status_filter[2].count++;
+            }
+            if( item.order_delivery_type == 'monthly'){
+               this.schedule_status_filter[3].count++;
+            }
+         });
+      }
+
+   },
+
+   async created(){
+
+      this.loading = true;
+      await this.get_messages_count();
+      var form = new FormData();
+      form.append('action', 'atlantis_get_order_schedule');
+      var r = await window.request(form);
+
+      if( r != undefined ){
+         var _res = JSON.parse( JSON.stringify( r ));
+         if( _res.message == 'get_order_ok' ){
+            this.orders.push(..._res.data);
+
+            this.re_count_total_order();  
+         }
+
+      }
+
+      this.orders.forEach( item => {
+         var _store_lat = item.store_latitude;
+         var _store_lng = item.store_longitude;
+         var _user_lat  = item.order_delivery_address.latitude;
+         var _user_lng  = item.order_delivery_address.longitude;
+         item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
+         if(item.address_kilometer > 0 ){
+            item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
+         }
+      });
+
+
+      this.loading = false;
+
+      $.datepicker.setDefaults({
+         minDate: 0,
+         dateFormat: "dd/mm/yy",
+         firstDay: 1,
+      });
+
+      this.datePicker();
+
+      window.appbar_fixed();
+
 
 
    },
 
    computed: {
-      getCurrentMonthData(){
-         var _currentDay = this.currentDate.getUTCDate();
-         var _currentYear = this.currentDate.getFullYear();
-         var _currentMonth = this.currentDate.getMonth();
-         var _calendar = { data: this.calendarData[this.currentMonthIndex] };
-         _calendar.data.weeks.forEach((week, weekIndex) => {
-            week.forEach((day, dayIndex) => {
-               if (day.day == _currentDay && _calendar.data.year == _currentYear && _calendar.data.month == this.months[_currentMonth]) {
-               _calendar.data.weeks[weekIndex][dayIndex].active = true;
-               } else {
-               _calendar.data.weeks[weekIndex][dayIndex].active = false;
-               }
-            });
+      filter_orders(){
+         var _findFilterSchedule = this.schedule_status_filter.find( item => item.active == true );
+
+         return this.orders.filter( item => {
+
+            if( _findFilterSchedule.value == 'all' ){
+               this.total_order++;
+               return item;
+            }else if( _findFilterSchedule.value == 'once' ){
+
+               return item.order_delivery_type == 'once_immediately' || item.order_delivery_type == 'once_date_time';
+            }else if( _findFilterSchedule.value == 'weekly' ){
+               return item.order_delivery_type == 'weekly';
+            }else if( _findFilterSchedule.value == 'monthly' ){
+               return item.order_delivery_type == 'monthly';
+            }else{
+               return item;
+            }
+
          });
-         return _calendar;
+
       },
-   },
-   
-   async created(){
-      this.get_current_location();
 
-      this.loading = true;
-
-      await this.get_messages_count();
-      // await this.get_store_nearby();
-
-
-
-      var currentYear = this.currentDate.getFullYear();
-      var currentMonth = this.currentDate.getMonth();
-      // console.log('CURRENT MONTH ' + currentMonth);
-      for (let i = currentMonth; i < 12; i++) {
-         var year = i >= currentMonth ? currentYear : currentYear + 1;
-         var obj = this.generateCalendar(year, i);
-         this.calendarData.push(obj);
-      }
-      this.dateSelected = this.dateFormatter(this.currentDate);
-      
-      this.orders = [
-         {
-            id: "1236",
-            type: "Monthly",
-            deliveryTime: "08/05/2023 | 8:00 - 9:00",
-            totalProducts: 3,
-            totalPrice: "90.000",
-            distance: "7km",
-         },
-         {
-            id: "1236",
-            type: "Monthly",
-            deliveryTime: "08/05/2023 | 8:00 - 9:00",
-            totalProducts: 3,
-            totalPrice: "90.000",
-            distance: "7km",
+      get_total_orders_count(){
+         var _count = this.schedule_status_filter.find( item => item.active == true );
+         if( _count ){
+            return _count.count;
+         }else{
+            return 0;
          }
-      ]
-      
+      }
+   },
 
-      // var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-
-      // if( _carts.length > 0 ){
-      //    _carts.some( store => {
-      //       var selectedProducts = store.products.filter(product => product.product_select);
-      //       if (selectedProducts.length > 0) {
-      //          this.carts.push({
-      //             store_id: store.store_id,
-      //             store_name: store.store_name,
-      //             products: selectedProducts
-      //          });
-      //       }
-      //    });
-      // }
-      
-
-      this.loading = false;
-
+   watch: {
+      datePickerValue: async function( val ){
+         console.log('date picker value ' + val);
+      }
    },
 
    mounted(){
-      
-      
+      console.log(this.orders);
    }
 
+
 })
-// .component('slick-carousel', VueSlickCarousel)
 .mount('#app');
 </script>
+
+

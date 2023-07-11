@@ -97,6 +97,10 @@ createApp({
       gotoNotification(code){ window.gotoNotification(code);},
       goBack(){ window.goBack();}
 
+   },
+
+   created(){
+      window.appbar_fixed();
    }
 
 }).mount('#app');

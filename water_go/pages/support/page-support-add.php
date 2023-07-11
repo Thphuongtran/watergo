@@ -65,6 +65,8 @@ createApp({
          }
       }
 
+      window.appbar_fixed();
+
    },
 }).mount('#app');
 </script>

@@ -5,6 +5,15 @@
    height: auto;
    align-items: center;
    width: 100%;
+
+   &.fixed{
+      width: 100%;
+      position: fixed;
+      background: white;
+      top: 0;
+      left: 0;
+      z-index: 88;
+   }
    
    .appbar-top{
       min-height: 56px;
@@ -63,6 +72,21 @@
 
    .appbar-bottom{
 		width: 100%;
+   }
+
+
+   &.style01{
+      padding-left: 0;
+      padding-right: 0;
+      .appbar-top{
+         padding: 0 15px;
+      }
+      .appbar-bottom{
+         position: relative;
+      }
+      .box-sort{
+         position: absolute;
+      }
    }
 
 }

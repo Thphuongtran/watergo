@@ -97,12 +97,8 @@ createApp({
       gotoProductDetail(id){ window.gotoProductDetail(id)},
       get_product_quantity(p){ return window.get_product_quantity(p)},
       common_get_product_price(p, p2){ return window.common_get_product_price(p, p2)},
-
-
       goBack(){window.goBack()},
-
       removeText(){ this.inputSearch = ''; },
-
       get_current_location(){
 
          if( window.appBridge != undefined ){

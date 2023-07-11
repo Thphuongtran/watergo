@@ -133,6 +133,8 @@ createApp({
       this.loading = true;
       await this.initUser();
       this.loading = false;
+
+      window.appbar_fixed();
    }
 }).mount('#app');
 </script>

@@ -134,6 +134,8 @@ createApp({
       await this.get_review_rating_average(store_id);
 
       this.loading = false;
+
+      window.appbar_fixed();
    },
 
 }).mount('#app');

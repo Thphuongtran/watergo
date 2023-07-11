@@ -303,6 +303,8 @@ createApp({
       await this.findStore(this.store_id);
       await this.get_review_rating_average(this.store.id);
 
+      window.appbar_fixed();
+
    }
 
 }).mount('#app');

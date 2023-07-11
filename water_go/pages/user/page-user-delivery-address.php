@@ -22,6 +22,10 @@ createApp({
 
    methods: {
       btn_delivery_address_open(){ window.goBack();}
+   },
+
+   created(){
+      window.appbar_fixed();
    }
 
 }).component('delivery-address',PageDeliveryAddress)

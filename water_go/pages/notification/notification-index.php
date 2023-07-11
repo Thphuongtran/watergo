@@ -106,6 +106,8 @@ createApp({
       await this.initNotification();
 
       this.loading = true;
+
+      window.appbar_fixed();
       
    }
 

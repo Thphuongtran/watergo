@@ -1,10 +1,10 @@
 .slider-container{
-   height: 45vw;
    overflow: hidden;
    margin: 15px 0;
 
-   .slide{
-      
+   .slick-track{
+      display: flex;
+      align-items: center;
    }
 
    img{

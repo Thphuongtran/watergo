@@ -324,6 +324,7 @@ createApp({
          form.append('status', order_status);
          form.append('timestamp', timestamp);
          var r = await window.request(form);
+         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -547,6 +548,7 @@ createApp({
    },
 
    async created(){
+      
       this.loading = true;
       var form = new FormData();
       form.append('action', 'atlantis_get_order_store');
@@ -586,6 +588,8 @@ createApp({
       }
       
       this.loading = false;
+
+      window.appbar_fixed();
    },
    
 }).mount('#app');

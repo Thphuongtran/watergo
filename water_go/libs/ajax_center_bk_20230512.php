@@ -490,8 +490,12 @@ function atlantis_user_delivery_address(){
 function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
 
-      $delivery_address = get_field('user_delivery_address', 'user_6');
+      global $wpdb;
 
-      wp_send_json_success([ 'data' =>  $delivery_address]);
+      $total_post = 'SELECT COUNT(*) total_record FROM wp_watergo_products';
+
+
+      wp_send_json_success(['message' => 'testing']);
+      
    }
 }

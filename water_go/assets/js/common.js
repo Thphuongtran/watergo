@@ -3,16 +3,60 @@
  */
 
 
+function appbar_fixed( callback ){
+
+   (function($){
+      $(document).ready(function(){
+         var _appbar = $('.appbar');
+         _appbar.addClass('fixed');
+         $('#app').css('padding-top', _appbar.height());
+      });
+   })(jQuery);
+
+}
+
+function count_howmany_timestamp_left_to_nextday( timestamp ){
+   // Convert the timestamp to milliseconds
+   const timestampMs = timestamp * 1000;
+
+   // Create a Date object using the timestamp
+   const currentDate = new Date(timestampMs);
+
+   // Get the current date values
+   const currentYear = currentDate.getFullYear();
+   const currentMonth = currentDate.getMonth();
+   const currentDay = currentDate.getDate();
+
+   // Create a new Date object for the next day
+   const nextDay = new Date(currentYear, currentMonth, currentDay + 1);
+
+   // Calculate the time remaining until the next day
+   const timeRemaining = nextDay.getTime() - currentDate.getTime();
+
+   // Calculate the remaining timestamp
+   const remainingTimestamp = Math.floor(timeRemaining / 1000);
+
+   // console.log('Time remaining until next day:', timeRemaining);
+   // console.log('Remaining timestamp:', remainingTimestamp);
+   
+}
+
 function bodyScrollToggle( check ){
    var el = document.querySelector('body.stop-scroll');
-   if( el == null && check == 'add' ){
-      document.querySelector('body').classList.add('stop-scroll');
-   } if( el != null && check == 'remove'){
-      document.querySelector('body').classList.remove('stop-scroll');
+
+   if( check == undefined || check == null ){
+      document.querySelector('body').classList.toggle('stop-scroll');
+   }else{
+      if( el == null && check == 'add' ){
+         document.querySelector('body').classList.add('stop-scroll');
+      } if( el != null && check == 'remove'){
+         document.querySelector('body').classList.remove('stop-scroll');
+      }
    }
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
+   if( lat1 == 0 || lon1 == 0 || lat2 == 0 || lon2 == 0 ) return 0;
    var earthRadius = 6371; // Radius of the Earth in kilometers (from chat gpt)
    // var earthRadius = 6366; // Radius of the Earth in kilometers (from nasa)
    var dLat = window.toRadians(lat2 - lat1);
@@ -25,6 +69,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2);
    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
    var distance = earthRadius * c;
+   
    return distance;
 }
 

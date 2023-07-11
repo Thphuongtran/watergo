@@ -19,12 +19,14 @@
       <div v-if="orders.length == 0" class='banner-order-no-found'>
          <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="65" cy="65" r="65" fill="#E9E9E9"/>
-         <path d="M44 32H71.1716L91 51.8284V93C91 94.3261 90.4732 95.5979 89.5355 96.5355C88.5979 97.4732 87.3261 98 86 98H44C42.6739 98 41.4021 97.4732 40.4645 96.5355C39.5268 95.5979 39 94.3261 39 93V37C39 35.6739 39.5268 34.4021 40.4645 33.4645C41.4021 32.5268 42.6739 32 44 32Z" stroke="#2040AF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M69 32V55H91" stroke="#2040AF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M79 79H51" stroke="#2040AF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M61.5 65H56.25H51" stroke="#2040AF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M44 32H71.1716L91 51.8284V93C91 94.3261 90.4732 95.5979 89.5355 96.5355C88.5979 97.4732 87.3261 98 86 98H44C42.6739 98 41.4021 97.4732 40.4645 96.5355C39.5268 95.5979 39 94.3261 39 93V37C39 35.6739 39.5268 34.4021 40.4645 33.4645C41.4021 32.5268 42.6739 32 44 32Z" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M69 32V55H91" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M79 79H51" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M61.5 65H56.25H51" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
          </svg>
-         <p class='t-thrid'>There is no weekly order</p>
+
+         <p v-if='filter == "weekly"' class='t-thrid'>There is no weekly order</p>
+         <p v-if='filter == "monthly"'class='t-thrid'>There is no monthly order</p>
       </div>
 
       <ul class='list-order'>
@@ -124,8 +126,6 @@ createApp({
                   });
                }
             }
-            console.log(this.order_id_delete);
-            console.log(r);
             this.order_id_delete = null;
          }
          this.loading = false;
@@ -204,7 +204,8 @@ createApp({
          }
       }
       this.loading = false;
-      console.log(this.orders);
+      window.appbar_fixed();
+      
    },
 }).mount('#app');
 </script>

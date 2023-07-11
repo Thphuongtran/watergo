@@ -452,12 +452,10 @@ createApp({
       //    }
       // }
 
+      this.loading = false;
+      window.appbar_fixed();
+   },
 
-
-      
-
-      setTimeout( () =>{ this.loading = false; }, 1000);
-   }
 }).mount('#app');
 
 </script>

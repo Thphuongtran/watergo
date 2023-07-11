@@ -1,3 +1,7 @@
+/**
+ * @access UPDATE ADD LOCATION TO DELIVERY ADDRESS
+ */
+
 const PageDeliveryAddress = {
    name: 'PageDeliveryAddress',
    template: `
@@ -174,8 +178,11 @@ const PageDeliveryAddress = {
          delivery_address_phone: null,
          delivery_address_location: null,
          delivery_address_primary: false,
+         delivery_address_latitude: 0,
+         delivery_address_longitude: 0,
 
-         popup_confirm_delete: false
+         popup_confirm_delete: false,
+
       }
    },
 
@@ -186,6 +193,8 @@ const PageDeliveryAddress = {
          this.delivery_address_name = null;
          this.delivery_address_phone = null;
          this.delivery_address_location = null;
+         this.delivery_address_latitude = 0;
+         this.delivery_address_longitude = 0;
          this.delivery_address_primary = false;
       },
 
@@ -211,12 +220,15 @@ const PageDeliveryAddress = {
          this.navigator = 'delivery_address';
       },
 
+      async get_location_from_address( address ){ return window.get_location_from_address(address) },
+
       async addDeliveryAddress(){
-         
+
          var form = new FormData();
          form.append('action', 'atlantis_user_delivery_address');
          form.append('event', 'add');
          var _primary = this.delivery_address_primary == true ? 1 : 0;
+
 
          if( this.delivery_address_name != '' &&
             this.delivery_address_phone != '' &&
@@ -226,10 +238,24 @@ const PageDeliveryAddress = {
                this.text_res = 'Phone numner is not invalid';
             }else{
                this.text_res = '';
+
+               // UPDATE LATITUDE + LONGITUDE WHEN USER UPDATE LOCATION 
+               var _get_address = await this.get_location_from_address(this.delivery_address_location);
+               var _latitude = 0;
+               var _longitude = 0;
+               if(_get_address != undefined ){
+                  var _res_address = JSON.parse( JSON.stringify( _get_address ));
+                  var _latitude = _res_address.items[0].position.lat;
+                  var _longitude = _res_address.items[0].position.lng;
+               }
+
                // this.$root.loading = true;
                form.append('name', this.delivery_address_name);
                form.append('phone', this.delivery_address_phone);
                form.append('address', this.delivery_address_location);
+               form.append('longitude', _longitude);
+               form.append('latitude', _latitude);
+
                form.append('primary', _primary);
                var r = await window.request( form);
                if(r != undefined ){
@@ -245,6 +271,8 @@ const PageDeliveryAddress = {
                         address: this.delivery_address_location,
                         phone: this.delivery_address_phone,
                         primary: _primary,
+                        longitude: _longitude,
+                        latitude: _latitude
                      });
                   }
                }
@@ -264,6 +292,8 @@ const PageDeliveryAddress = {
                this.delivery_address_name = delivery.name;
                this.delivery_address_phone = delivery.phone;
                this.delivery_address_location = delivery.address;
+               this.delivery_address_latitude = delivery.latitude;
+               this.delivery_address_longitude = delivery.longitude;
                this.delivery_address_primary = delivery.primary == 1 ? true : false;
             }
          });
@@ -272,6 +302,16 @@ const PageDeliveryAddress = {
 
 
       async updateDeliveryAddress(){
+         // UPDATE LATITUDE + LONGITUDE WHEN USER UPDATE LOCATION 
+         var _get_address = await this.get_location_from_address(this.delivery_address_location);
+         var _latitude = 0;
+         var _longitude = 0;
+         if(_get_address != undefined ){
+            var _res_address = JSON.parse( JSON.stringify( _get_address ));
+            var _latitude = _res_address.items[0].position.lat;
+            var _longitude = _res_address.items[0].position.lng;
+         }
+
          var form = new FormData();
          var _primary = this.delivery_address_primary == true ? 1 : 0;
          form.append('action', 'atlantis_user_delivery_address');
@@ -282,14 +322,19 @@ const PageDeliveryAddress = {
                var _phoneNumberString = String( this.delivery_address_phone);
             if( this.validatePhoneNumber( _phoneNumberString) == false ){
                this.text_res = 'Phone numner is not invalid';
+
             }else{
                this.text_res = '';
+               form.append('longitude', _longitude);
+               form.append('latitude', _latitude);
+
                form.append('name', this.delivery_address_name);
                form.append('phone', this.delivery_address_phone);
                form.append('address', this.delivery_address_location);
                form.append('primary', _primary);
                form.append('id_delivery', this.delivery_address_id);
                var r = await window.request( form);
+
                if(r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'update_delivery_address_ok' ){
@@ -301,6 +346,8 @@ const PageDeliveryAddress = {
                            e.name = this.delivery_address_name;
                            e.phone = this.delivery_address_phone;
                            e.address = this.delivery_address_location;
+                           e.latitude = this.delivery_address_latitude;
+                           e.longitude = this.delivery_address_longitude;
                            e.primary = _primary;
                         }
                      });
@@ -346,7 +393,9 @@ const PageDeliveryAddress = {
                   this.$root.delivery_address_primary = {
                      name: da.name,
                      phone: da.phone,
-                     address: da.address
+                     address: da.address,
+                     latitude: da.latitude,
+                     longitude: da.longitude
                   };
                }
             });
@@ -356,7 +405,6 @@ const PageDeliveryAddress = {
    },
 
    async created(){
-      // console.log('CREATED module delivery address');
       if( this.delivery_address.length == 0 ){
          var form = new FormData();
          form.append('action', 'atlantis_user_delivery_address');
@@ -378,7 +426,9 @@ const PageDeliveryAddress = {
                this.$root.delivery_address_primary = {
                   name: da.name,
                   phone: da.phone,
-                  address: da.address
+                  address: da.address,
+                  latitude: da.latitude,
+                  longitude: da.longitude
                };
             }
          });
@@ -389,7 +439,6 @@ const PageDeliveryAddress = {
 
 
    mounted(){
-      
    }
    
 };
