@@ -128,12 +128,9 @@ function atlantis_user_notification(){
 function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
 
-      $wheres = [1,2,3,4,5,6,7];
+      $u = md5( md5( 1 . '-user') . 'watergo' );
 
-      $placeholders = implode(',', $wheres); 
-
-      wp_send_json_success(['message' => 'ok' , 'placeholders' => $placeholders]);
-
+      wp_send_json_success(['message' => 'ok', 'user_md5' => $u ]);
 
 
    }

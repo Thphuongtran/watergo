@@ -114,6 +114,8 @@
          <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_created) }}</span></p>
          <p v-if='order.order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_cancel) }}</span></p>
          <p v-if='order.order_status == "delivering"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_delivery) }}</span></p>
+
+         <p v-if='order.order_status == "complete"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_delivery) }}</span></p>
          <p v-if='order.order_status == "complete"' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_completed) }}</span></p>
       </div>
 

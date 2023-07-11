@@ -14,7 +14,7 @@
                <span class='leading-title'>Cart</span>
             </div>
          </div>
-         <div class='appbar-bottom'>
+         <div v-if='carts.length > 0' class='appbar-bottom'>
             <div class="cart-head">
                <div class="gr-action">
 
@@ -37,7 +37,7 @@
          </div>
       </div>
 
-      <div v-if='carts.length == 0' class='banner style01'>
+      <div v-if='carts.length == 0' class='banner banner-cart'>
          <div class='banner-head'>
             <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="65" cy="65" r="65" fill="#E9E9E9"/>
@@ -175,14 +175,22 @@ createApp({
       },
 
       delete_all_item(){
-        this.popup_delete_all_item = true; 
+
+         if(this.select_all_value == true ){
+            this.popup_delete_all_item = true; 
+         }
+
       },
 
       buttonCloseModal_delete_all_item(){ this.popup_delete_all_item = false; },
       buttonCloseModal_delete_confirm(){
-         this.popup_delete_all_item = false;
-         this.carts = [];
-         this.cart_stream();
+         if(this.select_all_value == true ){
+            this.popup_delete_all_item = false;
+            localStorage.setItem('watergo_carts', '');
+            this.carts = [];
+            this.cart_stream();
+         }
+
       },
 
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
@@ -284,26 +292,28 @@ createApp({
          this.cart_stream();
          return window.count_product_total_price(); },
 
-      count_product_select(){
-         var _checkout = [];
-         this.carts.some( store => {
-            store.products.some( product => {
-               if( product.product_select == true ){
-                  _checkout.push( parseInt(product.product_id));
+      count_product_select() {
+         var _checkout = 0; // Initialize checkout count to 0
+         this.carts.forEach(store => {
+            store.products.forEach(product => {
+               if (product.product_select) {
+                  _checkout += product.product_quantity_count;
                }
-               // else if( _checkout > 0 ){ _checkout.pop(); }
             });
          });
          this.cart_stream();
-         return _checkout.length;
-      },
+         return _checkout;
+      }
    },
 
    async created(){
       this.loading = true;
+
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
       if( _carts != undefined && _carts.length > 0 ){ 
+         // force all false no select from begin
          _carts.forEach(item => {
+            item.store_select = false;
             item.products.forEach( product => product.product_select = false);
          });
          for( var i = 0; i < _carts.length; i++ ){
@@ -329,8 +339,7 @@ createApp({
    },
 
    mounted(){
-      var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-      console.log(_carts);
+      
    }
 }).mount('#app');
 </script>

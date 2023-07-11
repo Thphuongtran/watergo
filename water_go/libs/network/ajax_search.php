@@ -6,14 +6,9 @@ add_action( 'wp_ajax_atlantis_search_data', 'atlantis_search_data' );
 function atlantis_search_data(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_search_data' ){
 
-      $lat = isset($_POST['lat']) ? $_POST['lat'] : 0.0;
-      $lng = isset($_POST['lng']) ? $_POST['lng'] : 0.0;
+      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
       $search = isset($_POST['search']) ? $_POST['search'] : '';
-
-      if( $lat == 0.0 && $lng == 0.0 ){
-         wp_send_json_error(['message' => 'search_not_found' ]);
-         wp_die();
-      }
 
       $sql = "SELECT 
          -- STORE
@@ -36,10 +31,14 @@ function atlantis_search_data(){
          wp_watergo_products.id,
          wp_watergo_products.name as product_name,
          wp_watergo_products.price,
+         wp_watergo_products.product_type,
+         wp_watergo_products.quantity,
+         wp_watergo_products.weight,
+         wp_watergo_products.length_width,
          wp_watergo_products.name,
 
-         wp_watergo_photo.url as product_image,
-         wp_watergo_photo.url as store_image
+         p1.url as product_image,
+         p2.url as store_image
          
       FROM wp_watergo_store
       LEFT JOIN wp_watergo_reviews
@@ -48,10 +47,11 @@ function atlantis_search_data(){
       LEFT JOIN wp_watergo_products
          ON wp_watergo_products.store_id = wp_watergo_store.id
 
-      LEFT JOIN wp_watergo_photo
-         ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
-      LEFT JOIN wp_watergo_photo
-         ON wp_watergo_photo.upload_by = wp_watergo_store.id AND wp_watergo_photo.kind_photo = 'store'
+      LEFT JOIN wp_watergo_photo as p1
+         ON p1.upload_by = wp_watergo_products.id AND p1.kind_photo = 'product'
+
+      LEFT JOIN wp_watergo_photo as p2
+         ON p2.upload_by = wp_watergo_store.id AND p2.kind_photo = 'store'
       
       WHERE wp_watergo_products.name LIKE '%{$search}%'
          
@@ -62,12 +62,16 @@ function atlantis_search_data(){
          wp_watergo_store.name,
          wp_watergo_store.store_type,
          wp_watergo_products.name,
+         wp_watergo_products.product_type,
+         wp_watergo_products.quantity,
+         wp_watergo_products.weight,
+         wp_watergo_products.length_width,
 
-         wp_watergo_photo.url
+         p1.url,
+         p2.url
          
-      HAVING distance <= 2 -- Adjust the distance value as desired (in kilometers)
-      ORDER BY distance
-      LIMIT 20
+      HAVING distance <= 5 -- Adjust the distance value as desired (in kilometers)
+      ORDER BY distance DESC
 
       ";
 

@@ -152,13 +152,13 @@ function atlantis_load_product_recommend(){
       $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
 
       $filter = isset($_POST['filter']) ? $_POST['filter'] : 'nearest';
-      $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
 
       if( $filter == '' || $filter == null ){
          wp_send_json_error(['message' => 'product_not_found 2' ]);
          wp_die();
       }
 
+      $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
       $product_id_already_exists = json_decode( $product_id_already_exists );
       $placeholders = 0;
 

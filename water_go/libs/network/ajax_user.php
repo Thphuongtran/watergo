@@ -27,6 +27,95 @@ add_action( 'wp_ajax_atlantis_get_current_user_account', 'atlantis_get_current_u
 add_action( 'wp_ajax_nopriv_atlantis_user_delivery_address', 'atlantis_user_delivery_address' );
 add_action( 'wp_ajax_atlantis_user_delivery_address', 'atlantis_user_delivery_address' );
 
+add_action( 'wp_ajax_nopriv_atlantis_user_change_delivery_address_quick', 'atlantis_user_change_delivery_address_quick' );
+add_action( 'wp_ajax_atlantis_user_change_delivery_address_quick', 'atlantis_user_change_delivery_address_quick' );
+
+add_action( 'wp_ajax_nopriv_atlantis_user_get_avatar', 'atlantis_user_get_avatar' );
+add_action( 'wp_ajax_atlantis_user_get_avatar', 'atlantis_user_get_avatar' );
+
+add_action( 'wp_ajax_nopriv_atlantis_is_user_login_social', 'atlantis_is_user_login_social' );
+add_action( 'wp_ajax_atlantis_is_user_login_social', 'atlantis_is_user_login_social' );
+
+
+
+function atlantis_is_user_login_social(){
+
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_is_user_login_social'){
+
+      if(is_user_logged_in() == true ){
+         $user_id = get_current_user_id();
+         $user = get_user_by('id', $user_id);
+         $prefix_user = 'user_' . $user->data->ID;
+      }else{
+         wp_send_json_error(['message' => 'no_login_invalid' ]);
+         wp_die();
+      }
+
+      $is_user_login_social = get_user_meta( $user_id , 'user_login_social', true) != '' 
+         ? (int) get_user_meta($user_id , 'user_login_social', true) 
+         : 0;
+
+      if( $is_user_login_social == 1 || $is_user_login_social == true ){
+         wp_send_json_success([ 'message' => 'user_login_social' ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'user_login_normal' ]);
+      wp_die();
+
+      
+   }
+
+}
+
+/**
+ * @access CHANGE QUICKLY DEFAULT DELIVERY ADDRESS by user_id and delivery_id
+ */
+function atlantis_user_change_delivery_address_quick(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_user_change_delivery_address_quick' ){
+
+      if(is_user_logged_in() == true ){
+         $user_id = get_current_user_id();
+         $user = get_user_by('id', $user_id);
+         $prefix_user = 'user_' . $user->data->ID;
+      }else{
+         wp_send_json_error(['message' => 'no_login_invalid' ]);
+         wp_die();
+      }
+
+      $delivery_address_id = isset( $_POST['delivery_address_id'] ) ? $_POST['delivery_address_id'] : 0;
+
+      $sql_is_already_default = "SELECT wp_delivery_address.primary FROM wp_delivery_address 
+         WHERE user_id = $user_id AND id = $delivery_address_id";
+
+      global $wpdb;
+      $check_default = $wpdb->get_results( $sql_is_already_default );
+
+      if( empty( $check_default )){
+         wp_send_json_error(['message' => 'delivery_address_not_found' ]);
+         wp_die();
+      }
+
+      if( $check_default[0]->primary == 1 ){
+         wp_send_json_success([ 'message' => 'delivery_address_already_primary']);
+         wp_die();
+      }
+
+      // TOGGLE ALL TO FALSE
+      $wpdb->update('wp_delivery_address', [ 'primary' => 0], ['user_id' => $user_id]);
+
+      // SET PRIMARY
+      $updated = $wpdb->update('wp_delivery_address', [ 'primary' => 1], ['user_id' => $user_id, 'id' => $delivery_address_id]);
+
+      if( $updated ){
+         wp_send_json_success([ 'message' => 'delivery_address_primary_ok']);
+         wp_die();
+      }
+         wp_send_json_error(['message' => 'delivery_address_not_found' ]);
+         wp_die();
+   }
+}
+
 
 function atlantis_user_delivery_address(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_user_delivery_address' ){
@@ -72,7 +161,7 @@ function atlantis_user_delivery_address(){
             wp_die();
          }else{
             wp_send_json_success([ 'message' => 'get_delivery_address_ok', 'data' => $res ]);
-            wp_die();  
+            wp_die();
          }
       }
 
@@ -183,18 +272,8 @@ function atlantis_get_user_login_data(){
          $first_name = get_user_meta($user->data->ID, 'first_name', true) != '' 
             ? get_user_meta($user->data->ID, 'first_name', true) 
             : '';
-         
 
-         $sql_avatar = "SELECT * FROM wp_watergo_photo WHERE upload_by = $user_id AND kind_photo = 'user_avatar' ";
-         $avatar = $wpdb->get_results( $sql_avatar );
-
-         if( empty( $avatar ) ){
-            $avatar = 'avatar-dummy.png';
-         }else{
-            $avatar = $avatar[0]->url;
-         }
-
-         $delivery_address = $wpdb->get_results("SELECT * FROM wp_delivery_address WHERE user_id={$user_id}");
+         $delivery_address = $wpdb->get_results("SELECT * FROM wp_delivery_address WHERE user_id= $user_id");
 
          $user_notification = get_field('user_notification', 'user_' . $user_id, true) == 1 ? 1 : 0;
 
@@ -207,7 +286,6 @@ function atlantis_get_user_login_data(){
             'user_id' => $user->data->ID,
             'user_email' => $user->data->user_email,
             'first_name' => $first_name,
-            'avatar' => $avatar,
             'delivery_address' => $delivery_address,
          ];
 
@@ -230,35 +308,46 @@ function atlantis_update_user(){
          $user_id = get_current_user_id();
          $prefix_user = 'user_' . $user_id;
       }else{
-         wp_send_json_error([ 'err' => true, 'message' => 'no_Login_calid' ]);
+         wp_send_json_error([ 'message' => 'no_Login_valid' ]);
          wp_die();
       }
 
       // PROTECT USER ID
-      $secure_user_id = md5( md5($user_id) . 'watergo' );
+      $hash_protected = md5( md5( $user_id . '-user') . 'watergo' );
 
       $name   = isset($_POST['name']) ? $_POST['name'] : '';
       $email  = isset($_POST['email']) ? $_POST['email'] : '';
       $avatar = isset($_FILES['avatar']) ? $_FILES['avatar'] : null;
 
-      $uploadDirectory = THEME_DIR . '/uploads/' . $secure_user_id . '/' ;
-
-      if( !is_dir($uploadDirectory) ){
-         mkdir($uploadDirectory, 0755, true);
-      }
 
       // check folder exists or not
       if ( $avatar != null && $avatar['error'] === UPLOAD_ERR_OK) {
          $fileTmpPath      = $avatar['tmp_name'];
          $fileName         = $avatar['name'];
          $extension        = pathinfo($fileName, PATHINFO_EXTENSION);
-         $finalPath        = $uploadDirectory . 'avatar.' . $extension;
-         move_uploaded_file($fileTmpPath, $finalPath);
+         
+         $fileUpload    = THEME_DIR . '/uploads/' . $hash_protected . '-user_avatar.' . $extension;
+         $fileUrl       = $hash_protected . '-user_avatar.' . $extension;
 
-         $pathUrl = THEME_URI . '/uploads/' . $secure_user_id . '/avatar.' . $extension;
+         move_uploaded_file($fileTmpPath, $fileUpload);
 
-         // Save to Custom field user
-         update_field( 'user_avatar', $pathUrl, 'user_'. $user_id );
+         // UPDATE DB 
+         global $wpdb;
+         $sql_check_user_avatar = "SELECT * FROM wp_watergo_photo WHERE upload_by = $user_id AND kind_photo = 'user_avatar' ";
+         $res = $wpdb->get_results( $sql_check_user_avatar );
+         if( !empty( $res )){
+            $wpdb->update('wp_watergo_photo', [
+               'url' => $fileUrl,
+               'time_created' => time()
+            ], ['upload_by' => $user_id, 'kind_photo' => 'user_avatar']);
+         }else{
+            $wpdb->insert('wp_watergo_photo', [
+               'upload_by' => $user_id,
+               'url' => $fileUrl,
+               'time_created' => time(),
+               'kind_photo' => 'user_avatar'
+            ]);
+         }
       }
       
       $update_data = [];
@@ -268,6 +357,11 @@ function atlantis_update_user(){
       }
       if( $email != '' ){
          $update_data['user_email'] = $email;
+
+         if( ! is_email($email)){
+            wp_send_json_success([ 'message' => 'email_is_not_correct_format' ]);
+            wp_die();
+         }
       }
 
       if( !empty( $update_data ) ){
@@ -275,7 +369,7 @@ function atlantis_update_user(){
          wp_update_user($update_data);
       }
       
-      wp_send_json_success([ 'message' => 'update_user_ok' ]);
+      wp_send_json_success([ 'message' => 'update_user_ok', 'file_url' => $fileUrl ]);
       wp_die();
    }
 }
@@ -411,9 +505,9 @@ function atlantis_get_user(){
       $sql = "SELECT url as user_image FROM wp_watergo_photo WHERE upload_by = $user_id AND kind_photo = 'user_avatar' LIMIT 1";
       $res = $wpdb->get_results($sql);
 
-      $avatar = !empty($res) 
-         ? $res[0]->user_image 
-         : 'avatar-dummy.png';
+
+      
+
 
       // fake full name
       $first_name = get_user_meta($user->data->ID, 'first_name', true);
@@ -433,7 +527,6 @@ function atlantis_get_user(){
             'user_fullname'         => 
                $first_name != '' 
                ? $first_name : $user->data->display_name,
-            'user_image'            => $avatar,
             'current_user_account'  => 
                $is_user_store == null || $is_user_store == false 
                ? 'user' : 'store'
@@ -477,3 +570,5 @@ function atlantis_get_current_user_account(){
 
    }
 }
+
+

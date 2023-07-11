@@ -99,6 +99,7 @@ createApp({
       common_get_product_price(p, p2){ return window.common_get_product_price(p, p2)},
       goBack(){window.goBack()},
       removeText(){ this.inputSearch = ''; },
+
       get_current_location(){
 
          if( window.appBridge != undefined ){
@@ -117,19 +118,27 @@ createApp({
 
       async filteredData() {
          
+         console.log(this.search)
          if( this.search != '' ){
             var form = new FormData();
             form.append('action', 'atlantis_search_data');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
             form.append('search', this.inputSearch);
+
             var r = await window.request(form);
+            console.log(r);
 
             if( r != undefined){
                var res = JSON.parse( JSON.stringify( r));
                if(res.message == 'search_found'){
-                  this.searchs =  res.data;
+                  this.searchs = res.data;
                }
+               if( res.message == 'search_not_found'){
+                  this.searchs = [];
+               }
+            }else{
+               this.searchs = [];
             }
 
          }
@@ -143,6 +152,14 @@ createApp({
 
    created(){
       this.get_current_location();
+
+      (function($){
+         $(document).ready(function(){
+            var _appbar = $('.page-appbar-support');
+            _appbar.addClass('fixed');
+            $('#app').css('padding-top', _appbar.height());
+         });
+      })(jQuery);
    }
 }).mount('#app');
 </script>

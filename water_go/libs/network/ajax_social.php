@@ -22,19 +22,25 @@ function app_social_process_user_login($email, $name){
       $id_new_user = $check_user_name;
    }
 
+   $sql_user_login_social = "";
+
    if ( is_wp_error($id_new_user) ){
         echo $id_new_user->get_error_message();
     }else{
-      wp_clear_auth_cookie();
-        $user = wp_set_current_user($id_new_user);
-        wp_set_auth_cookie($id_new_user,true,is_ssl());
-        do_action('wp_login', $user->user_login, $user);
-      header('user_id: '.$id_new_user);
-      setcookie("USER_ID", $id_new_user,time() + 1209600, "/","", 0); 
-        setcookie("IS_LOGIN_BY_SN", "true",time()+1209600, "/","", 0);
-        setcookie("APP_LOGIN", "true",time()+1209600, "/","", 0);
-      if(is_user_logged_in()) echo 'success'; 
-      die();
+         wp_clear_auth_cookie();
+         $user = wp_set_current_user($id_new_user);
+         wp_set_auth_cookie($id_new_user,true,is_ssl());
+         do_action('wp_login', $user->user_login, $user);
+
+         // UPDATE USER META 
+         update_field('user_login_social', true, 'user_' . $id_new_user );
+
+         header('user_id: '.$id_new_user);
+         setcookie("USER_ID", $id_new_user,time() + 1209600, "/","", 0); 
+         setcookie("IS_LOGIN_BY_SN", "true",time()+1209600, "/","", 0);
+         setcookie("APP_LOGIN", "true",time()+1209600, "/","", 0);
+         if(is_user_logged_in()) echo 'success'; 
+         die();
     }
 }
 

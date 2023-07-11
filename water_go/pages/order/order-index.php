@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-order'>
+   <div v-show='loading == false' class='page-order'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -42,8 +42,8 @@
       </div>
 
 
-      <ul v-if='order_filter.length > 0' class='list-order'>
-         <li v-for='(order, orderKey) in order_filter' :key='orderKey'>
+      <ul v-if='orders.length > 0' class='list-order'>
+         <li v-for='(order, orderKey) in orders' :key='orderKey'>
 
             <div class='order-head'>
                <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/><path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/></svg>
@@ -74,7 +74,7 @@
 
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -90,6 +90,9 @@ createApp({
          loading: false,
          notification_count: 0,
          isCancel: false,
+         paged: 0,
+
+         order_status: 'ordered',
 
          orders: [],
          order_status_filter: [ 
@@ -120,14 +123,15 @@ createApp({
 
       select_filter( filter_select ){ 
          this.order_status_filter.some(item => {
-            if( item.value == filter_select ){ item.active = true;
+            if( item.value == filter_select ){ 
+               item.active = true;
+               this.order_status = item.value;
             }else{ item.active = false; }
-         })
-      },
+         });
 
-      get_order_status_filter_value(){
-         var item = this.order_status_filter.find(item => item.active == true );
-         return item.value;
+
+
+
       },
 
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
@@ -165,41 +169,84 @@ createApp({
 
       gotoCart(){ window.gotoCart(); },
       gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id); },
-      gotoOrderFilter(filter){ window.gotoOrderFilter(filter); }
+      gotoOrderFilter(filter){ window.gotoOrderFilter(filter); },
 
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            // await this.get_order(this.order_status, this.paged++);
+
+            var product_id_already_exists = [];
+            
+            this.orders.forEach(item => {
+               product_id_already_exists.push( parseInt( item.order_id ) );
+            });
+
+            await this.get_order(this.order_status, product_id_already_exists);
+
+         }
+      },
       
+
+      async get_order(order_status, product_id_already_exists){
+
+         if( product_id_already_exists == undefined || product_id_already_exists == null ){
+            product_id_already_exists = [0];
+         }
+
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_user');
+         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
+         form.append('order_status', order_status);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_ok' ){
+               // this.orders.push(...res.data);
+               res.data.forEach(item => {
+                  if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
+                     this.orders.push(item);
+                  }
+               });
+            }
+         }
+
+      }
    }, 
+
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
+   },
 
    computed: {
       count_product_in_cart(){ return window.count_product_in_cart(); },
+   },
 
-      order_filter(){
-         return this.orders.filter( (item ) => {
-            if( item.order_status == this.get_order_status_filter_value() ){
-               return item.order_status == this.get_order_status_filter_value();
-            }
-         });
+   watch: {
+      order_status: async function( status ){
+         this.loading = true;
+         this.orders = [];
+         this.paged  = 0;
+         await this.get_order(status, this.paged);
+         this.loading = false;
       }
    },
 
    async created(){
       this.loading = true;
-      await setTimeout(() => {}, 700);
       await this.get_notification_count();
-      var form = new FormData();
-      form.append('action', 'atlantis_get_order_user');
-      var r = await window.request(form);
-      console.log(r);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify( r ));
-
-         if( res.message == 'get_order_ok' ){
-            this.orders.push(...res.data);
-         }
-         if( res.message == 'no_order_found'){
-            this.loading = true;
-         }
-      }
+      await this.get_order( this.order_status, this.paged)
       this.loading = false;
 
       window.appbar_fixed();

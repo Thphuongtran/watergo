@@ -8,7 +8,7 @@ const PageDeliveryAddress = {
 <div v-if='$root.delivery_address_open == true'>
    <div v-if='navigator == "delivery_address"' class='page-delivery-address'>
 
-      <div class='appbar'>
+      <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='$root.btn_delivery_address_open' class='btn-action'>
@@ -36,7 +36,7 @@ const PageDeliveryAddress = {
       </div>
 
       <ul class='list-tile col3' v-if='delivery_address.length > 0'>
-         <li v-for='(delivery, index) in delivery_address' :key='index'>
+         <li @click='change_default_delivery_address(delivery)' v-for='(delivery, index) in delivery_address' :key='index'>
             <div class='leading'>
                <div class="radio-button" :class='delivery.primary == true ? "active" : ""'></div>
             </div>
@@ -57,7 +57,7 @@ const PageDeliveryAddress = {
 
 
    <div v-if='navigator == "delivery_address_add"' class='page-delivery-address'>
-      <div class='appbar'>
+      <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBack' class='btn-action'>
@@ -103,7 +103,7 @@ const PageDeliveryAddress = {
 
 
    <div v-if='navigator == "delivery_address_edit"' class='page-delivery-address'>
-      <div class='appbar'>
+      <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBack' class='btn-action'>
@@ -218,6 +218,23 @@ const PageDeliveryAddress = {
       goBack(){
          this.resetForm();
          this.navigator = 'delivery_address';
+      },
+
+      async change_default_delivery_address( delivery ){
+         var delivery_id = parseInt( delivery.id );
+         var form = new FormData();
+         form.append('action', 'atlantis_user_change_delivery_address_quick');
+         form.append('delivery_address_id', delivery_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'delivery_address_primary_ok' ){
+               // force all to false primary
+               this.delivery_address.some(item => item.primary = 0);
+               delivery.primary = 1;
+               this.$root.delivery_address_primary = delivery;
+            }
+         }
       },
 
       async get_location_from_address( address ){ return window.get_location_from_address(address) },

@@ -55,7 +55,8 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'question_add_ok' ){
-                  this.gotoSupport();
+                  this.goBack();
+                  
                }else{
                   this.loading = false;
                }
@@ -65,8 +66,12 @@ createApp({
          }
       }
 
-      window.appbar_fixed();
 
    },
+
+   created(){
+      window.appbar_fixed();
+
+   }
 }).mount('#app');
 </script>

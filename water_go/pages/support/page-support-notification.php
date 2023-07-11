@@ -16,9 +16,9 @@
       </div>
 
       <div v-if='supports.length > 0' class='list-support-notify'>
-         <ul v-for='(item, index) in supports' :key='index'>
-            <li :class='item.is_read == 0 ? "is_read" : ""' @click='gotoPageSupportNotificationDetail(item.id)'>
-               <div class='time'>{{ timestamp_to_date( item.time_answer ) }}</div>
+         <ul >
+            <li v-for='(item, index) in supports' :key='index' :class='item.is_read == 0 ? "is_read" : ""' @click='gotoPageSupportNotificationDetail(item.id)'>
+               <div class='time'>{{ timestamp_to_date( item.time_created ) }}</div>
                <div class='question'>{{ item.question }} </div>
             </li>
          </ul>
@@ -53,16 +53,14 @@ createApp({
    async created(){
       this.loading = true;
       var form = new FormData();
-      form.append('action', 'atlantis_support');
-      if( this.supports.length == 0 ){
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'get_support_ok' ){
-               this.supports.push( ...res.data);
-            }
+      form.append('action', 'atlantis_get_support_question_user');
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r));
+         if( res.message == 'get_support_user_ok' ){
+            this.supports.push( ...res.data);
          }
-      };
+      }
       this.loading = false;
 
       window.appbar_fixed();

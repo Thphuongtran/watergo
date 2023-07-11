@@ -157,6 +157,12 @@ function atlantis_add_review(){
 
 function atlantis_get_user_review(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_user_review' ){
+
+      $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
+      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
+
+      $paged = $paged * $limit;
+
       if(is_user_logged_in() == true ){
          $user_id = get_current_user_id();
          $user = get_user_by('id', $user_id);
@@ -168,24 +174,38 @@ function atlantis_get_user_review(){
 
       global $wpdb;
 
-      $sql = "SELECT 	
-            wp_watergo_reviews.id, 
-               wp_watergo_reviews.review_page,
-               wp_watergo_reviews.contents,
-               wp_watergo_reviews.rating,
-               wp_watergo_reviews.time_created,
-               wp_watergo_store.name as store_name
-               
-         FROM wp_watergo_reviews
-         LEFT JOIN wp_users
-         ON wp_watergo_reviews.user_id = wp_users.id
-         LEFT JOIN wp_watergo_store
-         ON wp_watergo_store.id = wp_watergo_reviews.related_id
-         WHERE 
-            wp_watergo_reviews.user_id = {$user_id}
-         AND 
-            wp_watergo_reviews.review_page = 'review-store'
+      $sql = "SELECT 
+         wp_watergo_reviews.id, 
+         wp_watergo_reviews.review_page,
+         wp_watergo_reviews.contents,
+         wp_watergo_reviews.rating,
+         wp_watergo_reviews.time_created,
+         wp_watergo_store.name as store_name,
+         --
+         wp_watergo_photo.url as store_image
+
+      FROM wp_watergo_reviews
+      
+      LEFT JOIN wp_users
+      ON wp_watergo_reviews.user_id = wp_users.id
+
+      LEFT JOIN wp_watergo_store
+      ON wp_watergo_store.id = wp_watergo_reviews.related_id
+
+      LEFT JOIN wp_watergo_photo
+      ON wp_watergo_photo.upload_by = wp_watergo_store.id AND wp_watergo_photo.kind_photo = 'store'
+
+      WHERE 
+         wp_watergo_reviews.user_id = $user_id
+      AND 
+         wp_watergo_reviews.review_page = 'review-store'
+
+      ORDER BY wp_watergo_reviews.time_created DESC
+
+      LIMIT $paged, $limit
+
       ";
+
       $res = $wpdb->get_results($sql);
       if( empty($res ) ){
          wp_send_json_error([ 'message' => 'no_review_found' ]);

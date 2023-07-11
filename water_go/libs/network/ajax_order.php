@@ -497,6 +497,9 @@ function atlantis_add_order(){
 function atlantis_get_order_user(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_user' ){
 
+      // [ ordered | comfirmed | delivering | complete | cancel ]
+      $order_status = $_POST['order_status'] ? $_POST['order_status'] : '';
+
       if(is_user_logged_in() == true ){
          $user_id = get_current_user_id();
          $user = get_user_by('id', $user_id);
@@ -505,6 +508,20 @@ function atlantis_get_order_user(){
          wp_send_json_error(['message' => 'no_login_invalid' ]);
          wp_die();
       }
+
+      $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
+      $product_id_already_exists = json_decode( $product_id_already_exists );
+      $placeholders = 0;
+
+      $wheres = [];
+
+      if( is_array($product_id_already_exists) && ! empty($product_id_already_exists) ){
+         foreach( $product_id_already_exists as $ids ){
+            $wheres[] = $ids;
+         }
+         $placeholders = implode(',', $wheres);
+      }
+
 
       global $wpdb;
 
@@ -525,7 +542,34 @@ function atlantis_get_order_user(){
 
          WHERE
             wp_watergo_order.order_by = $user_id
+         AND 
+            wp_watergo_order.order_status = '$order_status'
+         AND 
+            wp_watergo_order.order_id  NOT IN ($placeholders)
       ";
+
+      if( $order_status == 'ordered' ){
+         $sql .= " ORDER BY order_time_created DESC ";
+
+      }
+      if( $order_status == 'confirmed' ){
+         $sql .= " ORDER BY order_time_confirmed DESC ";
+
+      }
+      if( $order_status == 'delivering' ){
+         $sql .= " ORDER BY order_time_delivery DESC ";
+
+      }
+      if( $order_status == 'complete' ){
+         $sql .= " ORDER BY order_time_completed DESC ";
+
+      }
+      if( $order_status == 'cancel' ){
+         $sql .= " ORDER BY order_time_cancel DESC ";
+      }
+
+      $sql .= " LIMIT 10 ";
+
 
       $res = $wpdb->get_results($sql);
 
@@ -538,7 +582,7 @@ function atlantis_get_order_user(){
 
       if( ! empty( $orders ) ){
          sort($orders);
-         wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders]);
+         wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders, 'sql' => $sql]);
          wp_die();
       }
 
@@ -760,7 +804,6 @@ function atlantis_get_order_time_shipping(){
 
 function atlantis_get_order_filter(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_filter' ){
-      $filter = isset($_POST['filter']) ? $_POST['filter'] : '';
 
       if(is_user_logged_in() == true ){
          $user_id = get_current_user_id();
@@ -771,6 +814,7 @@ function atlantis_get_order_filter(){
          wp_die();
       }
 
+      $filter = isset($_POST['filter']) ? $_POST['filter'] : '';
       if( $filter == ''){
          wp_send_json_error(['message' => 'no_order_found' ]);
          wp_die();

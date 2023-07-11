@@ -19,7 +19,8 @@
 
          <div class='page-delete-account'>
             <div class='box-justify-between'>
-               <div v-if='settings_delete_account_step == 0' class='contents-wrapper'>
+
+               <div v-show='settings_delete_account_step == 0' class='contents-wrapper'>
                   <p class='heading'>Why do you want to delete your account?</p>
                   <ul class='list-delete-account'>
 
@@ -35,9 +36,9 @@
                   </ul>
                </div>
 
-               <div v-if='settings_delete_account_step == 1' class='banner-notify'>
+               <div v-show='settings_delete_account_step == 1' class='banner-notify'>
                   <div class='notify-wrapper'>
-                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="40" fill="#2040AF"/><path d="M49 34.6667H47.5V31.619C47.5 27.4133 44.14 24 40 24C35.86 24 32.5 27.4133 32.5 31.619V34.6667H31C29.35 34.6667 28 36.0381 28 37.7143V52.9524C28 54.6286 29.35 56 31 56H49C50.65 56 52 54.6286 52 52.9524V37.7143C52 36.0381 50.65 34.6667 49 34.6667ZM40 48.381C38.35 48.381 37 47.0095 37 45.3333C37 43.6571 38.35 42.2857 40 42.2857C41.65 42.2857 43 43.6571 43 45.3333C43 47.0095 41.65 48.381 40 48.381ZM44.65 34.6667H35.35V31.619C35.35 29.0133 37.435 26.8952 40 26.8952C42.565 26.8952 44.65 29.0133 44.65 31.619V34.6667Z" fill="white"/></svg>
+                     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="40" fill="#2790F9"/><path d="M49 34.6667H47.5V31.619C47.5 27.4133 44.14 24 40 24C35.86 24 32.5 27.4133 32.5 31.619V34.6667H31C29.35 34.6667 28 36.0381 28 37.7143V52.9524C28 54.6286 29.35 56 31 56H49C50.65 56 52 54.6286 52 52.9524V37.7143C52 36.0381 50.65 34.6667 49 34.6667ZM40 48.381C38.35 48.381 37 47.0095 37 45.3333C37 43.6571 38.35 42.2857 40 42.2857C41.65 42.2857 43 43.6571 43 45.3333C43 47.0095 41.65 48.381 40 48.381ZM44.65 34.6667H35.35V31.619C35.35 29.0133 37.435 26.8952 40 26.8952C42.565 26.8952 44.65 29.0133 44.65 31.619V34.6667Z" fill="white"/></svg>
                      <p class='heading'>We are sorry to see you leave</p>
                      <p class='text'>When you delete your account, you won't <br>be able to log in again by deleted account.</p>
                   </div>
@@ -67,8 +68,9 @@ createApp({
       return {
          loading: false,
          settings_delete_account_step: 0,
+
          settings_delete_account_question: [
-            "I don\'t want to use Social Beauty app anymore",
+            "I don\'t want to use WaterGo app anymore",
             'I want to create another account',
             'I have a privacy concern',
             'Other'
@@ -80,6 +82,9 @@ createApp({
 
    methods: {
       buttonUserCancelDeleteAccount(){
+         if( this.settings_delete_account_step == 0 ){
+            this.goBack();
+         }
          this.settings_delete_account_step = 0;
       },
 

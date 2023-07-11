@@ -59,7 +59,11 @@
             width: 90%;
          }
 		}
-	}   
+	}
+   
+   &.banner-cart{
+      z-index: 8;
+   }
 
 }
 

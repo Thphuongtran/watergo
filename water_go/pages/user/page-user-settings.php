@@ -30,7 +30,7 @@
                <span class='title'>Language</span>
                <span class='subtitle'>{{ user_language }}</span>
             </li>
-            <li @click='gotoPageUserPassword'>
+            <li v-if='is_user_login_social == false' @click='gotoPageUserPassword'>
                <span class='title'>Password</span>
             </li>
             <li @click='gotoPageUserTermConditions'>
@@ -46,7 +46,7 @@
       </div>
    </div>
 
-   <div v-show='modalOpenLogout' class='modal-popup open'>
+   <div v-show='modalOpenLogout' class='modal-popup'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalLogutCancel' class='close-button'><span></span><span></span></div></div>
          <p class='heading'>Logout?</p>
@@ -76,10 +76,27 @@ createApp({
          loading: false,
          user_language: '',
          user_notification: false,
-         modalOpenLogout: false
+         modalOpenLogout: false,
+
+         is_user_login_social: false,
+
+
       }
    },
    methods: {
+
+      // CHECK USER LOGIN IS SOCIAL 
+      async check_user_login_social(){
+         var form = new FormData();
+         form.append('action', 'atlantis_is_user_login_social');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'user_login_social'){
+               this.is_user_login_social = true;
+            }
+         }
+      },
 
       gotoPageUserLanguage(){ window.gotoPageUserLanguage()},
       gotoPageUserPassword(){ window.gotoPageUserPassword()},
@@ -148,6 +165,7 @@ createApp({
    async created(){
       this.loading = true;
       await this.initUser();
+      await this.check_user_login_social();
       this.loading = false;
 
       window.appbar_fixed();

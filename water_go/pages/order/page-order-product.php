@@ -7,7 +7,7 @@
 
    <div v-if='loading == false && delivery_address_open == false' class='page-product-order'>
       
-      <div class='appbar'>
+      <div class='appbar style01 fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBack' class='btn-action'>
@@ -19,9 +19,10 @@
                <p class='leading-title'>Order</p>
             </div>
          </div>
+         <div class='break-line'></div> 
       </div>
 
-      <div class='break-line'></div> 
+      
       <div class='inner'>
          <div @click='btn_delivery_address_open' class='list-tile delivery-address'>
             <div class='content'>
@@ -260,11 +261,8 @@ createApp({
             monthly: false,
          },
 
-
          delivery_address_primary: null,
          delivery_address_open: false,
-
-
 
          isUserCanOrder: {
             stage_delivery_address: false,
