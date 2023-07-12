@@ -98,10 +98,30 @@ createApp({
       gotoPageSupportDetail(support_id){ window.gotoPageSupportDetail(support_id);},
       gotoPageSupportAdd(){window.gotoPageSupportAdd()},
       gotoPageSupportNotification(){ window.gotoPageSupportNotification()},
+
+
+      async get_admin_support_question(){
+
+         // var form = new FormData();
+         // form.append('action', 'atlantis_get_admin_supports_for_user');
+         // var r = await window.request(form);
+         // if( r != undefined ){
+         //    var res = JSON.parse( JSON.stringify(r));
+         //    if( res.message == 'admin_supports_ok' ){
+         //       res.data.forEach( item => item.admin_side = true );
+         //       this.supports.push( ...res.data );
+         //    }
+         // }
+      },
+
+
    },
 
    async created(){
       this.loading = true;
+
+      await this.get_admin_support_question();
+
       var form = new FormData();
       form.append('action', 'atlantis_support');
       if( this.supports.length == 0 ){
@@ -109,6 +129,7 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_support_ok' ){
+               res.data.forEach( item => item.user_side = true );
                this.supports.push( ...res.data);
             }
          }

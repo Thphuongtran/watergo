@@ -57,12 +57,21 @@
 .order-item-title-container {
    display: flex;
    justify-content: space-between;
+   flex-flow: column nowrap;
 }
+
 
 .order-item-title-container div {
    display: flex;
-   flex-direction: column;
-   row-gap: 5px;
+}
+
+.order-item-title-container-tile01{
+   justify-content: space-between;
+   flex-flow: row nowrap;
+}
+
+.order-item-title-container-tile02{
+   margin-top: 6px;
 }
 
 .order-item-discount {

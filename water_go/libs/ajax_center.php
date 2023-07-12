@@ -128,9 +128,49 @@ function atlantis_user_notification(){
 function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
 
-      $u = md5( md5( 1 . '-user') . 'watergo' );
+      $datetime = isset($_POST['datetime']) ? $_POST['datetime'] : 0;
 
-      wp_send_json_success(['message' => 'ok', 'user_md5' => $u ]);
+      $sql = "SELECT *,
+         wp_watergo_store.name as store_name,
+         -- latitude
+         wp_watergo_store.latitude as store_latitude,
+         -- longitude
+         wp_watergo_store.longitude as store_longitude,
+            
+         -- order_time_shipping_id
+         wp_watergo_order.order_time_shipping_id as store_order_time_shipping_id,
+
+         wp_watergo_products.name as product_name,
+         wp_watergo_photo.url as product_image
+
+         -- time shipping
+         FROM wp_watergo_order
+         LEFT JOIN wp_watergo_order_group 
+            ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
+         LEFT JOIN wp_watergo_store
+            ON wp_watergo_store.id = wp_watergo_order_group.order_group_store_id
+         LEFT JOIN wp_watergo_products 
+            ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
+         LEFT JOIN wp_watergo_photo
+            ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
+         LEFT JOIN wp_watergo_order_time_shipping
+            ON wp_watergo_order_time_shipping.order_time_shipping_id = wp_watergo_order.order_time_shipping_id
+         -- 
+
+         WHERE
+            wp_watergo_store.id = 22
+         AND 
+            wp_watergo_order.order_status = 'confirmed'
+         AND
+            wp_watergo_order.order_id NOT IN (0)
+         AND 
+            wp_watergo_order_time_shipping.order_time_shipping_datetime = '$datetime'
+      ";
+
+      global $wpdb;
+      $res = $wpdb->get_results($sql);
+
+      wp_send_json_success(['message' => 'ok', 'res' => $res, 'datetime' => $datetime ]);
 
 
    }

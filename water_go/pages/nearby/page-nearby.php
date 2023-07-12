@@ -53,6 +53,7 @@
             </button>
 
          </div>
+         
          <div class='store-list'>
             <div class='list-wrapping' :class='isToggle == true ? "isToggle" : ""'>
 
@@ -81,6 +82,7 @@
 
             </div>
          </div>
+
       </div>
 
 
@@ -326,7 +328,6 @@ createApp({
 
    async mounted(){
       
-      this.get_current_location_per_second();
       await this.get_all_store_location();
 
       var appbar = document.getElementsByClassName('appbar');

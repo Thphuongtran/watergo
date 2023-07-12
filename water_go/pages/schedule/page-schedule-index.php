@@ -8,11 +8,10 @@
 
 <div id='app'>
 
-   <div v-if='loading == false'>
+   <div v-show='loading == false'>
       <div class='page-schedule'>
 
          <div class='appbar'>
-
             <div class='appbar-top'>
                <div class='leading'>
                   <p class='leading-title'>Schedule</p>
@@ -43,15 +42,18 @@
                </div>
             </div>
             <div class='appbar-bottom'>
+
                <ul id='schedule-bar' class='navbar style02 schedule-bar'>
-                  <li @click='select_schedule_status_filter(filter.label)' v-for='(filter, index) in schedule_status_filter' 
-                     :key='index' 
-                     :class='filter.active == true ? "active" : ""'>{{ filter.label }}</li>
+
+                  <li @click='select_schedule_status_filter("all")' :class='schedule_status_value == "all" ? "active" : "" '>All</li>
+                  <li @click='select_schedule_status_filter("once")' :class='schedule_status_value == "once" ? "active" : ""'>Delivery Once</li>
+                  <li @click='select_schedule_status_filter("weekly")' :class='schedule_status_value == "weekly" ? "active" : ""'>Delivery Weekly</li>
+                  <li @click='select_schedule_status_filter("monthly")' :class='schedule_status_value == "monthly" ? "active" : ""'>Delivery Monthly</li>
                </ul>
                
                <div class='order-store-header style01 border-bottom-large ' stlye=''>
                   <div class='datepicker-wrapper'>
-                     <input @click='datePicker' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' disable>
+                     <input @click='datePicker(true)' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' disable>
                      <span class='icon-dropdown'></span>
                   </div>
                   <div class='count-order'>Total order: <span>{{ get_total_orders_count }}</span></div>
@@ -62,30 +64,34 @@
 
          <div
             class='order-item-container'
-            v-for='(order, index) in filter_orders'
+            v-for='(order, index) in filter_order'
             :key='index'
             @click='gotoOrderDetailPage(order.order_id)'
          >
-            <div class='order-item-title-container'>
-               <div>
-                  <h3 class='order-title'>Order #{{ order.order_number}}</h3>
 
+            <div class='order-item-title-container'>
+               <div class='order-item-title-container-tile01'>
+                  <h3 class='order-title'>Order #{{ order.order_number}}</h3>
+                  <h3 class='order-type text-order-type' 
+                     :class="get_type_order(order.order_delivery_type)"
+                  >{{print_type_order_text(order.order_delivery_type)}}</h3>
+               </div>
+
+               <div class='order-item-title-container-tile02'>
                   <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>Delivery Immediately </p>
 
                   <p 
                      v-if="order.order_delivery_type == 'once_date_time'"
-                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_time}}</p>
+                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} </p>
                   <p 
                      v-if="order.order_delivery_type == 'weekly'"
-                     class='text-xsm'>Delivery on {{ get_day_from_weekly_time_shipping(order.order_time_shipping) }}</p>
+                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'monthly'"
-                     class='text-xsm'>Delivery on {{ get_day_from_monthly_time_shipping(order.order_time_shipping) }}</p>
-
+                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }}</p>
                </div>
-               <h3 class='order-type text-order-type' 
-                  :class="get_type_order(order.order_delivery_type)"
-               >{{print_type_order_text(order.order_delivery_type)}}</h3>
+
+
             </div>
             <div class='order-item-discount text-sm'>
                <p>{{ total_product_in_order( order )}} products</p>
@@ -97,14 +103,14 @@
 
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 </div>
 
-<script setup>
+<script>
 
 var { createApp } = Vue;
 
@@ -116,17 +122,13 @@ createApp({
          message_count: 0,
          notification_count: 0,
          currentDate: new Date(),
-
-         schedule_status_filter: [
-            { label: 'All', value: 'all', active: true, count: 0 },
-            { label: 'Delivery Once', value: 'once', active: false, count: 0 },
-            { label: 'Delivery Weekly', value: 'weekly', active: false, count: 0 },
-            { label: 'Delivery Monthly', value: 'monthly', active: false, count: 0 },
-         ],
+         
+         schedule_status_value: 'all',
+         current_date_timestamp: 0,
 
          orders: [],
 
-         datePickerValue: null
+         datePickerValue: null,
 
       }
    },
@@ -141,19 +143,6 @@ createApp({
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
 
-      // get weekly time shipping
-      get_day_from_weekly_time_shipping( time_shipping ){
-         var date = new Date( time_shipping.order_time_shipping_timestamp * 1000 );
-         var fullday = `${date.getDate()}/${time_shipping.order_time_shipping_month}/${time_shipping.order_time_shipping_year}`;
-         return time_shipping.order_time_shipping_day + ' | ' + fullday + ' | ' + time_shipping.order_time_shipping_time;
-      },
-
-      // get monthly time shipping
-      get_day_from_monthly_time_shipping( time_shipping ){
-         var fullday = `${time_shipping.order_time_shipping_day}/${time_shipping.order_time_shipping_month}/${time_shipping.order_time_shipping_year}`;
-         return fullday + ' | ' + time_shipping.order_time_shipping_time;
-      },
-      
 
       async get_notification_count(){
          var form = new FormData();
@@ -214,20 +203,49 @@ createApp({
          return _total_price.toLocaleString('vi-VN') + ' đ';;
       },
 
-      force_all_schedule_status_filter_to_inactive() {
-         this.schedule_status_filter.forEach((item) => item.active = false)
+      save_datetime_from_datepicker(){
+         if( this.$refs.datepicker.value == undefined || this.$refs.datepicker.value == null || this.$refs.datepicker.value == ''){
+            this.datePickerValue = window.timestamp_to_date( new Date().getTime() / 1000 );
+         }else{
+            this.datePickerValue = this.$refs.datepicker.value;
+         }
       },
 
-      select_schedule_status_filter(filter_selected){
-         this.schedule_status_filter.some((item) => {
-            if (filter_selected === item.label) {
-               this.force_all_schedule_status_filter_to_inactive()
-               item.active = true
-            }
-         });
+      async select_schedule_status_filter(filter_selected){
+
+         this.schedule_status_value = filter_selected;
+         if( filter_selected == 'all' ){
+            this.orders = [];
+            this.loading = true;
+            await this.schedule_load_product('all',this.datePickerValue, [0]);
+            this.loading = false;
+            this.save_datetime_from_datepicker();
+         }
+         if( filter_selected == 'once' ){
+            this.orders = [];
+            this.loading = true;
+            await this.schedule_load_product('once', this.datePickerValue, [0]);
+            this.loading = false;
+            this.save_datetime_from_datepicker();
+         }
+         if( filter_selected == 'weekly' ){
+            this.orders = [];
+            this.loading = true;
+            await this.schedule_load_product('weekly', this.datePickerValue, [0]);
+            this.loading = false;
+            this.save_datetime_from_datepicker();
+         }
+         if( filter_selected == 'monthly' ){
+            this.orders = [];
+            this.loading = true;
+            await this.schedule_load_product('monthly', this.datePickerValue, [0]);
+            this.loading = false;
+            this.save_datetime_from_datepicker();
+         }
+
       },
 
-      datePicker(){
+      async datePicker(isPicker){
          (function($){
 
             $(document).ready(function(){
@@ -258,70 +276,100 @@ createApp({
 
          })(jQuery);
 
+         this.save_datetime_from_datepicker();
+
+         if( isPicker == true ){
+            var query = document.querySelectorAll('#ui-datepicker-div a.ui-state-default');
+
+            for(let i = 0; i < query.length; i++ ){
+               query[i].addEventListener("click", async () => {
+                  console.log(this);
+                  var _getDatePicker = $('#datepicker').val();
+                  this.orders = [];
+                  this.loading = true;
+                  await this.schedule_load_product(this.schedule_status_value, _getDatePicker, [0] );
+                  this.loading = false;
+               });
+            }
+         }
+
          
-         if( this.$refs.datepicker.value !== undefined ){
-            this.datePickerValue = this.$refs.datepicker.value;
 
-            var dateStr = this.datePickerValue;
-            var [day, month, year] = dateStr.split('/');
-            var timestamp = Date.parse(`${month}/${day}/${year}`) / 1000;
+      },
 
-            // window.count_howmany_timestamp_left_to_nextday(timestamp)
+
+      async schedule_load_product(filter, datetime, product_id_already_exists){
+         
+         if( product_id_already_exists == undefined || product_id_already_exists == null ){
+            product_id_already_exists = [0];
+         }
+
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_schedule');
+         form.append('filter', filter);
+         form.append('datetime', 0);
+         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
+         form.append('datetime', String( datetime) );
+         var r = await window.request(form);
+         console.log(r);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_ok' ){
+
+               res.data.forEach(item => {
+                  if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
+                     var _store_lat = item.store_latitude;
+                     var _store_lng = item.store_longitude;
+                     var _user_lat  = item.order_delivery_address.latitude;
+                     var _user_lng  = item.order_delivery_address.longitude;
+                     item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
+                     if(item.address_kilometer > 0 ){
+                        item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
+                     }
+                     this.orders.push(item);
+                  }
+               });
+
+            }
 
          }
 
       },
 
+      async handleScroll(){
 
-      re_count_total_order(){
-         this.schedule_status_filter.some(item => item.count = 0);
-         this.schedule_status_filter[0].count = this.orders.length;
-         this.orders.some( item => {
-            if( item.order_delivery_type == 'once_immediately' || item.order_delivery_type == 'once_date_time'  ){
-               this.schedule_status_filter[1].count++;
-            }
-            if( item.order_delivery_type == 'weekly' ){
-               this.schedule_status_filter[2].count++;
-            }
-            if( item.order_delivery_type == 'monthly'){
-               this.schedule_status_filter[3].count++;
-            }
-         });
-      }
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            
+            var product_id_already_exists = [];
+            
+            this.orders.forEach(item => {
+               product_id_already_exists.push( parseInt( item.order_id ) );
+            });
+
+            await this.schedule_load_product(this.schedule_status_value, this.datePickerValue, product_id_already_exists );
+         }
+      },
+
 
    },
+
+   
 
    async created(){
 
       this.loading = true;
       await this.get_messages_count();
-      var form = new FormData();
-      form.append('action', 'atlantis_get_order_schedule');
-      var r = await window.request(form);
-
-      if( r != undefined ){
-         var _res = JSON.parse( JSON.stringify( r ));
-         if( _res.message == 'get_order_ok' ){
-            this.orders.push(..._res.data);
-
-            this.re_count_total_order();  
-         }
-
-      }
-
-      this.orders.forEach( item => {
-         var _store_lat = item.store_latitude;
-         var _store_lng = item.store_longitude;
-         var _user_lat  = item.order_delivery_address.latitude;
-         var _user_lng  = item.order_delivery_address.longitude;
-         item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
-         if(item.address_kilometer > 0 ){
-            item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
-         }
-      });
-
-
-      this.loading = false;
+      var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
+      await this.schedule_load_product('all', _currentDate, [0]);
 
       $.datepicker.setDefaults({
          minDate: 0,
@@ -329,57 +377,26 @@ createApp({
          firstDay: 1,
       });
 
-      this.datePicker();
-
+      await this.datePicker();
       window.appbar_fixed();
 
+      this.loading = false;
 
+   },
 
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
    },
 
    computed: {
-      filter_orders(){
-         var _findFilterSchedule = this.schedule_status_filter.find( item => item.active == true );
-
-         return this.orders.filter( item => {
-
-            if( _findFilterSchedule.value == 'all' ){
-               this.total_order++;
-               return item;
-            }else if( _findFilterSchedule.value == 'once' ){
-
-               return item.order_delivery_type == 'once_immediately' || item.order_delivery_type == 'once_date_time';
-            }else if( _findFilterSchedule.value == 'weekly' ){
-               return item.order_delivery_type == 'weekly';
-            }else if( _findFilterSchedule.value == 'monthly' ){
-               return item.order_delivery_type == 'monthly';
-            }else{
-               return item;
-            }
-
-         });
-
+      filter_order(){
+         return this.orders.sort((a, b) => b.order_time_confirmed - a.order_time_confirmed );
       },
-
-      get_total_orders_count(){
-         var _count = this.schedule_status_filter.find( item => item.active == true );
-         if( _count ){
-            return _count.count;
-         }else{
-            return 0;
-         }
-      }
+      get_total_orders_count(){ return this.orders.length }
    },
-
-   watch: {
-      datePickerValue: async function( val ){
-         console.log('date picker value ' + val);
-      }
-   },
-
-   mounted(){
-      console.log(this.orders);
-   }
 
 
 })
