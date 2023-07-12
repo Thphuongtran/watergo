@@ -4,19 +4,21 @@
  * @access THIS IS CUSTOM POST SUPPORT FOR ADMIN
  */
 
-$post_type_admin_support = tr_post_type('Admin Support');
+function admin_stylesheets(){
+   wp_enqueue_style('admin-support-stylesheet', THEME_URI . '/custom_post_admin_support/admin_support_stylesheet.css');
+
+}
+
+// add_action('admin_enqueue_scripts', 'admin_stylesheets');
+
+function setup_atlantis_admin(){
+   add_menu_page('Admin Support', 'Admin Support', '', 'admin_support', '', '', 3 );
+   add_submenu_page('admin_support', 'Admin Support All', 'Admin Support All', 'manage_options', 'admin_support_all', 'template_admin_support_all', 1 );
+   add_submenu_page('admin_support', 'Admin Support Users', 'Admin Support Users', 'manage_options', 'admin_support_users', 'template_admin_support_user', 2 );
+}
+
+add_action('admin_menu', 'setup_atlantis_admin');
 
 
-$post_type_admin_support = tr_meta_box('Post Details');
-
-// PAGE PARENT 
-$admin_support_all = tr_page('Admin Support All', 'index', '', ['capability' => 'administrator'] , function(){
-   
-});
-// $admin_support_all->
-// $post_type_admin_support->addScreen('post');
-// $post_type_admin_support->setCallback(function(){
-//     $form = tr_form();
-//     echo $form->image('Banner Image');
-//     echo $form->text('Subheading');
-// });
+require_once THEME_DIR. '/libs/custom_post_admin_support/template_admin_support_user.php';
+require_once THEME_DIR. '/libs/custom_post_admin_support/template_admin_support_all.php';

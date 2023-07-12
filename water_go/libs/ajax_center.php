@@ -152,3 +152,4 @@ require_once THEME_DIR . '/libs/network/ajax_search.php';
 require_once THEME_DIR . '/libs/network/ajax_social.php';
 require_once THEME_DIR . '/libs/network/ajax_upload.php';
 require_once THEME_DIR . '/libs/network/ajax_language.php';
+require_once THEME_DIR . '/libs/network/ajax_admin_supports.php';

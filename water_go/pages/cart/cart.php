@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false' class='page-cart'>
+   <div v-show='loading == false' class='page-cart'>
       <div class='appbar style01'>
          <div class='appbar-top'>
          
@@ -23,7 +23,7 @@
                      <label>All</label>
                   </div>
 
-                  <button class='btn-action mr0' @click="delete_all_item">
+                  <button class='btn-action mr0' @click="btn_delete_item">
                      <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 4.59998H2.8H17.2" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M15.3998 4.6V17.2C15.3998 17.6774 15.2102 18.1352 14.8726 18.4728C14.535 18.8104 14.0772 19 13.5998 19H4.5998C4.12242 19 3.66458 18.8104 3.32701 18.4728C2.98945 18.1352 2.7998 17.6774 2.7998 17.2V4.6M5.4998 4.6V2.8C5.4998 2.32261 5.68945 1.86477 6.02701 1.52721C6.36458 1.18964 6.82242 1 7.2998 1H10.8998C11.3772 1 11.835 1.18964 12.1726 1.52721C12.5102 1.86477 12.6998 2.32261 12.6998 2.8V4.6" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -37,7 +37,7 @@
          </div>
       </div>
 
-      <div v-if='carts.length == 0' class='banner banner-cart'>
+      <div v-show='carts.length == 0' class='banner banner-cart'>
          <div class='banner-head'>
             <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="65" cy="65" r="65" fill="#E9E9E9"/>
@@ -52,9 +52,7 @@
          </div>
       </div>
 
-      <div v-if='carts.length > 0' class='cart-wrapper'>
-
-         
+      <div v-show='carts.length > 0' class='cart-wrapper'>
 
          <div class="cart-body">
 
@@ -128,18 +126,18 @@
          <button @click="gotoPageOrder" :class='count_product_select == 0 ? "disabled": ""' class='btn-primary'>Check Out({{count_product_select}})</button>
       </div>
 
-      <div v-if='popup_delete_all_item == true' class='modal-popup open'>
+      <div class='modal-popup' :class='popup_delete_item == true ? "open" : ""'>
          <div class='modal-wrapper'>
             <p class='heading'>Are you sure to remove this product from your cart?</p>
             <div class='actions'>
-               <button @click='buttonCloseModal_delete_all_item' class='btn btn-outline'>Cancel</button>
+               <button @click='buttonCloseModal_btn_delete_item' class='btn btn-outline'>Cancel</button>
                <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'>Delete</button>
             </div>
          </div>
       </div>
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -157,7 +155,9 @@ createApp({
 
          loading: false,
          select_all_value: false,
-         popup_delete_all_item: false,
+         popup_delete_item: false,
+
+         trigger_btn_delete: false,
 
          carts: []
 
@@ -172,23 +172,67 @@ createApp({
             store.products.forEach( product => product.product_select = this.select_all_value);
          });
          this.cart_stream();
-      },
-
-      delete_all_item(){
-
-         if(this.select_all_value == true ){
-            this.popup_delete_all_item = true; 
+         if(this.select_all_value == false ){
+            this.trigger_btn_delete = false;
          }
-
       },
 
-      buttonCloseModal_delete_all_item(){ this.popup_delete_all_item = false; },
+      btn_delete_item(){
+         if( this.trigger_btn_delete == true ){
+            this.popup_delete_item = true;
+         }
+      },
+
+      buttonCloseModal_btn_delete_item(){ this.popup_delete_item = false; },
       buttonCloseModal_delete_confirm(){
-         if(this.select_all_value == true ){
-            this.popup_delete_all_item = false;
-            localStorage.setItem('watergo_carts', '');
-            this.carts = [];
-            this.cart_stream();
+
+         if( this.trigger_btn_delete == true ){
+            this.popup_delete_item = false;
+            
+            if( this.select_all_value == true ){
+               this.carts = [];
+               localStorage.setItem('watergo_carts', '');
+            }else{
+
+            //    this.carts.some( ( store, storeIndex ) => {
+                  
+            //       // IF STORE SLECTED
+            //       if( store.store_select == true ){
+            //          this.carts.splice(storeIndex, 1);
+            //       }else{
+            //          store.products.forEach( ( product, productIndex )  => {
+            //             if( product.product_select == true ){
+            //                store.products.splice(productIndex, 1);
+            //             }
+            //          });
+            //          if( store.products.length == 0 ){
+            //             this.carts.splice(storeIndex, 1);
+            //          }
+            //       }
+
+            //    });
+            //    localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+
+               
+            // }
+            
+               this.carts.forEach((store, storeIndex) => {
+                  // Condition 1: If store.store_select is true, delete the entire store
+                  if (store.store_select == true ) {
+                     this.carts.splice(storeIndex, 1);
+                  } else {
+                     // Condition 2: Delete selected products
+                     store.products = store.products.filter((product) => !product.product_select);
+
+                     // Check if the store has any products left
+                     if (store.products.length === 0) {
+                        this.carts.splice(storeIndex, 1);
+                     }
+                  }
+               });
+
+               localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+            }
          }
 
       },
@@ -301,6 +345,13 @@ createApp({
                }
             });
          });
+         // TRIGGER BUTTON DELETE
+         if( _checkout > 0 ){
+            this.trigger_btn_delete = true;
+         }else{
+            this.trigger_btn_delete = false;
+         }
+
          this.cart_stream();
          return _checkout;
       }
