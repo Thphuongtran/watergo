@@ -100,6 +100,7 @@
          height: 100%;
          background: rgba(0, 0, 0, 0.2);
          display: none;
+         z-index: 888;
       }
       
       .ui-datepicker th{

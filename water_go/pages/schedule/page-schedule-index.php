@@ -1,7 +1,3 @@
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lightpick@1.6.2/lightpick.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/lightpick@1.6.2/css/lightpick.min.css" rel="stylesheet"> -->
-
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
@@ -215,37 +211,37 @@ createApp({
 
          this.schedule_status_value = filter_selected;
          if( filter_selected == 'all' ){
+            this.save_datetime_from_datepicker();
             this.orders = [];
             this.loading = true;
-            await this.schedule_load_product('all',this.datePickerValue, [0]);
+            await this.schedule_load_product('all', this.datePickerValue, [0]);
             this.loading = false;
-            this.save_datetime_from_datepicker();
          }
          if( filter_selected == 'once' ){
             this.orders = [];
+            this.save_datetime_from_datepicker();
             this.loading = true;
             await this.schedule_load_product('once', this.datePickerValue, [0]);
             this.loading = false;
-            this.save_datetime_from_datepicker();
          }
          if( filter_selected == 'weekly' ){
             this.orders = [];
+            this.save_datetime_from_datepicker();
             this.loading = true;
             await this.schedule_load_product('weekly', this.datePickerValue, [0]);
             this.loading = false;
-            this.save_datetime_from_datepicker();
          }
          if( filter_selected == 'monthly' ){
             this.orders = [];
+            this.save_datetime_from_datepicker();
             this.loading = true;
             await this.schedule_load_product('monthly', this.datePickerValue, [0]);
             this.loading = false;
-            this.save_datetime_from_datepicker();
          }
 
       },
 
-      async datePicker(isPicker){
+      datePicker(isPicker){
          (function($){
 
             $(document).ready(function(){
@@ -281,14 +277,21 @@ createApp({
          if( isPicker == true ){
             var query = document.querySelectorAll('#ui-datepicker-div a.ui-state-default');
 
-            for(let i = 0; i < query.length; i++ ){
-               query[i].addEventListener("click", async () => {
-                  console.log(this);
-                  var _getDatePicker = $('#datepicker').val();
-                  this.orders = [];
-                  this.loading = true;
-                  await this.schedule_load_product(this.schedule_status_value, _getDatePicker, [0] );
-                  this.loading = false;
+            for (let i = 0; i < query.length; i++) {
+               query[i].addEventListener("mousedown", () => {
+                  setTimeout(() => {
+                     var _getDatePicker = $('#datepicker').val();
+                     this.orders = [];
+                     this.loading = true;
+                     this.schedule_load_product(this.schedule_status_value, _getDatePicker, [0])
+                        .then(() => {
+                           this.loading = false;
+                        })
+                        .catch((error) => {
+                           console.error(error);
+                           this.loading = false;
+                        });
+                  }, 0);
                });
             }
          }
@@ -311,7 +314,7 @@ createApp({
          form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
          form.append('datetime', String( datetime) );
          var r = await window.request(form);
-         console.log(r);
+         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
