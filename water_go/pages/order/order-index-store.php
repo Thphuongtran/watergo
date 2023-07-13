@@ -1,7 +1,7 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-order'>
+   <div v-show='loading == false' class='page-order'>
 
-      <div class='appbar'>
+      <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <p class='leading-title'>Order</p>
@@ -37,41 +37,46 @@
                   :key='index' 
                   :class='filter.active == true ? "active" : ""'>{{ filter.label }} <span class='count'>({{filter.count}})</span></li>
             </ul>
+
+            <div v-if='order_filter.length > 0' class='order-store-header'>
+               <button @click='filter_order_by_select' class='btn-filter'>
+                  <span class='filter-text'>{{filter_order_by}}</span>
+                  <span class='filter-icon'>
+                     <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1.5 1L5.5 5L9.5 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </button>
+
+               <div class='count-order'>Total order: <span >{{total_order}}</span> </div>
+            </div>
+
+            <div v-if='
+               order_filter.length > 0 && 
+               get_order_status_filter_value != "complete" && 
+               get_order_status_filter_value != "cancel"
+               ' class='order-store-action'>
+               <div class='form-check'>
+                  <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
+                  <label @click='select_all_item'>Select All</label>
+               </div>
+
+               <div class='action-all'>
+                  <button v-if='get_order_status_filter_value == "ordered" ' @click='btn_action_confirm_all' class='btn-action-confirm'>Confirm</button>
+                  <button v-if='get_order_status_filter_value == "ordered"' @click='btn_action_cancel_all' class='btn-action-cancel'>Cancel</button>
+                  
+                  <button v-if='get_order_status_filter_value == "confirmed"' @click='btn_action_delivery_all' class='btn-action-cancel'>Delivery</button>
+                  <button v-if='get_order_status_filter_value == "delivering"' @click='btn_action_complete_all' class='btn-action-cancel'>Complete</button>
+
+               </div>
+            </div>
+
          </div>
       </div>
 
-      <div v-if='order_filter.length > 0' class='order-store-header'>
-         <button @click='filter_order_by_select' class='btn-filter'>
-            <span class='filter-text'>{{filter_order_by}}</span>
-            <span class='filter-icon'>
-               <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M1.5 1L5.5 5L9.5 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-               </svg>
-            </span>
-         </button>
+      
 
-         <div class='count-order'>Total order: <span>{{total_order}}</span></div>
-      </div>
-
-      <div v-if='
-         order_filter.length > 0 && 
-         get_order_status_filter_value != "complete" && 
-         get_order_status_filter_value != "cancel"
-         ' class='order-store-action'>
-         <div class='form-check'>
-            <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
-            <label @click='select_all_item'>Select All</label>
-         </div>
-
-         <div class='action-all'>
-            <button v-if='get_order_status_filter_value == "ordered" ' @click='btn_action_confirm_all' class='btn-action-confirm'>Confirm</button>
-            <button v-if='get_order_status_filter_value == "ordered"' @click='btn_action_cancel_all' class='btn-action-cancel'>Cancel</button>
-            
-            <button v-if='get_order_status_filter_value == "confirmed"' @click='btn_action_delivery_all' class='btn-action-cancel'>Delivery</button>
-            <button v-if='get_order_status_filter_value == "delivering"' @click='btn_action_complete_all' class='btn-action-cancel'>Complete</button>
-
-         </div>
-      </div>
+      
       <div v-if='get_order_status_filter_value == "complete" || get_order_status_filter_value == "cancel"' class='break-line'></div>
 
       <ul class='list-order style-store'>
@@ -139,13 +144,13 @@
       </ul>
 
    </div>
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
-   <div v-if='popup_confirm_all_item == true' class='modal-popup open'>
+   <div v-show='popup_confirm_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <p class='heading'>Do you want to confirm <span class='t-primary'>All Order</span>?</p>
          <div class='actions'>
@@ -154,7 +159,7 @@
          </div>
       </div>
    </div>
-   <div v-if='popup_delivering_all_item == true' class='modal-popup open'>
+   <div v-show='popup_delivering_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <p class='heading'>Do you want to delivering <span class='t-primary'>All Order</span>?</p>
          <div class='actions'>
@@ -163,7 +168,7 @@
          </div>
       </div>
    </div>
-   <div v-if='popup_complete_all_item == true' class='modal-popup open'>
+   <div v-show='popup_complete_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <p class='heading'>Do you want to compete <span class='t-primary'>All Order</span>?</p>
          <div class='actions'>
@@ -174,7 +179,7 @@
    </div>
    
 
-   <div v-if='popup_cancel_all_item == true' class='modal-popup style01 open'>
+   <div v-show='popup_cancel_all_item == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
          <p class='tt01'>Why do you want to cancel <span class='t-primary'>All Order</span>?</p>
          <ul class='list-Reason'>
@@ -201,6 +206,7 @@ var { createApp } = Vue;
 createApp({
    data (){
       return {
+
          loading: false,
          popup_confirm_all_item: false,
          popup_cancel_all_item: false,
@@ -209,13 +215,18 @@ createApp({
 
          message_count: 0,
          notification_count: 0,
+
          total_order: 0,
+
+         paged: 0,
 
          is_select_all: false,
 
          filter_order_by: 'Old first',
 
          orders: [],
+
+         order_status_current: 'ordered',
          order_status_filter: [ 
             { label: 'ordered', active: true, count: 0 },
             { label: 'confirmed', active: false, count: 0 },
@@ -324,7 +335,7 @@ createApp({
          form.append('status', order_status);
          form.append('timestamp', timestamp);
          var r = await window.request(form);
-         console.log(r);
+         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -373,7 +384,7 @@ createApp({
 
                   }
                }
-               this.re_order_status();
+
             }
             
          }
@@ -390,8 +401,6 @@ createApp({
                item.is_select = false;
             }
          });
-
-         console.log(this.orders);
       },
 
       filter_order_by_select(){
@@ -410,16 +419,17 @@ createApp({
             }
          });
       },
+
       select_filter( filter_select ){ 
          this.order_status_filter.some( item => {
             if( item.label == filter_select ){
                item.active = true;
+               this.order_status_current = item.label;
             }else{
                this.force_all_select_to_false();
                item.active = false;
             }
          });
-         
       },
 
       get_image_upload( i ){ return window.get_image_upload( i ) },
@@ -429,6 +439,7 @@ createApp({
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
       timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp);},
+
       count_total_price_in_order(order_id ){
          var _total = 0;
 
@@ -491,35 +502,91 @@ createApp({
          }
 
       },
-      
-      // refresh
-      re_order_status(){
-         this.order_status_filter.some(item => item.count = 0);
-         this.orders.some(item => {
-            if(item.order_status == 'ordered'){
-               this.order_status_filter[0].count++;
+
+      async get_count_total_order(){
+         var form = new FormData();
+         form.append('action', 'atlantis_count_total_order_by_status');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'count_order_by_status' ){
+               res.data.forEach( item => {
+                  var _total_count = item.total_count;
+                  var _order_status = this.order_status_filter.find( order_status => order_status.label == item.order_status );
+                  _order_status.count = parseInt(_total_count);
+               });
             }
-            if(item.order_status == 'confirmed'){
-               this.order_status_filter[1].count++;
-            }
-            if(item.order_status == 'delivering'){
-               this.order_status_filter[2].count++;
-            }
-            if(item.order_status == 'complete'){
-               this.order_status_filter[3].count++;
-            }
-            if(item.order_status == 'cancel'){
-               this.order_status_filter[4].count++;
-            }
-         });
+         }
       },
 
-      gotoOrderStoreDetail(order_id){ window.gotoOrderStoreDetail(order_id)}
+      async get_order_store( order_status, paged ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_store');
+         form.append('order_status', order_status);
+         form.append('paged', paged);
+
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_ok' ){
+               res.data.forEach( order => {
+                  order => order.is_select = false;
+                  if( !this.orders.some( existingItem => existingItem.order_id === order.order_id )){
+                     this.orders.push( order );
+                  }
+               });
+               this.total_order = this.orders.length;
+            }
+         }
+      },
+
+      gotoOrderStoreDetail(order_id){ window.gotoOrderStoreDetail(order_id)},
+
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+
+            await this.get_order_store( this.order_status_current, this.paged++ );
+         }
+      }
       
+   },
+
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
    }, 
+
+   // STREAM ORDER STATUS -> reload order
+   watch: {
+      order_status_current: async function( filter ){
+         console.log('stream status');
+         this.paged = 0;
+         this.orders = [];
+         this.loading = true;
+         await this.get_order_store(filter, this.paged);
+         this.loading = false;
+
+      }
+   },
 
    computed: {
       
+      get_total_order(){
+         var _find = this.order_status_filter.find(item => item.active == true );
+         return _find.count;
+      },
+
       get_order_status_filter_value(){
          var _value = this.order_status_filter.find(item => item.active == true );
          if(_value){
@@ -529,13 +596,8 @@ createApp({
       },
 
       order_filter(){
-         var _filter_orders = this.orders.filter( item => {
-            var findFilter = this.order_status_filter.find(item => item.active == true);
-            this.total_order = findFilter.count;
-            if(item.order_status == findFilter.label ){
-               return item.order_status == findFilter.label;
-            }
-         });
+         var _filter_orders = this.orders;
+
          if(this.filter_order_by == 'Old first'){
             _filter_orders.sort((a,b) => a.order_time_created - b.order_time_created );
          }
@@ -550,42 +612,10 @@ createApp({
    async created(){
       
       this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_get_order_store');
-      var r = window.request(form);
-      var r = await window.request(form);
-      console.log(r);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify( r ));
-         if( res.message == 'get_order_ok' ){
-            // GROUP PRODUCT 
-            res.data.some( item => {
-               item.is_select = false;
-               if(item.order_status == 'ordered'){
-                  this.order_status_filter[0].count++;
-               }
-               if(item.order_status == 'confirmed'){
-                  this.order_status_filter[1].count++;
-               }
-               if(item.order_status == 'delivering'){
-                  this.order_status_filter[2].count++;
-               }
-               if(item.order_status == 'complete'){
-                  this.order_status_filter[3].count++;
-               }
-               if(item.order_status == 'cancel'){
-                  this.order_status_filter[4].count++;
-               }
 
-            });
-            
-            this.orders.push(...res.data);
-
-         }
-         if( res.message == 'no_order_found'){
-            this.loading = true;
-         }
-      }
+      await this.get_count_total_order();
+      await this.get_order_store( this.order_status_current, 0 );
+      
       
       this.loading = false;
 

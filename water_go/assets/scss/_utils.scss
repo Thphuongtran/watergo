@@ -286,6 +286,9 @@ p{
    outline: none;
    border: none;
    position: relative;
+   display: flex;
+   align-items: center;
+
    .badge{
       left: 15px;
       top: -5px;

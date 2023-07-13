@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-review-form'>
+   <div v-show='loading == false' class='page-review-form'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -15,7 +15,7 @@
          </div>
       </div>
 
-      <div class='inner'>
+      <div class='inner mt20'>
          <ul class='list-settings'>
             <li @click='updateUserNotification' class='no-arrow'>
                <span class='title'>Notification</span>
@@ -46,7 +46,13 @@
       </div>
    </div>
 
-   <div v-show='modalOpenLogout' class='modal-popup'>
+   <div v-show='loading == true'>
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
+   </div>
+
+   <div v-show='modalOpenLogout' class='modal-popup open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalLogutCancel' class='close-button'><span></span><span></span></div></div>
          <p class='heading'>Logout?</p>
@@ -116,7 +122,6 @@ createApp({
                // location to login
                window.appBridge.logout();
 		         window.appBridge.close();
-
                // window.gotoLogin();
             }else{
                this.loading = false;

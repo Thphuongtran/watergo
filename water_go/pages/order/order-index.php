@@ -95,6 +95,7 @@ createApp({
          order_status: 'ordered',
 
          orders: [],
+         
          order_status_filter: [ 
             { label: 'Ordered', value: 'ordered', active: true },
             { label: 'Prepare', value: 'confirmed', active: false },
