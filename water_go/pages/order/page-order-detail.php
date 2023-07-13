@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false && order != null' class='page-order-detail'>
+   <div v-show='loading == false && order != null' class='page-order-detail'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -166,14 +166,14 @@
       </div>
    </div>
    
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
    
-   <div v-if='popup_out_of_stock == true' class='modal-popup open'>
+   <div v-show='popup_out_of_stock == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
          <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>

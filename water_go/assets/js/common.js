@@ -2,6 +2,24 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+function getCurrentDateTime() {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const currentDate = new Date();
+  const month = months[currentDate.getMonth()];
+  const day = currentDate.getDate();
+  const year = currentDate.getFullYear();
+  let hours = currentDate.getHours();
+  let minutes = currentDate.getMinutes();
+
+  const amOrPm = hours >= 12 ? 'pm' : 'am';
+  hours %= 12;
+  hours = hours || 12; // Convert 0 to 12 for 12-hour format
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+
+  const formattedDateTime = `${month} ${day},${year} ${hours}:${minutes} ${amOrPm}`;
+  return formattedDateTime;
+}
 
 function appbar_fixed( callback ){
 
@@ -524,6 +542,8 @@ function gotoChatMessenger( args ){
       var store_id            = args.store_id != undefined ? parseInt(args.store_id) : null;
       var conversation_id     = args.conversation_id != undefined ? parseInt(args.conversation_id) : null;
       var user_id             = args.user_id != undefined ? parseInt(args.user_id) : null;
+      // USER | STORE
+      var host_chat           = args.host_chat != undefined ? String(args.host_chat) : null;
 
       var url =  window.watergo_domain + 'chat/?chat_page=chat-messenger';
 
@@ -541,6 +561,10 @@ function gotoChatMessenger( args ){
 
       if( user_id != null ){
          url += '&user_id=' + user_id;
+      }
+
+      if( host_chat != null ){
+         url += '&host_chat=' + host_chat;
       }
 
       window.location.href = url + '&appt=N';
@@ -570,3 +594,9 @@ async function is_conversation_created_or_create( user_id, store_id){
 
    }
 }  
+
+
+// SCHEDULE Order Detail
+function gotoScheduleOrderDetail( order_id ){
+   window.location.href = window.watergo_domain + 'schedule/?schedule_page=page-schedule-detail&order_id=' + order_id + '&appt=N';
+}

@@ -62,7 +62,7 @@
             class='order-item-container'
             v-for='(order, index) in filter_order'
             :key='index'
-            @click='gotoOrderDetailPage(order.order_id)'
+            @click='gotoScheduleOrderDetail(order.order_id)'
          >
 
             <div class='order-item-title-container'>
@@ -133,7 +133,7 @@ createApp({
 
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoChat(){ window.gotoChat() },
-      gotoOrderDetailPage( id) { window.gotoOrderDetailPage(id) },
+      gotoScheduleOrderDetail( id) { window.gotoScheduleOrderDetail(id) },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_image_upload(i){ return window.get_image_upload(i) },
       get_type_order(order_type){ return window.get_type_order(order_type)},

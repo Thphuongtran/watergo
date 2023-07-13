@@ -21,8 +21,8 @@ add_action( 'wp_ajax_atlantis_user_delete_account', 'atlantis_user_delete_accoun
 add_action( 'wp_ajax_nopriv_atlantis_get_user', 'atlantis_get_user' );
 add_action( 'wp_ajax_atlantis_get_user', 'atlantis_get_user' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_current_user_account', 'atlantis_get_current_user_account' );
-add_action( 'wp_ajax_atlantis_get_current_user_account', 'atlantis_get_current_user_account' );
+add_action( 'wp_ajax_nopriv_atlantis_get_both_user_messenger', 'atlantis_get_both_user_messenger' );
+add_action( 'wp_ajax_atlantis_get_both_user_messenger', 'atlantis_get_both_user_messenger' );
 
 add_action( 'wp_ajax_nopriv_atlantis_user_delivery_address', 'atlantis_user_delivery_address' );
 add_action( 'wp_ajax_atlantis_user_delivery_address', 'atlantis_user_delivery_address' );
@@ -506,9 +506,6 @@ function atlantis_get_user(){
       $res = $wpdb->get_results($sql);
 
 
-      
-
-
       // fake full name
       $first_name = get_user_meta($user->data->ID, 'first_name', true);
 
@@ -537,34 +534,59 @@ function atlantis_get_user(){
    }
 }
 
+/**
+ * @access FOR CHAT MESSENGER [ get user role ]
+ */
+function atlantis_get_both_user_messenger(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_both_user_messenger' ){  
 
-function atlantis_get_current_user_account(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_current_user_account' ){  
+      $user_id  = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error([ 'message' => 'no_login_invalid' ]);
-         wp_die();
-      }
-      $get_account_user = get_user_meta($user_id , 'user_store', true);
+      global $wpdb;
 
-      $is_user_store = 'user';
-      if($get_account_user == null || $get_account_user == 0){
-         $is_user_store = 'user';
-      }
-      if($get_account_user == true || $get_account_user == 1){
-         $is_user_store = 'store';
-      }
+      $sql_user = "SELECT 
+         user.ID as user_id,
+         user.user_nicename,
+         user.display_name,
+         photo.url as user_avatar,
 
-      $user = [
-         'user_id'      => $user_id,
-         'user_account' => $is_user_store
+         wp_usermeta.meta_value as first_name
+
+         FROM wp_users as user
+         LEFT JOIN wp_watergo_photo as photo
+         ON photo.upload_by = user.ID AND photo.kind_photo = 'user_avatar'
+
+         LEFT JOIN wp_usermeta
+         ON wp_usermeta.user_id = user.ID AND wp_usermeta.meta_key = 'first_name'
+
+         WHERE user.ID = $user_id
+      ";
+
+      $sql_store = "SELECT 
+         store.ID as store_id,
+         photo.url as store_avatar,
+         wp_watergo_store.name as store_name
+
+         FROM wp_users as store
+         LEFT JOIN wp_watergo_photo as photo
+         ON photo.upload_by = store.ID AND photo.kind_photo = 'store'
+
+         LEFT JOIN wp_watergo_store
+         ON wp_watergo_store.id = store.ID
+
+         WHERE store.ID = $store_id
+      ";
+
+      $user_account = $wpdb->get_results($sql_user);
+      $store_account = $wpdb->get_results($sql_store);
+
+      $account = [
+         'user_account'    => $user_account[0],
+         'store_account'   => $store_account[0]
       ];
 
-      wp_send_json_success([ 'message' => 'user_ok', 'data' => $user ]);
+      wp_send_json_success([ 'message' => 'user_ok', 'data' => $account ]);
       wp_die();
 
 
