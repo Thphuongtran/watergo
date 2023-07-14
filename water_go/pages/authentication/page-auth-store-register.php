@@ -5,7 +5,7 @@
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
-               <button @click='goBack' class='btn-action'>
+               <button @click='goBackForce' class='btn-action'>
                   <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 7.44772 0.447715 7 1 7H18.5C19.0523 7 19.5 7.44772 19.5 8C19.5 8.55228 19.0523 9 18.5 9H1C0.447715 9 0 8.55228 0 8Z" fill="#252831"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
@@ -24,18 +24,18 @@
          <div class='heading-01 t-center'>Sign Up</div>
 
          <div class='form-group style-checkbox-business'>
-            <label>
-               <input type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
+            <div class='form-check'>
+               <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
                <span class='text'>Water</span>
-            </label>
-            <label >
+            </div>
+            <div >
                <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
                <span class='text'>Ice</span>
-            </label>
-            <label >
+            </div>
+            <div >
                <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
                <span class='text'>Both</span>
-            </label>
+            </div>
          </div>
 
          <div class='form-group'>
@@ -119,7 +119,7 @@
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'>Exit</button>
+         <button @click='goBackForce' class='btn btn-outline'>Exit</button>
       </div>
    </div>
 
@@ -165,28 +165,29 @@ createApp({
 
       btn_select_type_product( type ){
          // force all
-         for (let prop in this.select_type_product) {
-            if (this.select_type_product.hasOwnProperty(prop)) {
-               this.select_type_product[prop] = false;
+         if(this.select_type_product_text != type ){
+            for (let prop in this.select_type_product) {
+               if (this.select_type_product.hasOwnProperty(prop)) {
+                  this.select_type_product[prop] = false;
+               }
             }
-         }
-         switch(type){
-            case 'water': 
-               this.select_type_product.water = true; 
-               this.select_type_product_text = 'water';
-            break;
-            case 'ice': this.select_type_product.ice = true; 
-               this.select_type_product_text = 'ice';
-            break;
-            case 'both': this.select_type_product.both = true; 
-               this.select_type_product_text = 'both';
-            break;
+            switch(type){
+               case 'water': 
+                  this.select_type_product.water = true; 
+                  this.select_type_product_text = 'water';
+               break;
+               case 'ice': this.select_type_product.ice = true; 
+                  this.select_type_product_text = 'ice';
+               break;
+               case 'both': this.select_type_product.both = true; 
+                  this.select_type_product_text = 'both';
+               break;
+            }
          }
       },
 
-      goBack(){ 
-         if(this.term_conditions == true ){ window.goBack() }
-      },
+      goBackForce(){ window.goBack(); },
+      goBack(){ if(this.term_conditions == true) { window.goBack(); } },
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
       

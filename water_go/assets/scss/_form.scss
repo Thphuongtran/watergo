@@ -15,19 +15,21 @@
 		justify-content: space-between;
 		
 		label{
+         width: auto;
 			display: flex;
 			flex-flow: row nowrap;
 			align-items: center;
-			
+
 			input{
 				width: 16px;
 				height: 16px;
+            display: block;
 			}
 			
 			.text{
 				font-size: 14px;
 				font-weight: 400;
-				margin: 0 10px;
+				margin-left: 0px;
 				line-height: 1;
 			}
 		}
