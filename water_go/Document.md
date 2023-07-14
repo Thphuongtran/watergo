@@ -38,6 +38,11 @@ Product Detail [http://watergo.net/product/?product_page=product-detail]
 Search [http://watergo.net/search/?search_page=search-index]
 
 
+Authentication Login                [http://watergo.net/authentication?auth_page=auth-login]
+Authentication Register             [http://watergo.net/authentication?auth_page=auth-register]
+Authentication Forget Password      [http://watergo.net/authentication?auth_page=auth-forget-password]
+Authentication Reset Password       [http://watergo.net/authentication?auth_page=auth-reset-password] => old version
+
 # TAB STORE
 
 Order Store    [http://watergo.net/order/?order_page=order-index-store]
@@ -50,13 +55,13 @@ Report         [http://watergo.net/report/?report_page=report-index]
 Store Profile [http://watergo.net/store/?store_page=store-profile]
 
 
-
-Authentication Login                [http://watergo.net/authentication?auth_page=auth-login]
-Authentication Register             [http://watergo.net/authentication?auth_page=auth-register]
-Authentication Forget Password      [http://watergo.net/authentication?auth_page=auth-forget-password]
-Authentication Reset Password       [http://watergo.net/authentication?auth_page=auth-reset-password]
-
 Authentication Login Store          [http://watergo.net/authentication?auth_page=auth-store-login]
 Authentication Register Store       [http://watergo.net/authentication?auth_page=auth-store-register]
 Authentication Forget Password      [http://watergo.net/authentication?auth_page=auth-store-forget-password]
-Authentication Reset Password       [http://watergo.net/authentication?auth_page=auth-store-reset-password]
+Authentication Reset Password       [http://watergo.net/authentication?auth_page=auth-store-reset-password] => old version
+
+# Account Store
+taikhoanstore1
+taikhoanstore2
+admin
+

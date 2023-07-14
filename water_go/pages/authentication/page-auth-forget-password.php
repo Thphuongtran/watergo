@@ -252,7 +252,7 @@ createApp({
                   var res = JSON.parse( JSON.stringify(r));
 
                   if( res.message == 'code_is_not_correct' ){
-                     this.res_text_sendcode = 'Code is not correct.';
+                     this.res_text_sendcode = 'Code is not match.';
                   }
                   if( res.message == 'reset_password_ok' ){
                      this.banner_open = true;

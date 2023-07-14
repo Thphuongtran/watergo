@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false' class='page-auth-register'>
+   <div v-show='loading == false' class='page-auth-register'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -17,17 +17,45 @@
 
       <div class='inner style01'>
 
-         
-
          <div class='t-center'>
-            <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
+            <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo_business.svg'; ?>">
          </div>
 
          <div class='heading-01 t-center'>Sign Up</div>
 
+         <div class='form-group style-checkbox-business'>
+            <label>
+               <input type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
+               <span class='text'>Water</span>
+            </label>
+            <label >
+               <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
+               <span class='text'>Ice</span>
+            </label>
+            <label >
+               <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
+               <span class='text'>Both</span>
+            </label>
+         </div>
+
          <div class='form-group'>
-            <span>User name</span>
-            <input v-model='inputUsername' type="text" placeholder='Enter your username'>
+            <span>Owner</span>
+            <input v-model='inputOwner' type="text" placeholder='Enter owner name'>
+         </div>
+
+         <div class='form-group'>
+            <span>Store Name</span>
+            <input v-model='inputStoreName' type="text" placeholder='Enter store name'>
+         </div>
+
+         <div class='form-group'>
+            <span>Address</span>
+            <input v-model='inputAddress' type="text" placeholder='Enter address'>
+         </div>
+
+         <div class='form-group'>
+            <span>Phone</span>
+            <input v-model='inputPhone' type="text" pattern='[0-9]*' placeholder='Enter phone'>
          </div>
 
          <div class='form-group'>
@@ -65,30 +93,22 @@
             {{ res_text_sendcode }}
          </p>
 
-         <div class='form-group'>
+         <div class='form-group mb50' :class='term_conditions == false ? "disable" : ""'>
             <button @click='btn_register' class='btn btn-primary'>Sign Up</button>
             <button @click='goBack' class='btn btn-second mt15'>Log In</button>
-         </div>
-
-         <p class='t-second t-center mt25'>Or log in with</p>
-
-         <div class='form-group mt20'>
-            <button @click='login_social_apple' class='btn-icon' ref='button-signup'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'>Log in with Apple</span></button>
-            <button @click='login_social_google' class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'>Log in with Google</span></button>
-            <button @click='login_social_zalo' class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'>Log in with Zalo</span></button>
          </div>
 
       </div>
 
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
-   <div v-if='banner_open == true' class='banner'>
+   <div v-show='banner_open == true' class='banner'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -114,11 +134,19 @@ createApp({
          loading: false,
          banner_open: false,
 
-         inputEmail: '',
-         inputUsername: '',
+         select_type_product: {
+            water: false,
+            ice: false,
+            both: false
+         },
+         select_type_product_text: '',
 
+         inputOwner: '',
+         inputStoreName: '',
+         inputAddress: '',
+         inputPhone: '',
+         inputEmail: '',
          inputPassword: '',
-         inputRepassword: '',
 
          res_text_sendcode: '',
 
@@ -134,23 +162,34 @@ createApp({
    },
 
    methods: {
-      goBack(){ window.goBack()},
+
+      btn_select_type_product( type ){
+         // force all
+         for (let prop in this.select_type_product) {
+            if (this.select_type_product.hasOwnProperty(prop)) {
+               this.select_type_product[prop] = false;
+            }
+         }
+         switch(type){
+            case 'water': 
+               this.select_type_product.water = true; 
+               this.select_type_product_text = 'water';
+            break;
+            case 'ice': this.select_type_product.ice = true; 
+               this.select_type_product_text = 'ice';
+            break;
+            case 'both': this.select_type_product.both = true; 
+               this.select_type_product_text = 'both';
+            break;
+         }
+      },
+
+      goBack(){ 
+         if(this.term_conditions == true ){ window.goBack() }
+      },
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
       
-      login_social_apple(){
-         try{ window.appBridge.socialLogin('A'); // google
-         }catch{}
-      },
-      login_social_google(){
-         try{ window.appBridge.socialLogin('G'); // google
-         }catch{}
-      },
-      login_social_zalo(){
-         try{ window.appBridge.socialLogin('Z'); // google
-         }catch{}
-      },
-
       moveFocus(event, nextInput){
          var input = event.target;
          var id = event.target.id;
@@ -210,46 +249,69 @@ createApp({
       },
 
       async btn_register(){
+         
          var code = this.code01 + this.code02 + this.code03 + this.code04;
-         if( this.inputUsername != '' && this.inputEmail != '' && this.inputPassowrd != '' ){
+         if( this.term_conditions == true){
+            this.loading = true;
 
-            if( this.term_conditions == true){
+            // taiemzo002z@gmail.com
+
+            if( 
+               this.inputOwner != '' && 
+               this.select_type_product_text != '' &&
+               this.inputStoreName != '' &&
+               this.inputAddress != '' &&
+               this.inputPhone != '' &&
+               this.inputEmail != '' && 
+               this.inputPassword != ''
+            ){
+
                if( code != '' ){
-                  this.loading = true;
+
                   var form = new FormData();
-                  form.append('action', 'atlantis_register_user');
-                  form.append('username', this.inputUsername);
+                  form.append('action', 'atlantis_store_register');
+                  form.append('owner', this.inputOwner);
+                  form.append('storeType', this.select_type_product_text);
+                  form.append('storeName', this.inputStoreName);
+                  form.append('address', this.inputAddress );
+                  form.append('phone', this.inputPhone);
                   form.append('email', this.inputEmail);
                   form.append('password', this.inputPassword);
                   form.append('code', code);
                   var r = await window.request(form);
+                  console.log(r);
+                  if( r != undefined ){
+                     var res = JSON.parse( JSON.stringify( r ));
+                     // DISPLAY ERROR
+                     if( res.message == 'email_already_exists' ){
+                        this.res_text_sendcode = 'Email already exists.';
 
-                  if(r != undefined ){
-                     var res = JSON.parse( JSON.stringify(r));
-                     if( res.message == 'register_ok'){
+                     }
+                     if( res.message == 'code_is_not_match' ){
+                        this.res_text_sendcode = 'Code is not match.';
+                     }
+
+                     if( res.message == 'phonenumber_is_not_correct_format' ){
+                        this.res_text_sendcode = 'Phone number is not correct format.';
+                     }
+
+                     if( res.message == 'all_field_empty' ){
+                        this.res_text_sendcode = 'All field must be not empty.';
+                     }
+                     if( res.message == 'register_ok' ){
                         this.banner_open = true;
-                        // this.gotoNotification('register-success');
                      }
-                     else if( res.message == 'resgiter_error' ){
-                        this.res_text_sendcode = 'Register Error.'; 
-                        this.loading = false;
-                     }
-                  }else{
-                     this.res_text_sendcode = 'Register Error.';   
-                     this.loading = false;
                   }
+
                }else{
-                  this.loading = false;
                   this.res_text_sendcode = 'Email is not verify.';
                }
             }else{
-               this.loading = false;
-               this.res_text_sendcode = 'Please agree Terms and Conditions.';
+               this.res_text_sendcode = 'All field must be not empty.';
             }
-         }else{
             this.loading = false;
-            this.res_text_sendcode = 'All field must be not empty.';
          }
+
       },
 
    }

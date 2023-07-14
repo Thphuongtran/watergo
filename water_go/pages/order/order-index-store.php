@@ -246,6 +246,7 @@ createApp({
    },
 
    methods: {
+      gotoChat(){ window.gotoChat(); },
       btn_select_reason( key ){
          this.reason_cancel.some( item => { 
             item.active = false;

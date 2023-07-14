@@ -480,7 +480,7 @@ function atlantis_load_product_top_related(){
 
       WHERE wp_watergo_products.category = $category_id
       ORDER BY wp_watergo_products.id DESC
-      LIMIT {$page},{$limit}";
+      ";
 
 
       global $wpdb;

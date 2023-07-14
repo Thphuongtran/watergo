@@ -193,45 +193,7 @@ createApp({
       },
 
       async btn_send_robot_message(rb_message ){
-         // TESTING
-         var _map = [
-            {conversation_id: 1, message_id: 1, content: 'abc', user_id: 1},
-            {conversation_id: 1, message_id: 2, content: 'abc', user_id: 22},
-            {conversation_id: 1, message_id: 3, content: 'abc', user_id: 22},
-            {conversation_id: 1, message_id: 4, content: 'abc', user_id: 22},
-            {conversation_id: 1, message_id: 5, content: 'abc', user_id: 1}
-         ];
 
-         // RESULT
-         // var result = [
-         //    [{conversation_id: 1, content: 'abc', message_id: 1, user_id: 1}],
-         //    [
-         //       {conversation_id: 1, content: 'abc', message_id: 2, user_id: 22},
-         //       {conversation_id: 1, content: 'abc', message_id: 3, user_id: 22},
-         //       {conversation_id: 1, content: 'abc', message_id: 4, user_id: 22},
-         //    ],
-         //    [{conversation_id: 1, content: 'abc',  message_id: 5, user_id: 1}]
-         // ];
-
-            var result = [];
-            var currentGroup = [];
-
-            for (var i = 0; i < _map.length; i++) {
-               var message = _map[i];
-
-               if (currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_id !== message.user_id) {
-                  currentGroup = [];
-                  result.push(currentGroup);
-               }
-
-               currentGroup.push({
-                  conversation_id: message.conversation_id,
-                  content: message.content,
-                  message_id: message.message_id,
-                  user_id: message.user_id
-               });
-            }
-            console.log(result)
       },
 
       async btn_send_message(){
@@ -433,6 +395,8 @@ createApp({
       }, 30000);
 
       this.loading = false;
+
+      console.log(this.account);
 
 
    }

@@ -36,6 +36,36 @@ add_action( 'wp_ajax_atlantis_user_get_avatar', 'atlantis_user_get_avatar' );
 add_action( 'wp_ajax_nopriv_atlantis_is_user_login_social', 'atlantis_is_user_login_social' );
 add_action( 'wp_ajax_atlantis_is_user_login_social', 'atlantis_is_user_login_social' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
+add_action( 'wp_ajax_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
+
+
+// FOR ONLY USER LOGIN
+function atlantis_get_current_user_id(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_current_user_id'){
+
+      if(is_user_logged_in() == true ){
+         $user_id = get_current_user_id();
+         $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
+         ? (int) get_user_meta($user_id , 'user_store', true) 
+         : null;
+
+         $res = [
+            'user_id' => $user_id,
+            'is_user_store' => $is_user_store
+         ];
+
+         wp_send_json_success(['message' => 'get_current_user_ok', 'data' => $res ]);
+         wp_die();
+
+      }else{
+         wp_send_json_error(['message' => 'no_login_invalid' ]);
+         wp_die();
+      }  
+
+   }
+}
+
 
 
 function atlantis_is_user_login_social(){
@@ -564,18 +594,16 @@ function atlantis_get_both_user_messenger(){
       ";
 
       $sql_store = "SELECT 
-         store.ID as store_id,
+         store.id as store_id,
          photo.url as store_avatar,
          wp_watergo_store.name as store_name
 
-         FROM wp_users as store
+         FROM wp_watergo_store
          LEFT JOIN wp_watergo_photo as photo
-         ON photo.upload_by = store.ID AND photo.kind_photo = 'store'
+         
+         ON photo.upload_by = store.id AND photo.kind_photo = 'store'
 
-         LEFT JOIN wp_watergo_store
-         ON wp_watergo_store.id = store.ID
-
-         WHERE store.ID = $store_id
+         WHERE store.id = $store_id
       ";
 
       $user_account = $wpdb->get_results($sql_user);

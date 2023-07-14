@@ -169,9 +169,11 @@ var { createApp } = Vue;
 createApp({
    data (){
       return {
+
          loading: false,
          product: null,
          store: null,
+         account: null,
 
          show_add_cart: false,
 
@@ -331,7 +333,6 @@ createApp({
          form.append('action', 'atlantis_find_store');
          form.append('store_id', store_id);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
@@ -404,7 +405,6 @@ createApp({
          }
       },
 
-      shortenNumber(n){return window.shortenNumber(n)},
 
       async get_purchase_store( store_id ){
          var form = new FormData();
@@ -420,26 +420,34 @@ createApp({
       },
 
 
+      shortenNumber(n){return window.shortenNumber(n)},
       gotoProductDetail(product_id){window.gotoProductDetail(product_id)},
       gotoProductTop( category_id){ window.gotoProductTop(category_id) },
-
       gotoStoreDetail(store_id){window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){window.gotoOrderProduct()},
       goBack(){window.goBack()},
 
-
-      async gotoChatMessenger(){ 
-         var _user = await window.get_current_user_by_network();
-         if( _user != undefined || _user != null){
-            var conversation_id = await window.is_conversation_created_or_create(_user.user_id, this.store.id);
-            
-            if(conversation_id != undefined || conversation_id != null ){
-               window.gotoChatMessenger({
-                  conversation_id: conversation_id,
-                  product_id: this.product.id
-               });
+      async get_current_user_id(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_current_user_id');
+         var r = await window.request(form);
+         if(r != undefined){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'get_current_user_ok' ){
+               this.account = res.data;
             }
          }
+      },
+
+      gotoChatMessenger(){ 
+         var args = {
+            product_id: this.product.id,
+            user_id: this.account.user_id,
+            store_id: this.store.id,
+            host_chat: 'user'
+         };
+         // console.log(this.store);
+         window.gotoChatMessenger( args );
       },
 
    },
@@ -459,6 +467,7 @@ createApp({
    async created(){
       const urlParams = new URLSearchParams(window.location.search);
       const product_id = urlParams.get('product_id');
+      await this.get_current_user_id();
       await this.findProduct(product_id);
       await this.get_review_rating_average( this.product.store_id);
       await this.get_purchase_store( this.product.store_id);

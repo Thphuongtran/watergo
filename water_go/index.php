@@ -5,25 +5,16 @@ if( is_page( 'authentication') ){
    get_template_part('pages/authentication/authentication');
 }
 
-
 if( is_page('home') ){
    get_template_part('pages/home/home');
 }
 
-if( is_user_logged_in() == true ){
-   if( is_page('user') ){
-      get_template_part('pages/user/user');
-   }
-   if( is_page('order') ){
-      get_template_part('pages/order/order');
-   }
-   if ( is_page('schedule')) {
-      get_template_part('pages/schedule/schedule');
-   }
-}else{
-   if( is_page('user') || is_page('order') || is_page('schedule')){
-      get_template_part('pages/authentication/page-auth-login');
-   }
+if( is_page('user') ){
+   get_template_part('pages/user/user');
+}
+
+if( is_page('order') ){
+   get_template_part('pages/order/order');
 }
 
 if( is_page('nearby')){
@@ -41,7 +32,6 @@ if( is_page('store') ){
 if( is_page('cart') ){
    get_template_part('pages/cart/cart');
 }
-
 
 if( is_page('chat') ){
    get_template_part('pages/chat/chat');
@@ -62,6 +52,17 @@ if( is_page('search') ){
 if( is_page('notification') ){
    get_template_part('pages/notification/notification');
 }
+
+
+/**
+ * @access FOR STORE LOGIN
+ */
+
+if( is_page('schedule')){
+   get_template_part('pages/schedule/schedule');
+}
+
+
 
 get_footer();
 ?>

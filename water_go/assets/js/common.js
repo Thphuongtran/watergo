@@ -625,3 +625,17 @@ async function is_conversation_created_or_create( user_id, store_id){
 function gotoScheduleOrderDetail( order_id ){
    window.location.href = window.watergo_domain + 'schedule/?schedule_page=page-schedule-detail&order_id=' + order_id + '&appt=N';
 }
+
+/**
+ * @access AUTH STORE
+ */
+
+function gotoStoreLogin(){
+   window.location.href = window.watergo_domain + 'authentication/?auth_page=auth-store-login&appt=N';
+}
+function gotoStoreRegister(){
+   window.location.href = window.watergo_domain + 'authentication/?auth_page=auth-store-register&appt=N';
+}
+function gotoStoreForgetPassword(){
+   window.location.href = window.watergo_domain + 'authentication/?auth_page=auth-store-forget-password&appt=N';
+}

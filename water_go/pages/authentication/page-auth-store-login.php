@@ -143,18 +143,9 @@
             </label>
          </div>
 
-         <div class='form-group'>
+         <div class='form-group' :class='term_conditions == false ? "disable" : "" '>
             <button @click='btn_login' class='btn btn-primary'>Log In</button>
-            <button @click='gotoAuthRegister' class='btn btn-second mt15'>Sign Up</button>
-         </div>
-
-
-         <p class='t-second t-center mt25'>Or log in with</p>
-
-         <div class='form-group mt20'>
-            <button @click='login_social_apple' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'>Log in with Apple</span></button>
-            <button @click='login_social_google' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'>Log in with Google</span></button>
-            <button @click='login_social_zalo' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'>Log in with Zalo</span></button>
+            <button @click='gotoStoreRegister' class='btn btn-second mt15'>Sign Up</button>
          </div>
 
       </div>
@@ -204,7 +195,7 @@ createApp({
          this.changeLanguage(language.id);
          this.showDropdown = false;
          this.toggleDropdown();
-   },
+      },
       changeLanguage(language){
          var form = new FormData();
          form.append('action', 'app_change_language');
@@ -243,37 +234,30 @@ createApp({
             }
          }
       },
-      login_social_apple(){
-         try{ window.appBridge.socialLogin('A'); // google
-         }catch{}
-      },
-      login_social_google(){
-         try{ window.appBridge.socialLogin('G'); // google
-         }catch{}
-      },
-      login_social_zalo(){
-         try{ window.appBridge.socialLogin('Z'); // google
-         }catch{}
-      },
+
 
       goBack(){this.page_welcome = true;},
       gotoLogin(){this.page_welcome = false;},
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
 
-      gotoAuthForgetPassword(){ window.gotoAuthForgetPassword()},
-      gotoAuthRegister(){ window.gotoAuthRegister()},
+      gotoAuthForgetPassword(){ window.gotoAuthForgetPassword() },
+      gotoStoreRegister(){ 
+         if( this.term_conditions == true ){
+            window.gotoStoreRegister();
+         }
+      },
 
       async btn_login(){
-         if( this.inputEmail != '' && this.inputPassword != ''){
-            if( this.term_conditions == true ){
+         if( this.term_conditions == true ){
+            if( this.inputEmail != '' && this.inputPassword != ''){
                this.loading = true;
                var form = new FormData();
-               form.append('action', 'atlantis_login');
+               form.append('action', 'atlantis_store_login');
                form.append('email', this.inputEmail);
                form.append('password', this.inputPassword);
                var r = await window.request(form);
-
+               console.log(r);
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
@@ -292,14 +276,13 @@ createApp({
                   if(res.message == 'user_not_found' ){
                      this.res_text_sendcode = 'Email or password is incorrect';
                   }
+
                }else{
                   this.res_text_sendcode = 'Email or password is incorrect';   
                }
             }else{
-               this.res_text_sendcode = 'Please agree Terms and Conditions.';
+               this.res_text_sendcode = 'Username or Password must be not empty.';
             }
-         }else{
-            this.res_text_sendcode = 'Username or Password must be not empty.';
          }
          this.loading = false;
          
