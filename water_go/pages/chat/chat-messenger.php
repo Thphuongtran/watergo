@@ -60,13 +60,12 @@
             </div>
 
          </li>
-         
       </ul>
 
    </div>
 
    <div class='box-form-chat'>
-      <div class='auto-message-wrapper'>
+      <!-- <div class='auto-message-wrapper'>
          <div class='auto-message'>
             <div 
                @click='btn_send_robot_message(rb_message)'
@@ -76,7 +75,7 @@
                {{ rb_message }}
             </div>
          </div>
-      </div>
+      </div> -->
       <div class='box-chat'>
          <div v-if='host_chat == "store"' class='avatar'><img :src="get_image_upload(account.store_account.store_avatar)"></div>
          <div v-if='host_chat == "user"' class='avatar'><img :src="get_image_upload(account.user_account.user_avatar)"></div>
@@ -141,15 +140,14 @@ createApp({
       get_product_quantity(product){ return window.get_product_quantity(product)},
 
       get_avatar_user_chat( messenger ){
-         if( this.host_chat == messenger.host_chat && this.host_chat == 'store' ){
+         if( messenger.host_chat == 'store' ){
             return this.get_image_upload(this.account.store_account.store_avatar);
-         }else{
+         }else {
             return this.get_image_upload(this.account.user_account.user_avatar);
          }
-
-         if( this.host_chat == messenger.host_chat && this.host_chat == 'user' ){
+         if( messenger.host_chat == 'user' ){
             return this.get_image_upload(this.account.user_account.user_avatar);
-         }else{
+         }else {
             return this.get_image_upload(this.account.store_account.store_avatar);
          }
       },
