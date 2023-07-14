@@ -14,7 +14,7 @@
 		align-items: center;
 		justify-content: space-between;
 		
-		label{
+		.form-checkbox{
          width: auto;
 			display: flex;
 			flex-flow: row nowrap;
@@ -23,10 +23,12 @@
 			input{
 				width: 16px;
 				height: 16px;
-            display: block;
+            display: inline; 
+            flex: 0 0 16px;
 			}
 			
 			.text{
+            display: inline-block;
 				font-size: 14px;
 				font-weight: 400;
 				margin-left: 0px;

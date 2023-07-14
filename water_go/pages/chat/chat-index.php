@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-chat'>
+   <div v-show='loading == false' class='page-chat'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -24,25 +24,30 @@
             </div>
          </div>
       </div>
-
-      <ul class='list-chat'>
+      
+      <ul v-if='filter_search.length > 0' class='list-chat'>
          <li 
-            @click='gotoChatMessenger({ conversation_id: chat.conversation_id })' 
-            v-for='(chat, chatIndex) in filter_search' :key='chatIndex' class='chat-item'>
+            @click='gotoChatMessenger()' 
+            v-for='(cons, conversationIndex) in filter_search' :key='conversationIndex' class='chat-item'>
+
             <div class='leading'>
-               <img src="<?php echo THEME_URI; ?>/assets/images/demo-box-review01.png" alt="">
+               <img :src="get_image_upload(cons.avatar_chat)">
             </div>
             <div class='contents'>
-               <div class='tt01'>{{ chat.store_name }}</div>
-               <div class='tt02'>{{ chat.content }}</div>
-               <div v-if='chat.timestamp' class='time'>{{ getTimeDifference(chat.timestamp) }}</div>
+               <div class='tt01'>
+                  <div class='name-chat'>{{ cons.name }}</div>
+                  <div class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
+               </div>
+               <div class='tt02'>{{ cons.content }}</div>
+               
             </div>
 
          </li>
       </ul>
 
    </div>
-   <div v-if='loading == true'>
+
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -58,8 +63,7 @@ createApp({
 
       return {
          loading: false,
-         chats: [],
-         product: null,
+         conversations: [],
          inputSearch: '',
       }
       
@@ -70,48 +74,51 @@ createApp({
       gotoChatMessenger(obj){ window.gotoChatMessenger(obj);},
       getTimeDifference(timestamp){ return window.getTimeDifference(timestamp); },
       shortString(str){ return window.shortString(str)},
+      get_image_upload(i){ return get_image_upload(i)},
       
 
       async getConversation(){
          var form = new FormData();
-         form.append('action', 'atlantis_load_chat');
+         form.append('action', 'atlantis_load_conversation');
          var r = await window.request(form);
          if(r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'chat_found' ){
-               if (this.chats.length === 0) {
-                  this.chats.push(...res.data);
+            
+            if( res.message == 'conversation_found' ){
+
+               if (this.conversations.length === 0) {
+                  this.conversations.push(...res.data);
                }else{
 
                   res.data.forEach((item, index ) => {
-                     var _exists = this.chats.some( chat => chat.message_id == item.message_id );
+                     var _exists = this.conversations.some( chat => chat.message_id == item.message_id );
                      if (_exists == true ) {
                         // Logic for existing item in res.data
-                        this.chats[index]['content'] = item.content;
+                        this.conversations[index]['content'] = item.content;
                      } else {
                         // Logic for new item in res.data
-                        this.chats.push(item);
+                        this.conversations.push(item);
                      }
                   });
-
-                  console.log('run every 2 seconds');
+                  // console.log('run every 2 seconds');
 
                }
                
             }
          }
+         console.log(this.conversations);
       }
 
    },
 
    computed: {
       filter_search(){
+         
          if( this.inputSearch == ''){
-            return this.chats;
+            return this.conversations;
          }else{
-            // this.chats.filter( item => item.store_name == this.inputSearch );
-            return this.chats.filter(item =>   
-               item.store_name.toLowerCase().includes(
+            return this.conversations.filter(item =>   
+               item.name.toLowerCase().includes(
                   this.inputSearch.toLowerCase()
                )
             );
@@ -123,9 +130,11 @@ createApp({
       this.loading = true;
       await this.getConversation();
       this.loading = false;
+
       setInterval( async () => {
+         console.log('run every 2 second');
          await this.getConversation();
-      }, 2000);
+      }, 10000);
       
    }
 }).mount('#app');

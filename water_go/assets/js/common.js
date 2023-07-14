@@ -337,7 +337,7 @@ function timestamp_to_fulldate(timestamp){
 function getTimeDifference(timestamp) {
   var currentTimestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
 //   var messageTimestamp = Math.floor(timestamp / 1000); // Provided timestamp in seconds
-  var messageTimestamp = Math.floor(timestamp); // Provided timestamp in seconds
+  var messageTimestamp = Math.floor( parseInt(timestamp)); // Provided timestamp in seconds
 
   var timeDifference = currentTimestamp - messageTimestamp;
 
