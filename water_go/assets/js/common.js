@@ -2,6 +2,33 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+function compare_day_with_currentDate(day) {
+  var currentDate = new Date();
+  var currentDay = currentDate.getDate();
+  var currentMonth = currentDate.getMonth() + 1;
+  var currentYear = currentDate.getFullYear();
+  // Convert the day parameter to an integer
+  day = parseInt(day);
+  // Check if the current day is greater than the given day
+  if (currentDay > day) {
+    // Check if the current month is December
+    if (currentMonth === 12) {
+      // Increment the current year
+      currentYear++;
+      currentMonth = 1; // Set the month to January
+    } else {
+      currentMonth++;
+    }
+  }
+  
+  var paddedDay = day.toString().padStart(2, '0');
+  var paddedMonth = currentMonth.toString().padStart(2, '0');
+
+  // Adjust the day to the current year and month
+  var adjustedDate = paddedDay + '/' + paddedMonth + '/' + currentYear;
+  return adjustedDate;
+}
+
 function getCurrentDateTime() {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -133,7 +160,6 @@ function common_get_product_price( price, discount_percent ){
    return parseInt(_price).toLocaleString('vi-VN') + ' đ';
 }
 
-
 function get_fulldate_from_day( day ){
    const currentDate = new Date(); // Get the current date
    const currentMonth = currentDate.getMonth() + 1; // Months are zero-based, so we add 1
@@ -199,7 +225,6 @@ function request(formdata){
       return null;
    }
 }
-
 
 function gotoHome(){
    window.location.href = window.watergo_domain + 'home';

@@ -288,14 +288,14 @@ createApp({
                      
                   }
                   else if(res.message == 'login_error' ){
-                     this.res_text_sendcode = 'Login Error.';
+                     this.res_text_sendcode = 'Email or password is incorrect';
                      this.loading = false;
                   }else{
                      this.loading = false;
                   }
                }else{
                   this.loading = false;
-                  this.res_text_sendcode = 'Login Error.';   
+                  this.res_text_sendcode = 'Email or password is incorrect';   
                }
             }else{
                this.loading = false;

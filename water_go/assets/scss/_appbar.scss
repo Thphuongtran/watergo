@@ -76,6 +76,12 @@
       &.style01{
          padding-bottom: 15px;
       }
+      &.style02{
+         border-bottom: 6px solid #F1F1F1;
+         .order-store-action{
+            border-bottom: none;
+         }
+      }
    }
 
 

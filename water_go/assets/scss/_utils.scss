@@ -1,4 +1,9 @@
-*{margin:0; padding:0; box-sizing: border-box;}
+*{margin:0; padding:0; box-sizing: border-box;
+   font-family: "Be Vietnam Pro",sans-serif;
+   line-height: 1.7;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+}
 html{
    font-family: 'Be Vietnam Pro', sans-serif;
    line-height: 1.7;
@@ -1896,29 +1901,48 @@ p{
 }
 
 
+.messenger-time{
+   text-align: center;
+   color: #AEAEAE;
+   font-size: 12px;
+   font-weight: 400;
+   padding: 25px 15px;
+}
+	
+	
+
 .list-messenger{
 	padding: 0 10px;
    padding-bottom: 100px;
 	display: flex;
 	flex-flow: column nowrap;
-	
-	.messenger-time{
-		text-align: center;
-		color: #AEAEAE;
-		font-size: 12px;
-		font-weight: 400;
-		padding: 25px 15px;
-	}
-	
+
 	li{
 		width: 100%;
 		font-weight: 400;
 		font-size: 14px;
-		&:not(.messenger-time){
-			margin-bottom: 25px;
+      margin-bottom: 25px;
+		display: flex;
+      margin-right: auto;
+
+		.gr-messenger{
+			width: auto;
+			max-width: 70%;
+			display: flex;
+			flex-flow: column nowrap;
 		}
+
+		.messages{
+			background: #F3F3F3;
+		}
+		.gr-messenger{
+			align-items: flex-start;
+		}
+      time{
+         font-size: 12px;
+      }
 	}
-	
+
 	.avatar{
 		margin: 4px 0;
 		height: 32px;
@@ -1941,7 +1965,7 @@ p{
 		margin: 4px 0;
 	}
 	
-	.from-user{
+	.is-host{
 		justify-content: flex-end;
 		.avatar{
 			justify-content: flex-end;
@@ -1959,30 +1983,8 @@ p{
 
 
 	}
+
 	
-	.to-user{
-		margin-right: auto;
-		.messages{
-			background: #F3F3F3;
-		}
-		.gr-messenger{
-			align-items: flex-start;
-		}
-	}
-	
-	// GROUP
-	.to-user,
-	.from-user{
-		width: 100%;
-		display: flex;
-		.gr-messenger{
-			width: auto;
-			max-width: 70%;
-			display: flex;
-			flex-flow: column nowrap;
-		}
-		
-	}
 }
 
 
@@ -2533,6 +2535,37 @@ p{
       width: 10px;
       height: 6px;
       background-image: url("data:image/svg+xml;charset=utf8,%3Csvg width='8' height='14' viewBox='0 0 8 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 13.0389L1 7.18308L7 1.32723' stroke='%23252831' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+   }
+}
+
+.order_filter_select{
+   text-align: center;
+   color: #252831;
+   font-size: 12px;
+   font-weight: 500;
+   padding: 0 30px;
+   padding-left: 16px;
+   height: 30px;
+   border-radius: 4px;
+   outline: none;
+   border: 1px solid #DADADA;
+   appearance: none;
+   &::-ms-expand {
+      display: none;
+   }
+
+}
+
+.select-wrapper{
+   position: relative;
+   .icon{
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
 
    }
 }

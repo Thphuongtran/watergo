@@ -314,7 +314,7 @@ createApp({
          form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
          form.append('datetime', String( datetime) );
          var r = await window.request(form);
-         // console.log(r);
+         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){

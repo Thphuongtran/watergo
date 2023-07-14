@@ -191,7 +191,7 @@ createApp({
             
             if( this.select_all_value == true ){
                this.carts = [];
-               localStorage.setItem('watergo_carts', '');
+               localStorage.setItem('watergo_carts', '[]');
             }else{
 
             //    this.carts.some( ( store, storeIndex ) => {
@@ -231,7 +231,11 @@ createApp({
                   }
                });
 
-               localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+               if( this.carts.length > 0){
+                  localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+               }else{
+                  localStorage.setItem('watergo_carts', '[]');
+               }
             }
          }
 
@@ -250,7 +254,11 @@ createApp({
                this.carts.splice(storeIndex, 1);
             }
          });
-         localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+         if( this.carts.length > 0){
+            localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+         }else{
+            localStorage.setItem('watergo_carts', '[]');
+         }
       },
 
       plusQuantityCount( product_id ){

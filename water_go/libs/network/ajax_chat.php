@@ -11,8 +11,8 @@ add_action( 'wp_ajax_atlantis_get_messages', 'atlantis_get_messages' );
 add_action( 'wp_ajax_nopriv_atlantis_send_messenger', 'atlantis_send_messenger' );
 add_action( 'wp_ajax_atlantis_send_messenger', 'atlantis_send_messenger' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_newest_messenger', 'atlantis_get_newest_messenger' );
-add_action( 'wp_ajax_atlantis_get_newest_messenger', 'atlantis_get_newest_messenger' );
+add_action( 'wp_ajax_nopriv_atlantis_get_newest_messages', 'atlantis_get_newest_messages' );
+add_action( 'wp_ajax_atlantis_get_newest_messages', 'atlantis_get_newest_messages' );
 
 add_action( 'wp_ajax_nopriv_atlantis_is_conversation_created_or_create', 'atlantis_is_conversation_created_or_create' );
 add_action( 'wp_ajax_atlantis_is_conversation_created_or_create', 'atlantis_is_conversation_created_or_create' );
@@ -252,7 +252,8 @@ function atlantis_get_messages(){
          wp_watergo_messages.conversation_id,
          wp_watergo_messages.message_id,  
          wp_watergo_messages.content,
-         wp_watergo_messages.user_id
+         wp_watergo_messages.user_id,
+         wp_watergo_messages.timestamp
          
       FROM wp_watergo_conversations
 
@@ -260,10 +261,9 @@ function atlantis_get_messages(){
       ON wp_watergo_messages.conversation_id = wp_watergo_conversations.conversation_id
       
       WHERE wp_watergo_conversations.conversation_id = $conversation_id
-      AND wp_watergo_messages.message_id NOT IN ($placeholders)
 
-      ORDER BY wp_watergo_messages.message_id DESC
-      LIMIT 0, 10
+      ORDER BY wp_watergo_messages.timestamp DESC
+      LIMIT 0, 20
       ";
 
       global $wpdb;
@@ -274,84 +274,36 @@ function atlantis_get_messages(){
          wp_die();
       }
 
+      // USING LEFT JOIN - REMOVE EFFECT LEFT JOIN
+      if( $res[0]->conversation_id == null ){
+         wp_send_json_error(['message' => 'message_not_found 3' ]);
+         wp_die();
+      }
+
       wp_send_json_success(['message' => 'message_found', 'data' => $res ]);
       wp_die();
 
    }
 }
 
-function atlantis_messenger_test(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_messenger_test' ){
-      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
-      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
-      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;   
-      global $wpdb;
-
-      $sql= "SELECT 
-         wp_watergo_messages.conversation_id,  
-         wp_watergo_messages.content,
-         wp_watergo_messages.user_id
-         
-         FROM wp_watergo_conversations
-         LEFT JOIN wp_watergo_messages
-         ON wp_watergo_messages.conversation_id = wp_watergo_conversations.conversation_id
-         WHERE wp_watergo_conversations.conversation_id = $conversation_id
-      ";
-
-      $sql2 = "SELECT 
-         wp_watergo_store.id,
-         wp_watergo_store.name
-            
-         FROM wp_watergo_store
-         LEFT JOIN wp_watergo_conversations
-         ON wp_watergo_store.id = wp_watergo_conversations.conversation_id
-         LEFT JOIN wp_watergo_messages
-         ON wp_watergo_messages.conversation_id = wp_watergo_conversations.conversation_id
-         WHERE 
-            wp_watergo_conversations.user_id = $user_id
-         AND 
-            wp_watergo_conversations.store_id = $store_id;
-	   ";
-
-      $res = $wpdb->get_results( $sql );
-      $res2 = $wpdb->get_results( $sql2 );
-      wp_send_json_success(['message' => 'message_found', 
-         'data' => $res, 
-         'data2' => $res2 
-      ]);
-   }
-}
 
 function atlantis_send_messenger(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_send_messenger' ){
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
+      $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
+      $chat_content     = isset($_POST['chat_content']) ? $_POST['chat_content'] : '';
+      $user_id          = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
 
-      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
-      $chat_content = isset($_POST['chat_content']) ? $_POST['chat_content'] : '';
-
-      if($chat_content == ''){
+      if($chat_content == '' || $conversation_id == 0 || $user_id == 0 ){
          wp_send_json_error(['message' => 'messenger_not_found 1' ]);
-         wp_die();
-      }
-
-      if( $conversation_id == 0 ){
-         wp_send_json_error(['message' => 'messenger_not_found 2' ]);
          wp_die();
       }
 
       global $wpdb;
 
       $args = [
-         'conversation_id' => (int) $conversation_id,
-         'user_id'         => (int) $user_id,
+         'conversation_id' => $conversation_id,
+         'user_id'         => $user_id,
          'content'         => $chat_content,
          'timestamp'       => time(),
          'is_read'         => 0
@@ -362,6 +314,7 @@ function atlantis_send_messenger(){
 
       if( $send_message ){
          wp_send_json_success(['message' => 'messenge_send_ok', 'data' => $args ]);
+         wp_die();
       }
       
       wp_send_json_error(['message' => 'messenger_not_found 3' ]);
@@ -370,49 +323,40 @@ function atlantis_send_messenger(){
    }
 }
 
-function atlantis_get_newest_messenger(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_newest_messenger' ){
+function atlantis_get_newest_messages(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_newest_messages' ){
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
+      $conversation_id        = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
+      $list_id_messenger      = isset($_POST['list_id_messenger']) ? $_POST['list_id_messenger'] : 0;
+
+      if($conversation_id == '' || $list_id_messenger == ''){
+         wp_send_json_error(['message' => 'newest_messenger_not_found' ]);
          wp_die();
       }
-
-      $chat_id             = isset($_POST['chat_id']) ? $_POST['chat_id'] : 0;
-      $list_id_messenger   = isset($_POST['list_id_messenger']) ? $_POST['list_id_messenger'] : '';
-
-      if( ! is_numeric($chat_id) || $chat_id == 0 ){
-         wp_send_json_error(['message' => 'chat_not_found' ]);
-         wp_die();
-      }
-
-      if($list_id_messenger == '' ){
-         wp_send_json_error(['message' => 'chat_not_found' ]);
-         wp_die();
-      }
-
 
       // convert json to array php
-      $list_id_messenger = json_decode( $list_id_messenger);
+      $list_id_messenger = json_decode( stripslashes( $list_id_messenger ) );
       // convert array php to string
       $list_id_messenger = implode(',', $list_id_messenger);
-      global $wpdb;
-      // $query = $wpdb->prepare("SELECT * FROM wp_watergo_messenger WHERE messenger_id NOT IN (%s) AND chat_id = %d", [ $list_id_messenger, $chat_id]);
-      $query = "SELECT * FROM wp_watergo_messenger WHERE messenger_id NOT IN($list_id_messenger) AND chat_id = $chat_id";
 
-      $res = $wpdb->get_results($query);
-
-   
-      if( empty( $res ) ){
-         wp_send_json_error(['message' => 'chat_not_found' ]);
-         wp_die();
+      if($list_id_messenger == '' ){
+         $list_id_messenger = 0;
       }
 
-      wp_send_json_success(['message' => 'chat_found', 'data' => $res, 'query' => $query]);
+
+      global $wpdb;
+      $sql = "SELECT * FROM wp_watergo_messages 
+         WHERE message_id NOT IN ($list_id_messenger) AND conversation_id = $conversation_id
+      ";
+
+
+      $res = $wpdb->get_results($sql);
+      // wp_send_json_success(['message' => 'ok', 'test' => $res ]);
+      if( empty( $res ) ){
+         wp_send_json_error(['message' => 'newest_messenger_not_found', 'list_id' => $list_id_messenger ]);
+         wp_die();
+      }
+      wp_send_json_success(['message' => 'newest_messenger_ok', 'data' => $res]);
       wp_die();
 
    }

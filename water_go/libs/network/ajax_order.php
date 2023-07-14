@@ -743,8 +743,6 @@ function atlantis_get_order_schedule(){
             wp_watergo_order.order_status = 'confirmed'
          AND
             wp_watergo_order.order_id NOT IN ($placeholders)
-         AND
-            wp_watergo_order_time_shipping.order_time_shipping_datetime = '$datetime'
          
          
       ";
@@ -759,13 +757,13 @@ function atlantis_get_order_schedule(){
       if( $filter == 'weekly'){
          $sql .= "
             AND wp_watergo_order.order_delivery_type = 'weekly'
-         ";
+         $sql .= " AND wp_watergo_order.order_delivery_type = 'weekly' ";
       }
       if( $filter == 'monthly'){
-         $sql .= "
-            AND wp_watergo_order.order_delivery_type = 'monthly'
-         ";
+         $sql .= " AND wp_watergo_order.order_delivery_type = 'monthly' ";
       }
+
+      $sql .= "AND wp_watergo_order_time_shipping.order_time_shipping_datetime = '$datetime'";
 
       // DATE TIME
 
@@ -779,7 +777,7 @@ function atlantis_get_order_schedule(){
       $res = $wpdb->get_results($sql);
 
       if( empty( $res ) ){
-         wp_send_json_error(['message' => 'no_order_found 1']);
+         wp_send_json_error(['message' => 'no_order_found 1',  'datetime' => $datetime, 'filter' => $filter, 'sql' => $sql ]);
          wp_die();
       }
 
@@ -794,11 +792,11 @@ function atlantis_get_order_schedule(){
             $orders[$k]['order_time_shipping'] = func_atlantis_get_order_time_shipping_single_record( $vl['store_order_time_shipping_id'] );
          }
 
-         wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders, 'datetime' => $datetime, 'filter' => $filter ]);
+         wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders]);
          wp_die();         
       }
 
-      wp_send_json_error(['message' => 'no_order_found 2' ]);
+      wp_send_json_error(['message' => 'no_order_found 2']);
       wp_die();
 
    }
@@ -1117,6 +1115,8 @@ function atlantis_order_status(){
          }
       }
 
+      $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+
       global $wpdb;
 
       if( ! empty( $wheres )){
@@ -1247,6 +1247,8 @@ function atlantis_order_status(){
 
                         $next_closest_day = $sortedArray[$next_index];
 
+                        // PREVIOUS DAY - FUTURE DAY
+
                         foreach ($arr as $item) {
                            if ($item->order_time_shipping_day === $next_closest_day) {
                               return $item;
@@ -1324,7 +1326,7 @@ function atlantis_order_status(){
             $wpdb->prepare(
                "UPDATE wp_watergo_order
                SET order_status = %s, $order_time
-               WHERE order_id IN (". implode(',', array_fill(0, count($wheres), '%d')) . ")",
+               WHERE order_id IN ($placeholders)",
                // FILL DATA
                $order_status,
                $timestamp,
@@ -1375,7 +1377,7 @@ function atlantis_order_callback(){
 
       $sql = "SELECT *,
          wp_watergo_store.name as store_name,
-         wp_watergo_products.name as product_name,
+         wp_watergo_products.name a qs product_name,
 
          p1.url as product_image
          

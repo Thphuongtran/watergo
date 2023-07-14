@@ -189,3 +189,28 @@ function language_custom($locale) {
 
   switch_to_locale($locale);
 }
+
+function adjustDay($day) {
+    $currentDay = date('d');
+    $currentMonth = date('m');
+    $currentYear = date('Y');
+
+    // Convert the day parameter to an integer
+    $day = intval($day);
+
+    // Check if the current day is greater than the given day
+    if ($currentDay > $day) {
+        // Check if the current month is December
+        if ($currentMonth === '12') {
+            // Increment the current year
+            $currentYear++;
+        }
+        // Adjust the day to the next year with the given day and month
+        $adjustedDate = sprintf('%02d/%02d/%04d', $day, $currentMonth, $currentYear);
+    } else {
+        // Adjust the day to the current year with the given day and month
+        $adjustedDate = sprintf('%02d/%02d/%04d', $day, $currentMonth, $currentYear);
+    }
+
+    return $adjustedDate;
+}

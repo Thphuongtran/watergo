@@ -907,7 +907,7 @@ createApp({
                         _delivery_data.monthly[i] = {
                            day: get_day_monthly,
                            time: get_time_monthly,
-                           datetime: window.get_fulldate_from_day(get_day_monthly)
+                           datetime: window.compare_day_with_currentDate(get_day_monthly)
                         };
                      }
 

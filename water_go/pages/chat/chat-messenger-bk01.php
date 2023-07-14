@@ -42,20 +42,20 @@
 
       <ul class='list-messenger'>
 
+         
          <li
-            v-if='messengers.length > 0'
+            v-if='filter_messengers.length > 0'
             v-for='(messenger, messengerKey) in filter_messengers' :key='messengerKey'
             :class='get_class_layout_for_message(messenger)'
          >
             <div class='avatar'>
-               <img :src="get_avatar_user_chat(messenger)" >
+               <img :src="get_avatar_user_chat(messenger)">
             </div>
 
             <div class='gr-messenger'>
-               <div class='messages'
-                  v-for='(messages, messagesKey) in messenger.messages' :key='messagesKey'
-               >
-               {{ messages.content }}
+               <div :id='message.message_id' v-for='( message, messageKey ) in messenger.messages' :key='messageKey' 
+                  class='messages'>
+                  {{ message.content }}
                </div>
             </div>
 
@@ -134,7 +134,6 @@ createApp({
       
 
       goBack(){ window.goBack();},
-      timestamp_to_fulldate(t){ return window.timestamp_to_fulldate(t)},
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
       get_image_upload( url ){ return window.get_image_upload( url ); },
       get_product_quantity(product){ return window.get_product_quantity(product)},
@@ -153,44 +152,26 @@ createApp({
          }
       },
 
-      get_class_layout_for_message( messenger ){
+      get_class_layout_for_message( messenger  ){
 
-         if( messenger.host_chat == this.host_chat ){
+         if( this.host_chat == messenger.host_chat ){
             return 'is-host';
          }
       },
 
-      handleScroll() {
-         (function($){
-            $(document).ready(function(){
-               $('html, body').animate({scrollTop: $(document).height()}, 800);
-            });
-         })(jQuery);
-      },
+      // async get_new_messenger_per_second(){
+      //    var form = new FormData();
+      //    form.append('action', 'atlantis_get_newest_messenger');
+      //    form.append('conversation_id', parseInt(this.conversation_id));
+      //    form.append('list_id_messenger', JSON.stringify( this.list_id_messenger));
+      //    var r = await window.request(form);
+      //    if(r != undefined){
+      //       if( r.message == 'chat_found' ){
+      //          this.messengers.push( ...r.data);
+      //       }
+      //    }
 
-      async get_new_messenger_per_second(){
-         var list_id_messenger = [];
-         this.messengers.forEach( message => {
-            list_id_messenger.push( message.message_id );
-         });
-
-         var form = new FormData();
-         form.append('action', 'atlantis_get_newest_messages');
-         form.append('conversation_id', this.conversation_id);
-         form.append('list_id_messenger', JSON.stringify(list_id_messenger ));
-         var r = await window.request(form);
-         if(r != undefined){
-            var res = JSON.parse( JSON.stringify( r) );
-            if( res.message == 'newest_messenger_ok' ){
-               if( res.data != undefined ){
-                  res.data.forEach( item => {
-                     this.messengers.push(item );
-                  });
-
-               }
-            }
-         }
-      },
+      // },
 
       async btn_send_robot_message(rb_message ){
          // TESTING
@@ -247,38 +228,46 @@ createApp({
             if( this.host_chat == 'user' ){
                form.append('user_id', this.account.user_account.user_id );
             }
+
             var r = await window.request(form);
             if( r != undefined){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'messenge_send_ok' ){
-                  this.messengers.push( res.data );
-                  this.handleScroll();
+                  this.messengers.push( r.data );
                }
             }
             this.chat_content = '';
          }
       },
 
-      async get_messages( ){
+      async get_messages( id_already_exists ){
+         if( id_already_exists == undefined || id_already_exists == null ){
+            id_already_exists = [0];
+         }
          var form = new FormData();
          form.append('action', 'atlantis_get_messages');
          form.append('conversation_id', this.conversation_id);
+         form.append('id_already_exists', JSON.stringify( id_already_exists ) );
+
          var r = await window.request(form);
          console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if(res.message == 'message_found'){
-               this.messengers.push( ...res.data );
-               
+               res.data.forEach( item => {
+                  if (!this.messengers.some(existingItem => existingItem.message_id === item.message_id)) {
+                     this.messengers.push(item);
+                  }
+               });
             }
          }
-
       },
 
       get_username( user ){
          if( user.first_name == undefined ) return user.display_name;
          return user.first_name;
       }, 
+
 
       isLastItem(array, item) {
          var lastIndex = array.length - 1;
@@ -367,10 +356,12 @@ createApp({
                conversation_id: message.conversation_id,
                content: message.content,
                message_id: message.message_id,
-               user_id: message.user_id,
-               timestamp: message.timestamp
+               user_id: message.user_id
             });
          }
+
+         console.log(result)
+
          return result;
       }
    },
@@ -379,10 +370,7 @@ createApp({
       getCurrentDateTime(){ return window.getCurrentDateTime(); },
 
       filter_messengers(){
-         if( this.messengers.length == 0) return [];
-         let sortedMessengers = this.messengers.sort((a, b) => a.timestamp - b.timestamp);
-         var _groupMessages = this.groupMessagesByUser(sortedMessengers);
-         return _groupMessages;
+         return this.groupMessagesByUser(this.messengers);
       }
 
    },
@@ -420,20 +408,7 @@ createApp({
 
       window.appbar_fixed();
 
-      (function($){
-         $(document).ready(function(){
-            $('html, body').animate({
-               scrollTop: $(document).height()
-            }, 800);
-         });
-      })(jQuery);
-
-      setInterval( async () => {
-         await this.get_new_messenger_per_second();
-      }, 30000);
-
       this.loading = false;
-
 
    }
 }).mount('#app');

@@ -31,7 +31,8 @@
 
             </div>
          </div>
-         <div class='appbar-bottom'>
+         <div class='appbar-bottom' :class='orders.length > 0 ? "style02" : ""'>
+
             <ul class='navbar style02'>
                <li @click='select_filter(filter.label)' v-for='(filter, index) in order_status_filter' 
                   :key='index' 
@@ -39,34 +40,33 @@
             </ul>
 
             <div v-if='order_filter.length > 0' class='order-store-header'>
-               <button @click='filter_order_by_select' class='btn-filter'>
-                  <span class='filter-text'>{{filter_order_by}}</span>
-                  <span class='filter-icon'>
+               <div class='select-wrapper'>
+                  <select v-model='order_by_filter_select' class='order_filter_select'>
+                     <option :value="{ value: 'desc' } ">New first</option>
+                     <option :value="{ value: 'asc' }">Old first</option>
+                  </select>
+                  <div class='icon'>
                      <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M1.5 1L5.5 5L9.5 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
-                  </span>
-               </button>
+                  </div>
+               </div>
 
                <div class='count-order'>Total order: <span >{{total_order}}</span> </div>
             </div>
 
-            <div v-if='
-               order_filter.length > 0 && 
-               get_order_status_filter_value != "complete" && 
-               get_order_status_filter_value != "cancel"
-               ' class='order-store-action'>
+            <div v-show='order_filter.length > 0 && ( order_status_current != "complete" && order_status_current != "cancel") ' class='order-store-action'>
                <div class='form-check'>
                   <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
                   <label @click='select_all_item'>Select All</label>
                </div>
 
                <div class='action-all'>
-                  <button v-if='get_order_status_filter_value == "ordered" ' @click='btn_action_confirm_all' class='btn-action-confirm'>Confirm</button>
-                  <button v-if='get_order_status_filter_value == "ordered"' @click='btn_action_cancel_all' class='btn-action-cancel'>Cancel</button>
+                  <button v-if='order_status_current == "ordered" ' @click='btn_action_all("confirmed")' class='btn-action-confirm'>Confirm</button>
+                  <button v-if='order_status_current == "ordered"' @click='btn_action_all("cancel")' class='btn-action-cancel'>Cancel</button>
                   
-                  <button v-if='get_order_status_filter_value == "confirmed"' @click='btn_action_delivery_all' class='btn-action-cancel'>Delivery</button>
-                  <button v-if='get_order_status_filter_value == "delivering"' @click='btn_action_complete_all' class='btn-action-cancel'>Complete</button>
+                  <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'>Delivery</button>
+                  <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'>Complete</button>
 
                </div>
             </div>
@@ -74,19 +74,14 @@
          </div>
       </div>
 
-      
-
-      
-      <div v-if='get_order_status_filter_value == "complete" || get_order_status_filter_value == "cancel"' class='break-line'></div>
 
       <ul class='list-order style-store'>
          
          <li v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
             <label @click='select_item(order.order_id)' class='order-head'>
-               <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check'><input disabled type='checkbox' :checked='order.is_select'></div>
+               <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check'><input disabled type='checkbox' :checked='order.select'></div>
                <!--  -->
                <span class='text-order-number'>#{{ order.order_number }}</span>
-
                <span class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</span>
             </label>
             <div class='order-time'>
@@ -122,20 +117,21 @@
                <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} product</span>
                <span class='total-price'>Total: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
             </div>
+
             <div class='order-func'>
                <button @click='gotoOrderStoreDetail(order.order_id)' class='btn-action-view'>View</button>
                <button 
                   v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_status(order.order_id, "confirmed")' class='btn-action-confirm'>Confirm</button>
+                  @click='btn_action_order_status([order.order_id], "confirmed")' class='btn-action-confirm'>Confirm</button>
                <button 
                   v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_status(order.order_id, "cancel")' class='btn-action-cancel'>Cancel</button>
+                  @click='btn_action_order_status([order.order_id], "cancel")' class='btn-action-cancel'>Cancel</button>
                <button 
                   v-if='order.order_status == "confirmed"' 
-                  @click='btn_action_order_status(order.order_id, "delivering")' class='btn-action-cancel'>Delivery</button>
+                  @click='btn_action_order_status([order.order_id], "delivering")' class='btn-action-cancel'>Delivery</button>
                <button 
                   v-if='order.order_status == "delivering"' 
-                  @click='btn_action_order_status(order.order_id, "complete")' class='btn-action-cancel'>Complete</button>
+                  @click='btn_action_order_status([order.order_id], "complete")' class='btn-action-cancel'>Complete</button>
             </div>
 
          </li>
@@ -155,7 +151,7 @@
          <p class='heading'>Do you want to confirm <span class='t-primary'>All Order</span>?</p>
          <div class='actions'>
             <button @click='btn_modal_cancel_all' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_modal_confirm_all' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_do_all_action' class='btn btn-primary'>Confirm</button>
          </div>
       </div>
    </div>
@@ -164,21 +160,19 @@
          <p class='heading'>Do you want to delivering <span class='t-primary'>All Order</span>?</p>
          <div class='actions'>
             <button @click='btn_modal_cancel_all' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_submit_delivering_all' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_do_all_action' class='btn btn-primary'>Confirm</button>
          </div>
       </div>
    </div>
    <div v-show='popup_complete_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p class='heading'>Do you want to compete <span class='t-primary'>All Order</span>?</p>
+         <p class='heading'>Do you want to complete <span class='t-primary'>All Order</span>?</p>
          <div class='actions'>
             <button @click='btn_modal_cancel_all' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_submit_complete_all' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_do_all_action' class='btn btn-primary'>Confirm</button>
          </div>
       </div>
    </div>
-   
-
    <div v-show='popup_cancel_all_item == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
          <p class='tt01'>Why do you want to cancel <span class='t-primary'>All Order</span>?</p>
@@ -192,7 +186,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='btn_submit_cancel_all' class='btn btn-primary'>Submit</button>
+            <button @click='btn_do_all_action' class='btn btn-primary'>Submit</button>
          </div>
       </div>
    </div>
@@ -221,10 +215,15 @@ createApp({
          paged: 0,
 
          is_select_all: false,
-
-         filter_order_by: 'Old first',
+         status_change_all: '',
 
          orders: [],
+
+         order_by_filter_select: {
+            value: 'desc'
+         },
+
+         order_id_selected: [],
 
          order_status_current: 'ordered',
          order_status_filter: [ 
@@ -261,38 +260,6 @@ createApp({
          this.orders.some(item => item.is_select = false);
       },
 
-      async btn_modal_confirm_all(){ 
-         var order_ids = this.get_all_ids_order();
-         if( order_ids.length > 0 ){
-            await this.btn_action_order_status(order_ids, 'confirmed');
-         }
-         this.popup_confirm_all_item = false;
-      },
-
-      async btn_submit_cancel_all(){
-         var order_ids = this.get_all_ids_order();
-         if( order_ids.length > 0 ){
-            await this.btn_action_order_status(order_ids, 'cancel');
-         }
-         this.popup_cancel_all_item = false;
-      },
-
-      async btn_submit_delivering_all(){
-         
-         var order_ids = this.get_all_ids_order();
-         if( order_ids.length > 0 ){
-            await this.btn_action_order_status(order_ids, 'delivering');
-         }
-         this.popup_delivering_all_item = false;
-      },
-
-      async btn_submit_complete_all(){
-         var order_ids = this.get_all_ids_order();
-         if( order_ids.length > 0 ){
-            await this.btn_action_order_status(order_ids, 'complete');
-         }
-         this.popup_complete_all_item = false;
-      },
 
       btn_modal_cancel_all(){ 
          this.popup_confirm_all_item = false;
@@ -301,121 +268,75 @@ createApp({
          this.popup_complete_all_item = false;
       },
 
-      btn_action_confirm_all(){ if(this.is_select_all == true) this.popup_confirm_all_item = true; },
-      btn_action_cancel_all(){ if(this.is_select_all == true) this.popup_cancel_all_item = true;},
-      btn_action_delivery_all(){ if(this.is_select_all == true) this.popup_delivering_all_item = true;},
-      btn_action_complete_all(){ if(this.is_select_all == true) this.popup_complete_all_item = true;},
+      async btn_action_order_status(order_ids, order_status){
 
-      get_all_ids_order(){
-         var list_ids = [];
-         if( this.is_select_all == true ){
-            this.popup_select_all_item = true;
-            this.orders.forEach(item => {
-               if(item.is_select == true ){
-                  list_ids.push(parseInt(item.order_id));
-               }
-            });
-         }
-         return list_ids;
-      },
-
-
-      async btn_action_order_status(order_id, order_status){
-         var ods = [];
-         if (Array.isArray(order_id)) {
-            ods = order_id.map(id => parseInt(id));
-         } else {
-            ods.push(parseInt(order_id));
-         }
          var timestamp = Math.floor(Date.now() / 1000);
-
          var form = new FormData();
          form.append('action', 'atlantis_order_status');
-         form.append('order_id', JSON.stringify(ods));
+         form.append('order_id', JSON.stringify(order_ids));
          form.append('status', order_status);
          form.append('timestamp', timestamp);
          var r = await window.request(form);
-         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
-               for(var i = 0; i < ods.length; i++ ){
-                  var _getOrder = this.orders.find(item => item.order_id == ods[i] );
-
-                  if( _getOrder ){
-                     if(order_status == 'confirmed'){
-                        _getOrder.order_status = 'confirmed';
-                        _getOrder.order_time_confirmed = timestamp;
-                     }
-                     if(order_status == 'cancel'){
-                        _getOrder.order_status = 'cancel';
-                        _getOrder.order_time_cancel = timestamp;
-                     }
-                     if(order_status == 'delivering'){
-                        _getOrder.order_status = 'delivering';
-                        _getOrder.order_time_delivery = timestamp;
-                     }
-                     if(order_status == 'complete'){
-                        _getOrder.order_status = 'complete';
-                        _getOrder.order_time_completed = timestamp;
-                        
-                        // callback order
-                        if( _getOrder.order_delivery_type == 'weekly' ||
-                           _getOrder.order_delivery_type == 'monthly'
-                        ){
-                           // GET BACK ORDER
-                           var _list_id = [];
-                           this.orders.forEach(item => {
-                              _list_id.push( parseInt( item.order_id ));
-                           });
-
-                           var callback = new FormData();
-                           callback.append('action', 'atlantis_order_callback');
-                           callback.append('order_id', JSON.stringify(_list_id));
-                           var _r = await window.request(callback);
-                           if( _r != undefined ){
-                              var _res = JSON.parse( JSON.stringify( _r ));
-                              if( _res.message == 'order_callback_ok' ){
-                                 this.orders.push(..._res.data);
-                              }
-                           }
-                        }
-                     }
-
-                  }
-               }
-
-            }
-            
+               await this.reset_get_order_store();
+            }  
          }
       },
 
+      // BUTTON SHOW POPUP MODEL WHEN TOGGLE SELECT OR SINGLE PRODUCT
+      btn_action_all( change_status ){
+         if( this.order_status_current == 'ordered' ) this.popup_confirm_all_item = true;
+         if( this.order_status_current == 'confirmed' ) this.popup_delivering_all_item = true;
+         if( this.order_status_current == 'delivering' ) this.popup_complete_all_item = true;
+         if( this.order_status_current == 'cancel' ) this.popup_cancel_all_item = true;
+
+         this.status_change_all = change_status;
+      },
+
+      // BUTTON DO ALL ACTION
+      async btn_do_all_action(){
+         
+         var order_ids = [];
+         this.orders.forEach( od => {
+            if( od.select == true ){
+               order_ids.push( parseInt( od.order_id) );
+            }
+         });
+
+
+         if( order_ids.length > 0 ){
+            this.btn_modal_cancel_all();
+            await this.btn_action_order_status(order_ids, this.status_change_all );
+            await this.reset_get_order_store();
+            this.status_change_all = '';
+         }
+
+      },
+
+      async reset_get_order_store(){
+         this.loading = true;
+         await this.get_count_total_order();
+         this.paged = 0;
+         this.orders = [];
+         this.total_count = 0;
+         this.order_by_filter_select = { value: 'desc' };
+         await this.get_order_store(this.order_status_current, this.paged);
+         window.appbar_fixed();
+         this.loading = false;
+      },
 
       select_all_item(){
          this.is_select_all = !this.is_select_all;
-         this.orders.forEach(item => {
-            var activeStatus = this.order_status_filter.find(status => status.active == true && status.label == item.order_status );
-            if( this.is_select_all && activeStatus ){
-               item.is_select = true;
-            }else{
-               item.is_select = false;
-            }
-         });
-      },
-
-      filter_order_by_select(){
-         if(this.filter_order_by == 'Old first'){
-            this.filter_order_by = 'New first';
-         }else{
-            this.filter_order_by = 'Old first';
-         }
+         this.orders.forEach(item => item.select = this.is_select_all );
       },
 
       select_item( order_id ){
+         this.is_select_all = false;
          this.orders.forEach(order => {
-            this.is_select_all = false;
             if( order.order_id == order_id ){
-               order.is_select = !order.is_select;
+               order.select = !order.select;
             }
          });
       },
@@ -530,7 +451,7 @@ createApp({
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
                res.data.forEach( order => {
-                  order => order.is_select = false;
+                  order.select = false;
                   if( !this.orders.some( existingItem => existingItem.order_id === order.order_id )){
                      this.orders.push( order );
                   }
@@ -552,7 +473,7 @@ createApp({
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
-         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         if (scrollPosition + windowHeight + 10 >= documentHeight) {
 
             await this.get_order_store( this.order_status_current, this.paged++ );
          }
@@ -570,39 +491,32 @@ createApp({
    // STREAM ORDER STATUS -> reload order
    watch: {
       order_status_current: async function( filter ){
-         console.log('stream status');
+         this.loading = true;
+         await this.get_count_total_order();
          this.paged = 0;
          this.orders = [];
-         this.loading = true;
+         this.total_count = 0;
+         this.order_by_filter_select = { value: 'desc' };
          await this.get_order_store(filter, this.paged);
+         window.appbar_fixed();
          this.loading = false;
-
-      }
+      },
    },
 
    computed: {
       
-      get_total_order(){
-         var _find = this.order_status_filter.find(item => item.active == true );
-         return _find.count;
-      },
-
-      get_order_status_filter_value(){
-         var _value = this.order_status_filter.find(item => item.active == true );
-         if(_value){
-            return _value.label;
-         }
-         return '';
-      },
-
       order_filter(){
          var _filter_orders = this.orders;
 
-         if(this.filter_order_by == 'Old first'){
+         if(this.order_by_filter_select.value == 'asc'){
             _filter_orders.sort((a,b) => a.order_time_created - b.order_time_created );
          }
-         else if(this.filter_order_by == 'New first'){
+         if(this.order_by_filter_select.value == 'desc'){
             _filter_orders.sort((a,b) => b.order_time_created - a.order_time_created );
+         }
+
+         if( _filter_orders.length == 0 ){
+            return [];
          }
 
          return _filter_orders;
@@ -614,8 +528,7 @@ createApp({
       this.loading = true;
 
       await this.get_count_total_order();
-      await this.get_order_store( this.order_status_current, 0 );
-      
+      await this.get_order_store( this.order_status_current, 0 );      
       
       this.loading = false;
 
