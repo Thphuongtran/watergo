@@ -1,0 +1,113 @@
+:root {
+  --primary-gray: #F1F1F1;
+  --secondary-gray: #7B7D83;
+  --tertiary-gray: #F9F9F9;
+  --quaternary-gray: #E1E1E1;
+  --quinary-gray: #EAEFF4;
+  --senary-gray: #F5F5F5;
+  --septenary-gray: #8F8F8F;
+  --octonary-gray: #8A8A8F;
+  --nonary-gray: #C9C9C9;
+  --denary-gray: #666666;
+  --undenary-gray: #989898;
+
+  --primary-blue: #2790F9;
+
+  --primary-red: #FF4848;
+  --secondary-red: #FF5656;
+
+  --primary-green: #13E800;
+
+  --primary-black: #252831;
+  --secondary-black: #00000029;
+  --tertiary-black: #252831;
+  
+  --primary-white: #FFFFFF;
+
+  --primary-border: #DADADA;
+  --secondary-border: #A2A2A2;
+  --tertiary-border: #D5D5D5;
+  --quaternary-border: #EBEBE6;
+  --quinary-border: #6F6F6F;
+  --senary-border: #D3D3D3;
+
+
+  --primary-shadow-black: #00000024;
+  --secondary-shadow-black: #0000001A;
+  --tertiary-shadow-black: #0000001F;
+
+  --primary-overlay-black: #00000033;
+}
+
+.overlay-popup {
+  background-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}
+
+.overlay-popup .date-picker-popup {
+  width: 90%;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.overlay-popup .date-picker-popup button.button {
+  padding: inherit;
+}
+
+.overlay-popup .confirm-model {
+  width: 380px;
+  height: 140px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--primary-white);
+  display: flex;
+  flex-direction: column;
+  row-gap: 23px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+}
+
+.overlay-popup .confirm-model p {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.overlay-popup .confirm-model div {
+  display: flex;
+  column-gap: 10px;
+}
+
+.overlay-popup .confirm-model div button {
+  width: 120px;
+  height: 36px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.overlay-popup .confirm-model div button:first-child {
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  background: var(--primary-white);
+}
+
+.overlay-popup .confirm-model div button:last-child {
+  color: var(--primary-white);
+  background: var(--primary-blue);
+}
+
+
+

@@ -160,6 +160,11 @@ function common_get_product_price( price, discount_percent ){
    return parseInt(_price).toLocaleString('vi-VN') + ' đ';
 }
 
+function priceFormat(price) {
+   return price === 0 ? 0 + "đ" : parseInt(price).toLocaleString('vi-VN') + "đ";
+}
+
+
 function get_fulldate_from_day( day ){
    const currentDate = new Date(); // Get the current date
    const currentMonth = currentDate.getMonth() + 1; // Months are zero-based, so we add 1
@@ -620,8 +625,25 @@ async function is_conversation_created_or_create( user_id, store_id){
    }
 }  
 
+// format date in product form
+function formatDate(dateString) {
+   const date = new Date(dateString);
+   if (date instanceof Date && !isNaN(date)) {
+     const days = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+     const months = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+     const years = date.getFullYear();
+     return days + "/" + months + "/" + years;
+     
+   }
 
-// SCHEDULE Order Detail
-function gotoScheduleOrderDetail( order_id ){
-   window.location.href = window.watergo_domain + 'schedule/?schedule_page=page-schedule-detail&order_id=' + order_id + '&appt=N';
+   return "00/00/0000";
+ }
+
+function redirectTo(url) {
+	window.history.pushState({ prevUrl: window.watergo_domain }, null, url);
+	window.location.replace(window.watergo_domain + url);
+}
+
+function redirectBack() {
+	window.history.back();
 }
