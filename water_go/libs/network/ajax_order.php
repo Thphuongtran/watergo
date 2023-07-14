@@ -755,8 +755,6 @@ function atlantis_get_order_schedule(){
          ";
       }
       if( $filter == 'weekly'){
-         $sql .= "
-            AND wp_watergo_order.order_delivery_type = 'weekly'
          $sql .= " AND wp_watergo_order.order_delivery_type = 'weekly' ";
       }
       if( $filter == 'monthly'){
