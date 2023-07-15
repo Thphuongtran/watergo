@@ -367,27 +367,16 @@ createApp({
 
    computed: {
       get_layout_text_price(){
-         // if( this.order.order_repeat_id != 0 &&
-         //    ( this.order.order_status == "ordered" || this.order.order_status == "confirmed" ) ){
-         //       return "t-right";
-         //    }else{
-         //       return "";
-         //    }
 
          if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering"){
             return "t-right";
          }else{
-            
             // IF CANCEL WITH repeat
             if( this.order.order_status == "cancel" && this.order.order_repeat_id != 0 ){
                return "t-right";
             }
-
             return "";
-
          }
-
-
 
       },
 

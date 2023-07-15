@@ -1,11 +1,6 @@
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-
 <div id='app'>
 
-   <component-delivery-address ref='component_delivery_address'></component-delivery-address>
-
-   <div v-if='loading == false && delivery_address_open == false' class='page-product-order'>
+   <div v-show='loading == false' class='page-product-order'>
       
       <div class='appbar style01 fixed'>
          <div class='appbar-top'>
@@ -107,7 +102,7 @@
 
             <div v-show='delivery_type.once_date' class='group-select-delivery-time'>
                <div class='btn-wrapper-order'>
-                  <input type='text' value='' class='btn_select_date_once btn-dropdown' placeholder='Select date'>
+                  <input type='text' value='' class='btn_select_date_once btn-dropdown' placeholder='Select date' readonly>
                </div>
                <div class='btn-wrapper-order'>
                   <select class='btn_select_time_once btn-dropdown'>
@@ -175,7 +170,7 @@
             <div v-show='delivery_type.monthly' class='deliverySelect_monthly'>
                <div class='group-select-delivery-time'>
                   <div class='btn-wrapper-order'>
-                     <input type='text' value='' class='btn_select_monthly btn-dropdown' placeholder='Select date'>
+                     <input type='text' value='' class='btn_select_monthly btn-dropdown' placeholder='Select date' readonly>
                   </div>
                   <div class='btn-wrapper-order'>
                      <select class='btn_select_monthly_time btn-dropdown'>
@@ -215,34 +210,36 @@
          <button id='buttonPlaceOrder' ref='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary disabled'>Place Order</button>
       </div>
 
+      
    </div>
    
-   <div v-if="loading == true">
+
+   <div v-show="loading == true">
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
       </div>
    </div>
 
-   <div v-if='banner_open == true && carts.length > 0' class='banner'>
+   <div v-show='banner_open == true' class='banner'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-
          <h3>Order Successfully</h3>
       </div>
-
       <div class='banner-footer'>
          <button @click='goBack' class='btn btn-outline'>Exit</button>
       </div>
    </div>
 
+   <component-delivery-address ref='component_delivery_address'></component-delivery-address>
+
+
 </div>
 
-<script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>
-<script type='module'>
 
+<script type='module' setup>
 
 var { createApp } = Vue;
 
@@ -471,7 +468,7 @@ createApp({
          var _dom = `
             <div class='group-select-delivery-time group-select-delivery-time_parent'>
                <div class='btn-wrapper-order'>
-                  <input type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date'>
+                  <input type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
                </div>
                <div class='btn-wrapper-order'>
                   <select class='btn_select_monthly_time btn-dropdown'>
@@ -718,6 +715,7 @@ createApp({
 
       // SETUP DATE PICKER
 
+      this.loading = true;
 
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
 
@@ -744,14 +742,6 @@ createApp({
                $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
             }
 
-               // #select_type01,
-               // #select_type02,
-               // #select_type03,
-               // #select_delivery_time_Immediately,
-               // #select_delivery_time_Date-Time,
-
-               // .btn_select_date_once,
-               // .btn_select_time_once
             var listenable = `.select_delivery_time`;
             var get_type_listenable = null;
 
@@ -932,7 +922,13 @@ createApp({
          });
       })(jQuery);
       
-      window.appbar_fixed();
+
+      setTimeout(() => {
+         this.loading = false;
+         window.appbar_fixed();
+      }, 500);
+
+      
    },
    
 
@@ -941,3 +937,6 @@ createApp({
 .mount('#app');
 </script>
 
+<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+<script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>

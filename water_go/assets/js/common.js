@@ -1,6 +1,46 @@
 /**
  * @access GLOBAL FUNCTION JS COMMON
  */
+function check_cart_is_exists(){
+   var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+   if( _cartItems == undefined ){
+      localStorage.setItem('watergo_carts', '[]');
+   }
+}
+function add_item_to_cart( item ){
+
+   var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+
+   if( _cartItems && _cartItems.length == 0 ){
+      _cartItems.push(item);
+      localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+   }else{
+      var _store_id     = item.store_id;
+      var _product_id   = item.products[0].product_id;
+      var _product_quantity_count = item.products[0].product_quantity_count;
+      var _product_max_stock = item.products[0].product_max_stock;
+
+      _cartItems.forEach( ( cart, indexCart ) => {
+         // NO STORE in cart
+         if( cart.store_id != _store_id ){
+            _cartItems.push( item );
+            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+         // Store EXISTS => update product_quantity_count
+         }else{
+
+            var _findProduct = cart.products.find( p => p.product_id == _product_id );
+            if( _findProduct ){
+               _findProduct.product_quantity_count = _product_quantity_count;
+               _findProduct.product_max_stock      = _product_max_stock;
+            }else{
+               _cartItems[indexCart].products.push( item.products[0] );
+            }
+
+            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+         }
+      });
+   }
+}
 
 function compare_day_with_currentDate(day) {
   var currentDate = new Date();

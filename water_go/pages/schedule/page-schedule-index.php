@@ -49,7 +49,7 @@
                
                <div class='order-store-header style01 border-bottom-large ' stlye=''>
                   <div class='datepicker-wrapper'>
-                     <input @click='datePicker(true)' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' disable>
+                     <input @click='datePicker(true)' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' disable readonly>
                      <span class='icon-dropdown'></span>
                   </div>
                   <div class='count-order'>Total order: <span>{{ get_total_orders_count }}</span></div>

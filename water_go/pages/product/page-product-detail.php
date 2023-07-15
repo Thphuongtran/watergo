@@ -214,55 +214,25 @@ createApp({
             }
          }
          if( this.check_can_order == true ){
-            var _cartItem = [
-               {
-                  store_id: this.store.id,
-                  store_name: this.store.name,
-                  store_select: false,
-                  products: [
-                     { 
-                        product_id: this.product.id, 
-                        product_max_stock: this.product.stock,
-                        product_name: this.product.name, 
-                        product_quantity_count: this.product_quantity_count, 
-                        product_quantity: this.get_product_quantity(this.product), 
-                        product_price: this.product.price,
-                        product_discount_percent: this.has_discount(this.product) ? this.product.discount_percent : 0,
-                        // TEST WHEN USER GO TO ORDER PAGE
-                        product_select: false
-                        // product_select: true 
-                     },
-                  ]
-               }
-            ];
-            var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-
-            // Check if the cart items exist in Local Storage
-            if (_cartItems && _cartItems.length > 0) {
-               // Check if the store exists in the cart items
-               var _indexStore = _cartItems.findIndex(item => item.store_id === _cartItem[0].store_id);
-               
-               if (_indexStore !== -1) {
-                  // Update the quantity of the existing product in the store
-                  var _indexProduct = _cartItems[_indexStore].products.findIndex(product => product.product_id === _cartItem[0].products[0].product_id);
-                  
-                  if (_indexProduct !== -1) {
-                     _cartItems[_indexStore].products[_indexProduct].product_quantity_count = _cartItem[0].products[0].product_quantity_count;
-                     _cartItems[_indexStore].products[_indexProduct].product_select = true;
-                  } else {
-                     // Add the new product to the existing store
-                     _cartItems[_indexStore].products.push(_cartItem[0].products[0]);
+            var _product = {
+               store_id: parseInt( this.store.id ),
+               store_name: this.store.name,
+               store_select: false,
+               products: [
+                  {
+                     product_id: parseInt(this.product.id ),
+                     product_max_stock: parseInt(this.product.stock ),
+                     product_name: this.product.name, 
+                     product_quantity_count: parseInt(this.product_quantity_count),
+                     product_quantity: this.get_product_quantity(this.product), 
+                     product_price: parseInt(this.product.price),
+                     product_discount_percent: this.has_discount(this.product) ? parseInt(this.product.discount_percent) : 0,
+                     product_select: false
                   }
-               } else {
-                  // Add the new store to the existing cart items
-                  _cartItems.push(_cartItem[0]);
-               }
-               // Save the updated cart items back to Local Storage
-               localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-            } else {
-               // No existing cart items, add the new cart items to Local Storage
-               localStorage.setItem('watergo_carts', JSON.stringify(_cartItem));
-            }
+               ]
+            };
+
+            window.add_item_to_cart( _product);
          }
       },
 
@@ -273,19 +243,18 @@ createApp({
             this.addToCart(false);
             // MAKE CURRENT PRODUCT IS SELECT IN THIS CASE
             var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+
             _cartItems.forEach(item => {
+               item.products.every( p => p.product_select = false );
                if( item.store_id == this.product.store_id ){
-                  if( item.products.length > 0  ){
-                     item.products.forEach( product => {
-                        if( product.product_id == this.product.id ){
-                           product.product_select = true;
-                        }else{
-                           product.product_select = false;
-                        }
-                     });
-                  }
+                  item.products.forEach( product => {
+                     if( product.product_id == this.product.id ){
+                        product.product_select = true;
+                     }
+                  });
                }
             });
+
             // Save the updated cart items back to Local Storage
             localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
             this.gotoOrderProduct();
@@ -297,7 +266,7 @@ createApp({
 
 
       async findProduct( product_id ){
-         this.loading = true;
+         
          var form = new FormData();
          form.append('action', 'atlantis_find_product');
          form.append('product_id', product_id);
@@ -325,7 +294,6 @@ createApp({
       
          await this.findStore(this.product.store_id);
          await this.findRelatedProductInStore( parseInt(this.product.store_id), product_id);
-         this.loading = false;
       },
 
       async findStore( store_id ){
@@ -465,6 +433,9 @@ createApp({
    },
 
    async created(){
+      this.loading = true;
+      window.check_cart_is_exists();
+
       const urlParams = new URLSearchParams(window.location.search);
       const product_id = urlParams.get('product_id');
       await this.get_current_user_id();
@@ -472,19 +443,28 @@ createApp({
       await this.get_review_rating_average( this.product.store_id);
       await this.get_purchase_store( this.product.store_id);
 
+      // GET QUANTITY 
       var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-
+      // 
       if (_cartItems && _cartItems.length > 0) {
          _cartItems.some( store => {
             store.products.some( product => {
+               product.product_select = false;
                if( product.product_id == this.product.id ){
-                  this.product_quantity_count = product.product_quantity_count;
+                  if( this.product.stock >= product.product_quantity_count ) {
+                     this.product_quantity_count = product.product_quantity_count;
+                  }else{
+                     // THIS IS OUT OF STOCK MAKE THEM CANT ORDER NOW
+                  }
                }
             });
          });
+         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
       }
 
       window.appbar_fixed();
+
+      this.loading = false;
 
    }
 }).mount('#app');

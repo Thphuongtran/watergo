@@ -2559,6 +2559,8 @@ p{
    outline: none;
    border: 1px solid #DADADA;
    appearance: none;
+   background: none;
+   
    &::-ms-expand {
       display: none;
    }

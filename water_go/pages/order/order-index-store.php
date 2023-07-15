@@ -62,9 +62,8 @@
                </div>
 
                <div class='action-all'>
-                  <button v-if='order_status_current == "ordered" ' @click='btn_action_all("confirmed")' class='btn-action-confirm'>Confirm</button>
+                  <button v-if='order_status_current == "ordered"' @click='btn_action_all("confirmed")' class='btn-action-confirm'>Confirm</button>
                   <button v-if='order_status_current == "ordered"' @click='btn_action_all("cancel")' class='btn-action-cancel'>Cancel</button>
-                  
                   <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'>Delivery</button>
                   <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'>Complete</button>
 
@@ -122,16 +121,16 @@
                <button @click='gotoOrderStoreDetail(order.order_id)' class='btn-action-view'>View</button>
                <button 
                   v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_status([order.order_id], "confirmed")' class='btn-action-confirm'>Confirm</button>
+                  @click='btn_action_order_single_record(order.order_id, "confirmed")' class='btn-action-confirm'>Confirm</button>
                <button 
                   v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_status([order.order_id], "cancel")' class='btn-action-cancel'>Cancel</button>
+                  @click='btn_action_order_single_record(order.order_id, "cancel")' class='btn-action-cancel'>Cancel</button>
                <button 
                   v-if='order.order_status == "confirmed"' 
-                  @click='btn_action_order_status([order.order_id], "delivering")' class='btn-action-cancel'>Delivery</button>
+                  @click='btn_action_order_single_record(order.order_id, "delivering")' class='btn-action-cancel'>Delivery</button>
                <button 
                   v-if='order.order_status == "delivering"' 
-                  @click='btn_action_order_status([order.order_id], "complete")' class='btn-action-cancel'>Complete</button>
+                  @click='btn_action_order_single_record(order.order_id, "complete")' class='btn-action-cancel'>Complete</button>
             </div>
 
          </li>
@@ -175,6 +174,7 @@
    </div>
    <div v-show='popup_cancel_all_item == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
+         <div class='modal-close style-static'><div @click='btn_modal_cancel_all' class='close-button'><span></span><span></span></div></div>
          <p class='tt01'>Why do you want to cancel <span class='t-primary'>All Order</span>?</p>
          <ul class='list-Reason'>
             <li @click='btn_select_reason(reason.label)'
@@ -203,9 +203,9 @@ createApp({
 
          loading: false,
          popup_confirm_all_item: false,
-         popup_cancel_all_item: false,
          popup_delivering_all_item: false,
          popup_complete_all_item: false,
+         popup_cancel_all_item: false,
 
          message_count: 0,
          notification_count: 0,
@@ -215,13 +215,13 @@ createApp({
          paged: 0,
 
          is_select_all: false,
+         // IF ORDER SELECT -> BUTTON CAN ACCESS
+
          status_change_all: '',
 
          orders: [],
 
-         order_by_filter_select: {
-            value: 'desc'
-         },
+         order_by_filter_select: { value: 'desc' },
 
          order_id_selected: [],
 
@@ -269,8 +269,14 @@ createApp({
          this.popup_complete_all_item = false;
       },
 
-      async btn_action_order_status(order_ids, order_status){
+      // FOR SINGLE BUTTON
+      async btn_action_order_single_record(order_id, order_status){
+         var _arr = [ parseInt(order_id) ];
+         await this.btn_action_order_status( _arr, order_status );
+      },
 
+      // THIS FUNCTION WILL AJAX ALL ACTION 
+      async btn_action_order_status(order_ids, order_status){
          var timestamp = Math.floor(Date.now() / 1000);
          var form = new FormData();
          form.append('action', 'atlantis_order_status');
@@ -282,36 +288,60 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
                await this.reset_get_order_store();
-            }  
+            }
          }
       },
 
       // BUTTON SHOW POPUP MODEL WHEN TOGGLE SELECT OR SINGLE PRODUCT
       btn_action_all( change_status ){
-         if( this.order_status_current == 'ordered' ) this.popup_confirm_all_item = true;
-         if( this.order_status_current == 'confirmed' ) this.popup_delivering_all_item = true;
-         if( this.order_status_current == 'delivering' ) this.popup_complete_all_item = true;
-         if( this.order_status_current == 'cancel' ) this.popup_cancel_all_item = true;
+         var _is_order_select = false;
 
-         this.status_change_all = change_status;
+         this.orders.forEach( od => {
+            if( od.select == true ){ _is_order_select = true }
+         });
+
+         // CHECK IS ORDER SELECT?
+         if( _is_order_select == true ){
+            if( change_status == 'ordered' ) {this.popup_confirm_all_item = true;}
+            if( change_status == 'confirmed' ) {this.popup_delivering_all_item = true;}
+            if( change_status == 'delivering' ) {this.popup_complete_all_item = true;}
+            if( change_status == 'cancel' ) {this.popup_cancel_all_item = true;}
+            this.status_change_all = change_status;
+         }
+         
       },
 
       // BUTTON DO ALL ACTION
       async btn_do_all_action(){
-         
          var order_ids = [];
          this.orders.forEach( od => {
-            if( od.select == true ){
-               order_ids.push( parseInt( od.order_id) );
-            }
+            if( od.select == true ){ order_ids.push( parseInt( od.order_id) ); }
          });
 
+         
+         if( this.status_change_all != 'cancel' ){
+            if( order_ids.length > 0 ){
+               this.btn_modal_cancel_all();
+               await this.btn_action_order_status(order_ids, this.status_change_all );
+               await this.reset_get_order_store();
+               this.btn_modal_cancel_all();
+            }
+         }
 
-         if( order_ids.length > 0 ){
-            this.btn_modal_cancel_all();
-            await this.btn_action_order_status(order_ids, this.status_change_all );
-            await this.reset_get_order_store();
-            this.status_change_all = '';
+         // SPECIAL FOR CANCEL ALL ORDER
+         if( this.status_change_all == 'cancel' ){
+            var _is_reason_select = false;
+            this.reason_cancel.forEach( reason => {
+               if(reason.active == true ){ _is_reason_select = true; }
+            });
+            if(_is_reason_select == true ){
+               if( order_ids.length > 0 ){
+                  this.btn_modal_cancel_all();
+                  await this.btn_action_order_status(order_ids, this.status_change_all );
+                  await this.reset_get_order_store();
+                  this.status_change_all = '';
+               }
+            }
          }
 
       },

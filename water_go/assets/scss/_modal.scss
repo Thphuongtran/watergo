@@ -90,6 +90,15 @@
       position: absolute;
       right: 15px; 
       top: 15px;
+
+      &.style-static{
+         position: initial;
+         right: initial;
+         top: initial;
+         height: 20px;
+         width: 100%;
+         text-align: right;
+      }
    }
 
 	.modal-wrapper{
