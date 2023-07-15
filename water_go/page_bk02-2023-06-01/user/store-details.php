@@ -1,3 +1,0 @@
-<?php 
-   // STORE DETAILS
-?>
