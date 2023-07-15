@@ -114,12 +114,15 @@ function atlantis_load_conversation(){
 
          $_res = $wpdb->get_results($sql_list_conversation);
          if( ! empty( $_res ) ){
+            // $_option = [...$_res, ['store_id' => $_store_id] ];
+            // foreach($res as)
+
             array_push($list_conversation, ...$_res);
          }
 
       }
 
-      wp_send_json_success(['message' => 'conversation_found', 'data' => $list_conversation]);
+      wp_send_json_success(['message' => 'conversation_found', 'data' => $list_conversation, 'host_chat' => $host_chat, 'host_id' => $user_id]);
       wp_die();
 
    }

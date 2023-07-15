@@ -429,6 +429,7 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_status');
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'count_order_by_status' ){

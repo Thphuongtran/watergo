@@ -15,6 +15,7 @@
 		justify-content: space-between;
 		
 		.form-checkbox{
+         
          width: auto;
 			display: flex;
 			flex-flow: row nowrap;
@@ -25,15 +26,16 @@
 				height: 16px;
             display: inline; 
             flex: 0 0 16px;
+            padding: 0;
 			}
 			
 			.text{
-            display: inline-block;
 				font-size: 14px;
 				font-weight: 400;
-				margin-left: 0px;
+            margin-left: 10px;
 				line-height: 1;
 			}
+
 		}
 		
 	}

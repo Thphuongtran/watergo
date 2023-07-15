@@ -53,6 +53,25 @@ add_action( 'wp_ajax_func_atlantis_get_order_time_shipping_single_record', 'func
 add_action( 'wp_ajax_nopriv_atlantis_count_total_order_by_status', 'atlantis_count_total_order_by_status' );
 add_action( 'wp_ajax_atlantis_count_total_order_by_status', 'atlantis_count_total_order_by_status' );
 
+/**
+ * @access FUNCTION GET STORE ID -> user must be logged in
+ */
+
+function func_get_store_id_from_current_user(){
+   if(is_user_logged_in() ){
+      $user_id = get_current_user_id();
+   }else{
+      return 0;
+   }
+   global $wpdb;
+   $sql_get_store_id = "SELECT id FROM wp_watergo_store WHERE user_id = $user_id LIMIT 1";
+   $res_get_store_id = $wpdb->get_results($sql_get_store_id);
+   if( empty( $res_get_store_id ) ){
+      return 0;
+   }
+   return $res_get_store_id[0]->id;
+}
+
 // USE FOR NO AJAX LOCAL PHP ONLY
 function func_atlantis_get_order_number( $order_id ){
    $sql = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id LIMIT 1";
@@ -302,6 +321,7 @@ function atlantis_add_order(){
       global $wpdb;
 
       $carts = json_decode( stripslashes( $productSelected ));
+      // wp_send_json_success(['message' => 'test', 'carts' => $carts ]);
 
       if ( 
          $delivery_type != '' && 
@@ -323,10 +343,13 @@ function atlantis_add_order(){
 
             $dayOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
+            
+
             if( $check_hash == 0 ){
 
                $wpdb->insert('wp_watergo_order', [
                   'order_by' => $user_id,
+                  'order_store_id' => $store_id,
                   'order_delivery_type' => $delivery_type,
                   'order_payment_method' => 'cash',
                   'order_status' => 'ordered',
@@ -598,14 +621,10 @@ function atlantis_get_order_user(){
 function atlantis_get_order_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_store' ){
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
+      global $wpdb;
+
+      // GET STORE ID 
+      $store_id = func_get_store_id_from_current_user();
 
       $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
       $limit = 10;
@@ -618,8 +637,6 @@ function atlantis_get_order_store(){
          wp_send_json_error(['message' => 'no_order_found 1' ]);
          wp_die();
       }
-
-      global $wpdb;
 
       $sql = "SELECT *,
          wp_watergo_store.name as store_name,
@@ -641,7 +658,7 @@ function atlantis_get_order_store(){
          LEFT JOIN wp_watergo_photo
             ON wp_watergo_photo.upload_by = wp_watergo_products.id AND wp_watergo_photo.kind_photo = 'product'
 
-         WHERE wp_watergo_store.id = $user_id
+         WHERE wp_watergo_store.id = $store_id
          AND wp_watergo_order.order_status = '$order_status'
          
          ORDER BY wp_watergo_order.order_id DESC
@@ -680,15 +697,7 @@ function atlantis_get_order_store(){
 
 function atlantis_get_order_schedule(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_schedule' ){
-
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
+      $store_id = func_get_store_id_from_current_user();
 
       $paged   = isset($_POST['paged']) ? $_POST['paged'] : 0;
       $filter  = isset($_POST['filter']) ? $_POST['filter'] : '';
@@ -738,7 +747,7 @@ function atlantis_get_order_schedule(){
             ON wp_watergo_order_time_shipping.order_time_shipping_id = wp_watergo_order.order_time_shipping_id
 
          WHERE
-            wp_watergo_store.id = $user_id
+            wp_watergo_store.id = $store_id
          AND 
             wp_watergo_order.order_status = 'confirmed'
          AND
@@ -998,6 +1007,7 @@ function atlantis_clone_order( $order_id, $order_time_shipping_id ){
    $sql_clone = "INSERT INTO wp_watergo_order(
       hash_id,
       order_by,
+      order_store_id,
       order_time_shipping_id,
       order_delivery_type,
       order_payment_method,
@@ -1012,6 +1022,7 @@ function atlantis_clone_order( $order_id, $order_time_shipping_id ){
    SELECT 
       '$hash_id',
       order_by,
+      order_store_id,
       $order_time_shipping_id,
       order_delivery_type,
       order_payment_method,
@@ -1425,6 +1436,10 @@ function atlantis_order_callback(){
  */
 function atlantis_count_total_order_by_status(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_total_order_by_status'){
+      
+      $store_id = func_get_store_id_from_current_user();
+
+      global $wpdb;
 
       $sql = "SELECT statuses.order_status, COUNT(orders.order_status) AS total_count
          FROM
@@ -1441,14 +1456,15 @@ function atlantis_count_total_order_by_status(){
          ) AS statuses
          LEFT JOIN wp_watergo_order AS orders 
          ON statuses.order_status = orders.order_status
+         WHERE orders.order_store_id = $store_id
          GROUP BY statuses.order_status
       ";
 
-      global $wpdb;
+      
       $res = $wpdb->get_results($sql);
 
       if( empty( $res )){
-         wp_send_json_error(['message' => 'order_not_found'  ]);
+         wp_send_json_error(['message' => 'order_not_found' ]);
          wp_die();
       }
       wp_send_json_success(['message' => 'count_order_by_status', 'data' => $res ]);

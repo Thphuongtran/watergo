@@ -26,8 +26,14 @@
       </div>
       
       <ul v-if='filter_search.length > 0' class='list-chat'>
+         <!-- user_id: 
+               store_id:  -->
          <li 
-            @click='gotoChatMessenger()' 
+            @click='gotoChatMessenger({
+               host_chat: host_chat,
+               conversation_id: cons.conversation_id,
+               id_from_user: cons.user_id
+            })' 
             v-for='(cons, conversationIndex) in filter_search' :key='conversationIndex' class='chat-item'>
 
             <div class='leading'>
@@ -63,6 +69,8 @@ createApp({
 
       return {
          loading: false,
+         host_id: null,
+         host_chat: null,
          conversations: [],
          inputSearch: '',
       }
@@ -71,10 +79,31 @@ createApp({
 
    methods: {
       goBack(){ window.goBack(); },
-      gotoChatMessenger(obj){ window.gotoChatMessenger(obj);},
       getTimeDifference(timestamp){ return window.getTimeDifference(timestamp); },
       shortString(str){ return window.shortString(str)},
       get_image_upload(i){ return get_image_upload(i)},
+      gotoChatMessenger(obj){ 
+         var _user_id = null;
+         var _store_id = null;
+
+         if( this.host_chat == 'user' ){
+            _user_id = this.host_id;
+            _store_id = obj.id_from_user;
+         }
+         if( this.host_chat == 'store' ){
+            _store_id = this.host_id;
+            _user_id = obj.id_from_user;
+         }
+
+         window.gotoChatMessenger({
+            host_chat: obj.host_chat,
+            conversation_id: obj.conversation_id,
+            user_id: _user_id,
+            store_id: _store_id
+         })
+      },
+
+      
       
 
       async getConversation(){
@@ -85,6 +114,9 @@ createApp({
             var res = JSON.parse( JSON.stringify( r));
             
             if( res.message == 'conversation_found' ){
+
+               this.host_chat = res.host_chat;
+               this.host_id = res.host_id;
 
                if (this.conversations.length === 0) {
                   this.conversations.push(...res.data);
@@ -113,7 +145,7 @@ createApp({
 
    computed: {
       filter_search(){
-         
+
          if( this.inputSearch == ''){
             return this.conversations;
          }else{

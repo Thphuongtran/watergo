@@ -24,18 +24,18 @@
          <div class='heading-01 t-center'>Sign Up</div>
 
          <div class='form-group style-checkbox-business'>
-            <div class='form-checkbox'>
+            <label class='form-checkbox'>
                <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
                <span class='text'>Water</span>
-            </div>
-            <div class='form-checkbox'>
+            </label>
+            <label class='form-checkbox'>
                <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
                <span class='text'>Ice</span>
-            </div>
-            <div class='form-checkbox'>
+            </label>
+            <label class='form-checkbox'>
                <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
                <span class='text'>Both</span>
-            </div>
+            </label>
          </div>
 
          <div class='form-group'>

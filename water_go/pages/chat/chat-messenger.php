@@ -7,13 +7,12 @@
                <button @click='goBack' class='btn-action'>
                   <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 7.44772 0.447715 7 1 7H18.5C19.0523 7 19.5 7.44772 19.5 8C19.5 8.55228 19.0523 9 18.5 9H1C0.447715 9 0 8.55228 0 8Z" fill="#252831"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/></svg>
                </button>
-               <div class='leading-group'>
-                  <div class='store-avatar'>
-                     <img v-if='host_chat == "store"' :src="get_image_upload(account.user_account.user_avatar)">
-                     <img v-if='host_chat == "user"' :src="get_image_upload(account.store_account.store_avatar)">
+               <div v-if='account != null' class='leading-group'>
+                  <div class='leading-avatar'>
+                     <img :src="get_leading_avatar">
                   </div>
                   <div v-if='host_chat == "store"' class='user-info'>
-                     <div class="tt01">{{ get_username(account.user_account) }}</div>
+                     <div class="tt01">{{ account.user_account.first_name }}</div>
                      <div class="tt02">Active</div>
                   </div>
                   <div v-if='host_chat == "user"' class='user-info'>
@@ -41,7 +40,6 @@
       <div class='messenger-time'><span>{{ getCurrentDateTime }}</span></div>
 
       <ul class='list-messenger'>
-
          <li
             v-if='messengers.length > 0'
             v-for='(messenger, messengerKey) in filter_messengers' :key='messengerKey'
@@ -65,17 +63,6 @@
    </div>
 
    <div class='box-form-chat'>
-      <!-- <div class='auto-message-wrapper'>
-         <div class='auto-message'>
-            <div 
-               @click='btn_send_robot_message(rb_message)'
-               v-for='( rb_message, rb_key) in robots_message' 
-               :key='rb_key'
-               class='item'>
-               {{ rb_message }}
-            </div>
-         </div>
-      </div> -->
       <div class='box-chat'>
          <div v-if='host_chat == "store"' class='avatar'><img :src="get_image_upload(account.store_account.store_avatar)"></div>
          <div v-if='host_chat == "user"' class='avatar'><img :src="get_image_upload(account.user_account.user_avatar)"></div>
@@ -110,7 +97,9 @@ createApp({
       return {
          loading: false,
 
-         product_id: 0,
+         product_id: null,
+         store_id: null,
+         user_id: null,
          conversation_id: 0,
 
          account: null,
@@ -123,11 +112,6 @@ createApp({
          chat_content: '',
          list_id_messenger: [],
 
-         robots_message: [
-            'Mặt hàng này còn không?',
-            'Bạn có ship hàng không?',
-            'Mặt hàng này còn không?'
-         ]
       }
    },
    methods: {
@@ -138,6 +122,8 @@ createApp({
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
       get_image_upload( url ){ return window.get_image_upload( url ); },
       get_product_quantity(product){ return window.get_product_quantity(product)},
+
+      
 
       get_avatar_user_chat( messenger ){
          if( messenger.host_chat == 'store' ){
@@ -263,7 +249,7 @@ createApp({
       async get_product_newest(){
          var form = new FormData();
          form.append('action', 'atlantis_find_product_newest');
-         form.append('store_id', this.store.store_id);
+         form.append('store_id', this.store_id);
          var r = await window.request(form);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
@@ -339,6 +325,17 @@ createApp({
    computed: {
       getCurrentDateTime(){ return window.getCurrentDateTime(); },
 
+      get_leading_avatar(){
+         if( this.account != null ){
+            if( this.host_chat == 'user' ){
+               return this.get_image_upload(this.account.store_account.store_avatar);
+            }
+            if( this.host_chat == 'store' ){
+               return this.get_image_upload(this.account.user_account.user_avatar);
+            }
+         }
+      },
+
       filter_messengers(){
          if( this.messengers.length == 0) return [];
          let sortedMessengers = this.messengers.sort((a, b) => a.timestamp - b.timestamp);
@@ -357,7 +354,10 @@ createApp({
       
       var store_id         = urlParams.get('store_id');
       var user_id          = urlParams.get('user_id');
-      var host_chat        = urlParams.get('host_chat');
+      var host_chat        = urlParams.get('host_chat')
+      
+      this.store_id = store_id;
+      this.user_id = user_id;
 
       this.host_chat = host_chat;
 
