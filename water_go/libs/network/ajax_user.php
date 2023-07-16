@@ -1,5 +1,9 @@
 <?php
 
+
+add_action( 'wp_ajax_nopriv_atlantis_user_notification', 'atlantis_user_notification' );
+add_action( 'wp_ajax_atlantis_user_notification', 'atlantis_user_notification' );
+
 add_action( 'wp_ajax_nopriv_atlantis_get_user_by_field', 'atlantis_get_user_by_field' );
 add_action( 'wp_ajax_atlantis_get_user_by_field', 'atlantis_get_user_by_field' );
 
@@ -39,6 +43,24 @@ add_action( 'wp_ajax_atlantis_is_user_login_social', 'atlantis_is_user_login_soc
 add_action( 'wp_ajax_nopriv_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
 add_action( 'wp_ajax_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
 
+
+function atlantis_user_notification(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_user_notification' ){
+
+      if(is_user_logged_in() == true ){
+         $user_id = get_current_user_id();
+         $user = get_user_by('id', $user_id);
+         $prefix_user = 'user_' . $user->data->ID;
+      }else{
+         wp_send_json_error(['message' => 'no_Login_invalid' ]);
+         wp_die();
+      }
+      $value = isset($_POST['notification']) ? $_POST['notification'] : 0;
+      update_field('user_notification', $value, 'user_' . $user_id );
+      wp_send_json_success([ 'message' => 'update_notification_ok', 'data' => $value ]);
+      wp_die();
+   }
+}
 
 // FOR ONLY USER LOGIN
 function atlantis_get_current_user_id(){

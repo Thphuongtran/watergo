@@ -276,7 +276,7 @@ function get_product_quantity( product ) {
 }
 
 function has_discount( product ){
-   if( product.discount_id == null ) return false;
+   if( product.has_discount == 0 ) return false;
    if( check_time_validate(product.discount_from, product.discount_to) == true ){
       return true;
    }else{
@@ -679,3 +679,36 @@ function gotoStoreRegister(){
 function gotoStoreForgetPassword(){
    window.location.href = window.watergo_domain + 'authentication/?auth_page=auth-store-forget-password&appt=N';
 }
+
+/**
+ * @access TAB PRODUCT STORE
+ */
+function gotoProductStoreEdit(action, product_type, product_id, store_id){
+   var url = window.watergo_domain + 'product/?product_page=product-store-view';
+
+   if( action != undefined ){
+      url += '&action=' + action;
+   }
+   if( product_type != undefined ){
+      url += '&product_type=' + product_type;
+   }
+   if( product_id != undefined ){
+      url += '&product_id=' + product_id;
+   }
+   if( store_id != undefined ){
+      url += '&store_id=' + store_id;
+   }
+   window.location.href = url + '&appt=N';
+}
+
+function gotoProductStoreAdd( store_id, product_type){
+   var url = window.watergo_domain + 'product/?product_page=product-store-view';
+   if( product_type != undefined ){
+      url += '&product_type=' + product_type;
+   }
+   if( store_id != undefined ){
+      url += '&store_id=' + store_id;
+   }
+   window.location.href = url + '&action=add&appt=N';
+}
+

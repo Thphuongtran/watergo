@@ -21,31 +21,21 @@ add_action( 'wp_ajax_atlantis_get_store_location', 'atlantis_get_store_location'
 add_action( 'wp_ajax_nopriv_atlantis_get_location_of_store', 'atlantis_get_location_of_store' );
 add_action( 'wp_ajax_atlantis_get_location_of_store', 'atlantis_get_location_of_store' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_store_id', 'atlantis_get_store_id' );
+add_action( 'wp_ajax_atlantis_get_store_id', 'atlantis_get_store_id' );
+
+
+function atlantis_get_store_id(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_store_id' ){
+      $store_id = func_get_store_id_from_current_user();
+      wp_send_json_success(['message' => 'get_store_id_ok', 'data' => $store_id]);
+      wp_die();
+   }
+}
+
 
 function atlantis_get_store_location(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_store_location' ){
-      // old sql 
-      /*
-      $old_sql = "SELECT 
-         wp_watergo_store.id,
-         wp_watergo_store.longitude,
-         wp_watergo_store.latitude,
-         wp_watergo_store.name,
-         wp_watergo_store.store_type,
-         AVG(wp_watergo_reviews.rating) as avg_rating
-                     
-         FROM wp_watergo_store
-
-         LEFT JOIN wp_watergo_reviews
-         ON wp_watergo_reviews.related_id = wp_watergo_store.id 
-         GROUP BY
-         wp_watergo_store.id,
-         wp_watergo_store.longitude,
-         wp_watergo_store.latitude,
-         wp_watergo_store.name,
-         wp_watergo_store.store_type
-      ";
-      */
 
       $lat = isset($_POST['lat']) ? $_POST['lat'] : 0.0;
       $lng = isset($_POST['lng']) ? $_POST['lng'] : 0.0;

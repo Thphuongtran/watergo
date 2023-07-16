@@ -33,6 +33,9 @@ if(is_user_logged_in() ){
    if( $product_page == 'product-store'){
       get_template_part('pages/product/page-product-store');
    }
+   if( $product_page == 'product-store-view'){
+      get_template_part('pages/product/page-product-store-view');
+   }
 
 }else{
    get_template_part('pages/authentication/page-auth-store-login');

@@ -49,28 +49,9 @@ add_action( 'wp_ajax_atlantis_get_order_schedule', 'atlantis_get_order_schedule'
 add_action( 'wp_ajax_nopriv_func_atlantis_get_order_time_shipping_single_record', 'func_atlantis_get_order_time_shipping_single_record' );
 add_action( 'wp_ajax_func_atlantis_get_order_time_shipping_single_record', 'func_atlantis_get_order_time_shipping_single_record' );
 
-
 add_action( 'wp_ajax_nopriv_atlantis_count_total_order_by_status', 'atlantis_count_total_order_by_status' );
 add_action( 'wp_ajax_atlantis_count_total_order_by_status', 'atlantis_count_total_order_by_status' );
 
-/**
- * @access FUNCTION GET STORE ID -> user must be logged in
- */
-
-function func_get_store_id_from_current_user(){
-   if(is_user_logged_in() ){
-      $user_id = get_current_user_id();
-   }else{
-      return 0;
-   }
-   global $wpdb;
-   $sql_get_store_id = "SELECT id FROM wp_watergo_store WHERE user_id = $user_id LIMIT 1";
-   $res_get_store_id = $wpdb->get_results($sql_get_store_id);
-   if( empty( $res_get_store_id ) ){
-      return 0;
-   }
-   return $res_get_store_id[0]->id;
-}
 
 // USE FOR NO AJAX LOCAL PHP ONLY
 function func_atlantis_get_order_number( $order_id ){

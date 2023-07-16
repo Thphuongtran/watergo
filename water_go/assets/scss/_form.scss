@@ -221,3 +221,165 @@
    }
 }
 
+
+
+.product-store-view-form{
+   
+   select, input, textarea{
+      width: 100%;
+      border: none;
+      background: #F5F5F5;
+      outline: none;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 16px;
+      font-weight: 400;
+      
+      &::placeholder{
+         color: #7B7D83;
+         font-size: 16px;
+         font-weight: 400;
+      }
+   }
+   
+   select{
+      border-right: 10px solid transparent;
+      height: 44px;
+      padding: 0 10px;
+      color: #7B7D83;
+      font-size: 16px;
+      font-weight: 400;
+   }
+   
+   textarea{
+      padding: 10px;
+      height: 110px;
+      resize: none;
+      font-size: 16px;
+      font-weight: 400;
+   }
+   
+   input[type='checkbox']{
+      border-radius: 5px;
+      width: 26px; height: 26px;
+      border: 1px solid #A2A2A2;
+      background: none;
+   }
+   
+   .form-checkbox{
+      padding: 0;
+      label{
+         padding: 0;
+         display: flex;
+         align-items: center;
+         flex-flow: row nowrap;
+      }
+      input{
+         border: 1px solid #A2A2A2;
+         background: none;
+         top: initial;
+      }
+      .text{
+         font-weight: 500;
+         font-size: 16px;
+         color: #252831;
+         margin-left: 10px;
+      }
+      
+      &.check-discount{
+         margin-bottom: 10px;
+      }
+      
+      &.check-out-of-stock{
+         margin: 10px 0;   
+      }
+   }
+   
+   input{
+      height: 44px;
+   }
+   
+   .form-title{
+      color: #252831;
+      font-weight: 500;
+      font-size: 16px;
+      margin-bottom: 5px;
+      
+      &.small-size{
+         font-weight: 400;
+         font-size: 14px;
+         margin-bottom: 0px;
+      }
+      
+   }
+   
+   .form-control{
+      margin-bottom: 15px;
+   }
+   
+   .form-photo{
+      display: flex;
+      flex-flow: row nowrap;
+      margin-bottom: 30px;
+      
+      .upload{
+         position: relative;
+         input{display: none;}
+         span{
+            position: absolute;
+            color: #2790F9;
+            font-size: 14px;
+            font-weight: 400;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: wrap;
+         }
+      }
+      
+      li{
+         width: 104px;
+         height: 104px;
+         margin-right: 10px;
+         margin-bottom: 10px;
+
+         img{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+         }
+
+         &.image{
+            position: relative;
+            
+            button{
+               width: 16px;
+               height: 16px;
+               position: absolute;
+               background: none;
+               right: 6px;
+               top: 6px;
+               outline: none;
+               border: none;
+            }
+
+         }
+      }
+      
+   }
+
+
+   .form-button{
+      width: 90%;
+      margin: 35px auto;
+      button{
+         margin-bottom: 10px;
+         height: 40px;
+         line-height: 40px;
+      }
+   }
+
+   
+}
+
+

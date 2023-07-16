@@ -51,6 +51,7 @@ Schedule       [http://watergo.net/schedule/?schedule_page=page-schedule-index]
    Schedule Detail       [http://watergo.net/schedule/?schedule_page=page-schedule-detail] 
    
 Product       [http://watergo.net/product/?product_page=product-store]
+   Product Add       [http://watergo.net/product/?product_page=product-add]
 Report         [http://watergo.net/report/?report_page=report-index]
 Store Profile [http://watergo.net/store/?store_page=store-profile]
 

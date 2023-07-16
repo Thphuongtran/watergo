@@ -180,16 +180,12 @@ createApp({
 
       ratingNumber(rating){ return parseFloat(rating).toFixed(1); },
       mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },
-
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoSearch(){ window.gotoSearch()},
-      
       get_image_upload(i){ return window.get_image_upload(i) },
-
       has_discount( product ){ return window.has_discount( product ); },      
       get_product_quantity( product ){ return window.get_product_quantity( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
-
       gotoProductRecommend(){ window.gotoProductRecommend(); },
       gotoNearbyStore(){ window.gotoNearbyStore() },
       gotoProductWater(){window.gotoProductWater() },
