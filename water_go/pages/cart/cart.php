@@ -88,7 +88,7 @@
                         </div>
                      </div>
                      <div class='content'>
-                        <div class='product-name'>{{ product.product_name }}</div>
+                        <div class='product-name'>{{ product.product_metadata.product_name }}</div>
                         <div class='product-price'>
                            <span class='price'>
                               {{ common_get_product_price(product.product_price) }}
@@ -378,14 +378,12 @@ createApp({
             for( var x = 0; x < _carts[i].products.length; x++ ){
                var _product_id = _carts[i].products[x].product_id;
                var form = new FormData();
-               form.append('action', 'atlantis_get_product_image');
+               form.append('action', 'atlantis_get_images');
                form.append('product_id', _product_id);
                var r = await window.request(form);
-               if( r != undefined ){
-                  _carts[i].products[x].product_image = r.data.url;
-               }else{
-                  _carts[i].products[x].product_image = '#';
-               }
+               console.log(r)
+
+               _carts[i].products[x].product_image = r.data;
             }
          }
          this.carts.push( ..._carts); 

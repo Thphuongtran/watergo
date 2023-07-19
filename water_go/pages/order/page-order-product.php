@@ -232,7 +232,7 @@
          <h3>Order Successfully</h3>
       </div>
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'>Exit</button>
+         <button @click='goBackRefresh' class='btn btn-outline'>Exit</button>
       </div>
    </div>
 
@@ -279,6 +279,12 @@ createApp({
    },
    methods: { 
       goBack(){ window.goBack() },
+      goBackRefresh(){ 
+         window.goBack(); 
+         if( window.appBridge != undefined ){
+            window.appBridge.refresh();
+         }
+      },
       
       btn_delivery_address_open(){
          this.delivery_address_open = !this.delivery_address_open;

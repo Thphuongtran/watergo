@@ -4,6 +4,9 @@
 add_action( 'wp_ajax_nopriv_atlantis_testing', 'atlantis_testing' );
 add_action( 'wp_ajax_atlantis_testing', 'atlantis_testing' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_images', 'atlantis_get_images' );
+add_action( 'wp_ajax_atlantis_get_images', 'atlantis_get_images' );
+
 /**
  * @access GET ORDER BY user_id | store_id | filter by order_status
  */
@@ -421,6 +424,17 @@ function sort_image_data($data) {
     return $sorted_data;
 }
 
+/**
+ * @access GET IMAGE
+ */
+function atlantis_get_images(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_images' ){
+      $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+      $res = func_atlantis_get_images($product_id, true);
+      wp_send_json_success(['message' => 'image_ok', 'data' => $res]);
+      wp_die();
+   }
+}
 
 
 require_once THEME_DIR . '/libs/network/ajax_product.php';
@@ -442,6 +456,7 @@ require_once THEME_DIR . '/libs/network/ajax_language.php';
 require_once THEME_DIR . '/libs/network/ajax_admin_supports.php';
 require_once THEME_DIR . '/libs/network/ajax_location.php';
 require_once THEME_DIR . '/libs/network/ajax_product_store.php';
+
 
 
 // TESTING API FOR ALL
