@@ -1,4 +1,4 @@
-<div id='app'>
+<div id='authentication'>
    <div v-if='loading == false' class='page-auth-reset-password'>
 
       <div class='appbar'>
@@ -176,7 +176,7 @@ createApp({
 
 
    }
-}).mount('#app');
+}).mount('#authentication');
 
 </script>
 </script>

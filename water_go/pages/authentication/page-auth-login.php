@@ -57,7 +57,7 @@
    }
 </style>
 
-<div id='app'>
+<div id='authentication'>
 
    <div v-if='page_welcome == true' class='banner page-welcome'>
       <div class='banner-head'>
@@ -319,6 +319,6 @@ createApp({
       },
    }
 
-}).mount('#app');
+}).mount('#authentication');
 
 </script>

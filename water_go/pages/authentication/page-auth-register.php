@@ -1,4 +1,4 @@
-<div id='app'>
+<div id='authentication'>
 
    <div v-if='loading == false' class='page-auth-register'>
 
@@ -254,6 +254,6 @@ createApp({
 
    }
 
-}).mount('#app');
+}).mount('#authentication');
 
 </script>

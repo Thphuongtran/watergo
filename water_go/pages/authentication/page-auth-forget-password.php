@@ -1,4 +1,4 @@
-<div id='app'>
+<div id='authentication'>
 
    <!-- THIS IS STEP PAGE -->
    <div v-if='loading == true'>
@@ -277,7 +277,7 @@ createApp({
 
 
    }
-}).mount('#app');
+}).mount('#authentication');
 
 </script>
 </script>
