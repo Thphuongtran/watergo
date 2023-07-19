@@ -85,11 +85,11 @@
                            @click='gotoProductDetail(product.id)'
                            v-for='(product, index) in productRecommend' :key='index' class='product-design'>
                            <div class='img'>
-                              <img :src='get_image_upload(product.product_image)'>
+                              <img :src='product.product_image.url'>
                               <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                            </div>
                            <p class='tt01'>{{ product.name }} </p>
-                           <p class='tt02'>{{ get_product_quantity(product) }}</p>
+                           <p class='tt02'>{{ product.name_second }}</p>
                            <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                               <span class='price'>
                                  {{ has_discount(product) == true 
@@ -118,7 +118,7 @@
                            @click='gotoStoreDetail(store.id)'
                            v-for='(store, index) in storeNearby' :key='index' class='product-design store-style'>
                            <div class='img'>
-                              <img :src='get_image_upload(store.store_image)'>
+                              <img :src='store.store_image.url'>
                            </div>
                            <p class='tt01'>{{ store.name }} </p>
                            <p class='product-meta'>
@@ -182,9 +182,7 @@ createApp({
       mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoSearch(){ window.gotoSearch()},
-      get_image_upload(i){ return window.get_image_upload(i) },
       has_discount( product ){ return window.has_discount( product ); },      
-      get_product_quantity( product ){ return window.get_product_quantity( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       gotoProductRecommend(){ window.gotoProductRecommend(); },
       gotoNearbyStore(){ window.gotoNearbyStore() },
@@ -237,10 +235,9 @@ createApp({
 
       async get_store_nearby(){
          var form = new FormData();
-         form.append('action', 'atlantis_get_store_location');
+         form.append('action', 'atlantis_get_store_nearby');
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
-
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
@@ -269,10 +266,10 @@ createApp({
       form.append('action', 'atlantis_load_product_recommend');
       form.append('lat',this.latitude);
       form.append('lng',this.longitude);
-      form.append('product_id_already_exists',[0]);
-      form.append('filter', 'nearest');
+      form.append('paged',0);
 
       var r = await window.request(form);
+      console.log(r);
 
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r));

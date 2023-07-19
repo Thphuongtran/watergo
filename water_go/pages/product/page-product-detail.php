@@ -23,8 +23,15 @@
             </div>
 
             <div class='main'> 
-               <img :src="get_image_upload(product.product_image)">
-               <span v-if='is_has_coupon == true' class='badge-discount bottom left'>-{{ product.discount_percent }}%</span>
+               <div class='product-slider'>
+                  <ul>
+                     <li
+                        v-for='( image, indexImage) in product.product_image' :key='indexImage'>
+                        <img :src="image.url">
+                     </li>
+                  </ul>
+               </div>
+               <span v-if='product.has_discount == 1' class='badge-discount bottom left'>-{{ product.discount_percent }}%</span>
                <span v-if='product.stock == 0' class='badge-out-of-stock bottom right'>Out of Stock</span>
             </div>
          </div>
@@ -32,16 +39,16 @@
          <div class='inner'>
             <div class='product-design product-detail'>
                <p class='tt01'>{{ product.name }}</p>
-               <p class='tt02'>{{ get_product_quantity(product) }}</p>
+               <p class='tt02'>{{ product.name_second }}</p>
                <p class='tt03'> {{ product.description }}</p>
-               <div class='gr-price' :class="is_has_coupon == true ? 'has_discount' : '' ">
+               <div class='gr-price' :class="product.has_discount == 1 ? 'has_discount' : '' ">
                   <span class='price'>
-                     {{ is_has_coupon == true 
+                     {{ product.has_discount == true 
                         ? common_get_product_price(product.price, product.discount_percent) 
                         : common_get_product_price(product.price)
                      }}
                   </span>
-                  <span v-if='is_has_coupon == true' class='price-sub'>{{ common_get_product_price(product.price) }}</span>
+                  <span v-if='product.has_discount == 1' class='price-sub'>{{ common_get_product_price(product.price) }}</span>
                </div>
                <div class='entry-quantity'>
                   <p>Quantity</p>
@@ -64,7 +71,7 @@
             <div v-if='store != null' class='list-tile shop-card'>
 
                <div class='leading'>
-                  <div class='avatar'><img :src="get_image_upload(store.store_image)"></div>
+                  <div class='avatar'><img :src="store.store_image.url"></div>
                </div>
                <div class='content'>
                   <div class='heading'>
@@ -103,19 +110,19 @@
                <ul>
                   <li @click='gotoProductDetail(product.id)' v-for='(product, index) in product_by_store' class='product-design'>
                      <div class='img'>
-                        <img :src='get_image_upload(product.product_image)'>
-                        <span v-if='is_has_coupon == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                        <img :src='product.product_image.url'>
+                        <span v-if='product.has_discount == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                      </div>
                      <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ get_product_quantity(product) }}</p>
-                     <div class='gr-price' :class="is_has_coupon == true ? 'has_discount' : '' ">
+                     <p class='tt02'>{{ product.name_second }}</p>
+                     <div class='gr-price' :class="product.has_discount == true ? 'has_discount' : '' ">
                         <span class='price'>
-                           {{ is_has_coupon == true 
+                           {{ product.has_discount == true 
                               ? common_get_product_price(product.price, product.discount_percent) 
                               : common_get_product_price(product.price)
                            }}
                         </span>
-                        <span v-if='is_has_coupon == true' class='price-sub'>
+                        <span v-if='product.has_discount == true' class='price-sub'>
                            {{ common_get_product_price(product.price) }}
                         </span>
                      </div>
@@ -162,6 +169,10 @@
 
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <script type='module'>
 
 var { createApp } = Vue;
@@ -189,20 +200,16 @@ createApp({
          modal_store_out_of_stock: false,
 
          is_out_of_stock: false,
-         is_has_coupon: false,
-
          canOrder: false,
       }
    },
 
    methods: {
+
       buttonCloseModal_store_working(){ this.modal_store_working = false; },
       buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false; },
-      get_image_upload( i ){ return window.get_image_upload( i ) },
       has_discount( product ){ return window.has_discount(product); },
-      get_product_quantity( product ){ return window.get_product_quantity(product); },
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
-
+      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent ) },
       addToCart( isJustShowModal ){
 
          if(isJustShowModal == true ){
@@ -214,6 +221,13 @@ createApp({
             }
          }
          if( this.check_can_order == true ){
+            // save those thing product_name | product_name_second | product_id 
+            var _product_metadata = {
+               product_name: this.product.name,
+               product_name_second: this.product.name_second,
+               // 
+               product_id: this.product.id,
+            };
             var _product = {
                store_id: parseInt( this.store.id ),
                store_name: this.store.name,
@@ -222,9 +236,8 @@ createApp({
                   {
                      product_id: parseInt(this.product.id ),
                      product_max_stock: parseInt(this.product.stock ),
-                     product_name: this.product.name, 
+                     product_metadata: _product_metadata, 
                      product_quantity_count: parseInt(this.product_quantity_count),
-                     product_quantity: this.get_product_quantity(this.product), 
                      product_price: parseInt(this.product.price),
                      product_discount_percent: this.has_discount(this.product) ? parseInt(this.product.discount_percent) : 0,
                      product_select: false
@@ -262,7 +275,7 @@ createApp({
       },
 
       timestamp_to_date(timestamp) { return window.timestamp_to_date(timestamp); },
-      check_time_validate(_startTime, _closeTime){ return window.check_time_validate(_startTime, _closeTime); },
+      check_time_validate(_startTime, _closeTime){ return window.check_time_validate_timestamp(_startTime, _closeTime); },
 
 
       async findProduct( product_id ){
@@ -270,11 +283,18 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_find_product');
          form.append('product_id', product_id);
+         form.append('limit_image', false);
+
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
                this.product = res.data;
+
+               if( typeof this.product.product_image == 'object' ){
+                  this.product.product_image = [{ url: this.product.product_image.url }];
+               }
 
                // out of stock
                if( this.product.mark_out_of_stock == 1 || this.product.stock == 0) {
@@ -285,15 +305,12 @@ createApp({
                   this.canOrder = true;
                }
 
-               this.is_has_coupon = this.has_discount(this.product);
-
                // is_out_of_stock
-               // is_has_coupon
             }
          }
       
          await this.findStore(this.product.store_id);
-         await this.findRelatedProductInStore( parseInt(this.product.store_id), product_id);
+         await this.get_all_product_by_store( parseInt(this.product.store_id), product_id);
       },
 
       async findStore( store_id ){
@@ -301,12 +318,12 @@ createApp({
          form.append('action', 'atlantis_find_store');
          form.append('store_id', store_id);
          var r = await window.request(form);
+         console.log('find store')
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
                this.store = res.data;
-               res.data.products = [];
-               res.data.products.push( this.product);
                // store is working?
                if( this.check_time_validate(this.store.start_time, this.store.close_time ) == true ){
                   this.modal_store_working = true;
@@ -319,9 +336,9 @@ createApp({
          }
       },
 
-      async findRelatedProductInStore( store_id, product_id ){
+      async get_all_product_by_store( store_id, product_id ){
          var form = new FormData();
-         form.append('action', 'atlantis_load_product_by_store');
+         form.append('action', 'atlantis_get_all_product_by_store');
          form.append('store_id', store_id);
          form.append('product_id', product_id);
          var r = await window.request(form);
@@ -331,18 +348,6 @@ createApp({
                this.product_by_store.push( ...res.data);
             }
          }
-      },
-
-      find_product_quantity_count(store_id, product_id){
-         this.$root.carts.forEach( (store) => {
-            if( store.store_id == store_id ){
-               store.products.forEach(( product) => {
-                  if( product.product_id == product_id ){
-                     this.product_quantity_count = product.product_quantity_count;
-                  }
-               });
-            }
-         });
       },
 
       plusQuantity( stock ){
@@ -418,6 +423,7 @@ createApp({
          window.gotoChatMessenger( args );
       },
 
+
    },
 
    computed: {
@@ -443,6 +449,8 @@ createApp({
       await this.get_review_rating_average( this.product.store_id);
       await this.get_purchase_store( this.product.store_id);
 
+      
+
       // GET QUANTITY 
       var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
       // 
@@ -463,6 +471,21 @@ createApp({
       }
 
       window.appbar_fixed();
+
+      (function($){
+         $(document).ready(function(){
+            $('.product-slider ul').slick({
+               dots: false,
+               arrows: false,
+               infinite: false,
+               autoplay: true,
+               duration: 1000,
+               speed: 300,
+               slidesToShow: 1,
+               slidesToScroll: 1,
+            })
+         });
+      })(jQuery);
 
       this.loading = false;
 

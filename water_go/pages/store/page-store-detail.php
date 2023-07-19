@@ -15,7 +15,7 @@
             </div>
 
             <div class='main'> 
-               <img :src="get_image_upload(store.store_image)">
+               <img :src="store.store_image.url">
             </div>
          </div>
       </div>
@@ -68,13 +68,13 @@
                   class='product-design' 
                   v-for='(product, index) in filter_product ' :key='index'>
                   <div class='img'>
-                     <img :src='get_image_upload(product.product_image)'>
+                     <img :src='product.product_image.url'>
                      <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                   </div>
                   <div class='box-wrapper'>
                      <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ get_product_quantity(product) }}</p>
-                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                     <p class='tt02'>{{ product.name_second }}</p>
+                     <!-- <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                         <span class='price'>
                            {{ has_discount(product) == true 
                               ? common_get_product_price(product.price, product.discount_percent) 
@@ -82,6 +82,17 @@
                            }}
                         </span>
                         <span v-if='has_discount(product) == true' class='price-sub'>
+                           {{ common_get_product_price(product.price) }}
+                        </span>
+                     </div> -->
+                     <div class='gr-price' :class="product.has_discount == true ? 'has_discount' : '' ">
+                        <span class='price'>
+                           {{ product.has_discount == true 
+                              ? common_get_product_price(product.price, product.discount_percent) 
+                              : common_get_product_price(product.price)
+                           }}
+                        </span>
+                        <span v-if='product.has_discount == true' class='price-sub'>
                            {{ common_get_product_price(product.price) }}
                         </span>
                      </div>
@@ -145,11 +156,8 @@ createApp({
             }).catch((e) => { alert(e); })
          }
       },
-      
-      get_image_upload( i ){ return window.get_image_upload( i ) },
 
       has_discount( product ){return window.has_discount(product);},
-      get_product_quantity( product ){ return window.get_product_quantity(product)},
       common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
 
       ratingNumber(rating){ return parseInt(rating).toFixed(1); },
@@ -170,7 +178,6 @@ createApp({
             }
          }
          await this.findReview();
-         await this.findRelatedProductInStore();
          await this.get_total_review(this.store.id);
 
 
@@ -208,10 +215,11 @@ createApp({
          }
       },
 
-      async findRelatedProductInStore(){
+      async get_all_product_by_store(){
          var form = new FormData();
-         form.append('action', 'atlantis_load_all_product_by_store');
+         form.append('action', 'atlantis_get_all_product_by_store');
          form.append('store_id', this.store.id);
+         form.append('limit', -1);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -301,6 +309,7 @@ createApp({
       this.store_id = urlParams.get('store_id');
       
       await this.findStore(this.store_id);
+      await this.get_all_product_by_store()
       await this.get_review_rating_average(this.store.id);
 
       window.appbar_fixed();

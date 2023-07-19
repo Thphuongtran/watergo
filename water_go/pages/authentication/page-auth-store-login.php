@@ -247,7 +247,8 @@ createApp({
 
                      if( window.appBridge != undefined ){
                         window.appBridge.loginSuccess(_cookie);
-                        window.appBridge.refresh();
+                        window.appBridge.startMain();
+                        // window.appBridge.refresh();
                      }
                      
                   }

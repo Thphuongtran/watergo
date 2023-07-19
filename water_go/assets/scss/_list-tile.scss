@@ -674,7 +674,7 @@
          color: #252831;
          font-weight: 500;
          font-size: 16px;
-         margin-top: -5px;
+         margin-top: -2px;
          line-height: 1.5;
       }
       .tt2{
@@ -694,7 +694,7 @@
          
          .gr-price{
             display: flex;
-            flex-flow: row nowrap;
+            flex-flow: row wrap;
             align-items: flex-end;
          }
          .price{
@@ -723,7 +723,7 @@
          font-weight: 400;
          font-size: 12px;
          display: flex;
-         flex-flow: row nowrap;
+         flex-flow: row wrap;
       }
       
       

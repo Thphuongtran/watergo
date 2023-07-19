@@ -1,6 +1,9 @@
+<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+<script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>
 <div id='app'>
 
-   <div v-show='loading == false' class='page-product-order'>
+   <div v-show='loading == false && delivery_address_open == false' class='page-product-order'>
       
       <div class='appbar style01 fixed'>
          <div class='appbar-top'>
@@ -62,8 +65,8 @@
                <div v-if="product.product_select == true" class="list-items-wrapper">
                   <span class='quantity'>{{ product.product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.product_name }}</span>
-                     <span class='product-subtitle'>{{ product.product_quantity }}</span>
+                     <span class='product-title'>{{ product.product_metadata.product_name }}</span>
+                     <span class='product-subtitle'>{{ product.product_metadata.product_name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -283,7 +286,6 @@ createApp({
 
 
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
-      get_product_quantity( product ){ return window.get_product_quantity(product); },
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
 
@@ -602,8 +604,6 @@ createApp({
                   localStorage.setItem('watergo_carts', JSON.stringify(_watergo_carts));
                   // 
                   this.banner_open = true;
-                  
-
                }else{
                   this.loading = false;
                }
@@ -936,7 +936,3 @@ createApp({
 .component('component-delivery-address', PageDeliveryAddress)
 .mount('#app');
 </script>
-
-<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
-<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-<script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>

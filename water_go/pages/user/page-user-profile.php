@@ -34,7 +34,7 @@
 
       <div class='inner'>
          <div class='profile-user'>
-            <img class='avatar-circle' width='80' height='80' :src="get_image_upload( avatar_user)">
+            <img class='avatar-circle' width='80' height='80' :src="avatar_user.user_avatar">
 
             <div class='user-prefs'>
                <div class='username'>{{ first_name }}</div>
@@ -91,7 +91,7 @@
                <div class='on-left'>
                   <div class='tile-3col'>
                      <div class='avatar-cirlce'>
-                        <img :src="get_image_upload( review.store_image != '' ? review.store_image : 'store-dummy.png' )">
+                        <img :src="review.store_image.url">
                      </div>
                      <div class='tile-detail'>
                         <span class='title'>{{ review.store_name }}</span>
@@ -175,7 +175,6 @@ createApp({
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
       count_product_in_cart(){return window.count_product_in_cart(); },
-      get_image_upload(image){ return window.get_image_upload(image); },
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
       btn_review_edit(review_id){ window.gotoPageUserReviewEdit(review_id);},
 

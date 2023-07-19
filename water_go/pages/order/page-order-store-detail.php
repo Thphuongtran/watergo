@@ -11,7 +11,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>#{{ order_number }}</p>
+               <p class='leading-title'>#{{ order.order_number }}</p>
                <!--  -->
             </div>
          </div>
@@ -42,8 +42,8 @@
                <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.order_group_product_name }}</span>
-                     <span class='product-subtitle'>{{ product.order_group_product_quantity }}</span>
+                     <span class='product-title'>{{ product.order_group_product_metadata.product_name }}</span>
+                     <span class='product-subtitle'>{{ product.order_group_product_metadata.product_name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -196,8 +196,6 @@ createApp({
          loading: false,
          popup_confirm_cancel: false,
          address_kilometer: 0.0,
-
-         order_number: null,
          
          reason_cancel: [
             {label: 'Reason 1', active: false},
@@ -232,7 +230,6 @@ createApp({
          }
       },
 
-      get_product_quantity( product ){ return window.get_product_quantity(product); },
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
@@ -242,19 +239,6 @@ createApp({
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
 
       goBack(){ window.goBack() },
-
-      async getOrderNumber( order_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_order_number');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'get_order_number_ok'){
-               this.order_number = res.data;
-            }
-         }
-      },
 
       async btn_order_status( order_status ){
 
@@ -270,7 +254,11 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
-               location.reload();
+               if( window.appBridge != undefined ){
+                  window.appBridge.refresh();
+               }else{
+                  location.reload();
+               }
             }
          }
 
@@ -319,6 +307,7 @@ createApp({
       form.append('action', 'atlantis_get_order_detail');
       form.append('order_id', parseInt(order_id));
       var r = await window.request(form);
+      console.log(r);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify(r));
 
@@ -356,8 +345,6 @@ createApp({
          }
 
       }
-
-      await this.getOrderNumber(order_id);
       
       this.loading = false;
 

@@ -13,7 +13,7 @@
                   </svg>
                </button>
                
-               <p class='leading-title'>#{{ order_number }}</p>
+               <p class='leading-title'>#{{ order.order_number }}</p>
             </div>
          </div>
          <div class='break-line'></div> 
@@ -44,8 +44,8 @@
                <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.order_group_product_name }}</span>
-                     <span class='product-subtitle'>{{ product.order_group_product_quantity }}</span>
+                     <span class='product-title'>{{ product.order_group_product_metadata.product_name }}</span>
+                     <span class='product-subtitle'>{{ product.order_group_product_metadata.product_name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -210,7 +210,6 @@ createApp({
          }
       },
 
-      get_product_quantity( product ){ return window.get_product_quantity(product); },
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
@@ -218,24 +217,12 @@ createApp({
       timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp);},
       // END CANCEL ORDER
 
-      async getOrderTimeShipping( order_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_order_time_shipping');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'order_time_found'){
-               this.order_time_shipping.push(...res.data);
-            }
-         }
-      },
-
       async findOrder( order_id ){
          var form = new FormData();
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
+         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
@@ -247,19 +234,6 @@ createApp({
                   this.order.order_delivery_address.longitude,
                );
                this.order.address_kilometer = parseFloat(_address_kilometer).toFixed(1);
-            }
-         }
-      },
-
-      async getOrderNumber( order_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_order_number');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'get_order_number_ok'){
-               this.order_number = res.data;
             }
          }
       },
@@ -313,9 +287,6 @@ createApp({
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
-      await this.getOrderNumber(order_id);
-      await this.getOrderTimeShipping(order_id);
-      console.log(this.order)
 
 
       this.loading = false;

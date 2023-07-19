@@ -55,10 +55,10 @@
                v-for='(product, prodKey) in order.order_products' :key='prodKey'
                @click='gotoOrderDetail(order.order_id)' class='order-prods'>
                <div class='leading'>
-                  <img :src="get_image_upload(product.product_image)">
+                  <img :src="product.order_group_product_image.url">
                </div>
                <div class='prod-detail'>
-                  <span class='prod-name'>{{ product.order_group_product_name }}</span>
+                  <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
                   <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
                </div>
                <div class='prod-price'>{{ common_get_product_price(product.order_group_product_price) }}</div>
@@ -91,9 +91,7 @@ createApp({
          notification_count: 0,
          isCancel: false,
          paged: 0,
-
          order_status: 'ordered',
-
          orders: [],
          
          order_status_filter: [ 
@@ -132,14 +130,10 @@ createApp({
             }else{ item.active = false; }
          });
 
-
-
-
       },
 
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
-      get_image_upload( i ){ return window.get_image_upload( i ) },
 
       count_total_price_in_order(order_id ){
          var _total = 0;
@@ -185,35 +179,24 @@ createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            // await this.get_order(this.order_status, this.paged++);
 
-            var product_id_already_exists = [];
-            
-            this.orders.forEach(item => {
-               product_id_already_exists.push( parseInt( item.order_id ) );
-            });
-
-            await this.get_order(this.order_status, product_id_already_exists);
+            await this.get_order(this.order_status, this.paged++);
 
          }
       },
       
 
-      async get_order(order_status, product_id_already_exists){
-
-         if( product_id_already_exists == undefined || product_id_already_exists == null ){
-            product_id_already_exists = [0];
-         }
+      async get_order(order_status, paged){
 
          var form = new FormData();
          form.append('action', 'atlantis_get_order_user');
-         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
+         form.append('paged', paged );
          form.append('order_status', order_status);
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
-               // this.orders.push(...res.data);
                res.data.forEach(item => {
                   if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
                      this.orders.push(item);
@@ -249,7 +232,7 @@ createApp({
    async created(){
       this.loading = true;
       await this.get_notification_count();
-      await this.get_order( this.order_status, this.paged)
+      await this.get_order( this.order_status, 0)
       this.loading = false;
 
       window.appbar_fixed();

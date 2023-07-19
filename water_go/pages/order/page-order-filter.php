@@ -41,7 +41,7 @@
             <div 
                v-for='(product, prodKey) in order.order_products' :key='prodKey' class='order-prods'>
                <div class='leading'>
-                  <img :src="get_image_upload(product.product_image)">
+                  <img :src="product.product_image.url">
                </div>
                <div class='prod-detail'>
                   <span class='prod-name'>{{ product.order_group_product_name }}</span>
@@ -168,14 +168,12 @@ createApp({
       },
 
       gotoOrderFilter(filter){ window.gotoOrderFilter(filter); },
-
       common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
       select_filter( filter_select ){ this.order_status_select = filter_select; },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id); },
-      goBack(){ window.goBack(); },
-      get_image_upload(image){ return window.get_image_upload(image); }
+      goBack(){ window.goBack(); }
    },
 
    computed: {

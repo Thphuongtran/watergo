@@ -1,6 +1,5 @@
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-
+<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 
 <div id='app'>
 
@@ -135,7 +134,6 @@ createApp({
       gotoChat(){ window.gotoChat() },
       gotoScheduleOrderDetail( id) { window.gotoScheduleOrderDetail(id) },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
-      get_image_upload(i){ return window.get_image_upload(i) },
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
 

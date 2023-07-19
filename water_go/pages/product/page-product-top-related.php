@@ -37,12 +37,12 @@
                class='product-design' 
                v-for='(product, index) in filter_products' :key='index'>
                <div class='img'>
-                  <img :src='get_image_upload(product.product_image)'>
+                  <img :src='product.product_image.url'>
                   <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                </div>
                <div class='box-wrapper'>
                   <p class='tt01'>{{ product.name }} </p>
-                  <p class='tt02'>{{ get_product_quantity(product) }}</p>
+                  <p class='tt02'>{{ product.name_second }}</p>
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
                         {{ has_discount(product) == true 
@@ -79,8 +79,9 @@ createApp({
          sortFeatureCurrentValue: 0,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
-         limit: 10,
-         page: 0,
+         
+         paged: 0,
+         category_id: 0,
       }
    },
 
@@ -102,6 +103,41 @@ createApp({
          }
       },
 
+
+      async get_top_related_product( paged ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_product_top_related');
+         form.append('category_id', this.category_id);
+         form.append('paged', paged);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'product_found' ){
+               res.data.forEach( item => {
+                  if (!this.products.some(existingItem => existingItem.id === item.id)) {
+                     this.products.push( item );
+                  }
+               });
+            }
+         }
+      },
+
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + scrollEndThreshold >= documentHeight - scrollEndThreshold) {
+            
+            await this.get_top_related_product( this.paged++);
+         }
+      },
+
       buttonSortFeatureSelected( index ){
          this.sortFeatureCurrentValue = index;
          this.sortFeatureOpen = false;
@@ -115,10 +151,7 @@ createApp({
          }
       },
 
-      get_image_upload( i ){ return window.get_image_upload( i ) },
-
       has_discount( product ){ return window.has_discount(product); },
-      get_product_quantity( product ) { return window.get_product_quantity(product) },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
       
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id);},
@@ -154,29 +187,22 @@ createApp({
       }
    },
 
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
+   },
+
    async created() {
+      this.loading = true; 
       const urlParams = new URLSearchParams(window.location.search);
       const category_id = urlParams.get('category_id');
-
+      this.category_id = category_id;
+      await this.get_top_related_product(0 );
       this.get_current_location();
-      this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_load_product_top_related');
-      form.append('category_id', category_id);
-      form.append('page', this.page);
-      form.append('limit', this.limit);
-
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify( r));
-         if( res.message == 'product_found' ){
-            this.products.push(...res.data );
-         }
-      }
-
-      this.loading = false;
-
       window.appbar_fixed();
+      this.loading = false;
    }
 
 }).mount('#app');

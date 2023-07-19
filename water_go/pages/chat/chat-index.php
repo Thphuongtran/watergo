@@ -81,7 +81,6 @@ createApp({
       goBack(){ window.goBack(); },
       getTimeDifference(timestamp){ return window.getTimeDifference(timestamp); },
       shortString(str){ return window.shortString(str)},
-      get_image_upload(i){ return get_image_upload(i)},
       gotoChatMessenger(obj){ 
          var _user_id = null;
          var _store_id = null;

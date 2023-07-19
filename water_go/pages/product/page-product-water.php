@@ -51,12 +51,12 @@
          <div class='grid-masonry'>
             <div @click='gotoProductDetail(product.id)' class='product-design' v-for='(product, index) in filter_products ' :key='index'>
                <div class='img'>
-                  <img :src='get_image_upload(product.product_image)'>
+                  <img :src='product.product_image.url'>
                   <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                </div>
                <div class='box-wrapper'>
                   <p class='tt01'>{{ product.name }} </p>
-                  <p class='tt02'>{{ get_product_quantity(product) }}</p>
+                  <p class='tt02'>{{ product.name_second }}</p>
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
                         {{ has_discount(product) == true 
@@ -100,8 +100,7 @@ createApp({
          sortFeatureCurrentValue: 0,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
-         limit: 10,
-         page: 0,
+         paged: 0,
 
          products: [],
          categoryWater: [],
@@ -130,10 +129,7 @@ createApp({
          }
       },
 
-      get_image_upload( i ){ return window.get_image_upload( i ) },
-
       has_discount( product ){ return window.has_discount(product); },
-      get_product_quantity( product ) { return window.get_product_quantity(product) },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
 
       buttonSortFeatureSelected( index ){
@@ -171,14 +167,14 @@ createApp({
          switch( this.sortFeatureCurrentValue ){
             case 0: return 'nearest'; break;
             case 1: return 'cheapest'; break;
-            case 2: return 'cheapest'; break;
+            case 2: return 'top_rated'; break;
          }
       },
 
       async load_category(){
          var form = new FormData();
          form.append('action', 'atlantis_load_category');
-         form.append('category', 'water');
+         form.append('category', 'water_category');
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -193,7 +189,7 @@ createApp({
       async load_brand(){
          var form = new FormData();
          form.append('action', 'atlantis_load_category');
-         form.append('category', 'brand');
+         form.append('category', 'water_brand');
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -216,13 +212,7 @@ createApp({
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
             
-            var product_id_already_exists = [];
-            
-            this.products.forEach(item => {
-               product_id_already_exists.push( parseInt( item.id ) );
-            });
-
-            await this.load_product_sort( this.get_text_filter(), product_id_already_exists);
+            await this.load_product_sort( this.get_text_filter(), this.paged++ );
 
          }
       },
@@ -231,21 +221,18 @@ createApp({
       goBack(){ window.goBack(); },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id)},
 
-      async load_product_sort( filter, product_id_already_exists ){
-
-         if( product_id_already_exists == undefined || product_id_already_exists == null ){
-            product_id_already_exists = [0];
-         }
+      async load_product_sort( filter, paged ){
             
          var form = new FormData();
          form.append('action', 'atlantis_get_product_sort');
          form.append('product_type', 'water');
          form.append('filter', filter);
+         form.append('paged', paged);
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
-         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
 
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -274,11 +261,11 @@ createApp({
             var cat = this.categoryWater.find(c => c.active == true);
             var brand = this.brandWater.find(b => b.active == true);
             if (cat && brand) {
-               return product.category_id == parseInt(cat.id) && product.brand_id == parseInt(brand.id);
+               return product.category == parseInt(cat.id) && product.brand == parseInt(brand.id);
             } else if(cat) {
-               return product.category_id == parseInt(cat.id);
+               return product.category == parseInt(cat.id);
             } else if(brand) {
-               return product.brand_id == parseInt(brand.id);
+               return product.brand == parseInt(brand.id);
             } else{
                return product;
             }
@@ -293,21 +280,21 @@ createApp({
          if( val == 0 ){
             this.products = [];
             this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), [0] );
+            await this.load_product_sort(this.get_text_filter(), 0 );
             this.loading = false;
             window.appbar_fixed();
          }
          if( val == 1 ){
             this.products = [];
             this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), [0] );
+            await this.load_product_sort(this.get_text_filter(), 0 );
             this.loading = false;
             window.appbar_fixed();
          }
          if( val == 2 ){
             this.products = [];
             this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), [0] );
+            await this.load_product_sort(this.get_text_filter(), 0 );
             this.loading = false;
             window.appbar_fixed();
          }
@@ -318,7 +305,7 @@ createApp({
          
       this.get_current_location();
       this.loading = true;
-      await this.load_product_sort('nearest', [0]);
+      await this.load_product_sort('nearest', 0);
 
       await this.load_category();
       await this.load_brand();

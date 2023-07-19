@@ -222,7 +222,6 @@ createApp({
             form.append('email', this.inputEmail);
             form.append('event', 'email_non_exists');
             var r = await window.request(form);
-            console.log(r);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                   this.loading = false;
@@ -280,7 +279,6 @@ createApp({
                   form.append('password', this.inputPassword);
                   form.append('code', code);
                   var r = await window.request(form);
-                  console.log(r);
                   if( r != undefined ){
                      var res = JSON.parse( JSON.stringify( r ));
                      // DISPLAY ERROR

@@ -103,10 +103,10 @@
             <div 
                v-for='(product, prodKey) in order.order_products' :key='prodKey' class='order-prods'>
                <div class='leading'>
-                  <img :src="get_image_upload(product.product_image)">
+                  <img :src="product.order_group_product_image.url">
                </div>
                <div class='prod-detail'>
-                  <span class='prod-name'>{{ product.order_group_product_name }}</span>
+                  <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
                   <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
                </div>
                <div class='prod-price'>{{ common_get_product_price(product.order_group_product_price) }}</div>
@@ -384,7 +384,6 @@ createApp({
          });
       },
 
-      get_image_upload( i ){ return window.get_image_upload( i ) },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
@@ -459,7 +458,6 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_status');
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'count_order_by_status' ){
@@ -479,6 +477,7 @@ createApp({
          form.append('paged', paged);
 
          var r = await window.request(form);
+         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){

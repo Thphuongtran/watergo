@@ -7,6 +7,11 @@ function check_cart_is_exists(){
       localStorage.setItem('watergo_carts', '[]');
    }
 }
+
+function explode_product_metadata( product_metadata ){
+   return JSON.parse(product_metadata);
+}
+
 function add_item_to_cart( item ){
 
    var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
@@ -270,20 +275,27 @@ function gotoHome(){
    window.location.href = window.watergo_domain + 'home';
 }
 
-function get_product_quantity( product ) {
-   if(product.product_type == "water" ) return product.quantity;
-   if(product.product_type == "ice" ) return product.weight + "kg " + product.length_width + "mm";
-}
 
 function has_discount( product ){
    if( product.has_discount == 0 ) return false;
-   if( check_time_validate(product.discount_from, product.discount_to) == true ){
+   var currentDate = new Date();
+
+   var discount_from = new Date(product.discount_from);
+   var discount_to   = new Date(product.discount_to);
+   discount_from.setHours(0,0,0);
+   discount_to.setHours(0,0,0);
+
+   if (currentDate >= discount_from && currentDate <= discount_to) {
       return true;
    }else{
-      return false;   
+      return false;
    }
+   return false;
 }
 
+/**
+ * @access TOTAL PRICE WITH QUANTITY + DISCOUNT
+ */
 function get_total_price( price, quantity, discount){
    if( discount != null || discount != undefined){
       var getPriceDiscount = price - ( price * ( discount / 100 ) );
@@ -294,8 +306,6 @@ function get_total_price( price, quantity, discount){
 }
 
 
-function get_image_upload( image ){ return theme_uploads + image; }
-
 function timestamp_to_date(timestamp) {
    var date = new Date(timestamp * 1000);
    var day = date.getDate();
@@ -304,7 +314,7 @@ function timestamp_to_date(timestamp) {
    return day + '/' + month + '/' + year;
 }
 
-function check_time_validate(_startTime, _closeTime){
+function check_time_validate_timestamp(_startTime, _closeTime){
    if( _startTime == 0 || _closeTime == 0 ) return false;
    var currentDate = new Date();
    var currentTime = parseInt( currentDate.getTime() / 1000 );

@@ -21,7 +21,7 @@
                class='product-design' 
                v-for='(store, index) in stores' :key='index'>
                <div class='img'>
-                  <img :src='get_image_upload(store.store_image)'>
+                  <img :src='store.store_image.url'>
                </div>
                <div class='box-wrapper'>
                   <p class='tt01'>{{ store.name }} </p>
@@ -78,10 +78,7 @@ createApp({
          }
       },
 
-      get_image_upload( i ){ return window.get_image_upload( i );},
-
       has_discount( product ){ return window.has_discount(product); },
-      get_product_quantity( product ) { return window.get_product_quantity(product) },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
 
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
@@ -93,7 +90,7 @@ createApp({
       this.get_current_location();
       this.loading = true;
       var form = new FormData();
-      form.append('action', 'atlantis_get_store_location');
+      form.append('action', 'atlantis_get_store_nearby');
       form.append('lat', this.latitude);
       form.append('lng', this.longitude);
       var r = await window.request(form);

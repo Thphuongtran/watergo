@@ -76,11 +76,11 @@
             v-for='( product, productIndex) in filter_products' :key='productIndex'
          >
             <div class='product-l'>
-               <div class='product-image'><img :src='get_image_upload(product.product_image)'></div>
+               <div class='product-image'><img :src='product.product_image.url'></div>
             </div>
             <div class='product-r'>
                <div class='tt1'>{{ product.name }}</div>
-               <div class='tt2'>{{ get_product_quantity(product) }}</div>
+               <div class='tt2'>{{ product.name_second }}</div>
                <div class='tt3'>
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
@@ -95,7 +95,7 @@
 
                   </div>
 
-                  <button @click='gotoProductStoreEdit("edit", product_tab_value, product.id, store_id )' class="btn-action-view">View</button>
+                  <button @click='gotoProductStoreEdit("edit", get_product_tab_value, product.id, store_id )' class="btn-action-view">View</button>
                </div>
                <div class='tt4'>
                   <div class='product-analytics'>
@@ -140,6 +140,7 @@ createApp({
             { label: 'Ice', value: 'ice', active: false}
          ],
          product_tab_value: '',
+
          products: []
 
       }
@@ -147,10 +148,12 @@ createApp({
 
    watch: {
       product_tab_value: async function( val ){
-         this.loading = true;
-         this.products = [];
-         await this.get_product_from_type_product( val );
-         this.loading = false;
+         if( val != undefined && val != ''){
+            this.loading = true;
+            this.products = [];
+            await this.get_product_from_type_product( val );
+            this.loading = false;
+         }
       },
 
    },
@@ -165,18 +168,16 @@ createApp({
       filter_products(){
          var _filter = this.products;
          if(this.product_tab_filter_select.value == 'availble'){
-            console.log('filter availble');
             return _filter.filter( p => p.is_availble == true );
          }
          if(this.product_tab_filter_select.value == 'out_of_stock'){
-            console.log('filter out_of_stock');
             return _filter.filter( p => p.is_availble == false );
          }
          if( this.productSearch != '' ){m
             return _filter.filter( p => p.name.toLowerCase().includes( this.productSearch.toLowerCase()) );
          }
          return _filter;
-      }
+      },
 
    },
 
@@ -190,6 +191,7 @@ createApp({
          form.append('action', 'atlantis_get_product_from_store');
          form.append('type_product', type);
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found'){
@@ -205,6 +207,7 @@ createApp({
 
          }
       },
+
 
       product_tab_select( val ){
          this.product_tab.some( tab => {
@@ -241,11 +244,6 @@ createApp({
 
       has_discount(product){ return window.has_discount(product)},
       common_get_product_price(price, discount_number){ return window.common_get_product_price(price, discount_number )},
-      get_image_upload(img){ 
-         if( img == undefined || img == null){ img = 'store-dummy.png'; }
-         return window.get_image_upload(img);
-      },
-      get_product_quantity(product){ return window.get_product_quantity(product)},
       gotoChat(){ window.gotoChat()},
       gotoProductAdd(){ window.gotoProductAdd(this.product_tab_value) },
       gotoNotificationIndex(){ window.gotoNotificationIndex()},

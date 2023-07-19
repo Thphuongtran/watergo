@@ -55,8 +55,11 @@ function atlantis_get_total_review(){
 function atlantis_reviews(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_reviews' ){
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-      $page = isset($_POST['page']) ? $_POST['page'] : 0;
-      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
+      $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
+
+      $limit = 10;
+
+      $paged = $paged * $limit;
 
       if( $store_id == 0 ){
          wp_send_json_error(['message' => 'review_not_found']);
@@ -64,19 +67,26 @@ function atlantis_reviews(){
       }
 
       global $wpdb;
-      $sql = "SELECT wp_watergo_reviews.*,
-         user.user_login as user_username,
-         user.display_name as user_display_name
+      $sql = "SELECT 
+            wp_watergo_reviews.*,
+            user.user_login as user_username,
+            user.display_name as user_display_name
          
          FROM wp_watergo_reviews
+         
          LEFT JOIN wp_users as user
          ON user.ID = wp_watergo_reviews.user_id
+
          WHERE wp_watergo_reviews.related_id = {$store_id} 
          AND wp_watergo_reviews.review_page = 'review-store'
-         LIMIT $page,$limit
+         LIMIT $paged, $limit
       ";
 
       $res = $wpdb->get_results($sql);
+      foreach( $res as $k => $vl ){
+         $res[$k]->user_avatar = func_atlantis_get_user_avatar($vl->user_id);
+      }
+
       if( empty( $res ) ){
          wp_send_json_error(['message' => 'review_not_found']);
          wp_die();
@@ -87,27 +97,29 @@ function atlantis_reviews(){
 
 }
 
+/**
+ * @access caculator avg rating review
+ */
+function func_atlantis_get_avg_rating( $store_id ){
+   global $wpdb;
+   $sql = "SELECT AVG(rating) as avg_rating FROM wp_watergo_reviews WHERE related_id = $store_id 
+      AND review_page = 'review-store' ";
+   $res = $wpdb->get_results($sql);
+   if( $res[0]->avg_rating == null ){
+      return 0;
+   }
+   return $res[0]->avg_rating;
+}
+
 function atlantis_get_avg_rating(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_avg_rating' ){
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-
       if( $store_id == 0 ){
          wp_send_json_error(['message' => 'rating_not_found']);
          wp_die();
       }
-
-      $sql = "SELECT AVG(rating) as avg_rating FROM wp_watergo_reviews 
-         WHERE related_id = $store_id 
-         AND review_page = 'review-store' ";
-      global $wpdb;
-      $res = $wpdb->get_results($sql);
-
-      if( $res[0]->avg_rating == null ){
-         wp_send_json_error(['message' => 'rating_not_found']);
-         wp_die();
-      }
-
-      wp_send_json_success(['message' => 'rating_found', 'data' => $res[0]->avg_rating ]);
+      $avg_rating = func_atlantis_get_avg_rating($store_id);
+      wp_send_json_success(['message' => 'rating_found', 'data' => $avg_rating ]);
       wp_die();
    }
 }
@@ -180,9 +192,8 @@ function atlantis_get_user_review(){
          wp_watergo_reviews.contents,
          wp_watergo_reviews.rating,
          wp_watergo_reviews.time_created,
-         wp_watergo_store.name as store_name,
+         wp_watergo_store.name as store_name
          --
-         wp_watergo_photo.url as store_image
 
       FROM wp_watergo_reviews
       
@@ -191,9 +202,6 @@ function atlantis_get_user_review(){
 
       LEFT JOIN wp_watergo_store
       ON wp_watergo_store.id = wp_watergo_reviews.related_id
-
-      LEFT JOIN wp_watergo_photo
-      ON wp_watergo_photo.upload_by = wp_watergo_store.id AND wp_watergo_photo.kind_photo = 'store'
 
       WHERE 
          wp_watergo_reviews.user_id = $user_id

@@ -84,7 +84,7 @@
                            <input type='checkbox' :checked='product.product_select'>
                         </div>
                         <div class='product-image'>
-                           <img :src="get_image_upload(product.product_image)">
+                           <img :src="product.product_image.url">
                         </div>
                      </div>
                      <div class='content'>
@@ -331,7 +331,6 @@ createApp({
          }
       },
 
-      get_image_upload( product_image ){ return window.get_image_upload( product_image ); },
       goBack(){ window.goBack(); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){ window.gotoOrderProduct()},

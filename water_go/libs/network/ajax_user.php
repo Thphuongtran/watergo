@@ -601,13 +601,7 @@ function atlantis_get_both_user_messenger(){
          user.ID as user_id,
          user.user_nicename,
          user.display_name,
-         photo.url as user_avatar,
-
          wp_usermeta.meta_value as first_name
-
-         FROM wp_users as user
-         LEFT JOIN wp_watergo_photo as photo
-         ON photo.upload_by = user.ID AND photo.kind_photo = 'user_avatar'
 
          LEFT JOIN wp_usermeta
          ON wp_usermeta.user_id = user.ID AND wp_usermeta.meta_key = 'first_name'
@@ -617,14 +611,10 @@ function atlantis_get_both_user_messenger(){
 
       $sql_store = "SELECT 
          wp_watergo_store.id as store_id,
-         wp_watergo_store.name as store_name,
-         photo.url as store_avatar
+         wp_watergo_store.name as store_name
 
          FROM wp_watergo_store
          
-         LEFT JOIN wp_watergo_photo as photo
-         ON photo.upload_by = wp_watergo_store.id AND photo.kind_photo = 'store'
-
          WHERE wp_watergo_store.id = $store_id
       ";
 

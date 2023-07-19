@@ -87,8 +87,6 @@ createApp({
          name: '',
          email: '',
 
-         avatar_user: 'avatar-dummy.png',
-
          text_err: '',
 
          previewAvatar: null,
@@ -96,7 +94,6 @@ createApp({
       }
    },
    methods: {
-      get_image_upload(image){ return window.get_image_upload(image); },
 
       async btn_update_user(){
          this.loading = true;

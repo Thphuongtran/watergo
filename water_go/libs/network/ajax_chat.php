@@ -18,7 +18,7 @@ add_action( 'wp_ajax_atlantis_is_conversation_created_or_create', 'atlantis_is_c
 add_action( 'wp_ajax_nopriv_atlantis_count_messages', 'atlantis_count_messages' );
 add_action( 'wp_ajax_atlantis_count_messages', 'atlantis_count_messages' );
 
-add_action( 'wp_ajax_nopriv_aatlantis_get_product_newest_and_store', 'atlantis_get_product_newest_and_store' );
+add_action( 'wp_ajax_nopriv_atlantis_get_product_newest_and_store', 'atlantis_get_product_newest_and_store' );
 add_action( 'wp_ajax_atlantis_get_product_newest_and_store', 'atlantis_get_product_newest_and_store' );
 
 add_action( 'wp_ajax_nopriv_atlantis_load_conversations_id', 'atlantis_load_conversations_id' );
@@ -77,13 +77,9 @@ function atlantis_load_conversation(){
          if( $host_chat == 'user' ){
             $sql_list_conversation = "SELECT
                wp_watergo_messages.*,
-               wp_watergo_photo.url as avatar_chat,
                wp_watergo_store.name as name
 
             FROM wp_watergo_messages
-            LEFT JOIN wp_watergo_photo
-            ON wp_watergo_photo.upload_by = wp_watergo_messages.user_id 
-            AND wp_watergo_photo.kind_photo = 'store'
             LEFT JOIN wp_watergo_store
             ON wp_watergo_store.id = wp_watergo_messages.user_id
             WHERE wp_watergo_messages.user_id = $_store_id AND wp_watergo_messages.conversation_id = $_conversation_id
@@ -95,13 +91,9 @@ function atlantis_load_conversation(){
          if( $host_chat == 'store' ){
             $sql_list_conversation = "SELECT
                wp_watergo_messages.*,
-               wp_watergo_photo.url as avatar_chat,
                wp_usermeta.meta_value as name
 
             FROM wp_watergo_messages
-            LEFT JOIN wp_watergo_photo
-            ON wp_watergo_photo.upload_by = wp_watergo_messages.user_id 
-            AND wp_watergo_photo.kind_photo = 'user_avatar'
 
             LEFT JOIN wp_usermeta
             ON wp_usermeta.user_id = wp_watergo_messages.user_id AND wp_usermeta.meta_key = 'first_name'
@@ -358,20 +350,11 @@ function atlantis_get_product_newest_and_store(){
          wp_watergo_products.weight,
          wp_watergo_products.length_width,
          wp_watergo_products.product_type,
-
-         p1.url as product_image,
-         p2.url as store_image
          
          FROM wp_watergo_store
 
          LEFT JOIN wp_watergo_products
          ON wp_watergo_products.store_id = wp_watergo_store.id
-
-         LEFT JOIN wp_watergo_photo as p1
-         ON p1.upload_by = wp_watergo_products.id AND p1.kind_photo = 'product'
-
-         LEFT JOIN wp_watergo_photo as p2
-         ON p2.upload_by = wp_watergo_store.id AND p2.kind_photo = 'store'
 
          WHERE wp_watergo_store.id = $store_id 
          ORDER BY wp_watergo_products.id DESC

@@ -25,7 +25,7 @@
          <li v-for='(review, reviewKey ) in reviews ' :key='reviewKey'>
             <div class='tile-review-head'>
                <div class='leading'>
-                  <img src="<?php echo THEME_URI; ?>/assets/images/demo-box-review01.png" alt="">
+                  <img :src="review.user_avatar">
                </div>
                <div class='content'>
                   <div class='tt01'>{{ review.user_username }}</div>
@@ -60,8 +60,8 @@ createApp({
       return {
          loading: false,
          reviews: [],
-         page: 0,
-         limit: 10,
+         store_id: null,
+         paged: 0,
          total_reviews: 0,
          averageRating: 0,
 
@@ -74,12 +74,11 @@ createApp({
 
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
 
-      async findReview( store_id ){
+      async findReview( store_id, paged ){
          var form = new FormData();
          form.append('action', 'atlantis_reviews');
          form.append('store_id', store_id);
-         form.append('page', this.page);
-         form.append('limit', this.limit);
+         form.append('paged', paged);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -118,18 +117,42 @@ createApp({
 
       ratingNumber(rating){ return parseInt(rating).toFixed(1); },
 
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            
+            await this.findReview(  this.store_id, this.paged++);
+         }
+      }
+
    },
 
    computed: {
 
    },
 
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
+   },
+
    async created(){
       this.loading = true;
       const urlParams = new URLSearchParams(window.location.search);
       const store_id = urlParams.get('store_id'); 
+      this.store_id = store_id;
 
-      await this.findReview(store_id);
+      await this.findReview(store_id, 0);
       await this.get_total_review(store_id);
       await this.get_review_rating_average(store_id);
 

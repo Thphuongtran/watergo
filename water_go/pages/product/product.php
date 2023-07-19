@@ -23,9 +23,6 @@ if( $product_page == 'top-products' ){
    get_template_part('pages/product/page-product-top-related');
 }
 
-if( $product_page == 'top-products' ){
-   get_template_part('pages/product/page-product-top-related');
-}
 
 // TAB PRODUCT STORE
 if(is_user_logged_in() ){

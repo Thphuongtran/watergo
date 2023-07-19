@@ -46,11 +46,11 @@
                class='product-design' 
                v-for='(product, index) in searchs' :key='index'>
                   <div class='img'>
-                     <img :src='get_image_upload(product.product_image)'>
+                     <img :src='product.product_image.url'>
                   </div>
                   <div class='box-wrapper'>
-                     <p class='tt01'>{{ product.product_name }} </p>
-                     <p class='tt02'>{{ get_product_quantity(product) }}</p>
+                     <p class='tt01'>{{ product.name }} </p>
+                     <p class='tt02'>{{ product.name_second }}</p>
                      <div class='gr-price'>
                         <span class='price'> {{ common_get_product_price(product.price) }} </span>
                      </div>
@@ -93,9 +93,7 @@ createApp({
    },
 
    methods: {
-      get_image_upload( i ){ return window.get_image_upload( i ) },
       gotoProductDetail(id){ window.gotoProductDetail(id)},
-      get_product_quantity(p){ return window.get_product_quantity(p)},
       common_get_product_price(p, p2){ return window.common_get_product_price(p, p2)},
       goBack(){window.goBack()},
       removeText(){ this.inputSearch = ''; },

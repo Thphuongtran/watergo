@@ -36,7 +36,7 @@ Tab Me [http://watergo.net/user/?user_page=user-profile]
 Store Detail [http://watergo.net/store/?store_page=store-detail]
 Product Detail [http://watergo.net/product/?product_page=product-detail]
 Search [http://watergo.net/search/?search_page=search-index]
-
+Top Product [http://watergo.net/product/?product_page=top-products&category_id=3&appt=N]
 
 Authentication Login                [http://watergo.net/authentication?auth_page=auth-login]
 Authentication Register             [http://watergo.net/authentication?auth_page=auth-register]

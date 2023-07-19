@@ -52,12 +52,12 @@
                class='product-design' 
                v-for='(product, index) in filter_products' :key='index'>
                   <div class='img'>
-                     <img :src='get_image_upload(product.product_image)'>
+                     <img :src='product.product_image.url'>
                      <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                   </div>
                   <div class='box-wrapper'>
                      <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ get_product_quantity(product) }}</p>
+                     <p class='tt02'>{{ product.name_second }}</p>
                      <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                         <span class='price'>
                            {{ has_discount(product) == true 
@@ -127,10 +127,7 @@ createApp({
          }
       },
 
-      get_image_upload( i ){ return window.get_image_upload( i ) },
-
       has_discount( product ){ return window.has_discount(product); },
-      get_product_quantity( product ) { return window.get_product_quantity(product) },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
 
       buttonSortFeatureSelected( index ){
@@ -155,21 +152,18 @@ createApp({
       },
 
       // INIT
-      async load_product_sort( filter, product_id_already_exists ){
+      async load_product_sort( filter, paged ){
 
-         if( product_id_already_exists == undefined || product_id_already_exists == null ){
-            product_id_already_exists = [0];
-         }
-         
          var form = new FormData();
          form.append('action', 'atlantis_get_product_sort');
          form.append('product_type', 'ice');
          form.append('filter', filter);
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
-         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
-
+         form.append('paged', paged );
+         
          var r = await window.request(form);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -188,14 +182,14 @@ createApp({
          switch( this.sortFeatureCurrentValue ){
             case 0: return 'nearest'; break;
             case 1: return 'cheapest'; break;
-            case 2: return 'cheapest'; break;
+            case 2: return 'top_rated'; break;
          }
       },
 
       async load_category(){
          var form = new FormData();
          form.append('action', 'atlantis_load_category');
-         form.append('category', 'ice');
+         form.append('category', 'ice_category');
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -221,14 +215,8 @@ createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            
-            var product_id_already_exists = [];
-            
-            this.products.forEach(item => {
-               product_id_already_exists.push( parseInt( item.id ) );
-            });
 
-            await this.load_product_sort( this.get_text_filter(), product_id_already_exists );
+            await this.load_product_sort( this.get_text_filter(), this.paged++);
          }
       }
       
@@ -239,7 +227,7 @@ createApp({
          return this.products.filter( product => {
             var cat = this.categoryIce.find(c => c.active == true);
             if ( cat ){
-               return product.category_id == cat.id;
+               return product.category == cat.id;
             } else {
                return this.products;
             }
@@ -254,21 +242,21 @@ createApp({
          if( val == 0 ){
             this.products = [];
             this.loading = true;
-            await this.load_product_sort( this.get_text_filter(), [0]);
+            await this.load_product_sort( this.get_text_filter(), 0);
             this.loading = false;
             window.appbar_fixed();
          }
          if( val == 1 ){
             this.products = [];
             this.loading = true;
-            await this.load_product_sort( this.get_text_filter(), [0]);
+            await this.load_product_sort( this.get_text_filter(), 0);
             this.loading = false;
             window.appbar_fixed();
          }
          if( val == 2 ){
             this.products = [];
             this.loading = true;
-            await this.load_product_sort( this.get_text_filter(), [0]);
+            await this.load_product_sort( this.get_text_filter(), 0);
             this.loading = false;
             window.appbar_fixed();
          }
@@ -285,7 +273,7 @@ createApp({
    async created(){
       this.get_current_location();
       this.loading = true;
-      await this.load_product_sort('nearest', [0]);
+      await this.load_product_sort('nearest', 0);
       await this.load_category();
       this.loading = false;
       window.appbar_fixed();

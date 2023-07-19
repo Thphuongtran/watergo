@@ -1,92 +1,106 @@
 <?php 
 
-// $secure_user_id = md5( md5($user_id) . 'watergo' );
-
-
 add_action( 'wp_ajax_nopriv_atlantis_upload', 'atlantis_upload' );
 add_action( 'wp_ajax_atlantis_upload', 'atlantis_upload' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_all_image_product', 'atlantis_get_all_image_product' );
+add_action( 'wp_ajax_atlantis_get_all_image_product', 'atlantis_get_all_image_product' );
 
+
+/**
+ * @access USING LIBRARY UPLOAD
+ */
 function atlantis_upload(){
-   // if( isset($_POST['action']) && $_POST['action'] == 'atlantis_upload' ){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_upload' ){
+      $files               = isset($_FILES['uploadImages'])    ? $_FILES['uploadImages'] : null;
+      $attachment_type     = isset($_POST['attachment_type'])  ? $_POST['attachment_type'] : null;
+      // attachment_type [ user_avatar | store | product ]
       
-   //    global $wpdb;
+      $res = func_atlantis_upload_no_ajax($attachment_type, $files);
+      if( empty($res )){
+         wp_send_json_error(['message' => 'upload_fail']);
+         wp_die();
+      }
+      wp_send_json_succes(['message' => 'upload_ok', 'data' => $res]);
+      wp_die();
 
-   //    $sql = "SELECT url FROM wp_watergo_photo";
-
-   //    $res = $wpdb->get_results($sql);
-
-   //    $export = [];
-
-   //    $photo_dir = THEME_DIR . '/photo/';
-
-   //    $upload = THEME_DIR . '/uploads/';
-
-   //    foreach( $res as $k => $vl ){
-
-   //    }
-
-   //    wp_send_json_success(['res' => $res]);
-
-   // }
-
-   if (isset($_POST['action']) && $_POST['action'] == 'atlantis_upload') {
-
-      $hash_id = bin2hex(random_bytes(40));
-
-      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
-
-      $hash_protect = md5( md5( $user_id . '-user') . 'watergo' );
-
-
-
-      // global $wpdb;
-      // $photo_dir = THEME_DIR . '/photo/';
-      // $upload_dir = THEME_DIR . '/uploads/';
-
-      
-      // for( $i = 0; $i < count($export); $i++ ){
-      //    $id = $export[$i]['id'];
-      //    $url = $export[$i]['url'];
-
-      //    $wpdb->insert('wp_watergo_photo', [
-      //       'upload_by' => $id,
-      //       'url' => $url,
-      //       'time_created' => time(),
-      //       'kind_photo' => 'store'
-      //    ]);
-      // }
-
-
-      // $sql = "SELECT url FROM wp_watergo_photo";
-      // $res = $wpdb->get_results($sql, ARRAY_A); // Fetch results as associative array
-
-      // $export = [];
-
-      // foreach ($res as $item) {
-      //    $url = $item['url'];
-      //    $file_parts = explode('-', $url);
-
-      //    $filename = $file_parts[1] . '-' . $file_parts[2];
-      //    $hash = $file_parts[0];
-
-      //    $sourceFile = $photo_dir . $filename;
-      //    $destination_file = $upload_dir . $url;
-
-      //    $export[] = [
-      //       'filename' => $filename,
-      //       'hash' => $hash,
-      //       // 'sourceFile' => $sourceFile,
-      //       // 'destination_file' => $destination_file,
-      //    ];
-
-      //    // copy($sourceFile, $destination_file);
-
-      // }
-
-      wp_send_json_success(['res' => $hash_protect]);
    }
-
 }
 
 
+/**
+ * @access UPLOAD NO AJAX
+ */
+
+function func_atlantis_upload_no_ajax($attachment_type, $files ){
+
+   // attachment_type [ user_avatar | store | product ]
+   if( $attachment_type == null || $files == null ) return [];
+   if( !empty( $files ) ){
+      $files = sort_image_data($files);
+      $list_attachment_id = [];
+      global $wpdb;
+      foreach( $files as $kFile => $file ){
+
+         if ( $file['error'] == UPLOAD_ERR_OK ) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $uploaded_file = wp_handle_upload($file, array('test_form' => false));
+            $attachment = array(
+               'post_mime_type' => $uploaded_file['type'],
+               'post_title' => preg_replace('/\.[^.]+$/', '', basename($uploaded_file['file'])),
+               'post_content' => '',
+               'post_status' => 'inherit'
+            );
+            $attachment_id = wp_insert_attachment($attachment, $uploaded_file['file']);
+            $attachment_data = wp_generate_attachment_metadata($attachment_id, $uploaded_file['file']);
+            wp_update_attachment_metadata($attachment_id, $attachment_data);
+            // make that group image 
+            update_field('attachment_type', $attachment_type, $attachment_id );
+            $list_attachment_id[] = $attachment_id;
+         }
+      }
+      return $list_attachment_id;
+   }
+   return [];
+}
+
+function atlantis_get_all_image_product(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_all_image_product'){
+
+      $attachment_type   = isset($_POST['attachment_type']) ? $_FILES['attachment_type'] : null;
+      // photo album [ user_avatar | store | product ]
+
+      $user_id = get_current_user_id();
+
+      $args = array(
+         'author'       => $user_id,
+         'post_status'  => 'any',
+         'post_type'    => 'attachment',
+         'meta_key'     => 'photo_album',
+         'meta_value'   => $photo_album,
+         'meta_compare' => '==',
+         'fields'       => 'ids'
+      );
+
+      $query = get_posts( $args );
+      $new_arr = [];
+
+      if( empty( $query )){
+         wp_send_json_error(['message' => 'image_not_found']);
+         wp_die();
+      }
+
+      foreach( $query as $k => $vl ){
+         $attachment = wp_get_attachment_image_url($vl);
+         $new_arr[$k]['id'] = $vl;
+         $new_arr[$k]['url'] = $attachment;
+      }
+
+      wp_send_json_success(['message' => 'image_found', 'data' => $new_arr]);
+      wp_die();
+      
+   }
+}

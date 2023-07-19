@@ -25,11 +25,11 @@
          <div class='appbar-bottom'>
             <div v-if='product != null' class='product-pin'>
                <div class='leading'>
-                  <img :src="get_image_upload(product.product_image)">
+                  <img :src="product.product_image.url">
                </div>
                <div class='contents'>
                   <div class='tt01'>{{ product.name }}</div>
-                  <div class='tt02'>{{ get_product_quantity(product) }}</div>
+                  <div class='tt02'>{{ product.name_seconds) }}</div>
                   <div class='tt03'>{{ common_get_product_price(product.price ) }}</div>
                </div>
             </div>
@@ -120,9 +120,6 @@ createApp({
       goBack(){ window.goBack();},
       timestamp_to_fulldate(t){ return window.timestamp_to_fulldate(t)},
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
-      get_image_upload( url ){ return window.get_image_upload( url ); },
-      get_product_quantity(product){ return window.get_product_quantity(product)},
-
       
 
       get_avatar_user_chat( messenger ){

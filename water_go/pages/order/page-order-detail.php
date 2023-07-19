@@ -13,10 +13,10 @@
                   </svg>
                </button>
                
-               <p class='leading-title'>#{{ order_number }}</p>
+               <p v-if='order.order_number != null' class='leading-title'>#{{ order.order_number }}</p>
             </div>
             <div class='action'>
-               <span class='badge-status'>{{ get_status_activity(order.order_status) }}</span>
+               <span v-if='order.order_status != null' class='badge-status'>{{ get_status_activity(order.order_status) }}</span>
             </div>
          </div>
       </div>
@@ -54,8 +54,8 @@
                <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.order_group_product_name }}</span>
-                     <span class='product-subtitle'>{{ product.order_group_product_quantity }}</span>
+                     <span class='product-title'>{{ product.order_group_product_metadata.product_name }}</span>
+                     <span class='product-subtitle'>{{ product.order_group_product_metadata.product_name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -89,7 +89,7 @@
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
                '
-            v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
+            v-for='( date_time, date_time_key ) in order.order_time_shipping' :key='date_time_key'
             class='display_delivery_time'>
 
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
@@ -192,7 +192,7 @@
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' >Exit</button>
+         <button @click='goBackReOrder' >Exit</button>
       </div>
    </div>
 
@@ -210,12 +210,11 @@ createApp({
          popup_out_of_stock: false,
          order_is_out_of_stock: false,
 
-         order_time_shipping: [],
+         // order_time_shipping: [],
 
          popup_confirm_cancel: false,
 
-         order_number: null,
-
+         // order_number: null,
 
          reason_cancel: [
             {label: 'Reason 1', active: false},
@@ -233,20 +232,9 @@ createApp({
 
       buttonCloseModal_store_out_of_stock(){ this.popup_out_of_stock = false; },
 
-      get_product_quantity( product ){ return window.get_product_quantity(product); },
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
-
-      get_status_activity( status ){
-         switch( status ){
-            case 'ordered' : return 'Pending'; break;
-            case 'confirmed' : return 'Confirmed'; break;
-            case 'delivering' : return 'Delivering'; break;
-            case 'complete' : return 'Complete'; break;
-            case 'cancel' : return 'Cancel'; break;
-         }
-      },
 
       timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp);},
 
@@ -283,52 +271,29 @@ createApp({
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'cancel_done' ) {
                   this.goBack();
-               }else{
-                  this.loading = false;
+
+                  if( window.appBridge != undefined ){
+                     window.appBridge.refresh();
+                  }
+
                }
-            }else{
-               this.loading = false;
             }
+            this.loading = false;
          }
       },
 
       // END CANCEL ORDER
-
-      async getOrderTimeShipping( order_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_order_time_shipping');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'order_time_found'){
-               this.order_time_shipping.push(...res.data);
-            }
-         }
-      },
 
       async findOrder( order_id ){
          var form = new FormData();
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
                this.order = res.data;
-            }
-         }
-      },
-
-      async getOrderNumber( order_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_order_number');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'get_order_number_ok'){
-               this.order_number = res.data;
             }
          }
       },
@@ -340,32 +305,42 @@ createApp({
             var form = new FormData();
             form.append('action', 'atlantis_re_order');
             form.append('order_id', this.order.order_id)
-            
             var r = await window.request(form);
-            console.log(r);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'reorder_ok' ){
-                  this.loading = false;
                   this.banner_open == true;
-
-               }else{
-                  this.loading = false;
                }
-            }else{
-               this.loading = false;
             }
+            this.loading = false;
          }
 
       },
 
       goBack(){ window.goBack();},
+      goBackReOrder(){
+         window.goBack();
+         if( window.appBridge != undefined ){
+            window.appBridge.refresh();
+         }
+      },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       gotoReview(review_page, related_id ){ window.gotoReview(review_page, related_id); },
+
+      get_status_activity( status ){
+         switch( status ){
+            case 'ordered' : return 'Pending'; break;
+            case 'confirmed' : return 'Confirmed'; break;
+            case 'delivering' : return 'Delivering'; break;
+            case 'complete' : return 'Complete'; break;
+            case 'cancel' : return 'Cancel'; break;
+         }
+      },
 
    },
 
    computed: {
+
       get_layout_text_price(){
 
          if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering"){
@@ -420,28 +395,26 @@ createApp({
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
-      await this.getOrderTimeShipping(order_id);
-      await this.getOrderNumber(order_id);
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
-      // if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
-      //    if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
-      //       var _formCheckReorder = new FormData();
-      //       _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
-      //       _formCheckReorder.append('order_id', order_id);
+      if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
+         if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
+            var _formCheckReorder = new FormData();
+            _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
+            _formCheckReorder.append('order_id', order_id);
 
-      //       var _r = await window.request(_formCheckReorder);
-      //       if( _r != undefined ){
-      //          var _res = JSON.parse( JSON.stringify( _r ) );
+            var _r = await window.request(_formCheckReorder);
+            if( _r != undefined ){
+               var _res = JSON.parse( JSON.stringify( _r ) );
 
-      //          if( _res.message == 'reorder_out_of_stock' ){
-      //             this.order_is_out_of_stock = true;
-      //             this.popup_out_of_stock = true;
-      //          }
-      //       }
+               if( _res.message == 'reorder_out_of_stock' ){
+                  this.order_is_out_of_stock = true;
+                  this.popup_out_of_stock = true;
+               }
+            }
 
-      //    }
-      // }
+         }
+      }
 
       this.loading = false;
       window.appbar_fixed();
