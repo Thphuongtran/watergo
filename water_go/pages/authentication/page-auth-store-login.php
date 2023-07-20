@@ -79,7 +79,7 @@
       <div class='inner style01'>
 
          <div class='t-center'>
-            <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
+            <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo_business.svg'; ?>" alt="Login Image">
          </div>
 
          <div class='heading-01 t-center'>
