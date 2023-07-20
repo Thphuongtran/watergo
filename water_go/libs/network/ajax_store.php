@@ -63,7 +63,7 @@ function atlantis_get_store_nearby(){
       $arr = [];
       foreach( $res as $k => $vl ){
          $res[$k]->avg_rating    = func_atlantis_get_avg_rating( (int) $vl->id);
-         $res[$k]->store_image   = func_atlantis_get_images( (int) $vl->id);
+         $res[$k]->store_image   = func_atlantis_get_images( (int) $vl->id, 'store');
       }
 
       wp_send_json_success(['message' => 'store_location_found', 'data' => $res, 'arr' => $arr ]);
@@ -137,7 +137,7 @@ function atlantis_find_store(){
       $res = $wpdb->get_results($sql);
 
       foreach( $res as $k => $vl ){
-         $res[$k]->store_image = func_atlantis_get_images($vl->id, true);
+         $res[$k]->store_image = func_atlantis_get_images($vl->id, 'store', true);
       }
 
       if( empty( $res ) ){
@@ -184,18 +184,19 @@ add_action( 'wp_ajax_atlantis_get_store_profile', 'atlantis_get_store_profile' )
 
 function atlantis_get_store_profile(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_store_profile' ){
+      $user_id = get_current_user_id();
       $store_id = func_get_store_id_from_current_user();
-      $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id";
+      $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id LIMIT 1";
       global $wpdb;
       $res = $wpdb->get_results($sql);
       if( empty($res )){
          wp_send_json_error(['message' => 'get_store_error', 'sql' => $sql]);
          wp_die();
       }
-
-      foreach( $res as $k => $vl ){
-         $res[$k]->store_image = func_atlantis_get_images( $vl->id, true );
-      }
+      $res[0]->store_image = func_atlantis_get_images( $res[0]->id, 'store', true );
+      // GET EMAIL FROM current user_id
+      $user_data = get_userdata($user_id);
+      $res[0]->email = $user_data->user_email;
 
       wp_send_json_success(['message' => 'get_store_ok', 'data' => $res[0]]);
       wp_die();
@@ -235,13 +236,7 @@ function atlantis_store_profile_edit(){
       }
 
       if( is_email($email) == false ){
-         wp_send_json_error([ 'message' => 'email_is_not_correct_format', 'phone_length' => strlen($phone)]);
-         wp_die();
-      }
-
-      // CHECK IS EXISTS IN DATABASE OR NOT?
-      if( email_exists( $email) ){
-         wp_send_json_error([ 'message' => 'email_already_exists']);
+         wp_send_json_error([ 'message' => 'email_is_not_correct_format']);
          wp_die();
       }
 
@@ -278,40 +273,47 @@ function atlantis_store_profile_edit(){
          'description'  => $description,
          'address'      => $address,
          'phone'        => $phone,
-         'email'        => $email,
          'latitude'     => $position['lat'],
          'longitude'    => $position['lng']
-
       ], ['id' => $id ]);
-      
 
+      // UPDATE EMAIL USER
+      if( $email != '' || $email != null){
+         
+         $email_exists = get_user_by('email', $email);
+         $current_user = wp_get_current_user();
+
+         if( $current_user->user_email != $email ){
+            if( $email_exists == false ){
+               wp_update_user($update_data);
+            }else{
+               wp_send_json_success([ 'message' => 'email_already_exists' ]);
+               wp_die();   
+            }
+         }
+      }
+      
       // find store already have image?
       // override when upload image
       if( $imageUpload != null ){
          // FIND IMAGE AND REPLACE
-         $sql_find_attachment = "SELECT * FROM wp_watergo_attachment WHERE related_id = $id";
+         $sql_find_attachment = "SELECT * FROM wp_watergo_attachment WHERE related_id = $id AND attachment_type = 'store' ";
          $attachment_exists = $wpdb->get_results( $sql_find_attachment );
 
          if( !empty($attachment_exists) ){
-            foreach( $attachment_exists as $k => $vl ){
-               $attachment_type = get_post_meta( $vl->attachment_id, 'attachment_type', true);
-               if( $attachment_type == 'store'){
-                  wp_delete_attachment($vl->attachment_id, true);
-                  $wpdb->delete('wp_watergo_attachment',[ 'attachment_id' => $vl->attachment_id ], [ '%d' ]);
-               }
-            }
+            wp_delete_attachment($attachment_exists[0]->attachment_id, true);
+            $wpdb->delete('wp_watergo_attachment',[ 'attachment_id' => $attachment_exists[0]->attachment_id ], [ '%d' ]);
          }
 
          $attachment_id = func_atlantis_upload_no_ajax('store', $imageUpload);
          if($attachment_id != null || !empty( $attachment_id ) ){
             $wpdb->insert('wp_watergo_attachment', [
                'attachment_id'   => $attachment_id[0],
-               'related_id'      => $id
+               'related_id'      => $id,
+               'attachment_type' => 'store'
             ]);
          }
-
       }
-         
       wp_send_json_success([ 'message' => 'store_profile_update_ok' ]);
       wp_die();   
    
@@ -331,7 +333,7 @@ function atlantis_get_current_store_profile(){
 
       global $wpdb;
       $store = $wpdb->get_results($sql);
-      $store[0]->store_image = func_atlantis_get_images($store[0]->id, true);
+      $store[0]->store_image = func_atlantis_get_images($store[0]->id, 'store', true);
 
       if( empty( $store )){
          wp_send_json_error([ 'message' => 'get_store_profile_error' ]);

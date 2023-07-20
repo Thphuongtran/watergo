@@ -58,7 +58,6 @@ function atlantis_reviews(){
       $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
 
       $limit = 10;
-
       $paged = $paged * $limit;
 
       if( $store_id == 0 ){
@@ -84,7 +83,7 @@ function atlantis_reviews(){
 
       $res = $wpdb->get_results($sql);
       foreach( $res as $k => $vl ){
-         $res[$k]->user_avatar = func_atlantis_get_user_avatar($vl->user_id);
+         $res[$k]->user_avatar = func_atlantis_get_images($vl->user_id, 'user_avatar');
       }
 
       if( empty( $res ) ){
@@ -192,6 +191,7 @@ function atlantis_get_user_review(){
          wp_watergo_reviews.contents,
          wp_watergo_reviews.rating,
          wp_watergo_reviews.time_created,
+         wp_watergo_store.name as store_id,
          wp_watergo_store.name as store_name
          --
 
@@ -211,7 +211,6 @@ function atlantis_get_user_review(){
       ORDER BY wp_watergo_reviews.time_created DESC
 
       LIMIT $paged, $limit
-
       ";
 
       $res = $wpdb->get_results($sql);
@@ -219,6 +218,11 @@ function atlantis_get_user_review(){
          wp_send_json_error([ 'message' => 'no_review_found' ]);
          wp_die();
       }
+
+      foreach( $res as $k => $vl ){
+         $res[$k]->store_image = func_atlantis_get_images($vl->store_id, 'store', true);
+      }
+
       wp_send_json_success([ 'message' => 'review_found', 'data' => $res ]);
       wp_die();
    }

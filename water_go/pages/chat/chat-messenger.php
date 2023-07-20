@@ -11,11 +11,11 @@
                   <div class='leading-avatar'>
                      <img :src="get_leading_avatar">
                   </div>
-                  <div v-if='host_chat == "store"' class='user-info'>
+                  <div v-if='host_chat == "store" && account != null ' class='user-info'>
                      <div class="tt01">{{ account.user_account.first_name }}</div>
                      <div class="tt02">Active</div>
                   </div>
-                  <div v-if='host_chat == "user"' class='user-info'>
+                  <div v-if='host_chat == "user" && account != null' class='user-info'>
                      <div class="tt01">{{ account.store_account.store_name }}</div>
                      <div class="tt02">Active</div>
                   </div>
@@ -29,7 +29,7 @@
                </div>
                <div class='contents'>
                   <div class='tt01'>{{ product.name }}</div>
-                  <div class='tt02'>{{ product.name_seconds) }}</div>
+                  <div class='tt02'>{{ product.name_second }}</div>
                   <div class='tt03'>{{ common_get_product_price(product.price ) }}</div>
                </div>
             </div>
@@ -64,8 +64,8 @@
 
    <div class='box-form-chat'>
       <div class='box-chat'>
-         <div v-if='host_chat == "store"' class='avatar'><img :src="get_image_upload(account.store_account.store_avatar)"></div>
-         <div v-if='host_chat == "user"' class='avatar'><img :src="get_image_upload(account.user_account.user_avatar)"></div>
+         <div v-if='host_chat == "store" && account != null ' class='avatar'><img :src="account.store_account.image.url"></div>
+         <div v-if='host_chat == "user" && account != null ' class='avatar'><img :src="account.user_account.image.url"></div>
          
          <label class='input-chat'>
             <input v-model='chat_content' type='text' placeholder='Message...'>
@@ -124,14 +124,14 @@ createApp({
 
       get_avatar_user_chat( messenger ){
          if( messenger.host_chat == 'store' ){
-            return this.get_image_upload(this.account.store_account.store_avatar);
+            return this.account.store_account.image.url;
          }else {
-            return this.get_image_upload(this.account.user_account.user_avatar);
+            return this.account.user_account.image.url;
          }
          if( messenger.host_chat == 'user' ){
-            return this.get_image_upload(this.account.user_account.user_avatar);
+            return this.account.user_account.image.url;
          }else {
-            return this.get_image_upload(this.account.store_account.store_avatar);
+            return this.account.store_account.image.url;
          }
       },
 
@@ -234,6 +234,7 @@ createApp({
          form.append('action', 'atlantis_find_product');
          form.append('product_id', this.product_id);
          var r = await window.request(form);
+         console.log(r);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -248,6 +249,7 @@ createApp({
          form.append('action', 'atlantis_find_product_newest');
          form.append('store_id', this.store_id);
          var r = await window.request(form);
+         console.log(r);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -262,7 +264,6 @@ createApp({
          _current_user.append('user_id', user_id);
          _current_user.append('store_id', store_id);
          var _requestAccount = await window.request(_current_user);
-
          if( _requestAccount != undefined ){
             var _res = JSON.parse( JSON.stringify(_requestAccount));
             if( _res.message == 'user_ok'){
@@ -325,10 +326,10 @@ createApp({
       get_leading_avatar(){
          if( this.account != null ){
             if( this.host_chat == 'user' ){
-               return this.get_image_upload(this.account.store_account.store_avatar);
+               return this.account.store_account.image.url;
             }
             if( this.host_chat == 'store' ){
-               return this.get_image_upload(this.account.user_account.user_avatar);
+               return this.account.user_account.image.url;
             }
          }
       },
@@ -355,12 +356,14 @@ createApp({
       
       this.store_id = store_id;
       this.user_id = user_id;
-
       this.host_chat = host_chat;
+
+      // GET USER ACCOUNT
+      await this.get_both_user(user_id, store_id);
 
       // GET CONVERSATION ID 
       if(this.conversation_id == undefined || this.conversation_id == null ){
-         await this.get_conversation_id(user_id, store_id);
+         await this.c(user_id, store_id);
       }
 
       // GET PRODUCT
@@ -369,9 +372,6 @@ createApp({
       }else{
          await this.get_product_newest();
       }
-
-      // GET USER ACCOUNT
-      await this.get_both_user(user_id, store_id);
 
       // // GET MESSAGES
       await this.get_messages( [0] );
@@ -386,13 +386,15 @@ createApp({
          });
       })(jQuery);
 
+
+      setTimeout( () => {  }, 1000);
       setInterval( async () => {
          await this.get_new_messenger_per_second();
       }, 30000);
 
-      this.loading = false;
+      
+      this.loading = false; 
 
-      console.log(this.account);
 
 
    }

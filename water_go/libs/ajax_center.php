@@ -1,6 +1,5 @@
 <?php
 
-
 add_action( 'wp_ajax_nopriv_atlantis_testing', 'atlantis_testing' );
 add_action( 'wp_ajax_atlantis_testing', 'atlantis_testing' );
 
@@ -117,7 +116,7 @@ function func_atlantis_get_order_fullpack( $args ){
                      'order_group_product_price'            => $product->order_group_product_price,
                      'order_group_product_discount_percent' => $product->order_group_product_discount_percent,
                      'order_group_store_id'                 => $product->order_group_store_id,
-                     'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, true)
+                     'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true)
                   ];
                }
             }
@@ -205,7 +204,7 @@ function func_atlantis_get_product_by( $args ){
    }
 
    if( $limit == -1 ){
-      $sql .= " ORDER BY wp_watergo_products.id DESC ";
+      $sql .= " ORDER BY wp_watergo_products.id DESC LIMIT 1";
    }else{
       $sql .= " 
          ORDER BY wp_watergo_products.id DESC 
@@ -219,7 +218,7 @@ function func_atlantis_get_product_by( $args ){
    if( !empty($products ) ){
       foreach($products as $k => $vl){
 
-         $products[$k]->product_image = func_atlantis_get_images($vl->id, $limit_image);
+         $products[$k]->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image);
          $category = func_atlantis_get_product_category([
             'category'     => $vl->category,
             'brand'        => $vl->brand,
@@ -229,14 +228,14 @@ function func_atlantis_get_product_by( $args ){
             'product_type' => $vl->product_type
          ]);
 
-         $products[$k]->category_name = $category['category_name'];
-         $products[$k]->brand_name = $category['brand_name'];
-         $products[$k]->quantity_name = $category['quantity_name'];
-         $products[$k]->volume_name = $category['volume_name'];
-         $products[$k]->weight_name = $category['weight_name'];
+         $products[$k]->category_name  = $category['category_name'];
+         $products[$k]->brand_name     = $category['brand_name'];
+         $products[$k]->quantity_name  = $category['quantity_name'];
+         $products[$k]->volume_name    = $category['volume_name'];
+         $products[$k]->weight_name    = $category['weight_name'];
 
-         $products[$k]->name        = $category['name'];
-         $products[$k]->name_second = $category['name_second'];
+         $products[$k]->name           = $category['name'];
+         $products[$k]->name_second    = $category['name_second'];
       }
       return $products;
    }
@@ -252,23 +251,6 @@ function func_atlantis_caculator_distance( $args ){
    // product_id | store_id
    $get_by = $args['get_by'];
    
-}
-
-/**
- * @access GET User Avatar
- */
-
-function func_atlantis_get_user_avatar($user_id){
-
-   global $wpdb;
-   $sql = "SELECT attachment_id FROM wp_watergo_attachment WHERE related_id = $user_id LIMIT 1";
-   $res = $wpdb->get_results( $sql);
-   if( empty($res )){
-      return THEME_URI . '/uploads/avatar-dummy.png';
-   }else{
-      return wp_get_attachment_image_url($res[0]->attachment_id);
-   }
-
 }
 
 /**
@@ -312,9 +294,9 @@ function func_atlantis_get_product_category( $args ){
 /**
  * @access GET IMAGE PRODUCT -> LIMIT == FALSE -> get all image by product_id
  */
-function func_atlantis_get_images($related_id, $limit = true){
+function func_atlantis_get_images($related_id, $attachment_type, $limit = true){
    global $wpdb;
-   $sql = "SELECT attachment_id FROM wp_watergo_attachment WHERE related_id = $related_id
+   $sql = "SELECT attachment_id FROM wp_watergo_attachment WHERE related_id = $related_id AND attachment_type = '$attachment_type' 
       ORDER BY id ASC
    ";
    if( $limit == true ){
@@ -339,10 +321,16 @@ function func_atlantis_get_images($related_id, $limit = true){
       return $attachment;
    }
    // default image
-   return [
-      'id'  => null,
-      'url' => THEME_URI . '/uploads/store-dummy.png'
-   ];
+   if($attachment_type == 'store'){
+      $url = THEME_URI . '/assets/images/store-dummy.png';
+   }
+   if($attachment_type == 'product'){
+      $url = THEME_URI . '/assets/images/store-dummy.png';
+   }
+   if($attachment_type == 'user_avatar'){
+      $url = THEME_URI . '/assets/images/avatar-dummy.png';
+   }
+   return [ 'id'  => null, 'url' => $url ];
 }
 
 /**
@@ -411,12 +399,12 @@ function sort_image_data($data) {
 
         for ($i = 0; $i < $num_images; $i++) {
             $sorted_data[] = array(
-                'name' => $data['name'][$i],
-                'full_path' => $data['full_path'][$i],
-                'type' => $data['type'][$i],
-                'tmp_name' => $data['tmp_name'][$i],
-                'error' => $data['error'][$i],
-                'size' => $data['size'][$i],
+               'name'      => $data['name'][$i],
+               'full_path' => $data['full_path'][$i],
+               'type'      => $data['type'][$i],
+               'tmp_name'  => $data['tmp_name'][$i],
+               'error'     => $data['error'][$i],
+               'size'      => $data['size'][$i],
             );
         }
     }
@@ -432,10 +420,10 @@ function atlantis_get_images(){
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       if( $product_id != 0){
-         $res = func_atlantis_get_images($product_id, true);
+         $res = func_atlantis_get_images($product_id, 'product', true);
       }
       if( $store_id != 0){
-         $res = func_atlantis_get_images($store_id, true);
+         $res = func_atlantis_get_images($store_id, 'store', true);
       }
       wp_send_json_success(['message' => 'image_ok', 'data' => $res]);
       wp_die();

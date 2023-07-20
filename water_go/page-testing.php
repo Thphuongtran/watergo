@@ -2,39 +2,49 @@
 get_header();
 
 
+   $email = 'vtry.tainv11@gmail.com';
+
+           $user_by_email_1 = get_user_by('email', $email);
 
 
-   // echo '<pre>';
-      // print_r(func_atlantis_get_order_fullpack([
-      //    'get_by' => 'store_id',
-      //    'related_id' => 22,
-      //    'order_status' => '',
-      //    'is_get_product_related' => 1
-      // ]));
-      // print_r( func_atlantis_get_order_fullpack([
-      //    'get_by'                   => 'order_id',
-      //    'related_id'               => 395,
-      //    'order_status'             => '',
-      //    'limit'                    => -1,
-      //    'is_get_product_related'   => 1,
-      //    'is_get_time_shipping'     => 1
+           if($user_by_email_1){
+            echo 'email exists';
+           }else{
+            echo 'email non exists';
+           }
 
-      // ]) );
-   // echo '</pre>';
 
-   global $wpdb;
-   $sql = "SELECT * FROM wp_watergo_attachment WHERE related_id = 1";
-   $res = $wpdb->get_results( $sql );
-   // echo '<pre>';
-   // print_r($res);
-   // echo '</pre>';
 
-   foreach( $res as $k => $v ){
-      $attachment_type = get_post_meta( $v->attachment_id, 'attachment_type', true);
-      if( $attachment_type == 'store'){
-         echo $v->attachment_id;
-      }
-   }
+  
+         
+// if ($email !== '' && $email !== null) {
+    $user_id = get_current_user_id();
+    $current_user = wp_get_current_user();
+
+   echo '<pre>';
+   //  echo $current_user->user_email;
+   echo '</pre>';
+
+    // Check if the new email is different from the current email
+    if ($email != $current_user->user_email) {
+        // Check if the email already belongs to another user
+        $user_by_email = get_user_by('email', $email);
+        if ($user_by_email && $user_by_email->ID !== $user_id) {
+            echo "Email already exists for another user.";
+            // Handle the case when the email already exists for another user
+            // You can redirect back to the profile page or display an error message.
+        } else {
+            // Update the user's email
+            // wp_update_user([
+            //     'ID'           => $user_id,
+            //     'user_email'   => $email
+            // ]);
+            echo "Email updated successfully.";
+        }
+    } else {
+        echo "Email is the same. No update needed.";
+    }
+// }
 
 ?>
 <h1>PAGE TESTING</h1>

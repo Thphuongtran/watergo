@@ -244,7 +244,7 @@ function atlantis_load_product_recommend(){
 
       if( ! empty( $res )){
          foreach( $res as $k => $vl ){
-            $res[$k]->product_image = func_atlantis_get_images($vl->id);
+            $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
             $category = func_atlantis_get_product_category([
                'category' => $vl->category,
                'brand' => $vl->brand,
@@ -305,28 +305,18 @@ function atlantis_find_product_newest(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_find_product_newest' ){
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
 
-      if( !is_numeric($store_id) && $store_id == 0){
-         wp_send_json_error(['message' => 'product_not_found 1']);
-         wp_die();
-      }
+      $product = func_atlantis_get_product_by([
+         'get_by' => 'store_id',
+         'id'     => $store_id,
+         'limit'  => -1
+      ]);
 
-      $sql = "SELECT wp_watergo_products.*
-
-         FROM wp_watergo_products 
-
-         WHERE wp_watergo_products.store_id = $store_id
-         ORDER BY wp_watergo_products.id DESC
-         LIMIT 1";
-
-      global $wpdb;
-      $res = $wpdb->get_results( $sql );
-
-      if( empty($res )){
+      if( empty($product )){
          wp_send_json_error(['message' => 'product_not_found 2']);
          wp_die();  
       }
 
-      wp_send_json_success(['message' => 'product_found', 'data' => $res[0] ]);
+      wp_send_json_success(['message' => 'product_found', 'data' => $product[0] ]);
       wp_die();
 
    }
@@ -430,7 +420,7 @@ function atlantis_get_product_sort(){
       $res = $wpdb->get_results($sql);
 
       foreach( $res as $k => $vl ){
-         $res[$k]->product_image = func_atlantis_get_images($vl->id);
+         $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
          $category = func_atlantis_get_product_category([
             'category' => $vl->category,
             'brand' => $vl->brand,

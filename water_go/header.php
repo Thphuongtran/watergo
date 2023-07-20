@@ -1,17 +1,3 @@
-<?php 
-   /**
-    * @access IF USE LOGGED IN OR NOT
-    */
-   // if( is_user_logged_in() == false && !is_page('authentication')){
-   //    wp_redirect( get_bloginfo('url') . '/authentication?auth_page=auth-login', 302 );
-   //    exit;
-   // }
-
-   // echo '<pre>';
-   // print_r(getallheaders());
-   // echo '</pre>';
-
-?>
 <!DOCTYPE html>
 <html lang="">
 <head>

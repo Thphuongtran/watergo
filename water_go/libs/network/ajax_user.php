@@ -355,6 +355,9 @@ function atlantis_get_user_login_data(){
             'delivery_address' => $delivery_address,
          ];
 
+         $final['user_avatar'] = func_atlantis_get_images($user->data->ID, 'user_avatar', true);
+
+
          wp_send_json_success([ 'message' => 'user_found', 'data' => $final ]);
          wp_die();
 
@@ -378,43 +381,11 @@ function atlantis_update_user(){
          wp_die();
       }
 
-      // PROTECT USER ID
-      $hash_protected = md5( md5( $user_id . '-user') . 'watergo' );
-
       $name   = isset($_POST['name']) ? $_POST['name'] : '';
       $email  = isset($_POST['email']) ? $_POST['email'] : '';
       $avatar = isset($_FILES['avatar']) ? $_FILES['avatar'] : null;
 
 
-      // check folder exists or not
-      if ( $avatar != null && $avatar['error'] === UPLOAD_ERR_OK) {
-         $fileTmpPath      = $avatar['tmp_name'];
-         $fileName         = $avatar['name'];
-         $extension        = pathinfo($fileName, PATHINFO_EXTENSION);
-         
-         $fileUpload    = THEME_DIR . '/uploads/' . $hash_protected . '-user_avatar.' . $extension;
-         $fileUrl       = $hash_protected . '-user_avatar.' . $extension;
-
-         move_uploaded_file($fileTmpPath, $fileUpload);
-
-         // UPDATE DB 
-         global $wpdb;
-         $sql_check_user_avatar = "SELECT * FROM wp_watergo_photo WHERE upload_by = $user_id AND kind_photo = 'user_avatar' ";
-         $res = $wpdb->get_results( $sql_check_user_avatar );
-         if( !empty( $res )){
-            $wpdb->update('wp_watergo_photo', [
-               'url' => $fileUrl,
-               'time_created' => time()
-            ], ['upload_by' => $user_id, 'kind_photo' => 'user_avatar']);
-         }else{
-            $wpdb->insert('wp_watergo_photo', [
-               'upload_by' => $user_id,
-               'url' => $fileUrl,
-               'time_created' => time(),
-               'kind_photo' => 'user_avatar'
-            ]);
-         }
-      }
       
       $update_data = [];
 
@@ -432,7 +403,18 @@ function atlantis_update_user(){
 
       if( !empty( $update_data ) ){
          $update_data['ID'] = $user_id;
-         wp_update_user($update_data);
+
+         $email_exists = get_user_by('email', $email);
+         $current_user = wp_get_current_user();
+
+         if( $current_user->user_email != $email ){
+            if( $email_exists == false ){
+               wp_update_user($update_data);
+            }else{
+               wp_send_json_success([ 'message' => 'email_already_exists' ]);
+               wp_die();   
+            }
+         }
       }
       
       wp_send_json_success([ 'message' => 'update_user_ok', 'file_url' => $fileUrl ]);
@@ -606,8 +588,8 @@ function atlantis_get_user(){
 function atlantis_get_both_user_messenger(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_both_user_messenger' ){  
 
-      $user_id  = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
-      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+      $user_id  = isset($_POST['user_id'])   ? $_POST['user_id'] : 0;
+      $store_id = isset($_POST['store_id'])  ? $_POST['store_id'] : 0;
 
       global $wpdb;
 
@@ -616,24 +598,24 @@ function atlantis_get_both_user_messenger(){
          user.user_nicename,
          user.display_name,
          wp_usermeta.meta_value as first_name
-
+         FROM wp_users as user
          LEFT JOIN wp_usermeta
          ON wp_usermeta.user_id = user.ID AND wp_usermeta.meta_key = 'first_name'
-
          WHERE user.ID = $user_id
       ";
 
       $sql_store = "SELECT 
          wp_watergo_store.id as store_id,
          wp_watergo_store.name as store_name
-
          FROM wp_watergo_store
-         
          WHERE wp_watergo_store.id = $store_id
       ";
 
-      $user_account = $wpdb->get_results($sql_user);
+      $user_account  = $wpdb->get_results($sql_user);
+      $user_account[0]->image = func_atlantis_get_images($user_account->user_id, 'user_avatar', true);
+
       $store_account = $wpdb->get_results($sql_store);
+      $store_account[0]->image = func_atlantis_get_images($store_account->user_id, 'store', true);
 
       $account = [
          'user_account'    => $user_account[0],

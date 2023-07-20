@@ -21,9 +21,9 @@
 
       <div class='inner form-store-style'>
          <div class='avatar-header style02'>
-            <label for='uploadAvatar' class='upload-avatar style02' :class='previewAvatar != null ? "has-preview" : ""'>
+            <label for='uploadAvatar' class='upload-avatar style02'  :class='previewAvatar != null ? "has-preview" : ""'>
                
-               <svg width="388" height="181" viewBox="0 0 388 181" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <svg v-if='previewAvatar == null' width="388" height="181" viewBox="0 0 388 181" fill="none" xmlns="http://www.w3.org/2000/svg">
                <rect width="388" height="180" rx="8" fill="#F9F9F9"/>
                <circle cx="194" cy="90" r="35" fill="#ECECEC"/>
                <rect x="179.529" y="86.9199" width="28" height="18.0197" rx="1" fill="white" stroke="#C9C9C9" stroke-width="2"/>
@@ -133,7 +133,7 @@ createApp({
          // CHECK ALL IS EMPTY ??
          if( 
             this.owner != '' &&
-            this.store_name != '' &&
+            this.name != '' &&
             this.address != '' &&
             this.phone != '' &&
             this.email != '' 
@@ -230,6 +230,7 @@ createApp({
    },
    async created(){
       this.loading = true;
+
       await this.get_store_profile();
       this.loading = false;
 

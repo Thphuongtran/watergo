@@ -200,7 +200,8 @@ function atlantis_action_product_store(){
                foreach($list_attachment as $k => $attachment_id ){
                   $wpdb->insert('wp_watergo_attachment', [
                      'attachment_id'   => $attachment_id,
-                     'related_id'      => $product_id
+                     'related_id'      => $product_id,
+                     'attachment_type' => 'product'
                   ]);
                }
             }
@@ -237,7 +238,8 @@ function atlantis_action_product_store(){
                foreach($list_attachment as $k => $attachment_id ){
                   $wpdb->insert('wp_watergo_attachment', [
                      'attachment_id'   => $attachment_id,
-                     'related_id'      => $product_id
+                     'related_id'      => $product_id,
+                     'attachment_type' => 'product'
                   ]);
                }
             }

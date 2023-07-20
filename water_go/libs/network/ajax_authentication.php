@@ -352,7 +352,6 @@ function atlantis_store_register(){
          'name'         => $storeName,
          'address'      => $address,
          'phone'        => $phone,
-         'email'        => $email,
          'user_id'      => $user_id, // same with id
          'latitude'     => $latitude,
          'longitude'    => $longitude

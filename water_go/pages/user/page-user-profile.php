@@ -34,13 +34,13 @@
 
       <div class='inner'>
          <div class='profile-user'>
-            <img class='avatar-circle' width='80' height='80' :src="avatar_user.user_avatar">
+            <img class='avatar-circle' width='80' height='80' :src="user.user_avatar.url">
 
             <div class='user-prefs'>
                <div class='username'>{{ first_name }}</div>
                <button @click='gotoPageUserEditProfile' class='btn-text arrow-right'>Edit Profile
                   <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 11L6 6L1 1" stroke="#2040AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M1 11L6 6L1 1" stroke="#2790F9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                </button>
             </div>
@@ -152,7 +152,6 @@ createApp({
       return {
          loading: false,
          user: null,
-         avatar_user: 'avatar-dummy.png',
          first_name: '',
 
          reviews: [],
@@ -246,26 +245,13 @@ createApp({
          }
       },
 
-      async get_user_avatar( user_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_user_get_avatar');
-         form.append('user_id', user_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'user_avatar_ok' ){
-               this.avatar_user = res.data;  
-            }
-         }
-
-      },
-
       async initReview( paged ){
          var form = new FormData();
          form.append('action', 'atlantis_get_user_review');
          form.append('paged', paged );
 
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'review_found'){
@@ -307,8 +293,6 @@ createApp({
       this.loading = true;
       await this.initReview(this.paged);
       await this.initUser();
-
-      await this.get_user_avatar( this.user.user_id);
 
       if( this.user.first_name != undefined || this.user.first_name != null || this.user.first_name != ''){
          this.first_name = this.user.first_name;

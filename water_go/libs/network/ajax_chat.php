@@ -50,14 +50,11 @@ function atlantis_load_conversation(){
          wp_die();
       }
       // GET CONVERSATION 
-      $sql_conversation = "SELECT conversation_id, store_id, user_id FROM wp_watergo_conversations ";
+      $sql_conversation = "SELECT conversation_id, user_id, store_id FROM wp_watergo_conversations ";
       $sql_conversation .= $sql_get_host;
 
       global $wpdb;
       $res_conversation = $wpdb->get_results($sql_conversation);
-
-      // wp_send_json_success(['message' => 'conversation_found', 'data' => $res_conversation]);
-      // wp_die();
 
       if( empty( $res_conversation )){
          wp_send_json_error(['message' => 'conversation_not_found' ]);
@@ -77,6 +74,7 @@ function atlantis_load_conversation(){
          if( $host_chat == 'user' ){
             $sql_list_conversation = "SELECT
                wp_watergo_messages.*,
+               wp_watergo_store.id as store_id,
                wp_watergo_store.name as name
 
             FROM wp_watergo_messages
@@ -106,12 +104,15 @@ function atlantis_load_conversation(){
 
          $_res = $wpdb->get_results($sql_list_conversation);
          if( ! empty( $_res ) ){
-            // $_option = [...$_res, ['store_id' => $_store_id] ];
-            // foreach($res as)
-
+            // get store avatar
+            if( $host_chat == 'user'){
+               $_res[0]->image = func_atlantis_get_images( $_store_id, 'store', true);
+            }
+            if( $host_chat == 'store'){
+               $_res[0]->image = func_atlantis_get_images( $_user_id, 'user_avatar', true);
+            }
             array_push($list_conversation, ...$_res);
          }
-
       }
 
       wp_send_json_success(['message' => 'conversation_found', 'data' => $list_conversation, 'host_chat' => $host_chat, 'host_id' => $user_id]);

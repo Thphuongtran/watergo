@@ -26,8 +26,6 @@
       </div>
       
       <ul v-if='filter_search.length > 0' class='list-chat'>
-         <!-- user_id: 
-               store_id:  -->
          <li 
             @click='gotoChatMessenger({
                host_chat: host_chat,
@@ -37,7 +35,7 @@
             v-for='(cons, conversationIndex) in filter_search' :key='conversationIndex' class='chat-item'>
 
             <div class='leading'>
-               <img :src="get_image_upload(cons.avatar_chat)">
+               <img :src="cons.image.url">
             </div>
             <div class='contents'>
                <div class='tt01'>
@@ -102,8 +100,6 @@ createApp({
          })
       },
 
-      
-      
 
       async getConversation(){
          var form = new FormData();
@@ -131,13 +127,10 @@ createApp({
                         this.conversations.push(item);
                      }
                   });
-                  // console.log('run every 2 seconds');
-
                }
                
             }
          }
-         console.log(this.conversations);
       }
 
    },
@@ -162,8 +155,9 @@ createApp({
       await this.getConversation();
       this.loading = false;
 
+      console.log(this.conversations)
+
       setInterval( async () => {
-         console.log('run every 2 second');
          await this.getConversation();
       }, 10000);
       

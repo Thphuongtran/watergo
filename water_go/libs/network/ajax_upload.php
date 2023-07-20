@@ -81,8 +81,8 @@ function atlantis_get_all_image_product(){
          'author'       => $user_id,
          'post_status'  => 'any',
          'post_type'    => 'attachment',
-         'meta_key'     => 'photo_album',
-         'meta_value'   => $photo_album,
+         'meta_key'     => 'attachment_type',
+         'meta_value'   => $attachment_type,
          'meta_compare' => '==',
          'fields'       => 'ids'
       );
