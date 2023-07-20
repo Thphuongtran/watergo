@@ -694,7 +694,7 @@ function gotoStoreForgetPassword(){
  * @access TAB PRODUCT STORE
  */
 function gotoProductStoreEdit(action, product_type, product_id, store_id){
-   var url = window.watergo_domain + 'product/?product_page=product-store-view';
+   var url = window.watergo_domain + 'product/?product_page=product-store-view&appt=N';
 
    if( action != undefined ){
       url += '&action=' + action;
@@ -712,7 +712,7 @@ function gotoProductStoreEdit(action, product_type, product_id, store_id){
 }
 
 function gotoProductStoreAdd( store_id, product_type){
-   var url = window.watergo_domain + 'product/?product_page=product-store-view';
+   var url = window.watergo_domain + 'product/?product_page=product-store-view&appt=N';
    if( product_type != undefined ){
       url += '&product_type=' + product_type;
    }
@@ -722,3 +722,19 @@ function gotoProductStoreAdd( store_id, product_type){
    window.location.href = url + '&action=add&appt=N';
 }
 
+
+/**
+ * @access TAB STORE
+ */
+
+function gotoPageStoreEdit(){
+   window.location.href = window.watergo_domain + 'store/?store_page=store-edit&appt=N';
+}
+
+function gotoPageStoreSettings(){
+   window.location.href = window.watergo_domain + 'store/?store_page=store-settings&appt=N';
+}
+
+function gotoPageStoreAdverstising(){
+   window.location.href = window.watergo_domain + 'store/?store_page=store-adverstising&appt=N';
+}

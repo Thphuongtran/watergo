@@ -21,28 +21,27 @@
          <div class='avatar-header'>
             <label for='uploadAvatar' class='upload-avatar'>
 
-               <svg v-if="previewAvatar == null" width="80" height="85" viewBox="0 0 80 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="35" cy="35" r="35" fill="#ECECEC"/>
-                  <path d="M35 34.6429C39.7581 34.6429 43.6154 30.8053 43.6154 26.0714C43.6154 21.3376 39.7581 17.5 35 17.5C30.2419 17.5 26.3846 21.3376 26.3846 26.0714C26.3846 30.8053 30.2419 34.6429 35 34.6429Z" fill="white"/>
-                  <path d="M39.4872 38.2145H30.5128C25.3077 38.2145 21 42.5002 21 47.6788C21 48.9288 21.5385 50.0002 22.6154 50.5359C24.2308 51.4288 27.8205 52.5002 35 52.5002C42.1795 52.5002 45.7692 51.4288 47.3846 50.5359C48.2821 50.0002 49 48.9288 49 47.6788C49 42.3216 44.6923 38.2145 39.4872 38.2145Z" fill="white"/>
-                  <g filter="url(#filter0_d_780_35)">
-                  <circle cx="61" cy="64" r="15" fill="white"/>
+               <svg width="388" height="181" viewBox="0 0 388 181" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="388" height="180" rx="8" fill="#F9F9F9"/>
+                  <g filter="url(#filter0_d_95_4)">
+                  <circle cx="367" cy="159" r="16" fill="white"/>
                   </g>
-                  <path d="M60.8888 67.556C62.3616 67.556 63.5555 66.3621 63.5555 64.8893C63.5555 63.4166 62.3616 62.2227 60.8888 62.2227C59.4161 62.2227 58.2222 63.4166 58.2222 64.8893C58.2222 66.3621 59.4161 67.556 60.8888 67.556Z" fill="#252831"/>
-                  <path d="M68 57.7778H65.1822L64.08 56.5778C63.9143 56.3959 63.7126 56.2506 63.4876 56.1511C63.2626 56.0516 63.0193 56.0002 62.7733 56H59.0044C58.5067 56 58.0267 56.2133 57.6889 56.5778L56.5956 57.7778H53.7778C52.8 57.7778 52 58.5778 52 59.5556V70.2222C52 71.2 52.8 72 53.7778 72H68C68.9778 72 69.7778 71.2 69.7778 70.2222V59.5556C69.7778 58.5778 68.9778 57.7778 68 57.7778ZM60.8889 69.3333C58.4356 69.3333 56.4444 67.3422 56.4444 64.8889C56.4444 62.4356 58.4356 60.4444 60.8889 60.4444C63.3422 60.4444 65.3333 62.4356 65.3333 64.8889C65.3333 67.3422 63.3422 69.3333 60.8889 69.3333Z" fill="#252831"/>
+                  <path d="M366.881 162.793C368.452 162.793 369.726 161.52 369.726 159.949C369.726 158.378 368.452 157.104 366.881 157.104C365.31 157.104 364.037 158.378 364.037 159.949C364.037 161.52 365.31 162.793 366.881 162.793Z" fill="#252831"/>
+                  <path d="M374.467 152.363H371.461L370.285 151.083C370.109 150.889 369.893 150.734 369.653 150.628C369.413 150.522 369.154 150.467 368.892 150.467H364.871C364.34 150.467 363.828 150.694 363.468 151.083L362.302 152.363H359.296C358.253 152.363 357.4 153.216 357.4 154.259V165.637C357.4 166.68 358.253 167.533 359.296 167.533H374.467C375.51 167.533 376.363 166.68 376.363 165.637V154.259C376.363 153.216 375.51 152.363 374.467 152.363ZM366.881 164.689C364.265 164.689 362.141 162.565 362.141 159.948C362.141 157.331 364.265 155.208 366.881 155.208C369.498 155.208 371.622 157.331 371.622 159.948C371.622 162.565 369.498 164.689 366.881 164.689Z" fill="#252831"/>
                   <defs>
-                  <filter id="filter0_d_780_35" x="42" y="47" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <filter id="filter0_d_95_4" x="347" y="141" width="40" height="40" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
                   <feFlood flood-opacity="0" result="BackgroundImageFix"/>
                   <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                   <feOffset dy="2"/>
                   <feGaussianBlur stdDeviation="2"/>
                   <feComposite in2="hardAlpha" operator="out"/>
                   <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
-                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_780_35"/>
-                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_780_35" result="shape"/>
+                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_95_4"/>
+                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_95_4" result="shape"/>
                   </filter>
                   </defs>
-               </svg>
+                  </svg>
+
 
                <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
                <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar" width='80' height='80' >

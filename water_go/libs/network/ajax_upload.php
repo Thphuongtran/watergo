@@ -40,6 +40,7 @@ function func_atlantis_upload_no_ajax($attachment_type, $files ){
       $files = sort_image_data($files);
       $list_attachment_id = [];
       global $wpdb;
+      
       foreach( $files as $kFile => $file ){
 
          if ( $file['error'] == UPLOAD_ERR_OK ) {
@@ -62,6 +63,7 @@ function func_atlantis_upload_no_ajax($attachment_type, $files ){
             $list_attachment_id[] = $attachment_id;
          }
       }
+
       return $list_attachment_id;
    }
    return [];

@@ -430,7 +430,13 @@ function sort_image_data($data) {
 function atlantis_get_images(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_images' ){
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
-      $res = func_atlantis_get_images($product_id, true);
+      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+      if( $product_id != 0){
+         $res = func_atlantis_get_images($product_id, true);
+      }
+      if( $store_id != 0){
+         $res = func_atlantis_get_images($store_id, true);
+      }
       wp_send_json_success(['message' => 'image_ok', 'data' => $res]);
       wp_die();
    }

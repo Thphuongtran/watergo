@@ -16,6 +16,7 @@
 
             <div class='main'> 
                <img :src="store.store_image.url">
+               <button v-if='user_current_is_store == true' @click='gotoPageStoreEdit' class='btn-edit-store-info'>Edit Info</button>
             </div>
          </div>
       </div>
@@ -74,17 +75,6 @@
                   <div class='box-wrapper'>
                      <p class='tt01'>{{ product.name }} </p>
                      <p class='tt02'>{{ product.name_second }}</p>
-                     <!-- <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
-                        <span class='price'>
-                           {{ has_discount(product) == true 
-                              ? common_get_product_price(product.price, product.discount_percent) 
-                              : common_get_product_price(product.price)
-                           }}
-                        </span>
-                        <span v-if='has_discount(product) == true' class='price-sub'>
-                           {{ common_get_product_price(product.price) }}
-                        </span>
-                     </div> -->
                      <div class='gr-price' :class="product.has_discount == true ? 'has_discount' : '' ">
                         <span class='price'>
                            {{ product.has_discount == true 
@@ -136,6 +126,8 @@ createApp({
          averageRating: 0,
 
          store_type: [],
+
+         user_current_is_store: false,
       }
    },
 
@@ -266,10 +258,27 @@ createApp({
          });
       },
 
+      async check_current_user_is_store( ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_current_user_id');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'get_current_user_ok' ){
+               if( res.data.is_user_store == 1 ){
+                  this.user_current_is_store = true;
+               }
+            }
+         }
+
+         
+      },
+
       gotoProductDetail(product_id){window.gotoProductDetail(product_id)},
       gotoStoreDetail(store_id){window.gotoStoreDetail(store_id)},
       goBack(){ window.goBack() },
       gotoReviewIndex( store_id){ window.gotoReviewIndex(store_id);},
+      gotoPageStoreEdit(){ window.gotoPageStoreEdit()},
 
    },
 
@@ -311,6 +320,8 @@ createApp({
       await this.findStore(this.store_id);
       await this.get_all_product_by_store()
       await this.get_review_rating_average(this.store.id);
+
+      await this.check_current_user_is_store();
 
       window.appbar_fixed();
 

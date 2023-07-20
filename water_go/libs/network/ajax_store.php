@@ -151,7 +151,6 @@ function atlantis_find_store(){
 
 }
 
-
 function atlantis_get_location_of_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_location_of_store' ){
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
@@ -173,5 +172,172 @@ function atlantis_get_location_of_store(){
       wp_send_json_success(['message' => 'store_found', 'data' => $res[0] ]);
       wp_die();
 
+   }
+}
+
+/**
+ * @access TAB STORE
+ */
+
+add_action( 'wp_ajax_nopriv_atlantis_get_store_profile', 'atlantis_get_store_profile' );
+add_action( 'wp_ajax_atlantis_get_store_profile', 'atlantis_get_store_profile' );
+
+function atlantis_get_store_profile(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_store_profile' ){
+      $store_id = func_get_store_id_from_current_user();
+      $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id";
+      global $wpdb;
+      $res = $wpdb->get_results($sql);
+      if( empty($res )){
+         wp_send_json_error(['message' => 'get_store_error', 'sql' => $sql]);
+         wp_die();
+      }
+
+      foreach( $res as $k => $vl ){
+         $res[$k]->store_image = func_atlantis_get_images( $vl->id, true );
+      }
+
+      wp_send_json_success(['message' => 'get_store_ok', 'data' => $res[0]]);
+      wp_die();
+
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_store_profile_edit', 'atlantis_store_profile_edit' );
+add_action( 'wp_ajax_atlantis_store_profile_edit', 'atlantis_store_profile_edit' );
+
+function atlantis_store_profile_edit(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_store_profile_edit' ){
+      global $wpdb;
+
+      // get location store when update location
+      $id = isset($_POST['id']) ? $_POST['id'] : 0;
+      $owner = isset($_POST['owner']) ? $_POST['owner'] : '';
+      $name = isset($_POST['name']) ? $_POST['name'] : '';
+      $description = isset($_POST['description']) ? $_POST['description'] : '';
+      $address = isset($_POST['address']) ? $_POST['address'] : '';
+      $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
+      $email = isset($_POST['email']) ? $_POST['email'] : '';
+      
+      $imageUpload = isset($_FILES['imageUpload']) ? $_FILES['imageUpload'] : null;
+
+      if( $id == 0 ){
+         wp_send_json_error(['message' => 'store_edit_error' ]);
+         wp_die();
+      } 
+
+      // REMOVE ANY NON-DIGITAL NO UNNESESSORY
+      $phone = preg_replace('/\D/', '', $phone);
+
+      if ( preg_match('/^\d+$/', $phone) == false || (strlen($phone) >= 10 && strlen($phone) < 12) == false) {
+         wp_send_json_error([ 'message' => 'phonenumber_is_not_correct_format']);
+         wp_die();
+      }
+
+      if( is_email($email) == false ){
+         wp_send_json_error([ 'message' => 'email_is_not_correct_format', 'phone_length' => strlen($phone)]);
+         wp_die();
+      }
+
+      // CHECK IS EXISTS IN DATABASE OR NOT?
+      if( email_exists( $email) ){
+         wp_send_json_error([ 'message' => 'email_already_exists']);
+         wp_die();
+      }
+
+      $url_request = 'https://geocode.search.hereapi.com/v1/geocode';
+      $keyID = 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k';
+
+      $query_params = [
+         'q'      => $address,
+         'apiKey' => $keyID
+      ];
+
+      $url = add_query_arg($query_params, $url_request);
+      $response = wp_remote_get($url);
+      $body = wp_remote_retrieve_body($response);
+
+      if( !empty($body) && $body != '' ){
+         $body             = json_decode( $body);
+         $position         = [];
+         if( $body->items[0]->position->lat != null ){
+            $position['lat'] = $body->items[0]->position->lat;
+         }else{
+            $position['lat'] = 0.0;
+         }
+         if( $body->items[0]->position->lng != null ){
+            $position['lng'] = $body->items[0]->position->lng;
+         }else{
+            $position['lng'] = 0.0;
+         }
+      }
+      
+      $updated = $wpdb->update('wp_watergo_store', [
+         'owner'        => $owner,
+         'name'         => $name,
+         'description'  => $description,
+         'address'      => $address,
+         'phone'        => $phone,
+         'email'        => $email,
+         'latitude'     => $position['lat'],
+         'longitude'    => $position['lng']
+
+      ], ['id' => $id ]);
+      
+
+      // find store already have image?
+      // override when upload image
+      if( $imageUpload != null ){
+         // FIND IMAGE AND REPLACE
+         $sql_find_attachment = "SELECT * FROM wp_watergo_attachment WHERE related_id = $id";
+         $attachment_exists = $wpdb->get_results( $sql_find_attachment );
+
+         if( !empty($attachment_exists) ){
+            foreach( $attachment_exists as $k => $vl ){
+               $attachment_type = get_post_meta( $vl->attachment_id, 'attachment_type', true);
+               if( $attachment_type == 'store'){
+                  wp_delete_attachment($vl->attachment_id, true);
+                  $wpdb->delete('wp_watergo_attachment',[ 'attachment_id' => $vl->attachment_id ], [ '%d' ]);
+               }
+            }
+         }
+
+         $attachment_id = func_atlantis_upload_no_ajax('store', $imageUpload);
+         if($attachment_id != null || !empty( $attachment_id ) ){
+            $wpdb->insert('wp_watergo_attachment', [
+               'attachment_id'   => $attachment_id[0],
+               'related_id'      => $id
+            ]);
+         }
+
+      }
+         
+      wp_send_json_success([ 'message' => 'store_profile_update_ok' ]);
+      wp_die();   
+   
+   }
+}
+
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_current_store_profile', 'atlantis_get_current_store_profile' );
+add_action( 'wp_ajax_atlantis_get_current_store_profile', 'atlantis_get_current_store_profile' );
+
+function atlantis_get_current_store_profile(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_current_store_profile' ){
+
+      $store_id = func_get_store_id_from_current_user();
+      $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id LIMIT 1";
+
+      global $wpdb;
+      $store = $wpdb->get_results($sql);
+      $store[0]->store_image = func_atlantis_get_images($store[0]->id, true);
+
+      if( empty( $store )){
+         wp_send_json_error([ 'message' => 'get_store_profile_error' ]);
+         wp_die();
+      }
+      wp_send_json_success([ 'message' => 'get_store_profile_ok', 'data' => $store[0] ]);
+      wp_die();
    }
 }

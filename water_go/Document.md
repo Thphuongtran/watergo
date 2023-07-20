@@ -54,6 +54,8 @@ Product       [http://watergo.net/product/?product_page=product-store]
    Product Add       [http://watergo.net/product/?product_page=product-add]
 Report         [http://watergo.net/report/?report_page=report-index]
 Store Profile [http://watergo.net/store/?store_page=store-profile]
+   Store Edit [http://watergo.net/store/?store_page=store-edit]
+   Store Setting [http://watergo.net/store/?store_page=store-setting]
 
 
 Authentication Login Store          [http://watergo.net/authentication?auth_page=auth-store-login]

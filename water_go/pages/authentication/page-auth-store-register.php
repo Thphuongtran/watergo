@@ -270,6 +270,7 @@ createApp({
 
                   var form = new FormData();
                   form.append('action', 'atlantis_store_register');
+                  
                   form.append('owner', this.inputOwner);
                   form.append('storeType', this.select_type_product_text);
                   form.append('storeName', this.inputStoreName);
@@ -284,8 +285,8 @@ createApp({
                      // DISPLAY ERROR
                      if( res.message == 'email_already_exists' ){
                         this.res_text_sendcode = 'Email already exists.';
-
                      }
+                     
                      if( res.message == 'code_is_not_match' ){
                         this.res_text_sendcode = 'Code is not match.';
                      }

@@ -250,6 +250,8 @@
          &:last-child{
             padding-bottom: 0;
          }
+
+
 			
 			.title{
 				font-weight: 500;
@@ -271,7 +273,25 @@
 			
 			&.no-border{border: none;}
 			&.no-arrow{&:after{display: none;}}
-		}
+
+         &.tile-item-2col{
+            justify-content: space-between;
+            padding-right: 0;
+            .leading-col{
+               display: flex;
+               align-items: center;
+            }
+         }
+
+      }
+
+      &.last-item-effect{
+         .tile-items{
+            &:last-child{
+               padding-bottom: 14px;
+            }
+         }
+      }
 	}
 
    // COL 3

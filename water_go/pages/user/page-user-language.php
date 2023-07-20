@@ -38,7 +38,8 @@ createApp({
          user_language: '',
          settings_language: [
             'Vietnamese', // 0
-            'English' // 1
+            'English', // 1
+            'Korean' // 2 
          ],
          
       }

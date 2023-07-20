@@ -43,6 +43,20 @@ add_action( 'wp_ajax_atlantis_is_user_login_social', 'atlantis_is_user_login_soc
 add_action( 'wp_ajax_nopriv_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
 add_action( 'wp_ajax_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
 
+add_action( 'wp_ajax_nopriv_atlantis_get_user_notification', 'atlantis_get_user_notification' );
+add_action( 'wp_ajax_atlantis_get_user_notification', 'atlantis_get_user_notification' );
+
+function atlantis_get_user_notification(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_user_notification' ){
+
+      $user_id = get_current_user_id();
+      $value   = get_field('user_notification', 'user_' . $user_id );
+
+      wp_send_json_success([ 'message' => 'get_notification_ok', 'data' => $value ]);
+      wp_die();
+   }
+}
+
 
 function atlantis_user_notification(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_user_notification' ){
