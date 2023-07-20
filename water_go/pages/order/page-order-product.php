@@ -928,15 +928,8 @@ createApp({
          });
       })(jQuery);
       
-
-      setTimeout(() => {
-         this.loading = false;
-         window.appbar_fixed();
-      }, 500);
-
-      console.log(this.carts);
-
-      
+      this.loading = false;
+      window.appbar_fixed();
    },
    
 
