@@ -26,7 +26,7 @@
                   <path d="M13.5947 9.30974C13.5947 9.69118 13.2855 10.0004 12.904 10.0004C12.5226 10.0004 12.2133 9.69118 12.2133 9.30974C12.2133 8.92829 12.5226 8.61906 12.904 8.61906C13.2855 8.61906 13.5947 8.92829 13.5947 9.30974Z" fill="#2790F9"/>
                   <path d="M16.7027 9.3235C16.7027 9.70494 16.3935 10.0142 16.012 10.0142C15.6306 10.0142 15.3214 9.70494 15.3214 9.3235C15.3214 8.94205 15.6306 8.63282 16.012 8.63282C16.3935 8.63282 16.7027 8.94205 16.7027 9.3235Z" fill="#2790F9"/>
                   </svg>
-                  <span class='badge'>8</span>
+                  <span class='badge' :class="message_count > 0 ? 'enable' : '' " >{{ message_count }}</span>
                </div>
             </div>
          </div>
@@ -158,6 +158,8 @@ createApp({
          popup_delete_all_review: false,
          review_id: 0,
 
+         message_count: 0,
+
          paged: 0,
 
       }
@@ -176,6 +178,18 @@ createApp({
       count_product_in_cart(){return window.count_product_in_cart(); },
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
       btn_review_edit(review_id){ window.gotoPageUserReviewEdit(review_id);},
+
+      async get_messages_count(){
+         var form_message_count = new FormData();
+         form_message_count.append('action', 'atlantis_count_messages');
+         var _atlantis_message = await window.request(form_message_count);
+         if( _atlantis_message != undefined ){
+            let res = JSON.parse( JSON.stringify( _atlantis_message));
+            if( res.message == 'message_count_found' ){
+               this.message_count = parseInt(res.data);
+            }
+         }
+      },
 
       async handleScroll() {
          const windowTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -291,6 +305,7 @@ createApp({
 
    async created(){
       this.loading = true;
+      await this.get_messages_count();
       await this.initReview(this.paged);
       await this.initUser();
 

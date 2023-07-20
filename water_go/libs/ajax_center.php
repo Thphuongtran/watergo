@@ -225,7 +225,8 @@ function func_atlantis_get_product_by( $args ){
             'quantity'     => $vl->quantity,
             'volume'       => $vl->volume,
             'weight'       => $vl->weight,
-            'product_type' => $vl->product_type
+            'product_type' => $vl->product_type,
+            'product_id'   => $vl->id,
          ]);
 
          $products[$k]->category_name  = $category['category_name'];
@@ -265,6 +266,7 @@ function func_atlantis_get_product_category( $args ){
    $volume     = $args['volume'];
    $weight     = $args['weight'];
    $product_type     = $args['product_type'];
+   $product_id = $args['product_id'];
 
    $res = [];
    $sql_category = $wpdb->prepare("SELECT name as category_name FROM wp_watergo_product_category WHERE id = %d ", $category);
@@ -278,9 +280,12 @@ function func_atlantis_get_product_category( $args ){
    $sql_weight = $wpdb->prepare("SELECT name as weight_name FROM wp_watergo_product_category WHERE id = %d", $weight);
    $res['weight_name'] = $wpdb->get_var($sql_weight);
 
+   $sql_length_width = $wpdb->prepare("SELECT length_width FROM wp_watergo_products WHERE id = %d", $product_id);
+   $res['length_width'] = $wpdb->get_var($sql_length_width);
+
    // BUILD MAME - AND NAME SECOND
    if( $product_type == 'ice' ){
-      $res['name'] = $res['category_name'];
+      $res['name']        = $res['category_name'];
       $weight_name_remove_space  = str_replace(' ', '', $res['weight_name']);
       $res['name_second'] = $weight_name_remove_space . ' ' . $res['length_width'] . 'mm';
    }

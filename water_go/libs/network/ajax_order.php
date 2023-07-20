@@ -301,7 +301,6 @@ function atlantis_add_order(){
             
 
             if( $check_hash == 0 ){
-
                $wpdb->insert('wp_watergo_order', [
                   'order_by'                 => $user_id,
                   'order_store_id'           => $store_id,
@@ -309,7 +308,7 @@ function atlantis_add_order(){
                   'order_payment_method'     => 'cash',
                   'order_status'             => 'ordered',
                   'order_delivery_address'   => $delivery_address,
-                  'order_time_created'       => time(),
+                  'order_time_created'       => atlantis_current_datetime(),
                   'hash_id'                  => (String) $hash_id,
                ]);
 
@@ -938,8 +937,9 @@ function atlantis_clone_order_repeat($order_repeat_order_id, $order_repeat_count
 function atlantis_order_status(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_order_status' ){
       
-      $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : '';
-      $timestamp = isset($_POST['timestamp']) ? $_POST['timestamp'] : 0;
+      $order_id   = isset($_POST['order_id']) ? $_POST['order_id'] : '';
+      // current datetime
+      $timestamp  = atlantis_current_datetime();
 
       $status = isset($_POST['status']) ? $_POST['status'] : '';
 
@@ -976,15 +976,15 @@ function atlantis_order_status(){
 
          if( $status == 'confirmed' ){
             $order_status = 'confirmed';
-            $order_time = "order_time_confirmed = %d ";
+            $order_time = "order_time_confirmed = %s ";
          }
          if( $status == 'delivering' ){
             $order_status = 'delivering';
-            $order_time = "order_time_delivery = %d ";
+            $order_time = "order_time_delivery = %s ";
          }
          if( $status == 'complete' ){
             $order_status = 'complete';
-            $order_time = "order_time_completed = %d ";
+            $order_time = "order_time_completed = %s ";
 
 
             // IF ORDER IS WEEKLY OR MONTHLY - MAKE NEW ORDER
@@ -1169,7 +1169,7 @@ function atlantis_order_status(){
 
          if( $status == 'cancel' ){
             $order_status = 'cancel';
-            $order_time = "order_time_cancel = %d ";
+            $order_time = "order_time_cancel = %s ";
          }
          
          // IF NOT STATUS COMPLETE DO OTHER WISE

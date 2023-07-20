@@ -246,12 +246,13 @@ function atlantis_load_product_recommend(){
          foreach( $res as $k => $vl ){
             $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
             $category = func_atlantis_get_product_category([
-               'category' => $vl->category,
-               'brand' => $vl->brand,
-               'quantity' => $vl->quantity,
-               'volume' => $vl->volume,
-               'weight' => $vl->weight,
-               'product_type' => $vl->product_type
+               'category'     => $vl->category,
+               'brand'        => $vl->brand,
+               'quantity'     => $vl->quantity,
+               'volume'       => $vl->volume,
+               'weight'       => $vl->weight,
+               'product_type' => $vl->product_type,
+               'product_id'   => $vl->id
             ]);
 
             $res[$k]->category_name = $category['category_name'];
@@ -422,12 +423,13 @@ function atlantis_get_product_sort(){
       foreach( $res as $k => $vl ){
          $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
          $category = func_atlantis_get_product_category([
-            'category' => $vl->category,
-            'brand' => $vl->brand,
-            'quantity' => $vl->quantity,
-            'volume' => $vl->volume,
-            'weight' => $vl->weight,
-            'product_type' => $vl->product_type
+            'category'     => $vl->category,
+            'brand'        => $vl->brand,
+            'quantity'     => $vl->quantity,
+            'volume'       => $vl->volume,
+            'weight'       => $vl->weight,
+            'product_type' => $vl->product_type,
+            'product_id'   => $vl->id
          ]);
 
          $res[$k]->category_name = $category['category_name'];

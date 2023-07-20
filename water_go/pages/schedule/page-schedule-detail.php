@@ -101,8 +101,8 @@
 
       <div class='break-line'></div>
       <div class='box-time-order'>
-         <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_created) }}</span></p>
-         <p class='heading-03'>Confirm Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_confirmed) }}</span></p>
+         <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
+         <p class='heading-03'>Confirm Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed) }}</span></p>
       </div>
 
       <div class='box-extra-function'>
@@ -214,7 +214,7 @@ createApp({
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
 
-      timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp);},
+      order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
       // END CANCEL ORDER
 
       async findOrder( order_id ){

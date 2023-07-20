@@ -85,19 +85,19 @@
             </label>
             <div class='order-time'>
                <span class='tt01'>Ordered Time: </span>
-               <span class='tt02'>{{ timestamp_to_fulldate(order.order_time_created) }}</span>
+               <span class='tt02'>{{ order_formatDate(order.order_time_created) }}</span>
             </div>
-            <div v-if='order.order_time_confirmed != 0' class='order-time'>
+            <div v-if='order.order_time_confirmed != null' class='order-time'>
                <span class='tt01'>Confirm Time: </span>
-               <span class='tt02'>{{ timestamp_to_fulldate(order.order_time_confirmed) }}</span>
+               <span class='tt02'>{{ order_formatDate(order.order_time_confirmed) }}</span>
             </div>
-            <div v-if='order.order_time_delivery != 0' class='order-time'>
+            <div v-if='order.order_time_delivery != null' class='order-time'>
                <span class='tt01'>Delivery Time: </span>
-               <span class='tt02'>{{ timestamp_to_fulldate(order.order_time_delivery) }}</span>
+               <span class='tt02'>{{ order_formatDate(order.order_time_delivery) }}</span>
             </div>
-            <div v-if='order.order_time_cancel != 0' class='order-time'>
+            <div v-if='order.order_time_cancel != null' class='order-time'>
                <span class='tt01'>Cancel Time: </span>
-               <span class='tt02'>{{ timestamp_to_fulldate(order.order_time_cancel) }}</span>
+               <span class='tt02'>{{ order_formatDate(order.order_time_cancel) }}</span>
             </div>
 
             <div 
@@ -348,14 +348,16 @@ createApp({
 
       async reset_get_order_store(){
          this.loading = true;
-         await this.get_count_total_order();
          this.paged = 0;
          this.orders = [];
          this.total_count = 0;
          this.order_by_filter_select = { value: 'desc' };
+         await this.get_count_total_order();
          await this.get_order_store(this.order_status_current, this.paged);
          window.appbar_fixed();
          this.loading = false;
+
+         console.log(this.order_status_filter);
       },
 
       select_all_item(){
@@ -389,7 +391,7 @@ createApp({
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
-      timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp);},
+      order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
 
       count_total_price_in_order(order_id ){
          var _total = 0;
@@ -455,6 +457,7 @@ createApp({
       },
 
       async get_count_total_order(){
+         this.order_status_filter.some(item => item.count = 0);
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_status');
          var r = await window.request(form);

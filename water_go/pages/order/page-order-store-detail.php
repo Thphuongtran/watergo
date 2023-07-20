@@ -101,11 +101,11 @@
 
       <div class='break-line'></div>
       <div class='box-time-order'>
-         <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_created) }}</span></p>
-         <p v-if='order.order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_cancel) }}</span></p>
-         <p v-if='order.order_time_confirmed > 0 ' class='heading-03'>Confirm Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_confirmed) }}</span></p>
-         <p v-if='order.order_time_delivery > 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_delivery) }}</span></p>
-         <p v-if='order.order_time_completed > 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ timestamp_to_fulldate(order.order_time_completed) }}</span></p>
+         <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
+         <p v-if='order.order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+         <p v-if='order.order_time_confirmed > 0 ' class='heading-03'>Confirm Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed) }}</span></p>
+         <p v-if='order.order_time_delivery > 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order.order_time_completed > 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
       </div>
 
       <div class='break-line'></div>
@@ -233,7 +233,7 @@ createApp({
       has_discount( product ){ return window.has_discount( product ); },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
-      timestamp_to_fulldate(timestamp){ return window.timestamp_to_fulldate(timestamp)},
+      order_formatDate(timestamp){ return window.order_formatDate(timestamp)},
       get_fulldate_from_day(day ){ return window.get_fulldate_from_day(day) },
       get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },

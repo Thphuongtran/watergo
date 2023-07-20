@@ -214,3 +214,17 @@ function adjustDay($day) {
 
     return $adjustedDate;
 }
+
+function atlantis_current_datetime(){
+   // Create a new DateTime object with the current time in the server's default timezone
+   $server_timezone = new DateTimeZone(date_default_timezone_get());
+   $current_datetime = new DateTime('now', $server_timezone);
+
+   // Set the desired timezone (UTC+7 in this case)
+   $utc_plus_7_timezone = new DateTimeZone('Asia/Bangkok');
+   $current_datetime->setTimezone($utc_plus_7_timezone);
+
+   // Format the date and time as 'YYYY-MM-DD HH:mm:ss'
+   $formatted_datetime = $current_datetime->format('Y-m-d H:i:s');
+   return $formatted_datetime;
+}

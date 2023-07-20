@@ -1,6 +1,27 @@
 /**
  * @access GLOBAL FUNCTION JS COMMON
  */
+
+function order_formatDate(inputDate){
+   if(inputDate != undefined && inputDate != null ){
+      // Parse the input date string to create a Date object
+      const dateObj = new Date(inputDate);
+
+      // Extract the date components (day, month, year) and time components (hours, minutes)
+      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+      const year = dateObj.getFullYear().toString();
+      const hours = dateObj.getHours().toString().padStart(2, '0');
+      const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+
+      // Format the date and time in the desired output format
+      const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
+
+      return formattedDate;
+   }
+   return false;
+}
+
 function check_cart_is_exists(){
    var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
    if( _cartItems == undefined ){

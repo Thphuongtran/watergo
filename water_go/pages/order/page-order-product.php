@@ -223,7 +223,7 @@
       </div>
    </div>
 
-   <div v-show='banner_open == true' class='banner'>
+   <div v-show='banner_open == true' class='banner z-index-5'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -933,6 +933,8 @@ createApp({
          this.loading = false;
          window.appbar_fixed();
       }, 500);
+
+      console.log(this.carts);
 
       
    },

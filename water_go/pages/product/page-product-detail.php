@@ -449,8 +449,6 @@ createApp({
       await this.get_review_rating_average( this.product.store_id);
       await this.get_purchase_store( this.product.store_id);
 
-      
-
       // GET QUANTITY 
       var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
       // 

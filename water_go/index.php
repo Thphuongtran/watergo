@@ -54,6 +54,7 @@ if( is_page('notification') ){
 }
 
 
+
 /**
  * @access FOR STORE LOGIN
  */
@@ -62,6 +63,9 @@ if( is_page('schedule')){
    get_template_part('pages/schedule/schedule');
 }
 
+if( is_page('report') ){
+   get_template_part('pages/report/report');
+}
 
 
 get_footer();

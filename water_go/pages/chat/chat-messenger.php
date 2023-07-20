@@ -118,7 +118,7 @@ createApp({
       
 
       goBack(){ window.goBack();},
-      timestamp_to_fulldate(t){ return window.timestamp_to_fulldate(t)},
+      order_formatDate(t){ return window.order_formatDate(t)},
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
       
 
