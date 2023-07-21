@@ -2787,7 +2787,7 @@ p{
    border: 1px solid black;
    top: 22px;
    right: 0;
-   height: 200px;
+   max-height: 250px;
    width: 70px;
    background: white;
    overflow-x: hidden;
@@ -2837,6 +2837,9 @@ p{
       font-size: 12px;
       font-weight: 500;
       color: #252831;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
    }
    
    .rank{

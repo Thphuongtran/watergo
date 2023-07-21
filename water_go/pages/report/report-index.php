@@ -86,25 +86,33 @@
          <div class='box-profit'>
             <div class='order-count'>SOLD: <span class='highlight'>{{ report.sold }}</span> Orders</div>
             <div class='rank rank-up'>
-               <svg width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <svg v-if='report.order_complete_Comparison > 0 && report.sold_rank == "low"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
                </svg>
-               <span ckass='rank-sum'>50</span>
+               <svg v-if='report.order_complete_Comparison > 0 && report.sold_rank == "high"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
+               </svg>
+               <span v-if='report.order_complete_Comparison > 0' class='rank-sum'>{{ report.order_complete_Comparison }}</span>
             </div>
          </div>
 
          <div class='box-profit'>
             <div class='order-count'>CANCELED: <span class='highlight'>{{ report.cancel }}</span> Orders</div>
             <div class='rank rank-down'>
-               <svg width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+               <svg v-if='report.order_cancel_Comparison > 0 && report.cancel_rank == "low"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
+               </svg>
+               <svg v-if='report.order_cancel_Comparison > 0 && report.cancel_rank == "high"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
                </svg>
-               <span class='rank-sum'>10</span>
+
+               <span v-if='report.order_cancel_Comparison > 0' class='rank-sum'>{{ report.order_cancel_Comparison }}</span>
             </div>
          </div>
 
          <div class='box-profit'>
-            <div class='order-count'>TOTAL PROFIT: <span class='highlight'>{{ report.profit }}đ</span></div>
+            <div class='order-count'>TOTAL PROFIT: <span class='highlight'>{{ get_price_convert(report.profit) }}</span></div>
          </div>
 
       </div>
@@ -149,7 +157,11 @@ createApp({
          report: {
             sold: 0,
             cancel: 0,
-            profit: 0
+            order_complete_Comparison: 0,
+            order_cancel_Comparison: 0,
+            profit: 0,
+            sold_rank: 'normal',
+            cancel_rank: 'normal'
          },
          
       }
@@ -196,6 +208,12 @@ createApp({
    },
 
    methods: {
+      get_price_convert(price){
+         if( price > 0){
+            return price.toLocaleString('vi-VN') + ' đ';
+         }
+         return 0 + ' đ';
+      },
 
       reverse_date_to_system_datetime(datetime){ return window.reverse_date_to_system_datetime(datetime) },
 
@@ -300,7 +318,6 @@ createApp({
 
       // 
       async get_order_report( from_date ){
-         console.log('from_date ' + from_date );
          var form = new FormData();
          form.append('action', 'atlantis_get_order_report_by_datetime');
          form.append('from_date', from_date );
@@ -309,19 +326,16 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_order_ok' ){
-               if( res.data.sold == undefined || res.data.sold == null ){
-                  this.report.sold     = 0;
-               }else{
-                  this.report.sold     = res.data.sold;
-               }
-
-               if( res.data.cancel == undefined || res.data.cancel == null ){
-                  this.report.cancel   = 0;
-               }else{
-                  this.report.cancel   = res.data.cancel;
-               }
                
+               this.report.sold     = res.data.sold;
+               this.report.cancel   = res.data.cancel;
                this.report.profit   = res.data.profit;
+               this.report.order_complete_Comparison   = res.data.order_complete_Comparison;
+               this.report.order_cancel_Comparison     = res.data.order_cancel_Comparison;
+
+               this.report.sold_rank         = res.data.sold_rank;
+               this.report.cancel_rank       = res.data.cancel_rank;
+
             }
          }
       },
