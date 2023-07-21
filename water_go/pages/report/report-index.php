@@ -9,7 +9,41 @@
             <div class='leading'>
                <p class='leading-title'>
                   Report
-                  <input @click='datetime_picker' id='datetime_picker' class='datetime_picker'>
+
+                  <div class='datetime-wrapper'>
+                     <span @click='btn_open_datetime' class='datetime-display'>{{display_datetime}}</span>
+
+                     <ul v-show='open_datetime' class='dropdown-datetime'>
+                        <li
+                           @click='select_date(date)'
+                           v-for='( date, keyDate) in getPastDaysInMonth ' :key='keyDate'
+                        >
+                           {{ date }}   
+                        </li>
+                     </ul>
+
+
+                     <ul v-show='open_datemonth ' class='dropdown-datetime'>
+                        <li
+                           @click='select_date(date)'
+                           v-for='( date, keyMonth) in getPastMonthsInCurrentYears ' :key='keyMonth'
+                        >
+                           {{ date }}   
+                        </li>
+
+                     </ul>
+
+                     <ul v-show='open_dateyear' class='dropdown-datetime'>
+                        <li @click='select_date(2022)'>2022</li>
+                        <li @click='select_date(2023)'>2023</li>
+                     </ul>
+
+                     <div class='icon'>
+                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1L5 5L9 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </div>
+                  </div>
                </p>
             </div>
             <div class='action'>
@@ -47,8 +81,32 @@
          </div>
       </div>
 
-      <div class='inner'>
+      <div class='inner mt30'>
          
+         <div class='box-profit'>
+            <div class='order-count'>SOLD: <span class='highlight'>{{ report.sold }}</span> Orders</div>
+            <div class='rank rank-up'>
+               <svg width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
+               </svg>
+               <span ckass='rank-sum'>50</span>
+            </div>
+         </div>
+
+         <div class='box-profit'>
+            <div class='order-count'>CANCELED: <span class='highlight'>{{ report.cancel }}</span> Orders</div>
+            <div class='rank rank-down'>
+               <svg width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
+               </svg>
+               <span class='rank-sum'>10</span>
+            </div>
+         </div>
+
+         <div class='box-profit'>
+            <div class='order-count'>TOTAL PROFIT: <span class='highlight'>{{ report.profit }}đ</span></div>
+         </div>
+
       </div>
    </div>
 
@@ -72,148 +130,123 @@ createApp({
          
          display_datetime: '',
          filter_datetime: [
-            {label: 'Day', value: 'day', active: true},
-            {label: 'Month', value: 'Month', active: false},
-            {label: 'Year', value: 'Year', active: false}
+            {label: 'Day', value: 'd', active: true},
+            {label: 'Month', value: 'm', active: false},
+            {label: 'Year', value: 'y', active: false}
          ],
+         stream_datetime_value: '',
 
-         day_of_month: [],
-         week_of_month: [],
-         month_of_year: [],
-         year: [2023, 2024]
+         datetime_day: {value: 0},
+         datetime_month: {value: 0},
+         datetime_year: {value: 0},
+
+         open_datetime: false,
+         open_datemonth: false,
+         open_dateyear: false,
+
+         final_datetime: '',
+
+         report: {
+            sold: 0,
+            cancel: 0,
+            profit: 0
+         },
          
       }
    },
 
+   watch: {
+
+      stream_datetime_value: function ( val ){
+         var dateObj = new Date();
+         var day     = dateObj.getDate().toString().padStart(2, '0');
+         var month   = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+         var year    = dateObj.getFullYear().toString();
+
+         if( val == 'd' ){
+            this.display_datetime   = this.get_full_current_datetime({ day: day });
+            this.final_datetime     = this.get_full_current_datetime({ day: day });
+         }
+         if( val == 'm' ){
+            this.display_datetime   = this.get_full_current_datetime({ month: month });
+            this.final_datetime     = '01/' + this.get_full_current_datetime({ month: month });
+         }
+         if( val == 'y' ){
+            this.display_datetime   = this.get_full_current_datetime({ year: year });
+            this.final_datetime     = '01/01/' + this.get_full_current_datetime({ year: year });
+         }
+      }
+
+   },
+
    computed: {
-      func_display_datetime( ){
-         var _findDate = this.filter_datetime.find( item => item.active );
-         // this.display_datetime = _findDate.value;
-
-      },
-      func_display_month( ){
-         var _findDate = this.filter_datetime.find( item => item.active );
-         // this.display_datetime = _findDate.value;
-      },
-      func_display_year( ){
-         var _findDate = this.filter_datetime.find( item => item.active );
-         // this.display_datetime = _findDate.value;
-      },
-
-
-
-      func_display_date_type(){
-         var _findDateType = this.filter_datetime.find( item => item.active );
-         return _findDateType.value;
-      },
 
       count_product_in_cart(){ return window.count_product_in_cart(); },
+      getPastDaysInMonth(){ return window.getPastDaysInMonth(); },
+      getPastMonthsInCurrentYears() {
+         const currentDate = new Date();
+         const currentMonth = currentDate.getMonth(); // 0-based index (0-11)
+         const previousMonths = [];
+         for (let i = currentMonth; i >= 0; i--) {
+            previousMonths.push(i + 1); // Add 1 to get the correct month number (1-12)
+         }
+         return previousMonths;
+      },
+
    },
 
    methods: {
 
-      datetime_picker(){
+      reverse_date_to_system_datetime(datetime){ return window.reverse_date_to_system_datetime(datetime) },
 
+      btn_open_datetime(){
 
-            $('.ui-date-picker-wrapper').addClass('active');
-            
-            $('#datetime_picker').datepicker({
-               dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-               onSelect: function(dateText, inst){
-                  if(dateText != undefined || dateText != '' || dateText != null){
-                     $('#datetime_picker').attr('value', dateText); 
-                  }
-               },
-               onClose: function(dateText, inst){
-                  console.log('on close');
-                  $('.ui-date-picker-wrapper').removeClass('active');
-               }
-            });
-
-      },
-
-      get_day_of_month(){
-         var currentDate = new Date();
-         var currentYear = currentDate.getFullYear();
-         var currentMonth = currentDate.getMonth();
-         var totalDays = this.getDaysInMonth(currentYear, currentMonth);
-
-         for (let day = 1; day <= totalDays; day++) {
-            var isActive = day === currentDate.getDate();
-            this.day_of_month.push({ 
-               isActive: isActive,
-               datetime: day,
-               value: day 
-            });
+         if( this.stream_datetime_value == 'd' ){
+            this.open_datetime = !this.open_datetime;
+         }
+         if( this.stream_datetime_value == 'm' ){
+            this.open_datemonth = !this.open_datemonth;
+         }
+         if( this.stream_datetime_value == 'y' ){
+            this.open_dateyear = !this.open_dateyear;
          }
       },
 
-      get_week_of_month(){
-         var currentDate = new Date();
-         var currentYear = currentDate.getFullYear();
-         var currentMonth = currentDate.getMonth();
-         var totalDays = this.getDaysInMonth(currentYear, currentMonth);
-         let weekStart = 1;
-
-         while (weekStart <= totalDays) {
-            var weekEnd = Math.min(weekStart + (7 - (new Date(currentYear, currentMonth, weekStart).getDay())), totalDays);
-            var week_1 = `${this.formatDate_for_week(new Date(currentYear, currentMonth, weekStart))}`;
-            var week_2 = `${this.formatDate_for_week(new Date(currentYear, currentMonth, weekEnd))}`;
-            var isActive = weekStart <= currentDate.getDate() && currentDate.getDate() <= weekEnd;
-            this.week_of_month.push({ 
-               isActive: isActive,
-               weekStart: week_1,
-               weekEnd: week_2,
-               value: week_1 + ' - ' + week_2
-            });
-            weekStart = weekEnd + 1;
+      async select_date( date ){
+         
+         if( this.stream_datetime_value == 'd' ){
+            this.open_datetime      = false;
+            this.display_datetime   = this.get_full_current_datetime({ day: date });
+            this.final_datetime     = this.get_full_current_datetime({ day: date });
          }
+         if( this.stream_datetime_value == 'm' ){
+            this.open_datemonth     = false;
+            this.display_datetime   = this.get_full_current_datetime({ month: date });
+            this.final_datetime     = '01/' + this.get_full_current_datetime({ month: date });
+         }
+         if( this.stream_datetime_value == 'y' ){
+            this.open_dateyear      = false;
+            this.display_datetime   = this.get_full_current_datetime({ year: date });
+            this.final_datetime     = '01/01/' + this.get_full_current_datetime({ year: date });
+         }
+            await this._re_get_order_report( this.reverse_date_to_system_datetime( this.final_datetime ) );
+
+         
+
+         console.log( this.final_datetime );
+         
       },
-      get_month_of_year(){
-         var currentDate = new Date();
-         var shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-         var currentMonth = currentDate.getMonth();
-         var currentYear = currentDate.getFullYear();
-
-         function formatDate(date) {
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
-         }
-
-         for (let month = 0; month < 12; month++) {
-            const firstDayOfMonth = new Date(currentYear, month, 1);
-            const lastDayOfMonth = new Date(currentYear, month + 1, 0);
-            var shortMonthName = shortMonths[month];
-            var isActive = month === currentMonth;
-            this.month_of_year.push({
-               isActive: isActive,
-               datetime: month + 1,
-               dayStart: formatDate(firstDayOfMonth),
-               dayEnd: formatDate(lastDayOfMonth),
-               value: `${shortMonthName}, ${currentYear}`,
-            });
-         }
-      },
-      get_year(){},
 
       select_filter_datetime(value){
-         
+
+         this.stream_datetime_value = value;
+         this.open_datetime = false;
+         this.open_datemonth = false;
+         this.open_dateyear = false;
          this.filter_datetime.forEach(item => {
             item.active = item.value === value;
          });
       },
-
-      getDaysInMonth(year, month) {
-         return new Date(year, month + 1, 0).getDate();
-      },
-      formatDate_for_week(date) {
-         const day = date.getDate().toString().padStart(2, '0');
-         const month = (date.getMonth() + 1).toString().padStart(2, '0');
-         return `${day}/${month}`;
-      },
-
 
       async get_messages_count(){
          var form_message_count = new FormData();
@@ -226,6 +259,73 @@ createApp({
             }
          }
       },
+
+      get_full_current_datetime( obj ){
+         var _isDay = obj && obj.day !== undefined ? obj.day : null;
+         var _isMonth = obj && obj.month !== undefined ? obj.month : null;
+         var _isYear = obj && obj.year !== undefined ? obj.year : null;
+
+         var dateObj = new Date();
+         var day     = dateObj.getDate().toString().padStart(2, '0');
+         var month   = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+         var year    = dateObj.getFullYear().toString();
+         var formattedDate = '';
+
+
+         if( _isDay == null || _isMonth == null || _isYear == null ){
+            formattedDate = `${day}/${month}/${year}`;
+         }
+
+         if( _isDay != null ){
+            _isDay = _isDay.toString().padStart(2, '0');
+            formattedDate = `${_isDay}/${month}/${year}`;
+         }
+         if( _isMonth != null ){
+            _isMonth = _isMonth.toString().padStart(2, '0');
+            formattedDate = `${_isMonth}/${year}`;
+         }
+         if( _isYear != null ){
+            formattedDate = `${_isYear}`;
+         }
+
+         return formattedDate;
+
+      },
+
+      async _re_get_order_report( from_date){
+         this.loading = true;
+         await this.get_order_report(from_date);
+         this.loading = false;
+      },
+
+      // 
+      async get_order_report( from_date ){
+         console.log('from_date ' + from_date );
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_report_by_datetime');
+         form.append('from_date', from_date );
+         var r = await window.request(form);
+         console.log( r );
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'get_order_ok' ){
+               if( res.data.sold == undefined || res.data.sold == null ){
+                  this.report.sold     = 0;
+               }else{
+                  this.report.sold     = res.data.sold;
+               }
+
+               if( res.data.cancel == undefined || res.data.cancel == null ){
+                  this.report.cancel   = 0;
+               }else{
+                  this.report.cancel   = res.data.cancel;
+               }
+               
+               this.report.profit   = res.data.profit;
+            }
+         }
+      },
+
 
       // count_product_in_cart(){ return window.count_product_in_cart(); },
       gotoChat(){ window.gotoChat(); },
@@ -240,26 +340,20 @@ createApp({
       this.loading = false;
 
       window.appbar_fixed();
-      
-      $('#datetime_picker').datepicker({
-         minDate: 0,
-         dateFormat: "dd/mm/yy",
-         firstDay: 1,
-      });
-      
-      if( $('#datetime_picker').val().length == 0 ){
-         $('#datetime_picker').datepicker('setDate', new Date() );
-         // add wrapper for picker
-         if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
-            $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
-         }
+
+      var _findFilter = this.filter_datetime.find(item => item.active == true);
+
+      if( _findFilter.value == 'd' ){
+         this.display_datetime      = this.get_full_current_datetime();
+         this.stream_datetime_value = _findFilter.value;
+         this.final_datetime        = this.display_datetime;
       }
+
+      var _time_reverse = this.reverse_date_to_system_datetime(this.final_datetime);
+
+      await this.get_order_report( _time_reverse );
+
       
-      // $.datepicker.setDefaults({
-      //    minDate: 0,
-      //    dateFormat: "dd/mm/yy",
-      //    firstDay: 1,
-      // });
 
    }
    

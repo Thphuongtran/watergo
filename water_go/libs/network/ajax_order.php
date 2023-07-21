@@ -455,16 +455,21 @@ function atlantis_add_order(){
                   ]);
 
                   // REDUCE STOCK PER ITEM ORDER
-                  $data = array(
-                     'stock' => $wpdb->get_var( $wpdb->prepare( "SELECT stock FROM wp_watergo_products WHERE id = %d", 1 ) ) - $product->product_quantity_count,
-                  );
-                  $wpdb->update( 'wp_watergo_products', $data, ['id' => $product->product_id]  );
+                  $sql_get_stock    = "SELECT stock FROM wp_watergo_products WHERE id = $product->product_id";
+                  $res_stock        = $wpdb->get_results($sql_get_stock);
+                  $_reducer_stock   = null; 
+                  if( !empty( $res_stock ) ){
+                     $_reducer_stock = $res_stock[0]->stock - $product->product_quantity_count;
+                     if( $_reducer_stock != null ){
+                        $wpdb->update( 'wp_watergo_products', ['stock' => $_reducer_stock ], ['id' => $product->product_id]  );
+                     }
+                  }
                }
 
             }
          }
 
-         wp_send_json_success(['message' => 'insert_order_ok', 'day' => $day ]);
+         wp_send_json_success(['message' => 'insert_order_ok' ]);
          wp_die();
       } else {
          wp_send_json_success(['message' => 'hash_exists' ]);

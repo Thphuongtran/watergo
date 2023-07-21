@@ -258,7 +258,7 @@ function atlantis_store_register(){
       $address    = isset($_POST['address']) ? $_POST['address'] : '';
       $phone      = isset($_POST['phone']) ? $_POST['phone'] : '';
       $email      = isset($_POST['email']) ? $_POST['email'] : '';
-      $password   = isset($_POST['password']) ? $_POST['email'] : '';
+      $password   = isset($_POST['password']) ? $_POST['password'] : '';
       $code       = isset($_POST['code']) ? $_POST['code'] : '';
 
       if( $owner == '' && $storeName == '' && $address == '' && $phone == '' && $email == '' && $password == '' && $storeType == '' && $code == '' ){
@@ -300,7 +300,7 @@ function atlantis_store_register(){
       $user_id = wp_insert_user([
          'user_login' => $email,
          'user_email' => $email,
-         'user_pass' => $password,
+         'user_pass'  => $password,
          'first_name' => $email
       ]);
 

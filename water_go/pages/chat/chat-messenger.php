@@ -120,15 +120,17 @@ createApp({
       goBack(){ window.goBack();},
       order_formatDate(t){ return window.order_formatDate(t)},
       common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
-      
 
       get_avatar_user_chat( messenger ){
-         if( messenger.host_chat == 'store' ){
+         if( messenger.user_role == 'store' ){
+            return this.account.store_account.image.url;
+         }
+         if( messenger.user_role == 'store' ){
             return this.account.store_account.image.url;
          }else {
             return this.account.user_account.image.url;
          }
-         if( messenger.host_chat == 'user' ){
+         if( messenger.user_role == 'user' ){
             return this.account.user_account.image.url;
          }else {
             return this.account.store_account.image.url;
@@ -136,10 +138,7 @@ createApp({
       },
 
       get_class_layout_for_message( messenger ){
-
-         if( messenger.host_chat == this.host_chat ){
-            return 'is-host';
-         }
+         if( messenger.user_role == this.host_chat ){ return 'is-host'; }
       },
 
       handleScroll() {
@@ -174,23 +173,13 @@ createApp({
          }
       },
 
-      async btn_send_robot_message(rb_message ){
-
-      },
-
       async btn_send_message(){
+
          if( this.chat_content.length > 0 ){
             var form = new FormData();
             form.append('action', 'atlantis_send_messenger');
             form.append('conversation_id', this.conversation_id);
             form.append('chat_content', this.chat_content);
-
-            if( this.host_chat == 'store' ){
-               form.append('user_id', this.account.store_account.store_id );
-            }
-            if( this.host_chat == 'user' ){
-               form.append('user_id', this.account.user_account.user_id );
-            }
             var r = await window.request(form);
             if( r != undefined){
                var res = JSON.parse( JSON.stringify(r));
@@ -201,6 +190,7 @@ createApp({
             }
             this.chat_content = '';
          }
+
       },
 
       async get_messages( ){
@@ -208,12 +198,11 @@ createApp({
          form.append('action', 'atlantis_get_messages');
          form.append('conversation_id', this.conversation_id);
          var r = await window.request(form);
-         console.log(r);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if(res.message == 'message_found'){
-               this.messengers.push( ...res.data );
-               
+               this.messengers.push( ...res.data ); 
             }
          }
 
@@ -224,17 +213,11 @@ createApp({
          return user.first_name;
       }, 
 
-      isLastItem(array, item) {
-         var lastIndex = array.length - 1;
-         return array.indexOf(item) === lastIndex;
-      },
-
       async get_product(){
          var form = new FormData();
          form.append('action', 'atlantis_find_product');
          form.append('product_id', this.product_id);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -249,7 +232,6 @@ createApp({
          form.append('action', 'atlantis_find_product_newest');
          form.append('store_id', this.store_id);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -259,22 +241,22 @@ createApp({
       },
 
       async get_both_user(user_id, store_id){
-         var _current_user = new FormData();
-         _current_user.append('action', 'atlantis_get_both_user_messenger');
-         _current_user.append('user_id', user_id);
-         _current_user.append('store_id', store_id);
-         var _requestAccount = await window.request(_current_user);
-         if( _requestAccount != undefined ){
-            var _res = JSON.parse( JSON.stringify(_requestAccount));
-            if( _res.message == 'user_ok'){
-               this.account = _res.data;
+         var form = new FormData();
+         form.append('action', 'atlantis_get_both_user_messenger');
+         form.append('user_id', user_id);
+         form.append('store_id', store_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'user_ok'){
+               this.account = res.data;
             }
          }
       },
 
-      async get_conversation_id(user_id, store_id){
+      async atlantis_load_conversations_id(user_id, store_id){
          var form = new FormData();
-         form.append('action', 'atlantis_get_conversations_id');
+         form.append('action', 'atlantis_load_conversations_id');
          form.append('user_id', parseInt(user_id));
          form.append('store_id', parseInt(store_id));
          var r = await window.request(form);
@@ -293,22 +275,17 @@ createApp({
          for (var i = 0; i < messages.length; i++) {
             var message = messages[i];
 
-            if (currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_id !== message.user_id) {
+            if (  currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_role != message.user_role ) {
                currentGroup = [];
-               var _get_host_chat = '';
-               if( this.account.user_account.user_id == message.user_id ){
-                  _get_host_chat = 'user';
-               }else{
-                  _get_host_chat = 'store';
-               }
                result.push({
-                  host_chat: _get_host_chat,
+                  user_role: message.user_role,
                   user_id: parseInt( message.user_id ),
                   messages: currentGroup
                });
             }
 
             currentGroup.push({
+               user_role: message.user_role,
                conversation_id: message.conversation_id,
                content: message.content,
                message_id: message.message_id,
@@ -336,7 +313,7 @@ createApp({
 
       filter_messengers(){
          if( this.messengers.length == 0) return [];
-         let sortedMessengers = this.messengers.sort((a, b) => a.timestamp - b.timestamp);
+         let sortedMessengers = this.messengers.sort((a, b) => a.message_id - b.message_id );
          var _groupMessages = this.groupMessagesByUser(sortedMessengers);
          return _groupMessages;
       }
@@ -352,7 +329,7 @@ createApp({
       
       var store_id         = urlParams.get('store_id');
       var user_id          = urlParams.get('user_id');
-      var host_chat        = urlParams.get('host_chat')
+      var host_chat        = urlParams.get('host_chat');
       
       this.store_id = store_id;
       this.user_id = user_id;
@@ -363,7 +340,7 @@ createApp({
 
       // GET CONVERSATION ID 
       if(this.conversation_id == undefined || this.conversation_id == null ){
-         await this.c(user_id, store_id);
+         await this.atlantis_load_conversations_id(user_id, store_id);
       }
 
       // GET PRODUCT
@@ -390,7 +367,7 @@ createApp({
       setTimeout( () => {  }, 1000);
       setInterval( async () => {
          await this.get_new_messenger_per_second();
-      }, 30000);
+      }, 5000);
 
       
       this.loading = false; 

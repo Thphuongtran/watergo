@@ -40,7 +40,7 @@
             <div class='contents'>
                <div class='tt01'>
                   <div class='name-chat'>{{ cons.name }}</div>
-                  <div class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
+                  <div v-if='cons.timestamp != 0' class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
                </div>
                <div class='tt02'>{{ cons.content }}</div>
                
@@ -77,8 +77,9 @@ createApp({
 
    methods: {
       goBack(){ window.goBack(); },
-      getTimeDifference(timestamp){ return window.getTimeDifference(timestamp); },
+      getTimeDifference(datetimeInput){ return window.getTimeDifference(datetimeInput); },
       shortString(str){ return window.shortString(str)},
+
       gotoChatMessenger(obj){ 
          var _user_id = null;
          var _store_id = null;
@@ -107,28 +108,41 @@ createApp({
          var r = await window.request(form);
          if(r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
-            
             if( res.message == 'conversation_found' ){
-
                this.host_chat = res.host_chat;
-               this.host_id = res.host_id;
+               this.host_id   = res.host_id;
+               res.data.forEach((item, index ) => {
+                  var _exists = this.conversations.some( cons => cons.conversation_id === item.conversation_id );
+                  if( ! _exists ){
+                     this.conversations.push(item);
+                  }
+               });
+               
+            }
+         }
+      },
 
-               if (this.conversations.length === 0) {
-                  this.conversations.push(...res.data);
-               }else{
-
-                  res.data.forEach((item, index ) => {
-                     var _exists = this.conversations.some( chat => chat.message_id == item.message_id );
-                     if (_exists == true ) {
-                        // Logic for existing item in res.data
-                        this.conversations[index]['content'] = item.content;
-                     } else {
-                        // Logic for new item in res.data
-                        this.conversations.push(item);
+      async ping_user_to_get_message(){
+         if( this.conversations.length > 0 ){
+            var _list_conversation = [];
+            this.conversations.forEach( cons => {
+               _list_conversation.push({conversation_id: cons.conversation_id});
+            });
+            var form = new FormData();
+            form.append('action', 'atlantis_ping_user_to_get_last_message');
+            form.append('list_conversation', JSON.stringify(_list_conversation));
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r ));
+               if( res.message == 'get_message_ok' ){
+                  res.data.forEach( message => {
+                     var conversationIndex   = this.conversations.findIndex((cons) => cons.conversation_id === message.conversation_id);
+                     if( message.content != undefined && message.timestamp != undefined){
+                        this.conversations[conversationIndex].content   = message.content;
+                        this.conversations[conversationIndex].timestamp = String(message.timestamp);
                      }
                   });
                }
-               
             }
          }
       }
@@ -136,6 +150,7 @@ createApp({
    },
 
    computed: {
+
       filter_search(){
 
          if( this.inputSearch == ''){
@@ -155,11 +170,15 @@ createApp({
       await this.getConversation();
       this.loading = false;
 
-      console.log(this.conversations)
-
       setInterval( async () => {
          await this.getConversation();
-      }, 10000);
+      }, 5000);
+
+      await this.ping_user_to_get_message();
+
+      setInterval( async () => {
+         await this.ping_user_to_get_message();
+      }, 5000);
       
    }
 }).mount('#app');

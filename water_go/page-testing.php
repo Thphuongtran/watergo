@@ -2,49 +2,33 @@
 get_header();
 
 
-   $email = 'vtry.tainv11@gmail.com';
+global $wpdb;
 
-           $user_by_email_1 = get_user_by('email', $email);
+$currentDate   = '2023-07-23 00:00:00'; 
+$dateSelect    = '2023-07-01 00:00:00'; 
+
+$datePart1 = date('Y-m-d', strtotime($dateSelect));
+$datePart2 = date('Y-m-d', strtotime($currentDate));
+
+global $wpdb;
+
+$sql_count_order_success = "SELECT * FROM wp_watergo_order 
+   WHERE DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '2023-07-20' 
+   AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '2023-07-23' 
+   AND order_store_id = 5
+";
+
+$sql_count_order_cancel = "SELECT * FROM wp_watergo_order 
+   WHERE DATE_FORMAT(order_time_cancel, '%Y-%m-%d') >= '2023-07-20' 
+   AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') <= '2023-07-23' 
+   AND order_store_id = 5
+";
 
 
-           if($user_by_email_1){
-            echo 'email exists';
-           }else{
-            echo 'email non exists';
-           }
-
-
-
-  
-         
-// if ($email !== '' && $email !== null) {
-    $user_id = get_current_user_id();
-    $current_user = wp_get_current_user();
-
-   echo '<pre>';
-   //  echo $current_user->user_email;
-   echo '</pre>';
-
-    // Check if the new email is different from the current email
-    if ($email != $current_user->user_email) {
-        // Check if the email already belongs to another user
-        $user_by_email = get_user_by('email', $email);
-        if ($user_by_email && $user_by_email->ID !== $user_id) {
-            echo "Email already exists for another user.";
-            // Handle the case when the email already exists for another user
-            // You can redirect back to the profile page or display an error message.
-        } else {
-            // Update the user's email
-            // wp_update_user([
-            //     'ID'           => $user_id,
-            //     'user_email'   => $email
-            // ]);
-            echo "Email updated successfully.";
-        }
-    } else {
-        echo "Email is the same. No update needed.";
-    }
-// }
+$results = $wpdb->get_results($sql);
+echo '<pre>';
+print_r($results);
+echo '</pre>';
 
 ?>
 <h1>PAGE TESTING</h1>

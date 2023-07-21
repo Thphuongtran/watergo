@@ -455,6 +455,7 @@ require_once THEME_DIR . '/libs/network/ajax_language.php';
 require_once THEME_DIR . '/libs/network/ajax_admin_supports.php';
 require_once THEME_DIR . '/libs/network/ajax_location.php';
 require_once THEME_DIR . '/libs/network/ajax_product_store.php';
+require_once THEME_DIR . '/libs/network/ajax_report.php';
 
 
 
@@ -462,51 +463,6 @@ require_once THEME_DIR . '/libs/network/ajax_product_store.php';
 function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
       
-      $description      = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.';
-
-      $price            = [8000, 12000, 18000, 28000, 68000, 88000, 128000, 160000];
-      $stock            = 8;
-
-      $water_category       = [5, 6, 7, 8];
-      $ice_category         = [1, 2, 3, 4];
-      $water_brand          = [9, 10, 23, 24];
-      $water_quantity       = [11, 12, 13, 14];
-      $water_volume         = [15, 16, 17, 18];
-      $ice_weight           = [19, 20, 21, 22];
-      $length_width         = ['100*200', '200*300', '150*200', '250*350', '300*150'];
-
-      $type = 'ice';
-
-      global $wpdb;
-      //  12 13
-      for( $i = 0; $i < 4; $i++ ){
-
-         $args = [
-            'store_id'        => 13,
-            'price'           => $price[array_rand($price)],
-            'stock'           => $stock,
-            'description'     => $description,
-            'product_type'    => $type,
-            'created_at'      => time()
-         ];
-
-         if( $type == 'water' ){
-            $args['category']        = $water_category[array_rand($water_category)];
-            $args['brand']           = $water_brand[array_rand($water_brand)];
-            $args['quantity']        = $water_quantity[array_rand($water_quantity)];
-            $args['volume']          = $water_volume[array_rand($water_volume)];
-         }
-
-         if( $type == 'ice'){
-            $args['category']        = $ice_category[array_rand($ice_category)];
-            $args['weight']          = $ice_weight[array_rand($ice_weight)];
-            $args['length_width']    = $length_width[array_rand($length_width)];
-         }
-
-         $wpdb->insert('wp_watergo_products', $args );
-
-      }
-      wp_send_json_success(['message' => 'test']);
 
 
    }

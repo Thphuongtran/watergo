@@ -2718,3 +2718,133 @@ p{
 .z-index-5{
    z-index: 88888 !important;
 }
+
+.datetime_picker{
+   color: #252831;
+   background: none;
+   border: none;
+   outline: none;
+   font-weight: 400;
+   font-size: 14px;
+   width: auto;
+   display: inline;
+}
+
+.datetime-wrapper{
+   position: relative;
+   margin-left: 10px;
+   width: auto;
+   display: flex;
+   flex-flow: row nowrap;
+   height: 20px;
+   align-items: center;
+   
+   .datetime-display{
+      width: 100%;
+      white-space: nowrap;
+      z-index: 1;
+      text-align: center;
+      color: #252831;
+      font-size: 14px;
+      font-weight: 400;
+   }
+   
+   select{
+      width: 100%;
+      border: none;
+      outline: none;
+      width: 100%;
+      position: absolute;
+      z-index: 2;
+      background: none;
+      appearance: none;
+      color: transparent;
+      
+      option{
+         opacity: 0;
+         visibility: hidden;
+      }
+   }
+   
+   .icon{
+      margin-left: 5px;
+      display: block;
+      width: 10px;
+      height: 6px;
+      position: relative;
+      
+      svg{
+         position: absolute;
+         
+      }
+   }
+   
+}
+
+
+.dropdown-datetime{
+   position: absolute;
+   border: 1px solid black;
+   top: 22px;
+   right: 0;
+   height: 200px;
+   width: 70px;
+   background: white;
+   overflow-x: hidden;
+   overflow-y: scroll;
+   z-index: 8;
+   border: 1px solid #E1E1E1;
+   border-radius: 5px;
+   
+   li{
+      padding: 4px 15px;
+      font-size: 14px;
+      font-weight: 400;
+   }
+}
+
+.box-profit{
+   display: flex;
+   flex-flow: row nowrap;
+   justify-content: space-between;
+   border: 1px solid #E1E1E1;
+   height: 59px;
+   align-items: center;
+   border-radius: 5px;
+   padding: 0 18px;
+   margin-bottom: 15px;
+   
+   
+   .rank-up{
+      color: #13E800;
+      font-weight: 600px;
+      font-size: 16px;
+   }
+   .rank-down{
+      color: #FF5656;
+      font-weight: 600px;
+      font-size: 16px;
+   }
+   
+   .highlight{
+      color: #2790F9;
+      font-weight: 600;
+      font-size: 20px;
+      padding: 0 10px;
+   }
+   
+   .order-count{
+      font-size: 12px;
+      font-weight: 500;
+      color: #252831;
+   }
+   
+   .rank{
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+   }
+}
+
+
+

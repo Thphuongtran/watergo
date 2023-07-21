@@ -27,100 +27,130 @@ add_action( 'wp_ajax_atlantis_load_conversations_id', 'atlantis_load_conversatio
 add_action( 'wp_ajax_nopriv_atlantis_messenger_test', 'atlantis_messenger_test' );
 add_action( 'wp_ajax_atlantis_messenger_test', 'atlantis_messenger_test' );
 
-function atlantis_load_conversation(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_conversation' ){
+add_action( 'wp_ajax_nopriv_atlantis_ping_user_to_get_last_message', 'atlantis_ping_user_to_get_last_message' );
+add_action( 'wp_ajax_atlantis_ping_user_to_get_last_message', 'atlantis_ping_user_to_get_last_message' );
 
-      $host_chat = null;
-      $sql_get_host = '';
+/**
+ * @access USER FOR CHAT-INDEX PAGE
+ */
+function atlantis_ping_user_to_get_last_message(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_ping_user_to_get_last_message' ){
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
-         ? (int) get_user_meta($user_id , 'user_store', true) 
-         : null;
-         if( $is_user_store == 1 || $is_user_store == true ){
-            $host_chat = 'store';
-            $sql_get_host = " WHERE store_id = $user_id";
-         }else{
-            $host_chat = 'user';
-            $sql_get_host = " WHERE user_id = $user_id";
+      $list_conversation = isset($_POST['list_conversation']) ? $_POST['list_conversation'] : '';
+      $list_conversation = json_decode( stripslashes( $list_conversation ) );
+
+      if( ! empty( $list_conversation ) ){
+         global $wpdb;
+
+         foreach( $list_conversation as $kCons => $vl  ){
+            $sql = "SELECT * FROM wp_watergo_messages
+               WHERE conversation_id = $vl->conversation_id
+               ORDER BY message_id DESC
+               LIMIT 1
+            ";
+            $res = $wpdb->get_results( $sql );
+            if( ! empty( $res )) {
+               foreach( $res as $kM => $message ){
+                  $list_conversation[$kCons]->message_id = $message->message_id;
+                  $list_conversation[$kCons]->content    = $message->content;
+                  $list_conversation[$kCons]->timestamp  = $message->timestamp;
+               }
+            }
          }
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
+         wp_send_json_success(['message' => 'get_message_ok', 'data' => $list_conversation ]);
          wp_die();
       }
-      // GET CONVERSATION 
-      $sql_conversation = "SELECT conversation_id, user_id, store_id FROM wp_watergo_conversations ";
-      $sql_conversation .= $sql_get_host;
-
-      global $wpdb;
-      $res_conversation = $wpdb->get_results($sql_conversation);
-
-      if( empty( $res_conversation )){
-         wp_send_json_error(['message' => 'conversation_not_found' ]);
-         wp_die();
-      }
-      
-
-      // LIST CONVERSATION 
-      $list_conversation = [];
-      foreach($res_conversation as $k => $conversation ){
-
-         $_user_id   = $conversation->user_id;
-         $_store_id  = $conversation->store_id;
-         $_conversation_id  = $conversation->conversation_id;
-         
-         // CURRENT IS USER => GET STORE_ID CHAT
-         if( $host_chat == 'user' ){
-            $sql_list_conversation = "SELECT
-               wp_watergo_messages.*,
-               wp_watergo_store.id as store_id,
-               wp_watergo_store.name as name
-
-            FROM wp_watergo_messages
-            LEFT JOIN wp_watergo_store
-            ON wp_watergo_store.id = wp_watergo_messages.user_id
-            WHERE wp_watergo_messages.user_id = $_store_id AND wp_watergo_messages.conversation_id = $_conversation_id
-            ORDER BY wp_watergo_messages.timestamp DESC
-            LIMIT 1";
-         }
-
-         // CURRENT IS STORE => GET USER_ID CHAT
-         if( $host_chat == 'store' ){
-            $sql_list_conversation = "SELECT
-               wp_watergo_messages.*,
-               wp_usermeta.meta_value as name
-
-            FROM wp_watergo_messages
-
-            LEFT JOIN wp_usermeta
-            ON wp_usermeta.user_id = wp_watergo_messages.user_id AND wp_usermeta.meta_key = 'first_name'
-
-            WHERE wp_watergo_messages.user_id = $_user_id 
-            AND wp_watergo_messages.conversation_id = $_conversation_id
-            ORDER BY wp_watergo_messages.timestamp DESC
-            LIMIT 1";
-         }
-
-         $_res = $wpdb->get_results($sql_list_conversation);
-         if( ! empty( $_res ) ){
-            // get store avatar
-            if( $host_chat == 'user'){
-               $_res[0]->image = func_atlantis_get_images( $_store_id, 'store', true);
-            }
-            if( $host_chat == 'store'){
-               $_res[0]->image = func_atlantis_get_images( $_user_id, 'user_avatar', true);
-            }
-            array_push($list_conversation, ...$_res);
-         }
-      }
-
-      wp_send_json_success(['message' => 'conversation_found', 'data' => $list_conversation, 'host_chat' => $host_chat, 'host_id' => $user_id]);
+      wp_send_json_error(['message' => 'no_message_found']);
       wp_die();
 
    }
 }
 
+function atlantis_load_conversation(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_conversation' ){
+
+      $host_chat = '';
+      $sql_conversation = "SELECT conversation_id, user_id, store_id FROM wp_watergo_conversations ";
+
+      $user_id       = get_current_user_id();
+      $is_user_store = get_user_meta($user_id , 'user_store', true);
+      
+      // GET CURRENT USER ROLE
+      if( $is_user_store == 1 || $is_user_store == true ){
+         $host_chat         = 'store';
+         $user_id           = func_get_store_id_from_current_user();
+         $sql_conversation .= " WHERE store_id = $user_id";
+      }else{
+         $host_chat         = 'user';
+         $sql_conversation .= " WHERE user_id = $user_id";
+      }
+
+      global $wpdb;
+      $res_cons = $wpdb->get_results($sql_conversation);
+
+      if( empty( $res_cons )){
+         wp_send_json_error(['message' => 'load_conversation_error']);
+         wp_die();
+      }
+
+      // LIST CONVERSATION 
+      $list_converstations = [];
+      foreach( $res_cons as $kCons => $cons ){
+         $_user_id            = $cons->user_id;
+         $_store_id           = $cons->store_id;
+         // HOST IS STORE => GET USER INFO
+         if( $host_chat == 'store'){
+            $sql_info = "SELECT user_id, meta_value as name
+               FROM wp_usermeta
+               WHERE user_id = $_user_id AND meta_key = 'first_name'
+            ";
+         }
+         // HOST IS USER => GET STORE INFO
+         if( $host_chat == 'user'){
+            $sql_info = "SELECT id as user_id, name FROM wp_watergo_store WHERE id = $_store_id";
+         }
+
+         $get_info = $wpdb->get_results( $sql_info );
+         
+         if( !empty( $get_info ) ){
+            foreach($get_info as $k => $vl ){
+               if( $host_chat == 'store'){
+                  $img = func_atlantis_get_images( $vl->user_id, 'user_avatar', true);
+                  $list_converstations[$kCons]['conversation_id']    = $cons->conversation_id;
+                  $list_converstations[$kCons]['user_id']            = $vl->user_id;
+                  $list_converstations[$kCons]['name']               = $vl->name;
+                  $list_converstations[$kCons]['image']              = $img;
+                  $list_converstations[$kCons]['content']            = 'Tap to chat';
+                  $list_converstations[$kCons]['user_role']          = 'user';
+                  $list_converstations[$kCons]['timestamp']          = 0;
+               }
+               if( $host_chat == 'user'){
+                  $img = func_atlantis_get_images( $vl->store_id, 'store', true);
+                  $list_converstations[$kCons]['conversation_id']    = $cons->conversation_id;
+                  $list_converstations[$kCons]['user_id']            = $vl->user_id;
+                  $list_converstations[$kCons]['name']               = $vl->name;
+                  $list_converstations[$kCons]['image']              = $img;
+                  $list_converstations[$kCons]['content']            = 'Tap to chat';
+                  $list_converstations[$kCons]['user_role']          = 'store';
+                  $list_converstations[$kCons]['timestamp']          = 0;
+               }
+            }
+         }
+      }
+
+      wp_send_json_success([
+         'message'   => 'conversation_found',
+         'data'      => $list_converstations,
+         'host_chat' => $host_chat, 
+         'host_id'   => $user_id,
+         // 'sql' => $sql_conversation
+      ]);
+      wp_die();
+
+
+
+   }
+}
 
 function atlantis_count_messages(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_count_messages' ){
@@ -152,47 +182,6 @@ function atlantis_count_messages(){
    }
 }
 
-// GET CONVERSATION ID IF NO FOUND -> CREATE
-function atlantis_is_conversation_created_or_create(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_is_conversation_created_or_create' ){
-
-      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
-      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-
-      if( $store_id == 0 || $user_id == 0){
-         wp_send_json_error(['message' => 'conversation_not_found 1' ]);
-         wp_die();
-      }
-
-      global $wpdb;
-      $sql = "SELECT conversation_id FROM wp_watergo_conversations WHERE store_id = $store_id AND user_id = $user_id LIMIT 1";
-      $res = $wpdb->get_results($sql);
-
-      // CREATE NEW CONVERSATION
-      if( empty( $res) ){
-         $args = [
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'created_at' => time()
-         ];
-         $inserted = $wpdb->insert('wp_watergo_conversations', $args);
-
-         if( $inserted ){
-            wp_send_json_success(['message' => 'conversation_create_ok', 'data' => $wpdb->insert_id ]);
-         }else{
-            wp_send_json_error(['message' => 'conversation_not_found 2' ]);
-         }
-         wp_die();
-      }
-
-      $conversation_id = $res[0]->conversation_id;
-
-      wp_send_json_success(['message' => 'conversation_found', 'data' => $conversation_id ]);
-      wp_die();
-
-
-   }
-}
 
 function atlantis_get_messages(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_messages' ){
@@ -224,7 +213,8 @@ function atlantis_get_messages(){
          wp_watergo_messages.message_id,  
          wp_watergo_messages.content,
          wp_watergo_messages.user_id,
-         wp_watergo_messages.timestamp
+         wp_watergo_messages.timestamp,
+         wp_watergo_messages.user_role
          
       FROM wp_watergo_conversations
 
@@ -233,8 +223,8 @@ function atlantis_get_messages(){
       
       WHERE wp_watergo_conversations.conversation_id = $conversation_id
 
-      ORDER BY wp_watergo_messages.timestamp DESC
-      LIMIT 0, 20
+      ORDER BY wp_watergo_messages.message_id DESC
+      LIMIT 20
       ";
 
       global $wpdb;
@@ -263,20 +253,33 @@ function atlantis_send_messenger(){
 
       $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
       $chat_content     = isset($_POST['chat_content']) ? $_POST['chat_content'] : '';
-      $user_id          = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
 
-      if($chat_content == '' || $conversation_id == 0 || $user_id == 0 ){
+      if($chat_content == '' || $conversation_id == 0 ){
          wp_send_json_error(['message' => 'messenger_not_found 1' ]);
          wp_die();
       }
 
+      $user_id       = get_current_user_id();
+      $is_user_store = get_user_meta($user_id , 'user_store', true);
+      $user_role = '';
+
+      if( $is_user_store == 1 || $is_user_store == true ){
+         $user_role  = 'store';
+         $user_id    = func_get_store_id_from_current_user();
+      }else{
+         $user_role = 'user';
+      }
+
       global $wpdb;
+
+      $timestamp  = atlantis_current_datetime();
 
       $args = [
          'conversation_id' => $conversation_id,
          'user_id'         => $user_id,
+         'user_role'       => $user_role,
          'content'         => $chat_content,
-         'timestamp'       => time(),
+         'timestamp'       => $timestamp,
          'is_read'         => 0
       ];
 

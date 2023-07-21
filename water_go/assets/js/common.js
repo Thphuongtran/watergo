@@ -2,21 +2,66 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+function getPastDaysInMonth() {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const pastDaysArray = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const checkDate = new Date(currentYear, currentMonth, day);
+    if (checkDate < currentDate) {
+      pastDaysArray.push(day);
+    }
+  }
+
+  return pastDaysArray;
+}
+
+/**
+ * @access REVERSE DATE (dd/mm/yyyy) to (yyyy-mm-dd)
+//  */
+// function reverse_date_to_system_datetime( inputDate){
+//    if(inputDate != undefined && inputDate != null ){
+//       const dateObj = new Date(inputDate);
+//       const day = dateObj.getDate().toString().padStart(2, '0');
+//       const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+//       const year = dateObj.getFullYear().toString();
+//       const hours = dateObj.getHours().toString().padStart(2, '0');
+//       const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+//       const formattedDate = `${year}-${month}-${day}`;
+//       return formattedDate;
+//    }
+//    return false;
+// }
+
+/**
+ * @access REVERSE DATE (dd/mm/yyyy) to (yyyy-mm-dd)
+ */
+function reverse_date_to_system_datetime( inputDate){
+   if(inputDate != undefined && inputDate != null ){
+      var [d, m, y] = inputDate.split('/');
+      const formattedDate = `${y}-${m}-${d}`;
+      return formattedDate;
+   }
+   return false;
+}
+
+
+/**
+ * @access REVERSE DATE TO yyyy-mm-dd hh:ii:ss to  dd-mm-yyyy hh:ii
+ */
 function order_formatDate(inputDate){
    if(inputDate != undefined && inputDate != null ){
-      // Parse the input date string to create a Date object
       const dateObj = new Date(inputDate);
-
-      // Extract the date components (day, month, year) and time components (hours, minutes)
       const day = dateObj.getDate().toString().padStart(2, '0');
       const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
       const year = dateObj.getFullYear().toString();
       const hours = dateObj.getHours().toString().padStart(2, '0');
       const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-
-      // Format the date and time in the desired output format
       const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
-
       return formattedDate;
    }
    return false;
@@ -405,28 +450,39 @@ function timestamp_to_fulldate(timestamp){
    return formattedDate;
 }
 
-function getTimeDifference(timestamp) {
-  var currentTimestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-//   var messageTimestamp = Math.floor(timestamp / 1000); // Provided timestamp in seconds
-  var messageTimestamp = Math.floor( parseInt(timestamp)); // Provided timestamp in seconds
+function getTimeDifference(datetimeInput) {
+   // if (datetimeInput != undefined && datetimeInput && typeof datetimeInput === "string" && datetimeInput.trim() !== "") {
+   if (datetimeInput != undefined ) {
+   
+      var unpack = datetimeInput.split(' ');
+      var [year, month, day] = unpack[0].split('-');
+      var [hour, min, sec] = unpack[1].split(':');
+      var datetime = new Date(year, month - 1, day, hour, min, sec); // Month is 0-indexed in Date constructor
 
-  var timeDifference = currentTimestamp - messageTimestamp;
+      var currentTimestamp = Date.now(); // Current timestamp in milliseconds
+      var messageTimestamp = datetime.getTime(); // Provided timestamp in milliseconds
 
-  var seconds = timeDifference;
-  var minutes = Math.floor(seconds / 60);
-  var hours = Math.floor(minutes / 60);
-  var days = Math.floor(hours / 24);
+      var timeDifferenceInMs = currentTimestamp - messageTimestamp;
+      var timeDifferenceInSeconds = Math.floor(timeDifferenceInMs / 1000);
 
-  if (days > 0) {
-    return days + " days ago";
-  } else if (hours > 0) {
-    return hours + " hours ago";
-  } else if (minutes > 0) {
-    return minutes + " minutes ago";
-  } else {
-    return seconds + " seconds ago";
-  }
+      var seconds = timeDifferenceInSeconds;
+      var minutes = Math.floor(seconds / 60);
+      var hours = Math.floor(minutes / 60);
+      var days = Math.floor(hours / 24);
+
+      if (days > 0) {
+         return days + (days === 1 ? " day ago" : " days ago");
+      } else if (hours > 0) {
+         return hours + (hours === 1 ? " hour ago" : " hours ago");
+      } else if (minutes > 0) {
+         return minutes + (minutes === 1 ? " min ago" : " mins ago");
+      } else {
+         return seconds + (seconds === 1 ? " second ago" : " seconds ago");
+      }
+   }
+   return '';
 }
+
 
 function shortString(str) {
    if (str.length > 50) {
