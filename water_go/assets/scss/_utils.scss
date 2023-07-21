@@ -754,6 +754,37 @@ p{
          }
 		}
 	}
+
+   &.style-minimal{
+      background: #F9F9F9;
+      align-items: center;
+      border-bottom: 0;
+      padding: 5px 0;
+      flex: auto;
+      li{
+         margin: 0 10px;
+         font-weight: 400;
+         font-size: 12px;
+         min-width: auto;
+         width: auto;
+         color: #252831;
+         border-bottom: none;
+         padding: 0 10px;
+         border-radius: 5px;
+         height: 30px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         white-space: nowrap;
+         
+         &:after{ display: none; }
+         &.active{
+            background: #FFFFFF;
+            color: #2790F9;
+         }
+      }
+   }
+   
 }
 
 .grid-masonry{

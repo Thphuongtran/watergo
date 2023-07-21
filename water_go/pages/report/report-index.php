@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+
 <div id='app'>
 
    <div v-show='loading == false ' class='page-report'>
@@ -6,7 +9,7 @@
             <div class='leading'>
                <p class='leading-title'>
                   Report
-                  <span class='display_datetime'>{{ func_display_datetime }}</span>
+                  <input @click='datetime_picker' id='datetime_picker' class='datetime_picker'>
                </p>
             </div>
             <div class='action'>
@@ -40,6 +43,7 @@
                   v-for=' ( date, keyDate ) in filter_datetime' :key='keyDate'
                   :class='date.active == true ? "active" : ""'>{{ date.label }}</li>
             </ul>
+
          </div>
       </div>
 
@@ -64,23 +68,135 @@ createApp({
       return {
          loading: false,
          message_count: 0,
+         currentDate: new Date(),
          
          display_datetime: '',
          filter_datetime: [
             {label: 'Day', value: 'day', active: true},
-            {label: 'Week', value: 'Week', active: false},
             {label: 'Month', value: 'Month', active: false},
             {label: 'Year', value: 'Year', active: false}
-         ]
+         ],
+
+         day_of_month: [],
+         week_of_month: [],
+         month_of_year: [],
+         year: [2023, 2024]
+         
       }
    },
+
    computed: {
-      func_display_datetime( value ){
+      func_display_datetime( ){
+         var _findDate = this.filter_datetime.find( item => item.active );
+         // this.display_datetime = _findDate.value;
+
       },
+      func_display_month( ){
+         var _findDate = this.filter_datetime.find( item => item.active );
+         // this.display_datetime = _findDate.value;
+      },
+      func_display_year( ){
+         var _findDate = this.filter_datetime.find( item => item.active );
+         // this.display_datetime = _findDate.value;
+      },
+
+
+
+      func_display_date_type(){
+         var _findDateType = this.filter_datetime.find( item => item.active );
+         return _findDateType.value;
+      },
+
       count_product_in_cart(){ return window.count_product_in_cart(); },
    },
 
    methods: {
+
+      datetime_picker(){
+
+
+            $('.ui-date-picker-wrapper').addClass('active');
+            
+            $('#datetime_picker').datepicker({
+               dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+               onSelect: function(dateText, inst){
+                  if(dateText != undefined || dateText != '' || dateText != null){
+                     $('#datetime_picker').attr('value', dateText); 
+                  }
+               },
+               onClose: function(dateText, inst){
+                  console.log('on close');
+                  $('.ui-date-picker-wrapper').removeClass('active');
+               }
+            });
+
+      },
+
+      get_day_of_month(){
+         var currentDate = new Date();
+         var currentYear = currentDate.getFullYear();
+         var currentMonth = currentDate.getMonth();
+         var totalDays = this.getDaysInMonth(currentYear, currentMonth);
+
+         for (let day = 1; day <= totalDays; day++) {
+            var isActive = day === currentDate.getDate();
+            this.day_of_month.push({ 
+               isActive: isActive,
+               datetime: day,
+               value: day 
+            });
+         }
+      },
+
+      get_week_of_month(){
+         var currentDate = new Date();
+         var currentYear = currentDate.getFullYear();
+         var currentMonth = currentDate.getMonth();
+         var totalDays = this.getDaysInMonth(currentYear, currentMonth);
+         let weekStart = 1;
+
+         while (weekStart <= totalDays) {
+            var weekEnd = Math.min(weekStart + (7 - (new Date(currentYear, currentMonth, weekStart).getDay())), totalDays);
+            var week_1 = `${this.formatDate_for_week(new Date(currentYear, currentMonth, weekStart))}`;
+            var week_2 = `${this.formatDate_for_week(new Date(currentYear, currentMonth, weekEnd))}`;
+            var isActive = weekStart <= currentDate.getDate() && currentDate.getDate() <= weekEnd;
+            this.week_of_month.push({ 
+               isActive: isActive,
+               weekStart: week_1,
+               weekEnd: week_2,
+               value: week_1 + ' - ' + week_2
+            });
+            weekStart = weekEnd + 1;
+         }
+      },
+      get_month_of_year(){
+         var currentDate = new Date();
+         var shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+         var currentMonth = currentDate.getMonth();
+         var currentYear = currentDate.getFullYear();
+
+         function formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+         }
+
+         for (let month = 0; month < 12; month++) {
+            const firstDayOfMonth = new Date(currentYear, month, 1);
+            const lastDayOfMonth = new Date(currentYear, month + 1, 0);
+            var shortMonthName = shortMonths[month];
+            var isActive = month === currentMonth;
+            this.month_of_year.push({
+               isActive: isActive,
+               datetime: month + 1,
+               dayStart: formatDate(firstDayOfMonth),
+               dayEnd: formatDate(lastDayOfMonth),
+               value: `${shortMonthName}, ${currentYear}`,
+            });
+         }
+      },
+      get_year(){},
 
       select_filter_datetime(value){
          
@@ -88,6 +204,16 @@ createApp({
             item.active = item.value === value;
          });
       },
+
+      getDaysInMonth(year, month) {
+         return new Date(year, month + 1, 0).getDate();
+      },
+      formatDate_for_week(date) {
+         const day = date.getDate().toString().padStart(2, '0');
+         const month = (date.getMonth() + 1).toString().padStart(2, '0');
+         return `${day}/${month}`;
+      },
+
 
       async get_messages_count(){
          var form_message_count = new FormData();
@@ -114,6 +240,27 @@ createApp({
       this.loading = false;
 
       window.appbar_fixed();
+      
+      $('#datetime_picker').datepicker({
+         minDate: 0,
+         dateFormat: "dd/mm/yy",
+         firstDay: 1,
+      });
+      
+      if( $('#datetime_picker').val().length == 0 ){
+         $('#datetime_picker').datepicker('setDate', new Date() );
+         // add wrapper for picker
+         if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+            $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+         }
+      }
+      
+      // $.datepicker.setDefaults({
+      //    minDate: 0,
+      //    dateFormat: "dd/mm/yy",
+      //    firstDay: 1,
+      // });
+
    }
    
 }).mount('#app');

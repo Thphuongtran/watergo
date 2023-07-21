@@ -11,7 +11,9 @@ if( $store_page == 'store-detail'){
    get_template_part('pages/store/page-store-detail');
 }
 
-$allow_store = ['store-profile'];
+
+
+$allow_store = ['store-profile', 'store-edit', 'store-settings', 'store-adverstising'];
 
 if( in_array($store_page, $allow_store) ){
    
@@ -31,6 +33,8 @@ if( in_array($store_page, $allow_store) ){
       if( $store_page == 'store-adverstising'){
          get_template_part('pages/store/page-store-adverstising-inquery');
       }
+
+
 
    }else{
       get_template_part('pages/authentication/page-auth-store-login');
