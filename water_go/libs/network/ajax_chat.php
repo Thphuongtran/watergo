@@ -125,7 +125,7 @@ function atlantis_load_conversation(){
                   $list_converstations[$kCons]['timestamp']          = 0;
                }
                if( $host_chat == 'user'){
-                  $img = func_atlantis_get_images( $vl->store_id, 'store', true);
+                  $img = func_atlantis_get_images( $vl->user_id, 'store', true);
                   $list_converstations[$kCons]['conversation_id']    = $cons->conversation_id;
                   $list_converstations[$kCons]['user_id']            = $vl->user_id;
                   $list_converstations[$kCons]['name']               = $vl->name;
