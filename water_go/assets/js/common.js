@@ -72,7 +72,7 @@ function reset_cart_to_select_false(){
    if( _cartItems.length > 0 ){
       _cartItems.forEach( store => {
          store.store_select = false;
-         store.products.some( product => product.product_select = false );
+         store.products.forEach( product => product.product_select = false );
       });
       localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
    }
@@ -92,36 +92,60 @@ function explode_product_metadata( product_metadata ){
 function add_item_to_cart( item ){
 
    var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-
    if( _cartItems && _cartItems.length == 0 ){
-      _cartItems.push(item);
-      localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-   }else{
-      var _store_id     = item.store_id;
-      var _product_id   = item.products[0].product_id;
-      var _product_quantity_count = item.products[0].product_quantity_count;
-      var _product_max_stock = item.products[0].product_max_stock;
-
-      _cartItems.forEach( ( cart, indexCart ) => {
-         // NO STORE in cart
-         if( cart.store_id != _store_id ){
-            _cartItems.push( item );
-            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-         // Store EXISTS => update product_quantity_count
-         }else{
-
-            var _findProduct = cart.products.find( p => p.product_id == _product_id );
-            if( _findProduct ){
-               _findProduct.product_quantity_count = _product_quantity_count;
-               _findProduct.product_max_stock      = _product_max_stock;
-            }else{
-               _cartItems[indexCart].products.push( item.products[0] );
+      console.log('store no exists');
+      _cartItems.push({
+         store_id: item.store_id,
+         store_name: item.store_name,
+         store_select: false,
+         products: [
+            {
+               product_id: item.product_id,
+               product_quantity_count: item.product_quantity_count,
+               product_select: false
             }
-
-            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-         }
+         ]
       });
+      localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+      
+   }else{
+
+      var _findStore = _cartItems.some( store => store.store_id == item.store_id );
+      if( _findStore ){
+         _cartItems.forEach( store => {
+            if( store.store_id == item.store_id  ){
+               var _findProduct = store.products.find( product => product.product_id === item.product_id );
+               if( _findProduct ){
+                  _findProduct.product_quantity_count = item.product_quantity_count;
+                  localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+               }else{
+                  store.products.push({
+                     product_id: item.product_id,
+                     product_quantity_count: item.product_quantity_count,
+                     product_select: false
+                  });
+                  localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+               }
+            }
+         });
+      }else{
+         _cartItems.push({
+            store_id: item.store_id,
+            store_name: item.store_name,
+            store_select: false,
+            products: [
+               {
+                  product_id: item.product_id,
+                  product_quantity_count: item.product_quantity_count,
+                  product_select: false
+               }
+            ]
+         });
+         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+      }
+      
    }
+   
 }
 
 function compare_day_with_currentDate(day) {

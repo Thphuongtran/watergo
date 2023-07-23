@@ -222,30 +222,14 @@ createApp({
             }
          }
          if( this.check_can_order == true ){
-            // save those thing product_name | product_name_second | product_id 
-            // var _product_metadata = {
-            //    product_name: this.product.name,
-            //    product_name_second: this.product.name_second,
-            //    product_id: this.product.id,
-            // };
-            var _product = {
+            window.add_item_to_cart( {
                store_id: parseInt( this.store.id ),
                store_name: this.store.name,
                store_select: false,
-               products: [
-                  {
-                     product_id: parseInt(this.product.id ),
-                     // product_max_stock: parseInt(this.product.stock ),
-                     // product_metadata: _product_metadata, 
-                     product_quantity_count: parseInt(this.product_quantity_count),
-                     // product_price: parseInt(this.product.price),
-                     // product_discount_percent: this.has_discount(this.product) ? parseInt(this.product.discount_percent) : 0,
-                     product_select: false
-                  }
-               ]
-            };
-
-            window.add_item_to_cart( _product);
+               product_id: parseInt(this.product.id ),
+               product_quantity_count: parseInt(this.product_quantity_count),
+               product_select: false
+            });
          }
       },
 
@@ -255,21 +239,22 @@ createApp({
          if( this.check_can_order == true ){
             this.addToCart(false);
             // MAKE CURRENT PRODUCT IS SELECT IN THIS CASE
+            window.reset_cart_to_select_false();
             var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
 
-            _cartItems.forEach(item => {
-               item.products.some( p => p.product_select = false );
+            _cartItems.some(item => {
                if( item.store_id == this.product.store_id ){
-                  item.products.forEach( product => {
-                     if( product.product_id == this.product.id ){
+                  item.products.some( product => {
+                     if( product.product_id == this.product.id && product.product_select == false){
                         product.product_select = true;
+                        // Save the updated cart items back to Local Storage
+                        localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
                      }
                   });
                }
             });
 
-            // Save the updated cart items back to Local Storage
-            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+
             this.gotoOrderProduct();
          }
       },
@@ -286,7 +271,6 @@ createApp({
          form.append('limit_image', false);
 
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -318,8 +302,6 @@ createApp({
          form.append('action', 'atlantis_find_store');
          form.append('store_id', store_id);
          var r = await window.request(form);
-         console.log('find store')
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
@@ -454,13 +436,11 @@ createApp({
       // 
       if (_cartItems && _cartItems.length > 0) {
          _cartItems.some( store => {
+            store.products.some( product => product.product_select = false );
             store.products.some( product => {
-               product.product_select = false;
                if( product.product_id == this.product.id ){
                   if( this.product.stock >= product.product_quantity_count ) {
                      this.product_quantity_count = product.product_quantity_count;
-                  }else{
-                     // THIS IS OUT OF STOCK MAKE THEM CANT ORDER NOW
                   }
                }
             });

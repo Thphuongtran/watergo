@@ -268,6 +268,9 @@ createApp({
       goBack(){ 
          window.goBack()
          window.reset_cart_to_select_false();
+         if( window.appBridge != undefined ){
+            window.appBridge.refresh();
+         }
       },
       goBackRefresh(){ 
          window.goBack(); 
@@ -662,17 +665,20 @@ createApp({
       // SETUP DATE PICKER
       await this.get_delivery_address_primary();
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+
       if( _carts.length > 0 ){
 
          _carts.forEach( ( store, storeIndex ) => {
-            this.carts.push({
-               store_id: store.store_id,
-               store_name: store.store_name,
-               products: []
-            });
 
             store.products.forEach( async product => {
                if( product.product_select == true ){
+                  
+                  this.carts.push({
+                     store_id: store.store_id,
+                     store_name: store.store_name,
+                     products: []
+                  });
+
                   var _findProduct = new FormData();
                   _findProduct.append('action', 'atlantis_find_product');
                   _findProduct.append('product_id', product.product_id);
@@ -680,15 +686,23 @@ createApp({
                   if( r != undefined ){
                      var res = JSON.parse( JSON.stringify(r))
                      if( res.message == 'product_found'){
+                        var _store_id = res.data.store_id;
                         res.data.product_quantity_count = product.product_quantity_count;
-                        this.carts[storeIndex].products.push( res.data);
+                        this.carts.forEach( item => {
+                           if( item.store_id == _store_id ){
+                              item.products.push( res.data);
+                           }
+                        })
                      }
                   }
 
                }
             });
+            
          });
       }
+
+      console.log(this.carts)
 
       // add wrapper for picker
       this.btn_select_date_once();
