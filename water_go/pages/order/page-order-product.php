@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-<script src='<?php echo THEME_URI . '/pages/module/delivery_address.js'; ?>'></script>
+
 <div id='app'>
 
-   <div v-show='loading == false && delivery_address_open == false' class='page-product-order'>
+   <div v-show='loading == false' class='page-product-order'>
       
       <div class='appbar style01 fixed'>
          <div class='appbar-top'>
@@ -22,7 +22,7 @@
 
       
       <div class='inner'>
-         <div @click='btn_delivery_address_open' class='list-tile delivery-address'>
+         <div id='delivery_address_primary' @click='gotoDeliveryAddress' class='list-tile delivery-address' :class='delivery_address_primary != null ? "has-primary" : ""' >
             <div class='content'>
                <div v-if='delivery_address_primary == null'>
                   <p class='tt01'>Delivery address</p>
@@ -62,18 +62,20 @@
             <div
                v-for="(product, productKey) in store.products" :key="productKey" 
                class='list-items'>
-               <div v-if="product.product_select == true" class="list-items-wrapper">
+               <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.product_metadata.product_name }}</span>
-                     <span class='product-subtitle'>{{ product.product_metadata.product_name_second }}</span>
+                     <span class='product-title'>{{ product.name }}</span>
+                     <span class='product-subtitle'>{{ product.name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
-                        {{ common_get_product_price(get_total_price(product.product_price, product.product_quantity_count, product.product_discount_percent)) }}
+                        {{ common_get_product_price(get_total_price(
+                           product.price, 
+                           product.product_quantity_count, product.discount_percent)) }}
                      </span>
                      <span class='od-price-discount' v-if='has_discount(product)'>
-                        {{ common_get_product_price(product.product_price, product.product_discount_percent) }}
+                        {{ common_get_product_price(product.price, product.discount_percent) }}
                      </span>
                   </div>
                </div>
@@ -235,10 +237,6 @@
          <button @click='goBackRefresh' class='btn btn-outline'>Exit</button>
       </div>
    </div>
-
-   <component-delivery-address ref='component_delivery_address'></component-delivery-address>
-
-
 </div>
 
 
@@ -262,34 +260,24 @@ createApp({
          },
 
          delivery_address_primary: null,
-         delivery_address_open: false,
-
-         isUserCanOrder: {
-            stage_delivery_address: false,
-            stage_product: false,
-            stage_delivery_time: false
-         },
-
-         canOrder: false,
-
          carts: []
-
 
       }
    },
    methods: { 
-      goBack(){ window.goBack() },
+      goBack(){ 
+         window.goBack()
+         window.reset_cart_to_select_false();
+      },
       goBackRefresh(){ 
          window.goBack(); 
+         window.reset_cart_to_select_false();
          if( window.appBridge != undefined ){
             window.appBridge.refresh();
          }
       },
-      
-      btn_delivery_address_open(){
-         this.delivery_address_open = !this.delivery_address_open;
-      },
 
+      gotoDeliveryAddress(){ window.gotoDeliveryAddress()},
 
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
       has_discount( product ){ return window.has_discount( product ); },
@@ -544,11 +532,6 @@ createApp({
          }
 
          this.$refs.select_delivery_time.setAttribute('delivery-type', type);
-         // this.$refs.select_delivery_time.setAttribute('delivery-data', '');
-         // this.$refs.select_delivery_time.setAttribute('delivery-datetime', ''); // 12-12-2012
-         // this.$refs.select_delivery_time.setAttribute('delivery-day', ''); // monday - 12
-         // this.$refs.select_delivery_time.setAttribute('delivery-time', ''); // monday - 12
-
 
       },
 
@@ -562,7 +545,7 @@ createApp({
             return store.products.find( product => product.product_select == true );
          });
 
-         if ( ! this.$refs.buttonPlaceOrder.classList.contains('disabled') ) {
+         if ( ! this.$refs.buttonPlaceOrder.classList.contains('disabled') && this.delivery_address_primary != null ) {
             this.loading = true;
             var delivery_data = this.$refs.select_delivery_time.getAttribute('delivery-data');
             var delivery_type = this.$refs.select_delivery_time.getAttribute('delivery-type');
@@ -619,71 +602,28 @@ createApp({
 
          }
 
-
-         // if(this.checkUserCanOrder == true ){
-
-         //    this.loading = true;
-         //    var form = new FormData();
-         //    form.append('action', 'atlantis_add_order');
-         //    form.append('delivery_data', JSON.stringify(_delivery_data.selectDate) );
-         //    form.append('delivery_address', JSON.stringify(this.delivery_address_primary) );
-         //    form.append('delivery_type', _delivery_data.delivery_type );
-         //    form.append('productSelected', JSON.stringify( _productSelected ) );
-
-         //    var r = await window.request(form);
-         //    console.log(_delivery_data);
-         //    console.log(r);
-
-
-         //    if( r != undefined ){
-         //       var res = JSON.parse( JSON.stringify( r ));
-         //       if( res.message == 'insert_order_ok' ){
-
-         //          for (let i = _watergo_carts.length - 1; i >= 0; i--) {
-         //             var _carts = _watergo_carts[i];
-         //             for (let j = _carts.products.length - 1; j >= 0; j--) {
-         //                var _product = _carts.products[j];
-         //                if ( _product.product_select == true ) {
-         //                   _carts.products.splice(j, 1);
-         //                }
-         //             }
-         //             // remove store when no product in cart
-         //             if (_carts.products.length === 0) { _watergo_carts.splice(i, 1); }
-         //          }
-         //          localStorage.setItem('watergo_carts', JSON.stringify(_watergo_carts));
-         //          // 
-         //          this.banner_open = true;
-                  
-
-         //       }else{
-         //          this.loading = false;
-         //       }
-         //    }else{
-         //       this.loading = false;
-         //    }
-         // }
-
       },
+
+      async get_delivery_address_primary(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_delivery_address_primary');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if(res.message == 'get_delivery_address_ok' ){
+               this.delivery_address_primary = {
+                  name: res.data.name,
+                  phone: res.data.phone,
+                  address: res.data.address,
+                  primary: true
+               };
+            }
+         }
+      }
 
    },
    
    computed: {
-      
-      checkUserCanOrder(){
-
-         if( this.delivery_address_primary == null ){
-            return false;
-         }
-
-         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-         _carts.some( store => {
-            var _check = store.products.some( product => product.product_select == true );
-            if( _check == true ){
-               this.isUserCanOrder.stage_product = true;
-            }
-         });
-
-      },
 
       count_product_total_price(){
          var gr_price = {
@@ -693,12 +633,12 @@ createApp({
 
          this.carts.forEach( store => {
             store.products.forEach(product => {
-               if( product.product_discount_percent != null || product.product_discount_percent != 0 ){
-                  gr_price.price_discount += ( product.product_price - ( product.product_price * ( product.product_discount_percent / 100)) ) * product.product_quantity_count;
+               if( product.iscount_percent != 0 ){
+                  gr_price.price_discount += ( product.price - ( product.price * ( product.discount_percent / 100)) ) * product.product_quantity_count;
                }else{
-                  gr_price.price_discount += product.product_price * product.product_quantity_count;
+                  gr_price.price_discount += product.price * product.product_quantity_count;
                }
-               gr_price.price += product.product_price * product.product_quantity_count;
+               gr_price.price += product.price * product.product_quantity_count;
             });
 
          });
@@ -714,27 +654,39 @@ createApp({
             price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
          };
       },
-
    },
 
-   created(){
-
-      // SETUP DATE PICKER
+   async created(){
 
       this.loading = true;
-
+      // SETUP DATE PICKER
+      await this.get_delivery_address_primary();
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-
       if( _carts.length > 0 ){
-         _carts.some( store => {
-            var selectedProducts = store.products.filter(product => product.product_select == true);
-            if (selectedProducts.length > 0) {
-               this.carts.push({
-                  store_id: store.store_id,
-                  store_name: store.store_name,
-                  products: selectedProducts
-               });
-            }
+
+         _carts.forEach( ( store, storeIndex ) => {
+            this.carts.push({
+               store_id: store.store_id,
+               store_name: store.store_name,
+               products: []
+            });
+
+            store.products.forEach( async product => {
+               if( product.product_select == true ){
+                  var _findProduct = new FormData();
+                  _findProduct.append('action', 'atlantis_find_product');
+                  _findProduct.append('product_id', product.product_id);
+                  var r = await window.request(_findProduct);
+                  if( r != undefined ){
+                     var res = JSON.parse( JSON.stringify(r))
+                     if( res.message == 'product_found'){
+                        res.data.product_quantity_count = product.product_quantity_count;
+                        this.carts[storeIndex].products.push( res.data);
+                     }
+                  }
+
+               }
+            });
          });
       }
 
@@ -800,6 +752,7 @@ createApp({
                   if(
                      _date_once != undefined && _date_once != null && _date_once != '' &&
                      _time_once != undefined && _time_once != null && _time_once != '--' && _time_once != '' 
+                     && $('#delivery_address_primary').hasClass('has-primary')
                   ){
                      $('#buttonPlaceOrder').removeClass('disabled');
                      _delivery_data.once_date = {
@@ -818,7 +771,9 @@ createApp({
                   _clear_data_once();
                   _clear_data_weekly();
                   _clear_data_monthly();
-                  $('#buttonPlaceOrder').removeClass('disabled');
+                  if( $('#delivery_address_primary').hasClass('has-primary') ){
+                     $('#buttonPlaceOrder').removeClass('disabled');
+                  }
                }
 
                if( _type_select == 'weekly' ){
@@ -826,17 +781,19 @@ createApp({
                   _clear_data_monthly();
 
                   if( _delivery_data.weekly.length == 0 ){
-                        $('#buttonPlaceOrder').addClass('disabled');
-                     }else{
-                        for(var a = 0; a < _delivery_data.weekly.length; a++  ){
-                           if( _delivery_data.weekly[a].day == '' || _delivery_data.weekly[a].time == ''){
-                              $('#buttonPlaceOrder').addClass('disabled');
-                              break;
-                           }else{
+                     $('#buttonPlaceOrder').addClass('disabled');
+                  }else{
+                     for(var a = 0; a < _delivery_data.weekly.length; a++  ){
+                        if( _delivery_data.weekly[a].day == '' || _delivery_data.weekly[a].time == ''){
+                           $('#buttonPlaceOrder').addClass('disabled');
+                           break;
+                        }else{
+                           if( $('#delivery_address_primary').hasClass('has-primary') ){
                               $('#buttonPlaceOrder').removeClass('disabled');
                            }
                         }
-                     }  
+                     }
+                  }
 
                   $(document).on('input change click', '.btn_select_weekly_day, .btn_select_weekly_time, .button_add_dom_delivery_weekly', function(){
 
@@ -862,7 +819,9 @@ createApp({
                               $('#buttonPlaceOrder').addClass('disabled');
                               break;
                            }else{
-                              $('#buttonPlaceOrder').removeClass('disabled');
+                              if( $('#delivery_address_primary').hasClass('has-primary') ){
+                                 $('#buttonPlaceOrder').removeClass('disabled');
+                              }
                            }
                         }
                      }  
@@ -876,17 +835,19 @@ createApp({
                   _clear_data_weekly();
 
                   if( _delivery_data.monthly.length == 0 ){
-                        $('#buttonPlaceOrder').addClass('disabled');
-                     }else{
-                        for(var a = 0; a < _delivery_data.monthly.length; a++  ){
-                           if( _delivery_data.monthly[a].day == '' || _delivery_data.monthly[a].time == ''){
-                              $('#buttonPlaceOrder').addClass('disabled');
-                              break;
-                           }else{
+                     $('#buttonPlaceOrder').addClass('disabled');
+                  }else{
+                     for(var a = 0; a < _delivery_data.monthly.length; a++  ){
+                        if( _delivery_data.monthly[a].day == '' || _delivery_data.monthly[a].time == ''){
+                           $('#buttonPlaceOrder').addClass('disabled');
+                           break;
+                        }else{
+                           if( $('#delivery_address_primary').hasClass('has-primary') ){
                               $('#buttonPlaceOrder').removeClass('disabled');
                            }
                         }
                      }
+                  }
 
                   $(document).on('input change click', '.btn_select_monthly, .btn_select_monthly_time, .button_add_dom_delivery_monthly', function(){
 
@@ -913,12 +874,16 @@ createApp({
                               $('#buttonPlaceOrder').addClass('disabled');
                               break;
                            }else{
-                              $('#buttonPlaceOrder').removeClass('disabled');
+                              if( $('#delivery_address_primary').hasClass('has-primary') ){
+                                 $('#buttonPlaceOrder').removeClass('disabled');
+                              }
                            }
                         }
                      }
                   });
                }
+
+               // $('#delivery_address_primary').hasClass('has-primary')
 
                $('.select_delivery_time').attr('delivery-data', JSON.stringify(_delivery_data));
 
@@ -927,13 +892,13 @@ createApp({
          
          });
       })(jQuery);
+
+      
       
       this.loading = false;
       window.appbar_fixed();
    },
    
 
-})
-.component('component-delivery-address', PageDeliveryAddress)
-.mount('#app');
+}).mount('#app');
 </script>

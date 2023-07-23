@@ -1,0 +1,147 @@
+@mixin close-icon($size) {
+   display: inline-block;
+   width: $size;
+   height: $size;
+   position: relative;
+   cursor: pointer;
+
+   span {
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 2px;
+      background-color: #000;
+
+      &:first-child {
+         transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      &:last-child {
+         transform: translate(-50%, -50%) rotate(-45deg);
+      }
+   }
+}
+
+.close-button {
+   @include close-icon(20px);
+}
+
+.modal-popup{
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	background: rgba(0, 0, 0, 0.4);
+	width: 100%;
+	height: 100%;
+	display: none;
+	align-items: center;
+	justify-content: center;
+
+
+   &.style01{
+	
+      .tt01{
+         display: block;
+         font-weight: 600;
+         font-size: 16px;
+         color: #252831;
+         margin: 5px 0;
+         margin-right: auto;
+      }
+      
+      .list-Reason{
+         width: 100%;
+         text-align: left;
+         font-weight: 400;
+         font-size: 15px;
+         color: black;
+         li{
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            margin: 5px 0;
+         }
+         .radio-button{
+            display: block;
+         }
+         .value{
+            margin-left: 10px;
+         }
+      }
+
+      .actions{
+         button{
+            margin: 10px 0;
+            max-width: 280px;
+            width: 80%;
+         }
+      }
+   }
+
+   &.open{
+      display: flex;
+   }
+	
+   .modal-close{
+      position: absolute;
+      right: 15px; 
+      top: 15px;
+
+      &.style-static{
+         position: initial;
+         right: initial;
+         top: initial;
+         height: 20px;
+         width: 100%;
+         text-align: right;
+      }
+   }
+
+	.modal-wrapper{
+      position: relative;
+		max-width: 300%;
+		width: 90%;
+		background: white;
+		border-radius: 12px;
+		padding: 15px;
+		text-align: center;
+      min-height: 120px;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      justify-content: center;
+
+		
+	}
+
+   .heading{
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      &.style01{
+         padding-bottom: 0;
+      }
+   }
+
+	
+	.actions{
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-evenly;
+      width: 100%;
+		button{
+         height: 36px;
+         line-height: 36px;
+			width: 42%;
+         min-width: 120px;
+         border-radius: 5px;
+         font-size: 16px;
+         font-weight: 500;
+		}
+	}
+}
+

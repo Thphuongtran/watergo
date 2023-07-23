@@ -1,0 +1,23 @@
+.radio-button{
+   width: 14px;
+   height: 14px;
+   border: 1px solid #A2A2A2;
+   border-radius: 100%;
+   position: relative;
+   &:after{
+      border-radius: 100%;
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60%; height: 60%;
+      background: #2790F9;
+      display: none;
+   }
+   &.active{
+      border-color: #2790F9;
+      &:after{
+         display: block;
+      }
+   }
+}

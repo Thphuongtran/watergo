@@ -88,13 +88,16 @@
                         </div>
                      </div>
                      <div class='content'>
-                        <div class='product-name'>{{ product.product_metadata.product_name }}</div>
+                        <div class='product-name'>{{ product.name }}</div>
                         <div class='product-price'>
                            <span class='price'>
-                              {{ common_get_product_price(product.product_price) }}
+                              {{ product.has_discount == 1 
+                                 ? common_get_product_price(product.price, product.discount_percent) 
+                                 : common_get_product_price(product.price)
+                              }}
                            </span>
-                           <span v-if="product.product_discount_percent != 0" class='sub-price'>
-                              {{ common_get_product_price(product.product_price, product.product_discount_percent) }}
+                           <span v-if='product.has_discount == 1' class='sub-price'>
+                              {{ common_get_product_price(product.price) }}
                            </span>
                         </div>
                      </div>
@@ -102,7 +105,7 @@
                         <button @click="minQuantityCount(product.product_id)" class='btn-action'>
                            <svg width="16" height="3" viewBox="0 0 16 3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 2.28571H1.14286C0.839753 2.28571 0.549063 2.16531 0.334735 1.95098C0.120408 1.73665 0 1.44596 0 1.14286C0 0.839752 0.120408 0.549063 0.334735 0.334735C0.549063 0.120408 0.839753 0 1.14286 0H14.8571C15.1602 0 15.4509 0.120408 15.6653 0.334735C15.8796 0.549063 16 0.839752 16 1.14286C16 1.44596 15.8796 1.73665 15.6653 1.95098C15.4509 2.16531 15.1602 2.28571 14.8571 2.28571Z" fill="#2790F9"/></svg>
                         </button>
-                        <input type="number" disabled :value="product.product_quantity_count" :max="product.product_max_stock">
+                        <input class='input_quantity' type="number" disabled :value="product.product_quantity_count" :max="product.stock">
                         <button @click="plusQuantityCount(product.product_id)" class='btn-action'>
                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 9.14286H9.14286V14.8571C9.14286 15.1602 9.02245 15.4509 8.80812 15.6653C8.59379 15.8796 8.30311 16 8 16C7.6969 16 7.40621 15.8796 7.19188 15.6653C6.97755 15.4509 6.85714 15.1602 6.85714 14.8571V9.14286H1.14286C0.839753 9.14286 0.549063 9.02245 0.334735 8.80812C0.120408 8.59379 0 8.30311 0 8C0 7.6969 0.120408 7.40621 0.334735 7.19188C0.549063 6.97755 0.839753 6.85714 1.14286 6.85714H6.85714V1.14286C6.85714 0.839753 6.97755 0.549062 7.19188 0.334735C7.40621 0.120407 7.6969 0 8 0C8.30311 0 8.59379 0.120407 8.80812 0.334735C9.02245 0.549062 9.14286 0.839753 9.14286 1.14286V6.85714H14.8571C15.1602 6.85714 15.4509 6.97755 15.6653 7.19188C15.8796 7.40621 16 7.6969 16 8C16 8.30311 15.8796 8.59379 15.6653 8.80812C15.4509 9.02245 15.1602 9.14286 14.8571 9.14286Z" fill="#2790F9"/></svg>
                         </button>
@@ -156,9 +159,7 @@ createApp({
          loading: false,
          select_all_value: false,
          popup_delete_item: false,
-
          trigger_btn_delete: false,
-
          carts: []
 
       }
@@ -341,7 +342,39 @@ createApp({
 
       count_product_total_price(){ 
          this.cart_stream();
-         return window.count_product_total_price(); },
+         var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+
+         var gr_price = {
+            price: 0,
+            price_discount: 0
+         };
+
+         _cartItems.forEach( store => {
+            store.products.forEach(product => {
+               if( product.product_select == true ){
+                  
+                  if( product.has_discount != 0 ){
+                     gr_price.price_discount += ( product.price - ( product.price * ( product.discount_percent / 100)) ) * product.product_quantity_count;
+                  }else{
+                     gr_price.price_discount += product.price * product.product_quantity_count;
+                  }
+                  gr_price.price += product.price * product.product_quantity_count;
+               }
+            });
+
+         });
+         
+         var _final_price = null;
+
+         if( gr_price.price != gr_price.price_discount){
+            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ';
+         }
+
+         return {
+            price: _final_price,
+            price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
+         };
+      },
 
       count_product_select() {
          var _checkout = 0; // Initialize checkout count to 0
@@ -378,15 +411,29 @@ createApp({
             for( var x = 0; x < _carts[i].products.length; x++ ){
                var _product_id = _carts[i].products[x].product_id;
                var form = new FormData();
-               form.append('action', 'atlantis_get_images');
+               form.append('action', 'atlantis_find_product');
                form.append('product_id', _product_id);
                var r = await window.request(form);
                console.log(r)
-
-               _carts[i].products[x].product_image = r.data;
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify(r));
+                  if( res.message == 'product_found' ){
+                     _carts[i].products[x].product_image    = res.data.product_image;
+                     _carts[i].products[x].discount_from    = res.data.discount_from;
+                     _carts[i].products[x].discount_to      = res.data.discount_to;
+                     _carts[i].products[x].discount_percent = res.data.discount_percent;
+                     _carts[i].products[x].has_discount     = res.data.has_discount;
+                     _carts[i].products[x].name             = res.data.name;
+                     _carts[i].products[x].stock            = res.data.stock;
+                     _carts[i].products[x].price            = res.data.price;
+                  }
+                  
+               }
             }
          }
          this.carts.push( ..._carts); 
+
+         console.log(this.carts)
       }
 
       this.loading = false;

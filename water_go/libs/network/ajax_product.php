@@ -21,6 +21,9 @@ add_action( 'wp_ajax_atlantis_find_product_newest', 'atlantis_find_product_newes
 add_action( 'wp_ajax_nopriv_atlantis_get_product_sort', 'atlantis_get_product_sort' );
 add_action( 'wp_ajax_atlantis_get_product_sort', 'atlantis_get_product_sort' );
 
+add_action( 'wp_ajax_nopriv_atlantis_check_product_discount', 'atlantis_check_product_discount' );
+add_action( 'wp_ajax_atlantis_check_product_discount', 'atlantis_check_product_discount' );
+
 
 // function atlantis_load_product_recommend_home(){
 //    global $wpdb;
@@ -475,7 +478,7 @@ function atlantis_get_all_product_by_store(){
       ]);
 
       if( empty($res ) ){
-         wp_send_json_error(['message' => 'product_not_found 2', 'data' => $res]);
+         wp_send_json_error(['message' => 'product_not_found 2']);
          wp_die();
       }
       wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
@@ -483,4 +486,28 @@ function atlantis_get_all_product_by_store(){
       
    }
    
+}
+
+function atlantis_check_product_discount(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_check_product_discount'){
+      $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+      if( $product_id == 0 ){
+         wp_send_json_error(['message' => 'product_not_found 1']);
+         wp_die();
+      }
+
+      $sql = "SELECT * FROM wp_watergo_products WHERE id = $product_id AND has_discount = 0";
+
+      global $wpdb;
+      $res = $wpdb->get_results($sql);
+      if( empty($res)){
+         wp_send_json_error(['message' => 'product_not_found 2']);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
+      wp_die();
+
+   }
+
 }

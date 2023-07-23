@@ -19,5 +19,9 @@
    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
         
    <?php wp_head(); ?>
+   <script>
+      // window.check_cart_is_exists();
+   </script>
 </head>
+
 <body <?php body_class( ); ?>>

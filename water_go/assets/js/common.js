@@ -67,6 +67,17 @@ function order_formatDate(inputDate){
    return false;
 }
 
+function reset_cart_to_select_false(){
+   var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+   if( _cartItems.length > 0 ){
+      _cartItems.forEach( store => {
+         store.store_select = false;
+         store.products.some( product => product.product_select = false );
+      });
+      localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+   }
+}
+
 function check_cart_is_exists(){
    var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
    if( _cartItems == undefined ){
@@ -413,12 +424,12 @@ function count_product_total_price(){
       store.products.forEach(product => {
          if( product.product_select == true ){
             
-            if( product.product_discount_percent != null || product.product_discount_percent != 0 ){
-               gr_price.price_discount += ( product.product_price - ( product.product_price * ( product.product_discount_percent / 100)) ) * product.product_quantity_count;
+            if( product.has_discount != 0 ){
+               gr_price.price_discount += ( product.price - ( product.price * ( product.discount_percent / 100)) ) * product.product_quantity_count;
             }else{
-               gr_price.price_discount += product.product_price * product.product_quantity_count;
+               gr_price.price_discount += product.price * product.product_quantity_count;
             }
-            gr_price.price += product.product_price * product.product_quantity_count;
+            gr_price.price += product.price * product.product_quantity_count;
          }
       });
 
@@ -814,4 +825,17 @@ function gotoPageStoreSettings(){
 
 function gotoPageStoreAdverstising(){
    window.location.href = window.watergo_domain + 'store/?store_page=store-adverstising&appt=N';
+}
+
+/**
+ * @access DELIVERY ADDRESS
+ */
+function gotoDeliveryAddress(){
+   window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-index&appt=N';
+}
+function gotoDeliveryAddressEdit( delivery_id ){
+   window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-edit&delivery_id=' + delivery_id +'&appt=N';
+}
+function gotoDeliveryAddressAdd(){
+   window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-add&appt=N';
 }

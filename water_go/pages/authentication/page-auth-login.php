@@ -56,7 +56,6 @@
      background-color: #f0f0f0;
    }
 </style>
-
 <div id='authentication'>
 
    <div v-if='page_welcome == true' class='banner page-welcome'>
@@ -273,7 +272,6 @@ createApp({
                form.append('email', this.inputEmail);
                form.append('password', this.inputPassword);
                var r = await window.request(form);
-
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
@@ -317,6 +315,9 @@ createApp({
          }
 
       },
+   },
+   mounted(){
+      
    }
 
 }).mount('#authentication');

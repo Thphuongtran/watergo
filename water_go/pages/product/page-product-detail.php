@@ -34,6 +34,7 @@
                <span v-if='product.has_discount == 1' class='badge-discount bottom left'>-{{ product.discount_percent }}%</span>
                <span v-if='product.stock == 0' class='badge-out-of-stock bottom right'>Out of Stock</span>
             </div>
+            
          </div>
 
          <div class='inner'>
@@ -111,18 +112,18 @@
                   <li @click='gotoProductDetail(product.id)' v-for='(product, index) in product_by_store' class='product-design'>
                      <div class='img'>
                         <img :src='product.product_image.url'>
-                        <span v-if='product.has_discount == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                        <span v-if='product.has_discount == 1' class='badge-discount'>-{{ product.discount_percent }}%</span>
                      </div>
                      <p class='tt01'>{{ product.name }} </p>
                      <p class='tt02'>{{ product.name_second }}</p>
-                     <div class='gr-price' :class="product.has_discount == true ? 'has_discount' : '' ">
+                     <div class='gr-price' :class="product.has_discount == 1 ? 'has_discount' : '' ">
                         <span class='price'>
-                           {{ product.has_discount == true 
+                           {{ product.has_discount == 1 
                               ? common_get_product_price(product.price, product.discount_percent) 
                               : common_get_product_price(product.price)
                            }}
                         </span>
-                        <span v-if='product.has_discount == true' class='price-sub'>
+                        <span v-if='product.has_discount == 1' class='price-sub'>
                            {{ common_get_product_price(product.price) }}
                         </span>
                      </div>
@@ -222,12 +223,11 @@ createApp({
          }
          if( this.check_can_order == true ){
             // save those thing product_name | product_name_second | product_id 
-            var _product_metadata = {
-               product_name: this.product.name,
-               product_name_second: this.product.name_second,
-               // 
-               product_id: this.product.id,
-            };
+            // var _product_metadata = {
+            //    product_name: this.product.name,
+            //    product_name_second: this.product.name_second,
+            //    product_id: this.product.id,
+            // };
             var _product = {
                store_id: parseInt( this.store.id ),
                store_name: this.store.name,
@@ -235,11 +235,11 @@ createApp({
                products: [
                   {
                      product_id: parseInt(this.product.id ),
-                     product_max_stock: parseInt(this.product.stock ),
-                     product_metadata: _product_metadata, 
+                     // product_max_stock: parseInt(this.product.stock ),
+                     // product_metadata: _product_metadata, 
                      product_quantity_count: parseInt(this.product_quantity_count),
-                     product_price: parseInt(this.product.price),
-                     product_discount_percent: this.has_discount(this.product) ? parseInt(this.product.discount_percent) : 0,
+                     // product_price: parseInt(this.product.price),
+                     // product_discount_percent: this.has_discount(this.product) ? parseInt(this.product.discount_percent) : 0,
                      product_select: false
                   }
                ]
@@ -258,7 +258,7 @@ createApp({
             var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
 
             _cartItems.forEach(item => {
-               item.products.every( p => p.product_select = false );
+               item.products.some( p => p.product_select = false );
                if( item.store_id == this.product.store_id ){
                   item.products.forEach( product => {
                      if( product.product_id == this.product.id ){

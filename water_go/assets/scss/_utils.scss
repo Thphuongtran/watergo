@@ -2849,5 +2849,21 @@ p{
    }
 }
 
+.product-price{
+   display: flex;
+   flex-flow: row wrap;
+   align-items: center;
+   .price{
+      margin-right: 8px;
+   }
+   .sub-price{
+      margin-left: 0 !important;
+   }
+}
 
-
+.input_quantity{
+   border: 1px solid #959595;
+   &:disabled{
+      border: 1px solid #959595;
+   }
+}
