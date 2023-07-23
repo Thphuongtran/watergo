@@ -420,7 +420,6 @@ createApp({
                form.append('action', 'atlantis_find_product');
                form.append('product_id', _product_id);
                var r = await window.request(form);
-               console.log(r)
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify(r));
                   if( res.message == 'product_found' ){
@@ -432,14 +431,18 @@ createApp({
                      _carts[i].products[x].name             = res.data.name;
                      _carts[i].products[x].stock            = res.data.stock;
                      _carts[i].products[x].price            = res.data.price;
+
+                     // Check if stock is 0 and remove the product from _carts
+                     if (_carts[i].products[x].stock == 0) {
+                        _carts[i].products.splice(x, 1);
+                        x--; // Decrement x to handle the next product correctly after the removal
+                     }
                   }
                   
                }
             }
          }
          this.carts.push( ..._carts); 
-
-         console.log(this.carts)
       }
 
       this.loading = false;

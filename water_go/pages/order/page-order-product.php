@@ -225,7 +225,7 @@
       </div>
    </div>
 
-   <div v-show='banner_open == true' class='banner z-index-5'>
+   <div v-show='banner_open == true' class='banner' :class='banner_open == true ? "z-index-5" : ""'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -667,39 +667,46 @@ createApp({
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
 
       if( _carts.length > 0 ){
-
-         _carts.forEach( ( store, storeIndex ) => {
-
-            store.products.forEach( async product => {
-               if( product.product_select == true ){
-                  
+         _carts.forEach( store => {
+            if (store.store_select == true ) {
+               this.carts.push({ ...store, products: [...store.products] });
+            } else {
+               const selectedProducts = store.products.filter(product => product.product_select);
+               if (selectedProducts.length > 0) {
+                  // If there are selected products, push the store with only selected products to this.carts
                   this.carts.push({
                      store_id: store.store_id,
                      store_name: store.store_name,
-                     products: []
+                     store_select: false,
+                     products: [...selectedProducts],
                   });
+               }
+            }
+         });
 
-                  var _findProduct = new FormData();
-                  _findProduct.append('action', 'atlantis_find_product');
-                  _findProduct.append('product_id', product.product_id);
-                  var r = await window.request(_findProduct);
-                  if( r != undefined ){
-                     var res = JSON.parse( JSON.stringify(r))
-                     if( res.message == 'product_found'){
-                        var _store_id = res.data.store_id;
-                        res.data.product_quantity_count = product.product_quantity_count;
-                        this.carts.forEach( item => {
-                           if( item.store_id == _store_id ){
-                              item.products.push( res.data);
-                           }
-                        })
-                     }
+         this.carts.forEach( ( store, storeIndex ) => {
+            console.log('get meta data')
+            store.products.forEach( async ( product, productIndex ) => {
+               var form = new FormData();
+               form.append('action', 'atlantis_find_product');
+               form.append('product_id', product.product_id);
+               var r = await window.request(form);
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify(r));
+                  if( res.message == 'product_found' ){
+                     this.carts[storeIndex].products[productIndex].name_second = res.data.name_second;
+                     this.carts[storeIndex].products[productIndex].name = res.data.name;
+                     this.carts[storeIndex].products[productIndex].has_discount = res.data.has_discount;
+                     this.carts[storeIndex].products[productIndex].discount_to = res.data.discount_to;
+                     this.carts[storeIndex].products[productIndex].discount_from = res.data.discount_from;
+                     this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
+                     this.carts[storeIndex].products[productIndex].stock = res.data.stock;
+                     this.carts[storeIndex].products[productIndex].price = res.data.price;
                   }
-
                }
             });
-            
          });
+
       }
 
       console.log(this.carts)
