@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-review-form'>
+   <div v-show='loading == false' class='page-review-form'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -44,7 +44,7 @@
       </div>
 
    </div>
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -92,7 +92,7 @@ createApp({
          }
       },
 
-      goBack(){ window.goBack();},
+      goBack(){ window.goBack(true);},
       gotoNotification(code){ window.gotoNotification(code)}
 
    },

@@ -49,10 +49,10 @@
                </div>
                <div class='prod-price' :class='product.has_discount != 0 ? "has-discount" : ""'>
                   <span class='price'>
-                     {{ common_get_product_price(product) }}
+                     {{ common_get_product_price(product, 0) }}
                   </span>
                   <span v-if='product.has_discount != 0' class='sub-price'>
-                     {{ common_get_product_price(product, 0) }}
+                     <!-- {{ common_get_price_order(product) }} -->
                   </span>
                </div>
             </div>
@@ -176,17 +176,9 @@ createApp({
 
       gotoOrderFilter(filter){ window.gotoOrderFilter(filter); },
 
-      common_get_product_price( product, depth ){
-         console.log(product)
-         return window.common_get_product_price( {
-            quantity: product.order_group_product_quantity_count,
-            price: product.price,
-            has_discount: product.has_discount,
-            discount_from: product.discount_from,
-            discount_to: product.discount_to,
-            discount_percent: product.discount_percent,
-         }, depth );
-      },
+      common_get_product_price(p, d){ return window.common_get_product_price(p, d) },
+      common_get_price_order( product, discount_percent ){ return window.common_get_price_order( product , discount_percent ); },
+
       select_filter( filter_select ){ this.order_status_select = filter_select; },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
@@ -243,7 +235,7 @@ createApp({
       this.filter = filter;
       this.loading = true;
       await this.get_order_filter(0);
-      // console.log(this.orders);
+      console.log(this.orders);
       window.appbar_fixed();
       this.loading = false;
       

@@ -135,7 +135,7 @@ createApp({
          if( window.appBridge !== undefined ){
             window.appBridge.getLocation().then( (data) => {
                if (Object.keys(data).length === 0) {
-                  alert("Error-1 :Không thể truy cập vị trí");
+                  // alert("Error-1 :Không thể truy cập vị trí");
                }else{
                   let lat = data.lat;
                   let lng = data.lng;

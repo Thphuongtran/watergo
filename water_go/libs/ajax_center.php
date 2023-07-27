@@ -139,20 +139,22 @@ function func_atlantis_get_order_number( $order_id ){
    $sql = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id LIMIT 1";
    global $wpdb;
    $res = $wpdb->get_results($sql);
+
    if ( ! empty( $res ) ) {
 
       if( $res[0]->order_repeat_type == 'weekly' || $res[0]->order_repeat_type == 'monthly' ){
-         // $number_repeat = '';
-         $number_repeat = '-' . $res[0]->order_repeat_count;
-         // if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
-         // }
+         $number_repeat = '';
+
+         if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
+            $number_repeat = '-' . $res[0]->order_repeat_count;
+         }
+         
          $numberWithZeros = str_pad( $res[0]->order_repeat_order_id, 4, "0", STR_PAD_LEFT) . $number_repeat;
          return $numberWithZeros;
       }
-
-   }else{
-      $numberWithZeros = str_pad( $order_id, 4, "0", STR_PAD_LEFT);
    }
+
+   $numberWithZeros = str_pad( $order_id, 4, "0", STR_PAD_LEFT);
    return $numberWithZeros;
 }
 
@@ -307,8 +309,10 @@ function func_atlantis_get_images($related_id, $attachment_type, $limit = true){
       $sql .= " LIMIT 1";
    }
    $res = $wpdb->get_results($sql);
+
    if( !empty($res )){
       $attachment = [];
+
       foreach( $res as $k => $vl ){
          $url = wp_get_attachment_image_url($vl->attachment_id);
          $attachment[$k]['url']  = $url;

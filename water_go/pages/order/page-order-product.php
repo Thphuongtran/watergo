@@ -198,6 +198,7 @@
                   </div>
                </div>
             </div>
+
             <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly'>Add Date</button>
 
          </div> 
@@ -265,18 +266,12 @@ createApp({
    },
    methods: { 
       goBack(){ 
-         window.goBack()
          window.reset_cart_to_select_false();
-         if( window.appBridge != undefined ){
-            window.appBridge.refresh();
-         }
+         window.goBack(true);
       },
       goBackRefresh(){ 
-         window.goBack(); 
          window.reset_cart_to_select_false();
-         if( window.appBridge != undefined ){
-            window.appBridge.refresh();
-         }
+         window.goBack(true);
       },
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
@@ -324,7 +319,7 @@ createApp({
                            var _currentDay  = new Date();
 
                            var getHourSelected = _currentDay.getHours().toString().padStart(2, '0');
-                           
+                           getHourSelected = parseInt( getHourSelected ) + 2;
 
                            var _selectOption = [
                               { label: '7:00  -  8:00', value: '7:00-8:00', time: 7 },
@@ -350,7 +345,7 @@ createApp({
                            $('.btn_select_time_once').empty('option');
 
                            if(_currentSelectDate.getTime() === _currentDay.getTime() ){
-                              _selectOption = _selectOption.filter( (item) => item.time >= getHourSelected );
+                              _selectOption = _selectOption.filter( item => item.time >= getHourSelected );
                            }
 
                            _selectOption.forEach( item => {
@@ -739,9 +734,6 @@ createApp({
 
       this.loading = true;
       // SETUP DATE PICKER
-
-      
-
 
       // add wrapper for picker
       this.btn_select_date_once();

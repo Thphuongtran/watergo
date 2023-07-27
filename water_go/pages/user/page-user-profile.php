@@ -177,7 +177,9 @@ createApp({
       gotoCart(){ window.gotoCart(); },
       count_product_in_cart(){return window.count_product_in_cart(); },
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
-      btn_review_edit(review_id){ window.gotoPageUserReviewEdit(review_id);},
+      btn_review_edit(review_id){ 
+         this.reviews.forEach( item => item.popup_active = false);
+         window.gotoPageUserReviewEdit(review_id);},
 
       async get_messages_count(){
          var form_message_count = new FormData();
@@ -227,13 +229,15 @@ createApp({
          this.btn_popup_cancel();
          this.loading = false;
       },
+
       btn_popup_cancel(){ 
          this.review_id = 0;
-         this.reviews.every(item => item.popup_active = false);
+         this.reviews.forEach( item => item.popup_active = false);
          this.popup_delete_all_review = false; },
 
       btn_review_delete(review_id){ 
          this.review_id = review_id;
+         this.reviews.forEach( item => item.popup_active = false);
          this.popup_delete_all_review = true; },
 
       popup_reivew_action(review_id){

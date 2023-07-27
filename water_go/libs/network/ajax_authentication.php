@@ -102,9 +102,9 @@ function atlantis_register_user(){
       delete_transient( 'verification_code_' . $email );
       wp_insert_user( [
          'user_login' => $username,
-         'user_pass' => $password,
+         'user_pass'  => $password,
          'user_email' => $email,
-         'first_name' => $email,
+         'first_name' => $username,
       ]);
 
       wp_send_json_success([ 'message' => 'register_ok' ]);
@@ -303,6 +303,7 @@ function atlantis_store_register(){
          'user_pass'  => $password,
          'first_name' => $email
       ]);
+
 
       if( ! $user_id ){
          wp_send_json_error([ 'message' => 'register_error_1']);

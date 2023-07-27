@@ -1,12 +1,12 @@
 <div id='app'>
-   <div v-show='loading == false && orders != null' class='page-order'>
+   <div v-if='loading == false && orders != null' class='page-order'>
 
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
                <p class='leading-title'>Order</p>
                <div class='leading-filter'>
-                  <button @click='gotoOrderFilter("weekly")' class='btn-action'>Week</button> | <button @click='gotoOrderFilter("monthly")' class='btn-action'>Month</button>
+                  <button @click='gotoOrderFilter("weekly")' class='btn-action pr10'>Week</button> | <button @click='gotoOrderFilter("monthly")' class='btn-action pl10'>Month</button>
                </div>
             </div>
             <div class='action'>
@@ -63,10 +63,10 @@
                </div>
                <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
                   <span class='price'>
-                     {{ common_get_price_order(product ) }}
+                     {{ common_get_price_order(product, product.order_group_product_discount_percent ) }}
                   </span>
                   <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
-                     {{ common_get_price_order(product, 0) }}
+                     {{ common_get_price_order(product) }}
                   </span>
                </div>
             </div>
@@ -81,7 +81,7 @@
 
    </div>
 
-   <div v-show='loading == true'>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -128,7 +128,7 @@ createApp({
          }
       },
 
-      common_get_price_order( price, discount_percent ){return window.common_get_price_order( price, discount_percent );},
+      common_get_price_order( p, d ){return window.common_get_price_order( p, d );},
 
       select_filter( filter_select ){ 
          this.order_status_filter.some(item => {
@@ -202,7 +202,7 @@ createApp({
          form.append('paged', paged );
          form.append('order_status', order_status);
          var r = await window.request(form);
-         console.log(r)
+         // console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
@@ -235,6 +235,7 @@ createApp({
          this.paged  = 0;
          await this.get_order(status, this.paged);
          this.loading = false;
+         window.appbar_fixed();
       }
    },
 
@@ -242,7 +243,7 @@ createApp({
       this.loading = true;
       await this.get_notification_count();
       await this.get_order( this.order_status, 0)
-      console.log(this.orders)
+      // console.log(this.orders)
       this.loading = false;
 
       window.appbar_fixed();

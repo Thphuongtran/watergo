@@ -101,11 +101,12 @@ add_action( 'wp_ajax_atlantis_action_product_store', 'atlantis_action_product_st
 
 function atlantis_action_product_store(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_action_product_store'){
-      $event = isset($_POST['event'] ) ? $_POST['event'] : '';
-      $product_type = isset($_POST['product_type']) ? $_POST['product_type'] : '';
-      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-      $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
-      // IMAGE UPLOAD
+      $event         = isset($_POST['event'] ) ? $_POST['event'] : '';
+      $product_type  = isset($_POST['product_type']) ? $_POST['product_type'] : '';
+      $store_id      = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+      $product_id    = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+
+     
 
       if( $product_type == '' || $event == ''){
          wp_send_json_error(['message' => 'action_product_store_error']);
@@ -125,14 +126,17 @@ function atlantis_action_product_store(){
 
       if( $discount_from != null || $discount_from != 0 ){
          $discount_from = DateTime::createFromFormat('d/m/Y', $discount_from);
-         $discount_from = $discount_from->format('Y-m-d');
+         if( $discount_from != false ){
+            $discount_from = $discount_from->format('Y-m-d');
+         }
 
       }
       if( $discount_to != null || $discount_to != 0 ){
          $discount_to = DateTime::createFromFormat('d/m/Y', $discount_to);
-         $discount_to = $discount_to->format('Y-m-d');
+         if( $discount_to != false ){
+            $discount_to = $discount_to->format('Y-m-d');
+         }
       }
-
 
       $product_description = isset($_POST['product_description']) ? $_POST['product_description'] : '';
 
@@ -171,6 +175,8 @@ function atlantis_action_product_store(){
          'stock'           => $stock,
       ];
 
+      
+
       if(!empty($arg_discount)){
          $args = array_merge($args, $arg_discount);
       }
@@ -208,6 +214,7 @@ function atlantis_action_product_store(){
             wp_send_json_success(['message' => 'action_product_ok' ]);
             wp_die();
          }
+         
          wp_send_json_error(['message' => 'action_product_error' ]);
          wp_die();
       }

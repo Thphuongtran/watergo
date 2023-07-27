@@ -214,6 +214,7 @@ createApp({
       buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false; },
       has_discount( product ){ return window.has_discount(product); },
       common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent ) },
+
       addToCart( isJustShowModal ){
 
          if(isJustShowModal == true ){
@@ -223,8 +224,9 @@ createApp({
                   this.show_add_cart = false;
                }, 1500);
             }
-         }
 
+         }
+         
          if( this.check_can_order == true ){
             var _res = window.add_quantity_to_cart( this.product.id, this.product_quantity_count, this.product.stock );
             if( _res == false ){
@@ -254,6 +256,7 @@ createApp({
                   item.products.some( product => {
                      if( product.product_id == this.product.id && product.product_select == false){
                         product.product_select = true;
+                        product.product_quantity_count = this.product_quantity_count; // update override quantity
                         // Save the updated cart items back to Local Storage
                         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
                      }
@@ -273,18 +276,17 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_find_product');
          form.append('product_id', product_id);
-         form.append('limit_image', false);
-
+         form.append('limit_image', 0);
          var r = await window.request(form);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
                this.product = res.data;
 
-               if( typeof this.product.product_image == 'object' ){
-                  this.product.product_image = [{ url: this.product.product_image.url }];
+               if( ! Array.isArray( res.data.product_image ) ){
+                  this.product.product_image = [ res.data.product_image]
                }
-
                // out of stock
                if( this.product.mark_out_of_stock == 1 || this.product.stock == 0) {
                   this.modal_store_out_of_stock = true;
@@ -436,24 +438,22 @@ createApp({
       await this.get_review_rating_average( this.product.store_id);
       await this.get_purchase_store( this.product.store_id);
 
-      console.log(this.product)
-
       // GET QUANTITY 
-      // var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-      // // 
-      // if (_cartItems && _cartItems.length > 0) {
-      //    _cartItems.some( store => {
-      //       store.products.some( product => product.product_select = false );
-      //       store.products.some( product => {
-      //          if( product.product_id == this.product.id ){
-      //             if( this.product.stock >= product.product_quantity_count ) {
-      //                this.product_quantity_count = product.product_quantity_count;
-      //             }
-      //          }
-      //       });
-      //    });
-      //    localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-      // }
+      var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+      // 
+      if (_cartItems && _cartItems.length > 0) {
+         _cartItems.some( store => {
+            store.products.some( product => product.product_select = false );
+            store.products.some( product => {
+               if( product.product_id == this.product.id ){
+                  if( this.product.stock >= product.product_quantity_count ) {
+                     this.product_quantity_count = product.product_quantity_count;
+                  }
+               }
+            });
+         });
+         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+      }
 
       // this.product_exists_in_cart = window.check_product_exists_in_cart(product_id);
       // this.get_product_from_cart = window.get_product_from_cart(product_id);

@@ -1,6 +1,36 @@
    <?php wp_footer(); ?>
-   <div class='scroll-bounce'></div>
    <script>
+
+   // function callbackResume(data){        
+   //    if ( data != "undefined" && data != "" ) {
+   //       if (data == 'refresh') {
+   //          if( window.appBridge != undefined ){
+   //             window.appBridge.refresh();
+   //          }
+   //       }
+   //    }
+   // }
+
+   async function native_share_link( link ){
+      var form = new FormData();
+      form.append('action', 'atlantis_share_link');
+      form.append('link', link );
+      var r = await window.request(form);
+      console.log(r);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.parse( r ));
+         if( res.message == 'share_success' ){
+
+            var shareData = {
+               title: 'WaterGo',
+               text: '',
+               url: link
+            };
+            // navigator.share(shareData);
+            navigator.share(shareData);
+         }
+      }
+   }
      
    function callbackLoginSuccess(type, token, information){
       // alert("ok");return;

@@ -249,6 +249,12 @@
 			font-weight: 500;
 			font-size: 12px;
 			border-bottom: 1px solid #DADADA;
+         color: #252831;
+
+         &.t-primary{
+            color: #2790F9 !important;
+         }
+
 			&:last-child{
 				border: none;
 			}

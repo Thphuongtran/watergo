@@ -23,7 +23,7 @@
             </div>
             <div class='form-group style01'>
                <span>Phone</span>
-               <input v-model='delivery_address_phone' type="tel">
+               <input v-model='delivery_address_phone' type="text" pattern='[0-9]*' maxlength='11'>
             </div>
             <div class='form-group style01'>
                <span>Address</span>
@@ -97,7 +97,7 @@ createApp({
 
       validatePhoneNumber(phoneNumber) {
          // Regular expression for phone number validation
-         const phoneRegex = /^\d{10,12}$/; // Assumes 11-digit phone number format
+         const phoneRegex = /^\d{10,11}$/; // Assumes 11-digit phone number format
          return phoneRegex.test(phoneNumber);
       },
 
@@ -140,9 +140,9 @@ createApp({
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'update_delivery_address_ok' ){
                      this.goBack();
-                     if( window.appBridge != undefined ){
-                        window.appBridge.refresh();
-                     }
+                     // if( window.appBridge != undefined ){
+                     //    window.appBridge.refresh();
+                     // }
                   }
                }
             }
@@ -162,9 +162,6 @@ createApp({
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'delete_delivery_address_ok' ){
                this.goBack();
-               if( window.appBridge != undefined ){
-                  window.appBridge.refresh();
-               }
             }
          }
       },
@@ -186,7 +183,7 @@ createApp({
       },
 
 
-      goBack(){ window.goBack()},
+      goBack(){ window.goBack(true)},
       validateEmail(email) {
          // Regular expression for email validation
          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -214,4 +211,6 @@ createApp({
    },
 
 }).mount('#app');
+
+
 </script>

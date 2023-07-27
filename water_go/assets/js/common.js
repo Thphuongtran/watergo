@@ -12,26 +12,25 @@ function removeZeroLeading(number) {
   return number;
 }
 
-async function native_share_link( link ){
-   var form = new FormData();
-   form.append('action', 'atlantis_share_link');
-   form.append('link', link );
-   var r = await window.request(form);
-   if( r != undefined ){
-      var res = JSON.parse( JSON.parse( r ));
-      if( res.message == 'share_success' ){
+// async function native_share_link( link ){
+//    var form = new FormData();
+//    form.append('action', 'atlantis_share_link');
+//    form.append('link', link );
+//    var r = await window.request(form);
+//    if( r != undefined ){
+//       var res = JSON.parse( JSON.parse( r ));
+//       if( res.message == 'share_success' ){
 
-         var shareData = {
-            title: 'WaterGo',
-            text: '',
-            url: link
-         };
-         // navigator.share(shareData);
-         navigator.share(shareData);
-      }
-   }
-
-}
+//          var shareData = {
+//             title: 'WaterGo',
+//             text: '',
+//             url: link
+//          };
+//          // navigator.share(shareData);
+//          navigator.share(shareData);
+//       }
+//    }
+// }
 
 function getPastDaysInMonth() {
   const currentDate = new Date();
@@ -712,8 +711,12 @@ function gotoStoreDetail(store_id){
 function gotoCart(){
    window.location.href = window.watergo_domain + 'cart/?appt=N';
 }
-function goBack(){
-   window.location.href = '?appt=X';
+function goBack( refresh = false ){
+   if(refresh == true ){
+      window.location.href = '?appt=X&data=refresh';
+   }else{
+      window.location.href = '?appt=X';
+   }
 }
 
 function gotoOrderProduct(){
@@ -1010,4 +1013,15 @@ function gotoDeliveryAddressAdd(){
 function gotoPageReOrder( order_id ){
 
    window.location.href = window.watergo_domain + 'order/?order_page=order-product&re_order_id=' + order_id + '&appt=N';
+}
+
+
+function callbackResume(data){        
+   if ( data != "undefined" && data != "" ) {
+      if (data == 'refresh') {
+         if( window.appBridge != undefined ){
+            window.appBridge.refresh();
+         }
+      }
+   }
 }

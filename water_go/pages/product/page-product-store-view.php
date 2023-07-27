@@ -322,9 +322,6 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'action_product_ok' ){
                this.goBack();
-               if( window.appBridge != undefined ){
-                  window.appBridge.refresh();
-               }
             }
          }
 
@@ -386,7 +383,6 @@ createApp({
 
                // CHECK IF DISCOUNT HAS ENABLE
                if( this.product.has_discount == true ){
-                  
                   if( 
                      ( _discount_from == undefined || _discount_from == '' ) ||
                      ( _discount_to == undefined || _discount_to == '' ) ||
@@ -474,9 +470,6 @@ createApp({
                      var res = JSON.parse( JSON.stringify( r ));
                      if( res.message == 'action_product_ok' ){
                         this.goBack();
-                        if( window.appBridge != undefined ){
-                           window.appBridge.refresh();
-                        }
                      }
                   }
                }
@@ -591,7 +584,7 @@ createApp({
          if( product_type == 'ice'){ this.leading_title = 'Add Ice Product'; }
       },
 
-      goBack(){ window.goBack()},
+      goBack(){ window.goBack(true)},
 
    },
 

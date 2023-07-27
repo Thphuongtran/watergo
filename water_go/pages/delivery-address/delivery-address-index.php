@@ -33,19 +33,20 @@
       </div>
 
       <ul class='list-tile col3' v-if='delivery_address.length > 0'>
-         <li v-for='(delivery, index) in delivery_address' :key='index'>
-            <div class='leading'>
+         <li 
+            v-for='(delivery, index) in delivery_address' :key='index'>
+            <div @click='change_default_delivery_address(delivery.id )' class='leading'>
                <div class="radio-button" :class='delivery.primary == true ? "active" : ""'></div>
             </div>
-            <div @click='change_default_delivery_address(delivery.id)' class='content'>
+            <div @click='change_default_delivery_address(delivery.id )' class='content'>
                <div class='tt01'>{{ delivery.address }}</div>
                <div class='gr-horizontal'>
-                  <span class='tt02'>{{ delivery.name }}</span><span class='tt02'>{{ delivery.phone }}</span>
+                  <span class='tt02'>{{ delivery.name }}</span><span class='tt02'> (+84) {{ removeZeroLeading(delivery.phone) }}</span>
                </div>
                <span v-if='delivery.primary == true' class='badge-default'>Default</span>
             </div>
             <div class='action'>
-               <button class='btn-text' @click='gotoDeliveryAddressEdit(delivery.id)'>Edit</button>
+               <button class='btn-text btn-edit-delivery-address' @click='gotoDeliveryAddressEdit(delivery.id)'>Edit</button>
             </div>
          </li>
       </ul>
@@ -72,22 +73,24 @@ createApp({
    },
 
    methods: {
-      goBack(){ window.goBack() },
+      goBack(){ window.goBack(true) },
       gotoDeliveryAddressAdd(){ window.gotoDeliveryAddressAdd()},
       gotoDeliveryAddressEdit(delivery_id){ window.gotoDeliveryAddressEdit(delivery_id)},
+      removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       
       async change_default_delivery_address( delivery_id ){
+         this.loading = true;
+         setTimeout(() => {}, 300);
          var delivery_id = parseInt( delivery_id );
          var form = new FormData();
          form.append('action', 'atlantis_user_change_delivery_address_quick');
          form.append('delivery_address_id', delivery_id);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'delivery_address_primary_ok' ){
                // force all to false primary
-               this.delivery_address.some(item => {
+               this.delivery_address.forEach(item => {
                   if( item.id == delivery_id ){
                      item.primary = 1;
                   }else{
@@ -96,6 +99,7 @@ createApp({
                });
             }
          }
+         this.loading = false;
       },
 
       async get_delivery_address(){
@@ -126,4 +130,6 @@ createApp({
 
    
 }).mount('#app');
+
+
 </script>

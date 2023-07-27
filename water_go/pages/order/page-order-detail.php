@@ -83,7 +83,7 @@
                '
             v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
             class='display_delivery_time'
-            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
+            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id && time_shipping.length > 1 ? "highlight" : ""'
             >
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
@@ -115,9 +115,11 @@
          <button @click='gotoReview("review-store", order.store_id )'
             v-if='order_status == "complete"'
             class='btn btn-outline btn-review-order'>Review Store</button>
-
-         <button @click='btn_cancel_order' v-if='order_status == "ordered" || order_status == "confirmed"' 
-            class='btn btn-outline btn-cancel-order'>Cancel</button>
+         
+         <div v-if='order_status == "ordered" || order_status == "confirmed"' class='btn_cancel_order_wrapper'>
+            <button @click='btn_cancel_order' v-if='order_status == "ordered" || order_status == "confirmed"' 
+               class='btn btn-outline btn-cancel-order'>Cancel</button>
+         </div>
 
          <div class='product-detail-bottomsheet'
             :class='get_layout_text_price'

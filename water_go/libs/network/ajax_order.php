@@ -311,7 +311,6 @@ function atlantis_add_order(){
             $dayOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
             
-
             if( $check_hash == 0 ){
                $wpdb->insert('wp_watergo_order', [
                   'order_by'                 => $user_id,

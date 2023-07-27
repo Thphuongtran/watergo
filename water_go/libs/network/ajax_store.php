@@ -31,6 +31,11 @@ function atlantis_get_store_id(){
 }
 
 
+/**
+ * @access TAB NREABY 
+ */
+
+
 function atlantis_get_store_nearby(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_store_nearby' ){
 
@@ -49,7 +54,7 @@ function atlantis_get_store_nearby(){
                sin(radians($lat)) * sin(radians(latitude))
             )) AS distance
          FROM wp_watergo_store
-         HAVING distance <= 5 -- Adjust the distance value as desired (in kilometers)
+         HAVING distance <= 8 -- Adjust the distance value as desired (in kilometers)
          ORDER BY distance ASC
          LIMIT 10
       ";

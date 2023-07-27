@@ -18,7 +18,7 @@ const LocationModal = {
    },
 
    methods: {
-      buttonCloseModal(){ this.modal_location_turned_off = false; },
+      buttonCloseModal(){ this.modal_location_turned_off = false; window.bodyScrollToggle('remove'); },
 
       open_app_setting() {
          if(window.appBridge){
@@ -32,6 +32,7 @@ const LocationModal = {
                if (Object.keys(data).length === 0) {
                   //alert("Error-1 :Không thể truy cập vị trí");
                   this.modal_location_turned_off = true;
+                  window.bodyScrollToggle('add');
                }else{
                   let lat = data.lat;
                   let lng = data.lng;
@@ -45,9 +46,12 @@ const LocationModal = {
       },
    },
 
+   update(){
+      this.get_current_location();
+   },
 
-   async mounted(){
-      this.get_current_location();      
+   mounted(){
+      this.get_current_location();
    }
    
 };

@@ -188,7 +188,6 @@ createApp({
          form.append('action', 'atlantis_get_product_from_store');
          form.append('type_product', type);
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found'){

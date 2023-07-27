@@ -136,9 +136,9 @@
          </p>
 
          <div class='form-check style01'>
-            <label >
+            <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text'> I agree with <span class='t-primary'>Terms and Conditions</span></span>
+               <span class='text text-nowrap'> I agree with <span class='t-primary'>Terms and Conditions</span></span>
             </label>
          </div>
 

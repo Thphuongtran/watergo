@@ -15,7 +15,7 @@
          </div>
       </div>
 
-      <div class='inner'>
+      <div class='inner mt20'>
          <ul class='list-settings list-language style01'>
             <li @click='updateUserLanguage(language)' class='no-arrow' v-for='(language , index) in settings_language' :key='index'>
                <span class='title'><span class='radio-button small' :class='language == user_language ? "active" : ""'></span>{{ language }}</span>
@@ -23,6 +23,12 @@
          </ul>
       </div>
 
+   </div>
+
+   <div v-show='loading == true'>
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
    </div>
 
 </div>
@@ -55,7 +61,7 @@ createApp({
          var r = await window.request(form);
       },
 
-      goBack(){ window.goBack();}
+      goBack(){ window.goBack(true);}
    },
 
    async created(){

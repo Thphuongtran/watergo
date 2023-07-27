@@ -321,11 +321,8 @@ createApp({
       },
 
       goBack(){ 
-         window.goBack(); 
+         window.goBack(true);
          window.reset_cart_to_select_false();
-         if( window.appBridge != undefined ){
-            window.appBridge.refresh();
-         }
       },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){ window.gotoOrderProduct()},

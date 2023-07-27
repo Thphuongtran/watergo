@@ -32,6 +32,8 @@
 
    .btn-action{
       margin-right: 15px;
+      display: flex;
+      align-items: center;
    }
 
    .btn-text{
@@ -62,6 +64,9 @@
    .leading-filter{
       margin: 0 10px;
       color: #2790F9;
+      display: flex;
+      flex-flow: row nowrap;
+      
       .btn-action{
          margin: 0;
          font-weight: 500;

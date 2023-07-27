@@ -23,7 +23,7 @@
             </div>
             <div class='form-group style01'>
                <span>Phone</span>
-               <input v-model='delivery_address_phone' type="tel">
+               <input v-model='delivery_address_phone' type="text" pattern='[0-9]*' maxlength='11'>
             </div>
             <div class='form-group style01'>
                <span>Address</span>
@@ -74,7 +74,7 @@ createApp({
 
    methods: {
       
-      goBack(){ window.goBack()},
+      goBack(){ window.goBack(true)},
 
       validatePhoneNumber(phoneNumber) {
          // Regular expression for phone number validation
@@ -124,9 +124,6 @@ createApp({
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'add_delivery_address_ok' ){
                      this.goBack();
-                     if( window.appBridge != undefined ){
-                        window.appBridge.refresh();
-                     }
                   }
                }
             }
