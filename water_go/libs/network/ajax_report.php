@@ -139,10 +139,6 @@ function atlantis_get_order_report_by_datetime(){
       ]]);
 
 
-
-
-
-
    }
 }
 
@@ -172,8 +168,6 @@ function calculateOrderComparison($todayOrders, $totalArray) {
    // return $result;
    return $totalComparisonResult;
 }
-
-
 
 function sql_atlantis_brand_report( $args ){
 
@@ -215,4 +209,165 @@ function sql_atlantis_brand_report( $args ){
    }
    return $sql;
 
+}
+
+
+function getFullDate($day) {
+   // Validate the input day
+   if ($day < 1 || $day > 31) {
+      return "Invalid input day";
+   }
+
+   // Get the current time in GMT+7 (Indochina Time)
+   date_default_timezone_set('Asia/Bangkok');
+   $current_time_gmt7 = time();
+
+   // Get the current year and month
+   $current_year = date('Y', $current_time_gmt7);
+   $current_month = date('m', $current_time_gmt7);
+
+   // Get the current day (without leading zeros) to use in strtotime function
+   $current_day = date('j', $current_time_gmt7);
+
+   // Create the full date for the input day (minus one day) in the format 'yyyy-mm-dd'
+   $day_from = date('Y-m-d', strtotime("$current_year-$current_month-$day -1 day"));
+
+   // Create the current full date (minus one day) in the format 'yyyy-mm-dd'
+   $day_current = date('Y-m-d', strtotime("$current_year-$current_month-$current_day -1 day"));
+
+   return array( 'day_from' => $day_from, 'day_current' => $day_current );
+}
+
+
+function getFirstAndLastDayOfMonth($month) {
+   // Validate the input month
+   if ($month < 1 || $month > 12) { return "Invalid input month"; }
+
+   // Get the current year and current month
+   date_default_timezone_set('Asia/Bangkok');
+   $current_year = date('Y');
+   $current_month = date('m');
+
+   // Create the first day of the input month
+   $first_day = date('Y-m-d', strtotime("$current_year-$month-01"));
+
+   // Create the last day of the input month
+   $last_day = date('Y-m-t', strtotime("$current_year-$month-01"));
+
+   // Create the first day of the current month
+   $current_first_day = date('Y-m-01');
+
+   // Create the last day of the current month
+   $current_last_day = date('Y-m-t');
+
+   return array(
+      'month_start'         => $first_day,
+      'month_end'           => $last_day,
+      'current_month_start' => $current_first_day,
+      'current_month_end'   => atlantis_current_date_only()
+   );
+}
+
+/**
+ * @access 2
+ */
+
+add_action( 'wp_ajax_nopriv_atlantis_get_order_report', 'atlantis_get_order_report' );
+add_action( 'wp_ajax_atlantis_get_order_report', 'atlantis_get_order_report' );
+
+function atlantis_get_order_report(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_order_report'){
+      $datetime = isset($_POST['datetime']) ? $_POST['datetime'] : '';
+      $datetype = isset($_POST['datetype']) ? $_POST['datetype'] : '';
+      $store_id      = func_get_store_id_from_current_user();
+
+      $current_date = atlantis_current_date_only();
+
+
+      $sql_today_profit = "SELECT 
+         wp_watergo_order_group.order_group_product_price as price,
+         wp_watergo_order_group.order_group_product_discount_percent as discount,
+         wp_watergo_order_group.order_group_product_quantity_count as quantity
+         FROM wp_watergo_order
+         LEFT JOIN wp_watergo_order_group
+         ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
+         WHERE order_status = 'complete' AND order_store_id = $store_id
+         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '2022-01-01' 
+         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '2023-07-30'
+      ";
+      $sql_today_sold = "SELECT COUNT(order_id) AS sold
+         FROM wp_watergo_order
+         WHERE order_status = 'complete' AND order_store_id = $store_id
+         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '$current_date' 
+         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '$current_date'
+      ";
+      $sql_today_cancel = "SELECT COUNT(order_id) AS cancel
+         FROM wp_watergo_order
+         WHERE order_status = 'cancel' AND order_store_id = $store_id
+         AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') >= '$current_date' 
+         AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') <= '$current_date'
+      ";
+
+      global $wpdb;
+
+      $today_profit  = $wpdb->get_results( $sql_today_profit );
+      $total_profit  = 0;
+      foreach( $today_profit as $k => $p ){
+         $price = $p->price - ( ( $p->price * $p->discount ) / 100 );
+         $total_profit += $price * $p->quantity;
+      }
+
+      $today_sold    = $wpdb->get_results( $sql_today_sold );
+      $today_cancel  = $wpdb->get_results( $sql_today_cancel );
+
+      // END VALUE FROM CURRENT DATETIME
+      $sold_past     = 0;
+      $cancel_past   = 0;
+      $profit_past   = 0;
+
+
+      if( $datetype == 'day' ){
+         $day = getFullDate($datetime);
+         $sql = sql_atlantis_brand_report([
+            'order_status' => 'complete',
+            'from_date'    => $day['day_from'],
+            'current_date' => $day['day_current']
+         ]);
+      }
+
+
+
+      if( $datetype == 'month' ){
+         $month = getFirstAndLastDayOfMonth($datetime);
+         $sql_from_month = sql_atlantis_brand_report([
+            'order_status' => 'complete',
+            'from_date'    => $month['month_start'],
+            'current_date' => $month['month_end']
+         ]);
+         $sql_from_month = sql_atlantis_brand_report([
+            'order_status' => 'complete',
+            'from_date'    => $month['month_start'],
+            'current_date' => $month['month_end']
+         ]);
+         
+      }
+
+      if( $datetype == 'year' ){
+
+      }
+
+      wp_send_json_success(['message' => 'bug', 'data' => 
+         [
+            'today_profit' => $total_profit,
+            'today_sold'   => $today_sold[0]->sold,
+            'today_cancel' => $today_cancel[0]->cancel,
+            'datetime'     => $datetime,
+            'datetype'     => $datetype,
+            'day'          => $day,
+            'month'          => $month,
+            
+         ]
+      ]);
+
+   }
 }

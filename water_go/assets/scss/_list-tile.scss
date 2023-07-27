@@ -496,6 +496,21 @@
 			margin-top: auto;
 			font-weight: 500;
 			font-size: 14px;
+         flex-flow: column nowrap;
+         display: flex;
+         align-items: flex-end;
+         
+         .sub-price{
+            font-weight: 400;
+            font-size: 9px;
+            color: #918D8D;
+            text-decoration: line-through;
+         }
+
+         &.has-discount{
+            margin-bottom: auto;
+         }
+
 		}
 		.t-primary{
 			font-weight: 500;

@@ -78,9 +78,6 @@ createApp({
          }
       },
 
-      has_discount( product ){ return window.has_discount(product); },
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
-
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
       goBack(){ window.goBack(); },
    },

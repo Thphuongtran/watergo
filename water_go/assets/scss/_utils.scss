@@ -1540,12 +1540,14 @@ p{
 		color: #252831;
       display: flex;
       align-items: center;
-
-      &.highlight{
-         color: #2790F9;
-
-      }
 	}
+
+   &.highlight{
+      .date_time_item{
+         color: #2790F9;
+      }
+   }
+   
 }
 
 .box-payment-method{
@@ -1667,7 +1669,7 @@ p{
       font-size: 14px;
       font-weight: 500;
 		&.td-left{
-			padding-left: 5px;
+			padding-left: 10px;
 		}
 	}
 }
@@ -2430,6 +2432,13 @@ p{
 				
 			}
 		}
+
+      .order-status-complete,
+      .order-status-cancel{
+         .text-order-number{
+            padding-left: 0;
+         }
+      }
 		
 		.order-time{
 			padding: 0px 15px;
@@ -2852,12 +2861,13 @@ p{
 .product-price{
    display: flex;
    flex-flow: row wrap;
-   align-items: center;
+   align-items: flex-end;
    .price{
       margin-right: 8px;
    }
    .sub-price{
       margin-left: 0 !important;
+      line-height: 2.0;
    }
 }
 
@@ -2866,4 +2876,8 @@ p{
    &:disabled{
       border: 1px solid #959595;
    }
+}
+
+.btn_select_monthly_time{
+   overflow-y: auto
 }

@@ -2,6 +2,37 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+ 
+
+function removeZeroLeading(number) {
+  let numberStr = number.toString();
+  if (numberStr.charAt(0) === '0') {
+    return parseInt(numberStr.slice(1), 10);
+  }
+  return number;
+}
+
+async function native_share_link( link ){
+   var form = new FormData();
+   form.append('action', 'atlantis_share_link');
+   form.append('link', link );
+   var r = await window.request(form);
+   if( r != undefined ){
+      var res = JSON.parse( JSON.parse( r ));
+      if( res.message == 'share_success' ){
+
+         var shareData = {
+            title: 'WaterGo',
+            text: '',
+            url: link
+         };
+         // navigator.share(shareData);
+         navigator.share(shareData);
+      }
+   }
+
+}
+
 function getPastDaysInMonth() {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -89,6 +120,61 @@ function explode_product_metadata( product_metadata ){
    return JSON.parse(product_metadata);
 }
 
+/**
+ * @access CART
+ */
+
+function add_quantity_to_cart( product_id, quantity, maxStock ) {
+   if( product_id != undefined && quantity > 0 && maxStock > 0 ){
+      var _findProduct = get_product_from_cart(product_id);
+      if( _findProduct != null ){
+         var _quantity_product = _findProduct.product_quantity_count; 
+         var new_quantity = _quantity_product + quantity;
+         if( new_quantity > maxStock ){
+            new_quantity = parseInt( maxStock );
+         }
+         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+         _carts.forEach( store => {
+            store.products.forEach( product => {
+               if( product.product_id == product_id ){
+                  product.product_quantity_count = new_quantity;
+               }
+            });
+         });
+         localStorage.setItem('watergo_carts', JSON.stringify(_carts));
+         return true;
+      }
+      return false;
+   }
+   return false;
+}
+
+function get_product_from_cart( product_id ){
+   var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+   let productExists = null;
+   _carts.forEach( store => {
+      store.products.forEach( product => {
+         if( product.product_id == parseInt( product_id ) ){
+            productExists = product;
+         }
+      });
+   });
+   return productExists;
+}
+
+function check_product_exists_in_cart( product_id ){
+   var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+   let productExists = false;
+   _carts.forEach( store => {
+      store.products.forEach( product => {
+         if( product.product_id == parseInt( product_id ) ){
+            productExists = true;
+         }
+      });
+   });
+   return productExists;
+}
+
 function add_item_to_cart( item ){
 
    var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
@@ -119,6 +205,7 @@ function add_item_to_cart( item ){
                   _findProduct.product_quantity_count = item.product_quantity_count;
                   localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
                }else{
+                  // NO
                   store.products.push({
                      product_id: item.product_id,
                      product_quantity_count: item.product_quantity_count,
@@ -147,6 +234,8 @@ function add_item_to_cart( item ){
    }
    
 }
+
+/** --------------------------------------------- */
 
 function compare_day_with_currentDate(day) {
   var currentDate = new Date();
@@ -200,7 +289,7 @@ function appbar_fixed( callback ){
       $(document).ready(function(){
          var _appbar = $('.appbar');
          _appbar.addClass('fixed');
-         $('#app').css('padding-top', _appbar.height());
+         $('#app').css('padding-top', parseInt(_appbar.height()) );
       });
    })(jQuery);
 
@@ -297,13 +386,64 @@ function shortenNumber(number) {
    }
 }
 
-function common_get_product_price( price, discount_percent ){
-   if( discount_percent == undefined || discount_percent == null || discount_percent == 0){
-      return parseInt(price).toLocaleString('vi-VN') + ' đ';
+/**
+ * @access UPDATE Put product and output print
+ */
+function common_get_product_price( product, depth = null ){  
+   var price            = product.price != undefined ? product.price : 0;
+   if( price == 0) return ' 0đ';
+   if( depth == 0 ) return parseInt(price).toLocaleString('vi-VN') + ' đ';
+
+   var quantity         = product.quantity != undefined ? product.quantity : 0;
+   var has_discount     = product.has_discount != undefined ? product.has_discount : 0;
+   var discount_from    = product.discount_from != undefined ? product.discount_from : 0;
+   var discount_to      = product.discount_to != undefined ? product.discount_to : 0;
+   var discount_percent = product.discount_percent != undefined ? product.discount_percent : 0;
+
+   if( has_discount == 0 ){
+      if( quantity == 0 ){
+         return parseInt(price).toLocaleString('vi-VN') + ' đ';
+      }else{
+         price = price * quantity;
+         return parseInt(price).toLocaleString('vi-VN') + ' đ';
+      }
    }
-   var _price = price - ( price * ( discount_percent / 100 ) );
-   if( _price == 0 ) return 0 + ' đ';
-   return parseInt(_price).toLocaleString('vi-VN') + ' đ';
+
+   // has discount - check time discount
+   var currentDate = new Date();
+   discount_from = new Date(product.discount_from);
+   discount_to   = new Date(product.discount_to);
+   discount_from.setHours(0,0,0);
+   discount_to.setHours(0,0,0);
+
+   if (currentDate >= discount_from && currentDate <= discount_to) {
+      price = price - ( price * ( discount_percent / 100 ) );
+   }
+   
+   // if time is expire
+   if( quantity != 0 ){ price = price * quantity; }
+
+   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+}
+
+function add_extra_space_order_time_shipping_time(shipping_time){
+   var [ start, end ] = shipping_time.split('-');
+   return start + ' - ' + end;
+}
+
+function common_get_price_order(product, discount_percent){
+   var price = product.order_group_product_price != undefined ? product.order_group_product_price : 0;
+   var quantity = product.order_group_product_quantity_count != undefined ? product.order_group_product_quantity_count : 0;
+   var discount_percent = discount_percent != undefined ? parseInt( discount_percent ) : 0;
+
+   if(discount_percent == 0){
+      price * quantity;
+   }else{
+      price_discount = price - ( price * ( discount_percent / 100 ) );
+      price = price_discount * quantity;
+   }
+
+   return parseInt(price).toLocaleString('vi-VN') + ' đ'; 
 }
 
 function get_fulldate_from_day( day ){
@@ -323,13 +463,13 @@ function get_fulldate_from_day( day ){
 
 function get_shortname_day_of_week( dayOfWeek ){
    switch( dayOfWeek ){
-      case 'Monday': return 'Mon'; break;
-      case 'Tuesday': return 'Tue'; break;
-      case 'Wednesday': return 'Wed'; break;
-      case 'Thursday': return 'Thu'; break; 
-      case 'Friday': return 'Fri'; break;
-      case 'Saturday': return 'Sat'; break;
-      case 'Sunday': return 'Sun'; break;
+      case 'Monday': return 'Mon'
+      case 'Tuesday': return 'Tue';
+      case 'Wednesday': return 'Wed';
+      case 'Thursday': return 'Thu';
+      case 'Friday': return 'Fri';
+      case 'Saturday': return 'Sat';
+      case 'Sunday': return 'Sun';
    }
 }
 
@@ -391,7 +531,6 @@ function has_discount( product ){
    }else{
       return false;
    }
-   return false;
 }
 
 /**
@@ -862,4 +1001,13 @@ function gotoDeliveryAddressEdit( delivery_id ){
 }
 function gotoDeliveryAddressAdd(){
    window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-add&appt=N';
+}
+
+/**
+ * @access RE-ORDER => page order_page=order-product
+ */
+
+function gotoPageReOrder( order_id ){
+
+   window.location.href = window.watergo_domain + 'order/?order_page=order-product&re_order_id=' + order_id + '&appt=N';
 }

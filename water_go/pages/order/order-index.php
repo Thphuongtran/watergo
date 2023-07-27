@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-show='loading == false' class='page-order'>
+   <div v-show='loading == false && orders != null' class='page-order'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -61,7 +61,14 @@
                   <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
                   <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
                </div>
-               <div class='prod-price'>{{ common_get_product_price(product.order_group_product_price) }}</div>
+               <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
+                  <span class='price'>
+                     {{ common_get_price_order(product ) }}
+                  </span>
+                  <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
+                     {{ common_get_price_order(product, 0) }}
+                  </span>
+               </div>
             </div>
 
             <div class='order-bottom'>
@@ -80,6 +87,7 @@
       </div>
    </div>
 </div>
+
 <script type='module'>
 
 var { createApp } = Vue;
@@ -120,7 +128,7 @@ createApp({
          }
       },
 
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
+      common_get_price_order( price, discount_percent ){return window.common_get_price_order( price, discount_percent );},
 
       select_filter( filter_select ){ 
          this.order_status_filter.some(item => {
@@ -140,13 +148,15 @@ createApp({
 
          this.orders.some( order => {
             if( order.order_id == order_id ){
-               order.order_products.some ( product => {
-                  _total += get_total_price(
-                     product.order_group_product_price, 
-                     product.order_group_product_quantity_count, 
-                     product.order_group_product_discount_percent
-                  )
-               });
+               if( order.order_products != undefined && order.order_products.length > 0 ){
+                  order.order_products.some ( product => {
+                     _total += get_total_price(
+                        product.order_group_product_price, 
+                        product.order_group_product_quantity_count, 
+                        product.order_group_product_discount_percent
+                     )
+                  });
+               }
             }
          });
          return _total.toLocaleString('vi-VN') + ' đ';
@@ -154,13 +164,17 @@ createApp({
 
       count_total_product_in_order(order_id){
          var _total = 0;
-         this.orders.some( order => {
-            if( order.order_id == order_id ){
-               order.order_products.some( product => {
-                  _total += parseInt( product.order_group_product_quantity_count );
-               });
-            }
-         });
+         if( this.orders.length > 0 ){
+            this.orders.some( order => {
+               if( order.order_id == order_id ){
+                  if( order.order_products != undefined && order.order_products.length > 0 ){
+                     order.order_products.some( product => {
+                        _total += parseInt( product.order_group_product_quantity_count );
+                     });
+                  }
+               }
+            });
+         }
          return _total;
       },
 
@@ -174,17 +188,12 @@ createApp({
          const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
-
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
-
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-
             await this.get_order(this.order_status, this.paged++);
-
          }
       },
-      
 
       async get_order(order_status, paged){
 
@@ -233,6 +242,7 @@ createApp({
       this.loading = true;
       await this.get_notification_count();
       await this.get_order( this.order_status, 0)
+      console.log(this.orders)
       this.loading = false;
 
       window.appbar_fixed();

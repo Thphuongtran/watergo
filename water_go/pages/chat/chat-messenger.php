@@ -30,7 +30,7 @@
                <div class='contents'>
                   <div class='tt01'>{{ product.name }}</div>
                   <div class='tt02'>{{ product.name_second }}</div>
-                  <div class='tt03'>{{ common_get_product_price(product.price ) }}</div>
+                  <div class='tt03'>{{ common_get_product_price(product, 0) }}</div>
                </div>
             </div>
          </div>
@@ -119,7 +119,7 @@ createApp({
 
       goBack(){ window.goBack();},
       order_formatDate(t){ return window.order_formatDate(t)},
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
+      common_get_product_price( p, d ){ return window.common_get_product_price( p, d ); },
 
       get_avatar_user_chat( messenger ){
          if( messenger.user_role == 'store' ){

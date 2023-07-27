@@ -231,26 +231,28 @@ createApp({
       },
 
       async select_date( date ){
-
-         var _datetype = '';
+         
          if( this.stream_datetime_value == 'd' ){
             this.open_datetime      = false;
             this.display_datetime   = this.get_full_current_datetime({ day: date });
-            _datetype = 'day';
+            this.final_datetime     = this.get_full_current_datetime({ day: date });
          }
          if( this.stream_datetime_value == 'm' ){
             this.open_datemonth     = false;
             this.display_datetime   = this.get_full_current_datetime({ month: date });
-            _datetype = 'month';
+            this.final_datetime     = '01/' + this.get_full_current_datetime({ month: date });
          }
          if( this.stream_datetime_value == 'y' ){
             this.open_dateyear      = false;
             this.display_datetime   = this.get_full_current_datetime({ year: date });
-            _datetype = 'year';
+            this.final_datetime     = '01/01/' + this.get_full_current_datetime({ year: date });
          }
-         
-         await this._re_get_order_report( date, _datetype );
+            await this._re_get_order_report( this.reverse_date_to_system_datetime( this.final_datetime ) );
 
+         
+
+         console.log( this.final_datetime );
+         
       },
 
       select_filter_datetime(value){
@@ -274,12 +276,6 @@ createApp({
                this.message_count = parseInt(res.data);
             }
          }
-      },
-
-      async _re_get_order_report( datetime, datetype){
-         this.loading = true;
-         await this.get_order_report(datetime, datetype);
-         this.loading = false;
       },
 
       get_full_current_datetime( obj ){
@@ -314,12 +310,17 @@ createApp({
 
       },
 
+      async _re_get_order_report( from_date){
+         this.loading = true;
+         await this.get_order_report(from_date);
+         this.loading = false;
+      },
+
       // 
-      async get_order_report( datetime, datetype ){
+      async get_order_report( from_date ){
          var form = new FormData();
-         form.append('action', 'atlantis_get_order_report');
-         form.append('datetime', datetime );
-         form.append('datetype', datetype );
+         form.append('action', 'atlantis_get_order_report_by_datetime');
+         form.append('from_date', from_date );
          var r = await window.request(form);
          console.log( r );
          if( r != undefined ){
@@ -359,11 +360,12 @@ createApp({
       if( _findFilter.value == 'd' ){
          this.display_datetime      = this.get_full_current_datetime();
          this.stream_datetime_value = _findFilter.value;
+         this.final_datetime        = this.display_datetime;
       }
 
-      // var _time_reverse = this.reverse_date_to_system_datetime(this.final_datetime);
+      var _time_reverse = this.reverse_date_to_system_datetime(this.final_datetime);
 
-      await this.get_order_report();
+      await this.get_order_report( _time_reverse );
 
       
 

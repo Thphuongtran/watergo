@@ -76,7 +76,9 @@
 
       <ul class='list-order style-store'>
          
-         <li v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
+         <li 
+            :class='"order-status-" + order_status_current'
+            v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
             <label @click='select_item(order.order_id)' class='order-head'>
                <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check'><input disabled type='checkbox' :checked='order.select'></div>
                <!--  -->
@@ -109,7 +111,14 @@
                   <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
                   <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
                </div>
-               <div class='prod-price'>{{ common_get_product_price(product.order_group_product_price) }}</div>
+               <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
+                  <span class='price'>
+                     {{ common_get_price_order(product, product.order_group_product_discount_percent) }}
+                  </span>
+                  <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
+                     {{ common_get_price_order(product) }}
+                  </span>
+               </div>
             </div>
 
             <div class='order-bottom'>
@@ -172,7 +181,7 @@
          </div>
       </div>
    </div>
-   <div v-show='popup_cancel_all_item == true' class='modal-popup style01 open'>
+   <div v-show='popup_cancel_all_item == true' class='modal-popup open style01'>
       <div class='modal-wrapper'>
          <div class='modal-close style-static'><div @click='btn_modal_cancel_all' class='close-button'><span></span><span></span></div></div>
          <p class='tt01'>Why do you want to cancel <span class='t-primary'>All Order</span>?</p>
@@ -246,7 +255,10 @@ createApp({
    },
 
    methods: {
+      gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoChat(){ window.gotoChat(); },
+
+
       btn_select_reason( key ){
          this.reason_cancel.some( item => { 
             item.active = false;
@@ -284,6 +296,7 @@ createApp({
          form.append('status', order_status);
          form.append('timestamp', timestamp);
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -302,9 +315,9 @@ createApp({
 
          // CHECK IS ORDER SELECT?
          if( _is_order_select == true ){
-            if( change_status == 'ordered' ) {this.popup_confirm_all_item = true;}
-            if( change_status == 'confirmed' ) {this.popup_delivering_all_item = true;}
-            if( change_status == 'delivering' ) {this.popup_complete_all_item = true;}
+            if( change_status == 'confirmed' ) {this.popup_confirm_all_item = true;}
+            if( change_status == 'delivering' ) {this.popup_delivering_all_item = true;}
+            if( change_status == 'complete' ) {this.popup_complete_all_item = true;}
             if( change_status == 'cancel' ) {this.popup_cancel_all_item = true;}
             this.status_change_all = change_status;
          }
@@ -356,8 +369,7 @@ createApp({
          await this.get_order_store(this.order_status_current, this.paged);
          window.appbar_fixed();
          this.loading = false;
-
-         console.log(this.order_status_filter);
+         
       },
 
       select_all_item(){
@@ -386,7 +398,8 @@ createApp({
          });
       },
 
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
+      common_get_price_order(p, discount ){return window.common_get_price_order(p, discount)},
+
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       get_type_order(order_type){ return window.get_type_order(order_type)},
@@ -478,9 +491,7 @@ createApp({
          form.append('action', 'atlantis_get_order_store');
          form.append('order_status', order_status);
          form.append('paged', paged);
-
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
@@ -541,18 +552,13 @@ createApp({
       
       order_filter(){
          var _filter_orders = this.orders;
-
          if(this.order_by_filter_select.value == 'asc'){
             _filter_orders.sort((a,b) => a.order_time_created - b.order_time_created );
          }
          if(this.order_by_filter_select.value == 'desc'){
             _filter_orders.sort((a,b) => b.order_time_created - a.order_time_created );
          }
-
-         if( _filter_orders.length == 0 ){
-            return [];
-         }
-
+         if( _filter_orders.length == 0 ){ return []; }
          return _filter_orders;
       }
    },
@@ -562,7 +568,9 @@ createApp({
       this.loading = true;
 
       await this.get_count_total_order();
-      await this.get_order_store( this.order_status_current, 0 );      
+      await this.get_order_store( this.order_status_current, 0 );
+
+      console.log(this.orders);
       
       this.loading = false;
 

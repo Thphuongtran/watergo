@@ -148,14 +148,10 @@ add_action('wp_enqueue_scripts', 'common_js');
 // add_action('init', 'callback_from_login_social');
 function callback_from_login_social(){
    $headers = getallheaders();
-
    if( !empty($headers['app_name'] ) ){
-
       // SET LOGIN USER BY TOKEN FROM LOGIN SOCIAL 
-      
       $user_token = "";
       if( !empty($headers['user_token']) && $headers['user_token'] != "Token not found" ){
-
          $user_token = $headers['user_token'];
          $user_token_arr = explode(":", 'user_id');
          if( is_array($user_token_arr )){
@@ -166,8 +162,6 @@ function callback_from_login_social(){
             do_action('wp_login', $user->user_login, $user);
 
          }
-
-
       }
    }
 

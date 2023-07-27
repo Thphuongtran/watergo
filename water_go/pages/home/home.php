@@ -92,13 +92,10 @@
                            <p class='tt02'>{{ product.name_second }}</p>
                            <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                               <span class='price'>
-                                 {{ has_discount(product) == true 
-                                    ? common_get_product_price(product.price, product.discount_percent) 
-                                    : common_get_product_price(product.price)
-                                 }}
+                                 {{ common_get_product_price(product) }}
                               </span>
                               <span v-if='has_discount(product) == true' class='price-sub'>
-                                 {{ common_get_product_price(product.price) }}
+                                 {{ common_get_product_price(product, 0) }}
                               </span>
                            </div>
                         </li>
@@ -183,7 +180,7 @@ createApp({
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoSearch(){ window.gotoSearch()},
       has_discount( product ){ return window.has_discount( product ); },      
-      common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
+      common_get_product_price( p, d ){ return window.common_get_product_price( p, d ); },
       gotoProductRecommend(){ window.gotoProductRecommend(); },
       gotoNearbyStore(){ window.gotoNearbyStore() },
       gotoProductWater(){window.gotoProductWater() },
@@ -269,7 +266,7 @@ createApp({
       form.append('paged',0);
 
       var r = await window.request(form);
-      console.log(r);
+      // console.log(r);
 
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r));

@@ -13,10 +13,10 @@
                   </svg>
                </button>
                
-               <p v-if='order.order_number != null' class='leading-title'>#{{ order.order_number }}</p>
+               <p v-if='order_number != 0' class='leading-title'>#{{ order_number }}</p>
             </div>
             <div class='action'>
-               <span v-if='order.order_status != null' class='badge-status'>{{ get_status_activity(order.order_status) }}</span>
+               <span class='badge-status'>{{ get_status_activity(order_status) }}</span>
             </div>
          </div>
       </div>
@@ -27,8 +27,8 @@
          <div class='list-tile delivery-address style-order'>
             <div class='content'>
                <p class='tt01'>Delivery address</p>
-               <p class='tt03'>{{ order.order_delivery_address.address }}</p>
-               <p class='tt02'>{{ order.order_delivery_address.name }} | (+84) {{ order.order_delivery_address.phone }}</p>
+               <p class='tt03'>{{ order_delivery_address.address }}</p>
+               <p class='tt02'>{{ order_delivery_address.name }} | (+84) {{ removeZeroLeading( order_delivery_address.phone ) }}</p>
             </div>
          </div>
       </div>
@@ -59,18 +59,10 @@
                   </div>
                   <div class='order-price'>
                      <span class='price'>
-                        {{ common_get_product_price(get_total_price(
-                           product.order_group_product_price, 
-                           product.order_group_product_quantity_count, 
-                           product.order_group_product_discount_percent )) 
-                        }}
+                        {{ common_get_price_order(product, product.order_group_product_discount_percent) }}
                      </span>
                      <span v-if='product.order_group_product_discount_percent != 0' class='od-price-discount'>
-                        {{ common_get_product_price(
-                              product.order_group_product_price, 
-                              product.order_group_product_discount_percent
-                           ) 
-                        }}
+                        {{ common_get_price_order(product) }}
                      </span>
                   </div>
                </div>
@@ -89,17 +81,16 @@
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
                '
-            v-for='( date_time, date_time_key ) in order.order_time_shipping' :key='date_time_key'
-            class='display_delivery_time'>
-
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
-
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
-
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ date_time.order_time_shipping_time }}</div>
+            v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
+            class='display_delivery_time'
+            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
+            >
+               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>Date {{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
          </div>
       </div>
 
@@ -112,34 +103,34 @@
       <div class='break-line'></div>
       <div class='box-time-order'>
          <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
-         <p v-if='order.order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
-         <p v-if='order.order_status == "delivering"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-
-         <p v-if='order.order_status == "complete"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order.order_status == "complete"' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+         <p v-if='order_status == "delivering"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order_status == "complete"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order_status == "complete"' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
       </div>
 
 
       <div class='order-bottomsheet'>
          
          <button @click='gotoReview("review-store", order.store_id )'
-            v-if='order.order_status == "complete"'
+            v-if='order_status == "complete"'
             class='btn btn-outline btn-review-order'>Review Store</button>
 
-         <button @click='btn_cancel_order' v-if='order.order_status == "ordered" || order.order_status == "confirmed"' 
+         <button @click='btn_cancel_order' v-if='order_status == "ordered" || order_status == "confirmed"' 
             class='btn btn-outline btn-cancel-order'>Cancel</button>
 
          <div class='product-detail-bottomsheet'
             :class='get_layout_text_price'
          >
-            <p class='price-total' :class='order.order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
-
+            <p class='price-total' :class='order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
+            
             <button 
-               v-if='order.order_repeat_id == 0 && ( order.order_status == "complete" || order.order_status == "cancel") '
+               v-if='
+                  ( order_status == "complete" || order_status == "cancel" ) 
+                  && order_is_out_of_stock == false
+               '
+
                @click='buttonReOrder' 
-               :class='[
-                  order_is_out_of_stock == true ? "disabled" : ""
-               ]'
                class='btn-primary'>Re-Order</button>
          </div>
          
@@ -181,7 +172,7 @@
    </div>
    
 
-   <div v-if='banner_open == true && order != null' class='banner'>
+   <div v-show='banner_open == true' class='banner' :class='banner_open == true ? "z-index-5": ""'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -198,7 +189,7 @@
 
 </div>
 
-<script type='module'>
+<script type='module' setup>
 
 var { createApp } = Vue;
 
@@ -210,11 +201,13 @@ createApp({
          popup_out_of_stock: false,
          order_is_out_of_stock: false,
 
-         // order_time_shipping: [],
-
          popup_confirm_cancel: false,
 
-         // order_number: null,
+         order_number: 0,
+         order_status: '',
+         order_delivery_address: null,
+
+         time_shipping: [],
 
          reason_cancel: [
             {label: 'Reason 1', active: false},
@@ -223,21 +216,23 @@ createApp({
             {label: 'Reason 4', active: false},
             {label: 'Others', active: false}
          ],
+
          order: null
       }
    },
 
    methods: {
 
+      add_extra_space_order_time_shipping_time(n){ return window.add_extra_space_order_time_shipping_time(n)},
+
+      common_get_price_order( p, d ){ return window.common_get_price_order( p, d ); },
 
       buttonCloseModal_store_out_of_stock(){ this.popup_out_of_stock = false; },
 
+      removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       has_discount( product ){ return window.has_discount( product ); },
-      common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
-
       order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
-
       get_fulldate_from_day(day ){ return window.get_fulldate_from_day(day) },
       get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
@@ -259,7 +254,6 @@ createApp({
       async buttonModalSubmit_cancel_order(){
          
          var isCancel = this.reason_cancel.some(item => item.active == true ); 
-
          if( isCancel == true ){
             this.loading = true;
             var form = new FormData();
@@ -270,8 +264,8 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'cancel_done' ) {
-                  this.goBack();
 
+                  this.goBack();
                   if( window.appBridge != undefined ){
                      window.appBridge.refresh();
                   }
@@ -289,31 +283,40 @@ createApp({
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
+               
+               this.order_number = res.data.order_number;
+               this.order_status = res.data.order_status;
+               this.order_delivery_address = res.data.order_delivery_address;
+
                this.order = res.data;
+
+               setTimeout(() => {}, 1);
             }
          }
       },
 
-      async buttonReOrder(){
+      buttonReOrder(){
 
-         if( this.order_is_out_of_stock == false ){
-            this.loading = true;
-            var form = new FormData();
-            form.append('action', 'atlantis_re_order');
-            form.append('order_id', this.order.order_id)
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify( r ));
-               if( res.message == 'reorder_ok' ){
-                  this.banner_open == true;
-               }
-            }
-            this.loading = false;
-         }
+         window.gotoPageReOrder(this.order.order_id);
+
+         // if( this.order_is_out_of_stock == false ){
+         //    this.loading = true;
+         //    var form = new FormData();
+         //    form.append('action', 'atlantis_re_order');
+         //    form.append('order_id', this.order.order_id)
+         //    var r = await window.request(form);
+         //    // console.log(r)
+         //    if( r != undefined ){
+         //       var res = JSON.parse( JSON.stringify( r ));
+         //       if( res.message == 'reorder_ok' ){
+         //          this.banner_open == true;
+         //       }
+         //    }
+         //    this.loading = false;
+         // }
 
       },
 
@@ -336,6 +339,19 @@ createApp({
             case 'cancel' : return 'Cancel'; break;
          }
       },
+
+      async get_time_shipping_order(order_id){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_all_time_shipping_from_order');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'time_shipping_found'){
+               this.time_shipping.push(...res.data);
+            }
+         }
+      }
 
    },
 
@@ -387,6 +403,12 @@ createApp({
             return 'By Cash';
          }
       },
+
+      filter_time_shipping(){
+         return this.time_shipping;
+         // .sort( ( a, b ) => a.order_time_shipping_datetime < b.order_time_shipping_datetime  );
+      }
+
    },
 
 
@@ -395,18 +417,20 @@ createApp({
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
+      await this.get_time_shipping_order(order_id);
+
+      console.log(this.order)
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
+      
       if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
          if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
             var _formCheckReorder = new FormData();
             _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
             _formCheckReorder.append('order_id', order_id);
-
             var _r = await window.request(_formCheckReorder);
             if( _r != undefined ){
                var _res = JSON.parse( JSON.stringify( _r ) );
-
                if( _res.message == 'reorder_out_of_stock' ){
                   this.order_is_out_of_stock = true;
                   this.popup_out_of_stock = true;

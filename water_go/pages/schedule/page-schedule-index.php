@@ -125,6 +125,8 @@ createApp({
 
          datePickerValue: null,
 
+         paged: 0
+
       }
    },
 
@@ -299,20 +301,15 @@ createApp({
       },
 
 
-      async schedule_load_product(filter, datetime, product_id_already_exists){
-         
-         if( product_id_already_exists == undefined || product_id_already_exists == null ){
-            product_id_already_exists = [0];
-         }
+      async schedule_load_product(filter, datetime, paged){
 
          var form = new FormData();
          form.append('action', 'atlantis_get_order_schedule');
          form.append('filter', filter);
-         form.append('datetime', 0);
-         form.append('product_id_already_exists', JSON.stringify( product_id_already_exists ) );
+         form.append('paged', paged );
          form.append('datetime', String( datetime) );
          var r = await window.request(form);
-         console.log(r);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
@@ -323,6 +320,7 @@ createApp({
                      var _store_lng = item.store_longitude;
                      var _user_lat  = item.order_delivery_address.latitude;
                      var _user_lng  = item.order_delivery_address.longitude;
+                     
                      item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
                      if(item.address_kilometer > 0 ){
                         item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
@@ -349,14 +347,11 @@ createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            
-            var product_id_already_exists = [];
-            
-            this.orders.forEach(item => {
-               product_id_already_exists.push( parseInt( item.order_id ) );
-            });
 
-            await this.schedule_load_product(this.schedule_status_value, this.datePickerValue, product_id_already_exists );
+            await this.schedule_load_product(
+               this.schedule_status_value, 
+               this.datePickerValue, 
+               this.paged++ );
          }
       },
 
@@ -370,7 +365,7 @@ createApp({
       this.loading = true;
       await this.get_messages_count();
       var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
-      await this.schedule_load_product('all', _currentDate, [0]);
+      await this.schedule_load_product('all', _currentDate, 0);
 
       $.datepicker.setDefaults({
          minDate: 0,
@@ -394,7 +389,8 @@ createApp({
 
    computed: {
       filter_order(){
-         return this.orders.sort((a, b) => b.order_time_confirmed - a.order_time_confirmed );
+         return this.orders;
+         // return this.orders.sort((a, b) => b.order_id - a.order_id );
       },
       get_total_orders_count(){ return this.orders.length }
    },

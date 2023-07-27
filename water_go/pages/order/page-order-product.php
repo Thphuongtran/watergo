@@ -31,7 +31,7 @@
                <div v-else>
                   <p class='tt01'>Delivery address</p>
                   <p class='tt03'>{{ delivery_address_primary.address }}</p>
-                  <p class='tt02'>{{ delivery_address_primary.name }} | {{ delivery_address_primary.phone }}</p>
+                  <p class='tt02'>{{ delivery_address_primary.name }} | (+84) {{ removeZeroLeading( delivery_address_primary.phone ) }}</p>
                </div>
             </div>
             <div class='action'>
@@ -49,7 +49,7 @@
       <ul class='list-tile order'>
          <li  
             v-for='(store, index) in carts' :key='index'>
-            <div class='shop-detail'>
+            <div class='shop-detail add-arrow'>
                <div class='logo'>
                   <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/>
@@ -61,7 +61,9 @@
 
             <div
                v-for="(product, productKey) in store.products" :key="productKey" 
-               class='list-items'>
+               class='list-items'
+               v-show='product.name != null'
+            >
                <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.product_quantity_count }}x</span>
                   <div class='order-gr'>
@@ -69,13 +71,11 @@
                      <span class='product-subtitle'>{{ product.name_second }}</span>
                   </div>
                   <div class='order-price'>
-                     <span class='price'>
-                        {{ common_get_product_price(get_total_price(
-                           product.price, 
-                           product.product_quantity_count, product.discount_percent)) }}
+                     <span class='price' >
+                        {{ common_get_product_price(product) }}
                      </span>
-                     <span class='od-price-discount' v-if='has_discount(product)'>
-                        {{ common_get_product_price(product.price, product.discount_percent) }}
+                     <span class='od-price-discount' v-if='has_discount(product) == true'>
+                        {{ common_get_product_price(product, 0) }}
                      </span>
                   </div>
                </div>
@@ -205,17 +205,13 @@
       </div>
 
       <div class='break-line'></div>
-      <div class='inner'>
-         <p class='heading-02'>Payment method </p>
-         <p>By Cash</p>
-      </div>
+      <div class='inner'><p class='heading-02'>Payment method </p><p>By Cash</p></div>
 
       <div class='product-detail-bottomsheet cell-placeorder'>
          <p class='price-total'>Total: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></p>
          <button id='buttonPlaceOrder' ref='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary disabled'>Place Order</button>
       </div>
 
-      
    </div>
    
 
@@ -260,7 +256,10 @@ createApp({
          },
 
          delivery_address_primary: null,
-         carts: []
+         carts: [],
+
+         // FOR RE-ORDER
+         time_shipping: [],
 
       }
    },
@@ -280,11 +279,19 @@ createApp({
          }
       },
 
+      removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       gotoDeliveryAddress(){ window.gotoDeliveryAddress()},
-
-      get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
       has_discount( product ){ return window.has_discount( product ); },
-      common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
+      common_get_product_price( product, depth ){ 
+         return window.common_get_product_price({
+            price: product.price,
+            quantity: product.product_quantity_count,
+            has_discount: product.has_discount,
+            discount_to: product.discount_to,
+            discount_from: product.discount_from,
+            discount_percent: product.discount_percent
+         }, depth);
+      },
 
       /**
        * @access DATE FUNCTION
@@ -388,6 +395,7 @@ createApp({
                      changeYear: false,
                      stepMonths: 0,
                      showButtonPanel: false,
+                     maxDate: new Date(new Date().getFullYear(), new Date().getMonth(), 28),
                      onSelect: function(dateText, inst){
                         if(dateText != undefined || dateText != '' || dateText != null){
                            targetElement.attr('value', dateText);
@@ -456,7 +464,10 @@ createApp({
          `;
          (function($){
             $(document).ready(function(){
-               $('.deliverySelect_weekly').append(_dom);
+               if( $('.deliverySelect_weekly .group-select-delivery-time').length < 7 ){
+                  $('.deliverySelect_weekly').append(_dom);
+               }
+
             })
          })(jQuery);
 
@@ -492,7 +503,9 @@ createApp({
          `;
          (function($){
             $(document).ready(function(){
-               $('.deliverySelect_monthly').append(_dom);
+               if( $('.deliverySelect_monthly .group-select-delivery-time').length < 28 ){
+                  $('.deliverySelect_monthly').append(_dom);
+               }
             })
          })(jQuery);
       },
@@ -540,11 +553,11 @@ createApp({
 
       async buttonPlaceOrder(){
 
-         var _currentDate = new Date();         
+         var _currentDate = new Date();
       
          var _watergo_carts = JSON.parse(localStorage.getItem('watergo_carts'));
 
-         var _productSelected = _watergo_carts.filter( store => {
+         var _productSelected = this.carts.filter( store => {
             return store.products.find( product => product.product_select == true );
          });
 
@@ -618,8 +631,54 @@ createApp({
                   name: res.data.name,
                   phone: res.data.phone,
                   address: res.data.address,
+                  latitude: res.data.latitude,
+                  longitude: res.data.longitude,
                   primary: true
                };
+            }
+         }
+      },
+
+      // FIND ORDER
+      async find_order( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_detail');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'get_order_ok'){
+               return res.data;
+            }
+         }
+
+      },
+      
+
+      // GET ALL TIME SGIPPING FROM ORDER
+      async get_time_shipping_order(order_id){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_all_time_shipping_from_order');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'time_shipping_found'){
+               this.time_shipping.push(...res.data);
+            }
+         }
+      },
+
+      // FIND PRODUCT
+      async find_product( product_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_find_product');
+         form.append('product_id', product_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'product_found' ){
+               return res.data;
             }
          }
       }
@@ -660,75 +719,47 @@ createApp({
    },
 
    async created(){
+      // IF PASS ORDER_ID => this is re-order product
+      const urlParams = new URLSearchParams(window.location.search);
+      const order_id = urlParams.get('re_order_id');
+
+      await this.get_delivery_address_primary();
+
+      // INIT TIME PICKER FOR USER
+      this.delivery_type.once = true;
+      this.delivery_type.once_immediately = true;
+      if( 
+         this.delivery_address_primary != null &&
+         this.delivery_type.once == true && this.delivery_type.once_immediately == true
+      ){
+         $('#buttonPlaceOrder').removeClass('disabled');
+      }
+      $('.select_delivery_time').attr('delivery-data', '{"once_date":[],"weekly":[],"monthly":[]}');
+      $('.select_delivery_time').attr('delivery-type', 'once_immediately');
 
       this.loading = true;
       // SETUP DATE PICKER
-      await this.get_delivery_address_primary();
-      var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
 
-      if( _carts.length > 0 ){
-         _carts.forEach( store => {
-            if (store.store_select == true ) {
-               this.carts.push({ ...store, products: [...store.products] });
-            } else {
-               const selectedProducts = store.products.filter(product => product.product_select);
-               if (selectedProducts.length > 0) {
-                  // If there are selected products, push the store with only selected products to this.carts
-                  this.carts.push({
-                     store_id: store.store_id,
-                     store_name: store.store_name,
-                     store_select: false,
-                     products: [...selectedProducts],
-                  });
-               }
-            }
-         });
+      
 
-         this.carts.forEach( ( store, storeIndex ) => {
-            console.log('get meta data')
-            store.products.forEach( async ( product, productIndex ) => {
-               var form = new FormData();
-               form.append('action', 'atlantis_find_product');
-               form.append('product_id', product.product_id);
-               var r = await window.request(form);
-               if( r != undefined ){
-                  var res = JSON.parse( JSON.stringify(r));
-                  if( res.message == 'product_found' ){
-                     this.carts[storeIndex].products[productIndex].name_second = res.data.name_second;
-                     this.carts[storeIndex].products[productIndex].name = res.data.name;
-                     this.carts[storeIndex].products[productIndex].has_discount = res.data.has_discount;
-                     this.carts[storeIndex].products[productIndex].discount_to = res.data.discount_to;
-                     this.carts[storeIndex].products[productIndex].discount_from = res.data.discount_from;
-                     this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
-                     this.carts[storeIndex].products[productIndex].stock = res.data.stock;
-                     this.carts[storeIndex].products[productIndex].price = res.data.price;
-                  }
-               }
-            });
-         });
-
-      }
-
-      console.log(this.carts)
 
       // add wrapper for picker
       this.btn_select_date_once();
       this.btn_select_monthly();
+
+      /**
+       * @access MAKE USER PICK
+       */
+      
 
       (function($){
          $(document).ready(function(){
             if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
                $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
             }
-
             var listenable = `.select_delivery_time`;
             var get_type_listenable = null;
-
-            var _delivery_data = {
-               once_date: [],
-               weekly: [],
-               monthly: [],
-            };
+            var _delivery_data = { once_date: [], weekly: [], monthly: [], };
 
             function _clear_data_once(){
                _delivery_data.once_date = [];
@@ -752,7 +783,6 @@ createApp({
                $('.deliverySelect_monthly .btn_select_monthly_time option').prop('selected', false);
                $('.btn_select_monthly').val('');
             }
-            
 
             $(document).on('input change click', listenable , function(){
                var _type_select = $(this).attr('delivery-type');
@@ -821,21 +851,47 @@ createApp({
                      var _weekly_object = $('.deliverySelect_weekly .group-select-delivery-time');
                      var _weekly_object_total = _weekly_object.length;
 
+                     var dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
                      for (var i = 0; i < _weekly_object_total; i++) {
-                        var get_day_weekly = $(_weekly_object[i]).find('.btn_select_weekly_day option:selected').val();
-                        var get_time_weekly = $(_weekly_object[i]).find('.btn_select_weekly_time option:selected').val();
+                        var get_day_weekly   = $(_weekly_object[i]).find('.btn_select_weekly_day option:selected').val();
+                        var get_time_weekly  = $(_weekly_object[i]).find('.btn_select_weekly_time option:selected').val();
 
                         _delivery_data.weekly[i] = {
                            day: get_day_weekly,
                            time: get_time_weekly,
                            datetime: window.get_fullday_form_dayOfWeek(get_day_weekly)
-                        };
+                        }
                      }
+
+                     // Loop through the options to remove disabled attribute for non-selected values
+                     $('.btn_select_weekly_day option').each(function() {
+                        var optionValue = $(this).val();
+                        var isValueInWeekly = _delivery_data.weekly.some(item => item.day === optionValue);
+
+                        if ( ! isValueInWeekly && optionValue != '') {
+                           $(this).prop('disabled', false);
+                        }
+                     });
+
+                     // Disable the options in .btn_select_weekly_day dropdowns based on _delivery_data.weekly array
+                     _delivery_data.weekly.forEach(item => {
+                        var _day = item.day;
+                        if (_day != undefined && _day != null && _day != '') {
+                           var _object_day = $(`.deliverySelect_weekly .group-select-delivery-time .btn_select_weekly_day option[value="${_day}"]`);
+                           if (_object_day ) {
+                              _object_day.prop('disabled', true);
+                           }
+                        }
+                     });
+
+
 
                      if( _delivery_data.weekly.length == 0 ){
                         $('#buttonPlaceOrder').addClass('disabled');
                      }else{
                         for(var a = 0; a < _delivery_data.weekly.length; a++  ){
+
                            if( _delivery_data.weekly[a].day == '' || _delivery_data.weekly[a].time == ''){
                               $('#buttonPlaceOrder').addClass('disabled');
                               break;
@@ -845,8 +901,7 @@ createApp({
                               }
                            }
                         }
-                     }  
-
+                     }
                   });
                      
                }
@@ -871,7 +926,6 @@ createApp({
                   }
 
                   $(document).on('input change click', '.btn_select_monthly, .btn_select_monthly_time, .button_add_dom_delivery_monthly', function(){
-
 
                      var _monthly_object = $('.deliverySelect_monthly .group-select-delivery-time');
                      var _monthly_object_total = _monthly_object.length;
@@ -904,15 +958,144 @@ createApp({
                   });
                }
 
-               // $('#delivery_address_primary').hasClass('has-primary')
-
                $('.select_delivery_time').attr('delivery-data', JSON.stringify(_delivery_data));
+
 
 
             });
          
          });
       })(jQuery);
+
+      /**
+       * @access FOR ORDER PRODUCT
+       */
+      if( order_id == undefined ){
+         
+         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+
+         if( _carts.length > 0 ){
+            _carts.forEach( store => {
+               if (store.store_select == true ) {
+                  this.carts.push({ ...store, products: [...store.products] });
+               } else {
+                  const selectedProducts = store.products.filter(product => product.product_select);
+                  if (selectedProducts.length > 0) {
+                     // If there are selected products, push the store with only selected products to this.carts
+                     this.carts.push({
+                        store_id: store.store_id,
+                        store_name: store.store_name,
+                        store_select: false,
+                        products: [...selectedProducts],
+                     });
+                  }
+               }
+            });
+
+            this.carts.forEach( ( store, storeIndex ) => {
+               console.log('get meta data')
+               store.products.forEach( async ( product, productIndex ) => {
+                  var form = new FormData();
+                  form.append('action', 'atlantis_find_product');
+                  form.append('product_id', product.product_id);
+                  var r = await window.request(form);
+                  if( r != undefined ){
+                     var res = JSON.parse( JSON.stringify(r));
+                     if( res.message == 'product_found' ){
+                        this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
+                        this.carts[storeIndex].products[productIndex].name             = res.data.name;
+                        this.carts[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
+                        this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
+                        this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
+                        this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
+                        this.carts[storeIndex].products[productIndex].stock            = res.data.stock;
+                        this.carts[storeIndex].products[productIndex].price            = res.data.price;
+                        this.carts[storeIndex].products[productIndex].product_metadata = {
+                           product_name: res.data.name,
+                           product_name_second: res.data.name_second
+                        };
+                     }
+                  }
+               });
+            });
+         }
+      }
+
+      /**
+       * @access FOR RE-ORDER
+       */
+      if( order_id != undefined ){
+         var order = await this.find_order(order_id);
+         // await this.get_time_shipping_order(order_id);
+         // var _delivery_data = { once_date: [], weekly: [], monthly: [], };
+
+         if( order.order_products != undefined && order.order_products.length > 0 ){
+            
+            $('.select_delivery_time').attr('delivery-type', order.order_delivery_type);
+
+            this.carts.push({
+               store_id: order.store_id,
+               store_name: order.store_name,
+               store_select: false,
+               products: []
+            });
+
+            // SET TYPE SHIPPING FOR WEEKLY
+            if( order.order_delivery_type == 'weekly'){
+               this.delivery_type.once = false;
+               this.delivery_type.once_immediately = false;
+               this.delivery_type.weekly = true;
+               if(  this.delivery_address_primary != null && this.delivery_type.weekly == true ){
+                  $('#buttonPlaceOrder').removeClass('disabled');
+               }
+
+               
+               // this.time_shipping.forEach( (time, indexTime)  => {
+               //    _delivery_data.weekly[indexTime] = {
+               //       day: time.order_time_shipping_day,
+               //       time: time.order_time_shipping_time,
+               //       datetime: time.order_time_shipping_datetime
+               //    }
+               //    insert_dom_delivery_weekly(time.order_time_shipping_day, time.order_time_shipping_time);
+               // });
+            }
+
+            if( order.order_delivery_type == 'monthly' ){
+               this.delivery_type.once = false;
+               this.delivery_type.once_immediately = false;
+               this.delivery_type.monthly = true;
+               if(  this.delivery_address_primary != null && this.delivery_type.monthly == true ){
+                  $('#buttonPlaceOrder').removeClass('disabled');
+               }
+            }
+
+            // SET TYPE SHIPPING FOR MONTHLY
+
+
+            for (var p of order.order_products) {
+               var _find_product = await this.find_product(p.order_group_product_id);
+               this.carts[0].products.push({ // Assuming you want to push the product to the first cart in the array
+                  product_id: _find_product.id,
+                  product_quantity_count: p.order_group_product_quantity_count,
+                  product_select: true,
+                  name: _find_product.name,
+                  name_second: _find_product.name_second,
+                  has_discount: _find_product.has_discount,
+                  discount_to: _find_product.discount_to,
+                  discount_from: _find_product.discount_from,
+                  discount_percent: _find_product.discount_percent,
+                  stock: _find_product.stock,
+                  price: _find_product.price,
+                  product_metadata: {
+                     product_name: _find_product.name,
+                     product_name_second: _find_product.name_second
+                  }
+               });
+            }
+         }
+
+         // $('.select_delivery_time').attr('delivery-data', JSON.stringify(_delivery_data));
+      }
 
       
       
@@ -922,4 +1105,84 @@ createApp({
    
 
 }).mount('#app');
+
+/*
+function insert_dom_delivery_weekly( date, time){
+
+   var _dateList = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ];
+   var _timeList = [ 
+      {label: '7:00  -  8:00', value: '7:00-8:00',}
+      {label: '8:00  -  9:00', value: '8:00-9:00',}
+      {label: '9:00 -   10:00', value: '9:00-10:00',}
+      {label: '10:00  -  11:00', value: '10:00-11:00',}
+      {label: '11:00  -  12:00', value: '11:00-12:00',}
+      {label: '12:00  -  13:00', value: '12:00-13:00',}
+      {label: '13:00  -  14:00', value: '13:00-14:00',}
+      {label: '14:00  -  15:00', value: '14:00-15:00',}
+      {label: '15:00  -  16:00', value: '15:00-16:00',}
+      {label: '16:00  -  17:00', value: '16:00-17:00',}
+      {label: '17:00  -  18:00', value: '17:00-18:00',}
+      {label: '18:00  -  19:00', value: '18:00-19:00',}
+      {label: '19:00  -  20:00', value: '19:00-20:00',}
+      {label: '20:00  -  21:00', value: '20:00-21:00',}
+   ];
+   var _dateDom = '';
+   var _timeDom = '';
+
+   _dateList.forEach( item => {
+      var datetime = window.get_fullday_form_dayOfWeek(date)
+      _dateDom += `<option value="${item}">${item}</option>`;
+   });
+
+   var _dom = `
+      <div class='group-select-delivery-time group-select-delivery-time_parent'>
+         <div class='btn-wrapper-order'>
+            <select class='btn_select_weekly_day btn-dropdown'>
+               <option value="">Select day</option>
+               ${_dateDom}
+            </select>
+         </div>
+         <div class='btn-wrapper-order'>
+            <select class='btn_select_weekly_time btn-dropdown'>
+               <option value=''>Select time</option>
+               ${_timeDom}
+               <option value='7:00-8:00'>7:00  -  8:00</option>
+            </select>
+         </div>
+
+      </div>
+   `;
+    if( $('.deliverySelect_weekly .group-select-delivery-time').length < 7 ){
+      $('.deliverySelect_weekly').append(_dom);
+   }
+}
+function insert_dom_delivery_monthly( date, time){
+   var _dom = `
+      <div class='group-select-delivery-time group-select-delivery-time_parent'>
+         <div class='btn-wrapper-order'>
+            <input type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
+         </div>
+         <div class='btn-wrapper-order'>
+            <select class='btn_select_monthly_time btn-dropdown'>
+               <option value=''>Select time</option>
+               <option value='7:00-8:00'>7:00  -  8:00</option>
+               <option value='8:00-9:00'>8:00  -  9:00</option>
+               <option value='9:00-10:00'>9:00  -  10:00</option>
+               <option value='10:00-11:00'>10:00  -  11:00</option>
+               <option value='11:00-12:00'>11:00  -  12:00</option>
+               <option value='12:00-13:00'>12:00  -  13:00</option>
+               <option value='13:00-14:00'>13:00  -  14:00</option>
+               <option value='14:00-15:00'>14:00  -  15:00</option>
+               <option value='15:00-16:00'>15:00  -  16:00</option>
+               <option value='16:00-17:00'>16:00  -  17:00</option>
+               <option value='17:00-18:00'>17:00  -  18:00</option>
+               <option value='18:00-19:00'>18:00  -  19:00</option>
+               <option value='19:00-20:00'>19:00  -  20:00</option>
+               <option value='20:00-21:00'>20:00  -  21:00</option>
+            </select>
+         </div>
+      </div>
+   `;
+}
+*/
 </script>

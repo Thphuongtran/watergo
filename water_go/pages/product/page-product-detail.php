@@ -12,7 +12,7 @@
                   </svg>
                </button>
 
-               <button class='btn-action'>
+               <button @click='btn_share' class='btn-action'>
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="14" cy="14" r="14" transform="matrix(-1 0 0 1 28 0)" fill="black" fill-opacity="0.2"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M7.9999 12.15C8.46934 12.15 8.8499 12.5306 8.8499 13V19.4C8.8499 19.5989 8.92892 19.7897 9.06957 19.9304C9.21022 20.071 9.40099 20.15 9.5999 20.15H19.1999C19.3988 20.15 19.5896 20.071 19.7302 19.9304C19.8709 19.7897 19.9499 19.5989 19.9499 19.4V13C19.9499 12.5306 20.3305 12.15 20.7999 12.15C21.2693 12.15 21.6499 12.5306 21.6499 13V19.4C21.6499 20.0498 21.3918 20.673 20.9323 21.1324C20.4728 21.5919 19.8497 21.85 19.1999 21.85H9.5999C8.95012 21.85 8.32695 21.5919 7.86749 21.1324C7.40803 20.673 7.1499 20.0498 7.1499 19.4V13C7.1499 12.5306 7.53046 12.15 7.9999 12.15Z" fill="white"/>
@@ -44,12 +44,11 @@
                <p class='tt03'> {{ product.description }}</p>
                <div class='gr-price' :class="product.has_discount == 1 ? 'has_discount' : '' ">
                   <span class='price'>
-                     {{ product.has_discount == true 
-                        ? common_get_product_price(product.price, product.discount_percent) 
-                        : common_get_product_price(product.price)
-                     }}
+                     {{ common_get_product_price(product) }}
                   </span>
-                  <span v-if='product.has_discount == 1' class='price-sub'>{{ common_get_product_price(product.price) }}</span>
+                  <span v-if='product.has_discount == 1' class='price-sub'>
+                     {{ common_get_product_price(product, 0) }}
+                  </span>
                </div>
                <div class='entry-quantity'>
                   <p>Quantity</p>
@@ -118,13 +117,10 @@
                      <p class='tt02'>{{ product.name_second }}</p>
                      <div class='gr-price' :class="product.has_discount == 1 ? 'has_discount' : '' ">
                         <span class='price'>
-                           {{ product.has_discount == 1 
-                              ? common_get_product_price(product.price, product.discount_percent) 
-                              : common_get_product_price(product.price)
-                           }}
+                           {{ common_get_product_price(product) }}
                         </span>
                         <span v-if='product.has_discount == 1' class='price-sub'>
-                           {{ common_get_product_price(product.price) }}
+                           {{ common_get_product_price(product, 0) }}
                         </span>
                      </div>
                   </li>
@@ -202,10 +198,17 @@ createApp({
 
          is_out_of_stock: false,
          canOrder: false,
+
+         product_exists_in_cart: false,
       }
    },
 
    methods: {
+      async btn_share(){
+         var _url = window.location.href;
+         // alert(_url);
+         await window.native_share_link( _url);
+      },
 
       buttonCloseModal_store_working(){ this.modal_store_working = false; },
       buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false; },
@@ -214,23 +217,28 @@ createApp({
       addToCart( isJustShowModal ){
 
          if(isJustShowModal == true ){
-            if( this.product_quantity_count > 0){
+            if( this.product_quantity_count > 0 && this.product_quantity_count <= this.product.stock ){
                this.show_add_cart = true;
                setTimeout(() => {
                   this.show_add_cart = false;
                }, 1500);
             }
          }
+
          if( this.check_can_order == true ){
-            window.add_item_to_cart( {
-               store_id: parseInt( this.store.id ),
-               store_name: this.store.name,
-               store_select: false,
-               product_id: parseInt(this.product.id ),
-               product_quantity_count: parseInt(this.product_quantity_count),
-               product_select: false
-            });
+            var _res = window.add_quantity_to_cart( this.product.id, this.product_quantity_count, this.product.stock );
+            if( _res == false ){
+               window.add_item_to_cart( {
+                  store_id: parseInt( this.store.id ),
+                  store_name: this.store.name,
+                  store_select: false,
+                  product_id: parseInt(this.product.id ),
+                  product_quantity_count: parseInt(this.product_quantity_count),
+                  product_select: false
+               });
+            }
          }
+
       },
 
       // GO TO PAGE ORDER
@@ -241,7 +249,6 @@ createApp({
             // MAKE CURRENT PRODUCT IS SELECT IN THIS CASE
             window.reset_cart_to_select_false();
             var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-
             _cartItems.some(item => {
                if( item.store_id == this.product.store_id ){
                   item.products.some( product => {
@@ -253,7 +260,6 @@ createApp({
                   });
                }
             });
-
             this.gotoOrderProduct();
          }
       },
@@ -410,7 +416,7 @@ createApp({
    computed: {
       check_can_order(){
          if( this.canOrder == true ){
-            if( this.product_quantity_count > 0 ){
+            if( this.product_quantity_count > 0 && this.product_quantity_count <= this.product.stock ){
                return true;
             }else{
                return false;
@@ -430,22 +436,31 @@ createApp({
       await this.get_review_rating_average( this.product.store_id);
       await this.get_purchase_store( this.product.store_id);
 
+      console.log(this.product)
+
       // GET QUANTITY 
-      var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-      // 
-      if (_cartItems && _cartItems.length > 0) {
-         _cartItems.some( store => {
-            store.products.some( product => product.product_select = false );
-            store.products.some( product => {
-               if( product.product_id == this.product.id ){
-                  if( this.product.stock >= product.product_quantity_count ) {
-                     this.product_quantity_count = product.product_quantity_count;
-                  }
-               }
-            });
-         });
-         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-      }
+      // var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+      // // 
+      // if (_cartItems && _cartItems.length > 0) {
+      //    _cartItems.some( store => {
+      //       store.products.some( product => product.product_select = false );
+      //       store.products.some( product => {
+      //          if( product.product_id == this.product.id ){
+      //             if( this.product.stock >= product.product_quantity_count ) {
+      //                this.product_quantity_count = product.product_quantity_count;
+      //             }
+      //          }
+      //       });
+      //    });
+      //    localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+      // }
+
+      // this.product_exists_in_cart = window.check_product_exists_in_cart(product_id);
+      // this.get_product_from_cart = window.get_product_from_cart(product_id);
+
+      // console.log(this.product)
+
+      // console.log()
 
       window.appbar_fixed();
 

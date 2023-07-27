@@ -77,13 +77,10 @@
                      <p class='tt02'>{{ product.name_second }}</p>
                      <div class='gr-price' :class="product.has_discount == true ? 'has_discount' : '' ">
                         <span class='price'>
-                           {{ product.has_discount == true 
-                              ? common_get_product_price(product.price, product.discount_percent) 
-                              : common_get_product_price(product.price)
-                           }}
+                           {{ common_get_product_price(product )}}
                         </span>
                         <span v-if='product.has_discount == true' class='price-sub'>
-                           {{ common_get_product_price(product.price) }}
+                           {{ common_get_product_price(product, 0) }}
                         </span>
                      </div>
                   </div>

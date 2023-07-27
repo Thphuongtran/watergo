@@ -84,13 +84,10 @@
                <div class='tt3'>
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
-                        {{ has_discount(product) == true 
-                           ? common_get_product_price(product.price, product.discount_percent) 
-                           : common_get_product_price(product.price)
-                        }}
+                        {{ common_get_product_price(product ) }}
                      </span>
                      <span v-if='has_discount(product) == true' class='price-sub'>
-                        {{ common_get_product_price(product.price) }}
+                        {{ common_get_product_price(product, 0 ) }}
                      </span>
 
                   </div>

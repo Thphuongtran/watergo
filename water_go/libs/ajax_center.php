@@ -139,19 +139,20 @@ function func_atlantis_get_order_number( $order_id ){
    $sql = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id LIMIT 1";
    global $wpdb;
    $res = $wpdb->get_results($sql);
-
    if ( ! empty( $res ) ) {
-      $number_repeat = '';
 
-      if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
+      if( $res[0]->order_repeat_type == 'weekly' || $res[0]->order_repeat_type == 'monthly' ){
+         // $number_repeat = '';
          $number_repeat = '-' . $res[0]->order_repeat_count;
+         // if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
+         // }
+         $numberWithZeros = str_pad( $res[0]->order_repeat_order_id, 4, "0", STR_PAD_LEFT) . $number_repeat;
+         return $numberWithZeros;
       }
 
-      $numberWithZeros = str_pad( $res[0]->order_repeat_order_id, 4, "0", STR_PAD_LEFT) . $number_repeat;
-      return $numberWithZeros;
+   }else{
+      $numberWithZeros = str_pad( $order_id, 4, "0", STR_PAD_LEFT);
    }
-
-   $numberWithZeros = str_pad( $order_id, 4, "0", STR_PAD_LEFT);
    return $numberWithZeros;
 }
 
@@ -176,8 +177,6 @@ function func_atlantis_get_product_by( $args ){
    // paged
    $paged = isset($args['paged']) ? $args['paged'] : 0;
    $paged = $paged * $limit;
-
-
 
    global $wpdb;
 
@@ -435,6 +434,139 @@ function atlantis_get_images(){
    }
 }
 
+/**
+ * @access CHECK REPEAT ORDER CAN CREATE?
+ */
+
+// function func_check_repeat_order_can_create( $order_id ){
+//    global $wpdb;
+//    $sql_get_id_parent = "SELECT 
+//       order_repeat_order_id
+//       FROM wp_watergo_order_repeat 
+//       WHERE order_repeat_order_id_parent = $order_id";
+//    $res_get_id_parent = $wpdb->get_results($sql_get_id_parent);
+
+
+//    if( $res_get_id_parent[0]->order_repeat_order_id != null ){
+//       $order_id_parent = $res_get_id_parent[0]->order_repeat_order_id;
+
+//       $sql_is_repeat = "SELECT 
+//          order_repeat_is_keep_repeat
+//          FROM wp_watergo_order_repeat 
+//          WHERE order_repeat_order_id_parent = $order_id_parent
+//          AND order_repeat_order_id = $order_id_parent
+//       ";
+//       $get_is_repeat = $wpdb->get_results($sql_is_repeat);
+//       if( $get_is_repeat[0]->order_repeat_is_keep_repeat == 1 ){
+//          return 1;
+//       }
+//       return 0;
+//    }
+//    return 0;
+// }
+
+function func_get_repeat_order_id( $order_id ){
+   global $wpdb;
+   $sql_get_repeat_order = "SELECT *
+      FROM wp_watergo_order_repeat 
+      WHERE order_repeat_order_id_parent = $order_id";
+   $repeat_order = $wpdb->get_results($sql_get_repeat_order);
+
+   if( !empty( $repeat_order ) ){
+      $order_id_parent = $repeat_order[0]->order_repeat_order_id;
+
+      $sql_order_primary = "SELECT *
+         FROM wp_watergo_order_repeat 
+         WHERE order_repeat_order_id_parent = $order_id_parent
+         AND order_repeat_order_id = $order_id_parent
+      ";
+
+      $get_order_primary = $wpdb->get_results($sql_order_primary);
+
+      if( !empty($get_order_primary) )return $get_order_primary[0];
+      return [];
+   }
+   return [];
+}
+
+function func_get_repeat_count( $order_id, $order_parent_id ){
+   global $wpdb;
+   $sql = "SELECT order_repeat_count
+      FROM wp_watergo_order_repeat 
+      WHERE order_repeat_order_id_parent = $order_parent_id
+      AND order_repeat_order_id = $order_id
+   ";
+   $res = $wpdb->get_results( $sql);
+   if( $res[0]->order_repeat_count != null ){
+      return $res[0]->order_repeat_count;
+   }
+   return 0;
+}
+
+/**
+ * @access FIND NEXT CLOSEST DAY BY DAY OF WEEK
+ */
+function findNextClosestDay_byWeekly($arr, $_current_order_time_shipping_day) {
+   if (count($arr) === 1) return $arr[0];
+
+   $weekDays = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ];
+
+   $currentDayIndex = array_search($_current_order_time_shipping_day, array_column($arr, 'order_time_shipping_day'));
+
+   if ($currentDayIndex === false) return null;
+
+   $arrCount = count($arr);
+
+   for ($i = 1; $i <= $arrCount; $i++) {
+      $index = ($currentDayIndex + $i) % $arrCount;
+      if ($arr[$index]->order_time_shipping_day !== $_current_order_time_shipping_day) {
+            return $arr[$index];
+      }
+   }
+
+   return null;
+}
+
+/**
+ * @access FIND NEXT CLOSEST DAY BY DAY OF MONTHLY
+ */
+function findNextClosestDay_byMonthly($arr, $_current_order_time_shipping_day) {
+   if (count($arr) === 1) return $arr[0];
+
+   usort($arr, function ($a, $b) {
+      return $a->order_time_shipping_day - $b->order_time_shipping_day;
+   });
+
+   $sortedArray = array_column($arr, 'order_time_shipping_day');
+   $index = array_search($_current_order_time_shipping_day, $sortedArray);
+
+   if ($index === false) {
+      $sortedArray[] = $_current_order_time_shipping_day;
+      sort($sortedArray);
+      $index = array_search($_current_order_time_shipping_day, $sortedArray);
+   }
+
+   $arrayCount = count($sortedArray);
+
+   if ($index < $arrayCount - 1) {
+      $next_index = $index + 1;
+   } else {
+      $next_index = 0;
+   }
+
+   $next_closest_day = $sortedArray[$next_index];
+
+   // PREVIOUS DAY - FUTURE DAY
+
+   foreach ($arr as $item) {
+      if ($item->order_time_shipping_day === $next_closest_day) {
+         return $item;
+      }
+   }
+
+   return null;
+}
+
 require_once THEME_DIR . '/libs/network/ajax_upload.php';
 require_once THEME_DIR . '/libs/network/ajax_product.php';
 require_once THEME_DIR . '/libs/network/ajax_store.php';
@@ -455,6 +587,7 @@ require_once THEME_DIR . '/libs/network/ajax_admin_supports.php';
 require_once THEME_DIR . '/libs/network/ajax_location.php';
 require_once THEME_DIR . '/libs/network/ajax_product_store.php';
 require_once THEME_DIR . '/libs/network/ajax_report.php';
+require_once THEME_DIR . '/libs/network/ajax_share.php';
 
 
 

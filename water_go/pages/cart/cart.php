@@ -91,13 +91,10 @@
                         <div class='product-name'>{{ product.name }}</div>
                         <div class='product-price'>
                            <span class='price'>
-                              {{ product.has_discount == 1 
-                                 ? common_get_product_price(product.price, product.discount_percent) 
-                                 : common_get_product_price(product.price)
-                              }}
+                              {{ common_get_product_price(product) }}
                            </span>
                            <span v-if='product.has_discount == 1' class='sub-price'>
-                              {{ common_get_product_price(product.price) }}
+                              {{ common_get_product_price(product, 0) }}
                            </span>
                         </div>
                      </div>
@@ -195,31 +192,13 @@ createApp({
                localStorage.setItem('watergo_carts', '[]');
             }else{
 
-            //    this.carts.some( ( store, storeIndex ) => {
-                  
-            //       // IF STORE SLECTED
-            //       if( store.store_select == true ){
-            //          this.carts.splice(storeIndex, 1);
-            //       }else{
-            //          store.products.forEach( ( product, productIndex )  => {
-            //             if( product.product_select == true ){
-            //                store.products.splice(productIndex, 1);
-            //             }
-            //          });
-            //          if( store.products.length == 0 ){
-            //             this.carts.splice(storeIndex, 1);
-            //          }
-            //       }
+               var _carts = JSON.parse( localStorage.getItem('watergo_carts') );
 
-            //    });
-            //    localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+               for (let storeIndex = this.carts.length - 1; storeIndex >= 0; storeIndex--) {
+                  const store = this.carts[storeIndex];
 
-               
-            // }
-            
-               this.carts.forEach((store, storeIndex) => {
                   // Condition 1: If store.store_select is true, delete the entire store
-                  if (store.store_select == true ) {
+                  if (store.store_select === true) {
                      this.carts.splice(storeIndex, 1);
                   } else {
                      // Condition 2: Delete selected products
@@ -227,10 +206,10 @@ createApp({
 
                      // Check if the store has any products left
                      if (store.products.length === 0) {
-                        this.carts.splice(storeIndex, 1);
+                           this.carts.splice(storeIndex, 1);
                      }
                   }
-               });
+               }
 
                if( this.carts.length > 0){
                   localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
@@ -240,11 +219,19 @@ createApp({
             }
          }
 
+
       },
 
-      common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
+      common_get_product_price( p, d ){ return window.common_get_product_price( p, d ); },
 
       cart_stream(){
+         var _isAllSelected = this.carts.every(store => store.store_select === true);
+         if( _isAllSelected == true ){
+            this.select_all_value = true;
+         }else{
+            this.select_all_value = false;
+         }
+
          this.carts.some( ( store, storeIndex ) => {
             store.products.forEach( ( product, productIndex )  => {
                if( product.product_quantity_count == 0 ){
@@ -260,6 +247,7 @@ createApp({
          }else{
             localStorage.setItem('watergo_carts', '[]');
          }
+
       },
 
       plusQuantityCount( product_id ){
@@ -358,7 +346,6 @@ createApp({
          _cartItems.forEach( store => {
             store.products.forEach(product => {
                if( product.product_select == true ){
-                  
                   if( product.has_discount != 0 ){
                      gr_price.price_discount += ( product.price - ( product.price * ( product.discount_percent / 100)) ) * product.product_quantity_count;
                   }else{

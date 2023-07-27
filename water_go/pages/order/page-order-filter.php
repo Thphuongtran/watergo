@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-order-filter'>
+   <div v-show='loading == false' class='page-order-filter'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -44,10 +44,17 @@
                   <img :src="product.product_image.url">
                </div>
                <div class='prod-detail'>
-                  <span class='prod-name'>{{ product.order_group_product_name }}</span>
+                  <span class='prod-name'>{{ product.name }}</span>
                   <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
                </div>
-               <div class='prod-price'>{{ common_get_product_price(product.order_group_product_price) }}</div>
+               <div class='prod-price' :class='product.has_discount != 0 ? "has-discount" : ""'>
+                  <span class='price'>
+                     {{ common_get_product_price(product) }}
+                  </span>
+                  <span v-if='product.has_discount != 0' class='sub-price'>
+                     {{ common_get_product_price(product, 0) }}
+                  </span>
+               </div>
             </div>
 
             <div class='order-bottom'>
@@ -57,27 +64,25 @@
 
             <div class='order-delivery-time'>
                <table>
-                  <tr v-for='( _delivery, _deliveryKey ) in order.order_delivery_data' :key='_deliveryKey'>
-                     <td v-if='order.order_delivery_type == "monthly" '>Date {{_delivery.day}}</td>
-                     <td v-if='order.order_delivery_type == "weekly" '>{{_delivery.day}}</td>
-                     <td class='td-left'> | {{_delivery.time}}</td>
+                  <tr v-for='( shipping, shippingKey ) in order.order_time_shipping' :key='shippingKey'>
+                     <td v-if='shipping.order_time_shipping_type == "monthly" '>Date {{shipping.order_time_shipping_day}}</td>
+                     <td v-if='shipping.order_time_shipping_type == "weekly" '>{{shipping.order_time_shipping_day}}</td>
+                     <td class='td-left'> | {{shipping.order_time_shipping_time}}</td>
                   </tr>
                </table>
             </div>
 
          </li>
       </ul>
-
-
-
    </div>
-   <div v-if='loading == true'>
+
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div>
+      </div> 
    </div>
 
-   <div v-if='popup_delete_all_item == true' class='modal-popup open'>
+   <div v-show='popup_delete_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <p v-if='filter == "weekly"' class='heading'>Are you sure to delete this<br> weekly order?</p>
          <p v-if='filter == "monthly"' class='heading'>Are you sure to delete this<br> monthly order?</p>
@@ -101,7 +106,8 @@ createApp({
          loading: false,
          filter: '',
          orders: [],
-         order_id_delete: null
+         order_id_delete: null,
+         paged: 0,
       }
    },
 
@@ -117,7 +123,6 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r) );
                if( res.message == 'order_delete_ok' ){
-                  this.loading = false;
                   this.popup_delete_all_item = false;
                   this.orders.forEach( (item, index ) => {
                      if( item.order_id == this.order_id_delete ){
@@ -128,6 +133,7 @@ createApp({
             }
             this.order_id_delete = null;
          }
+         window.appbar_fixed();
          this.loading = false;
       },
 
@@ -145,9 +151,10 @@ createApp({
             if( order.order_id == order_id ){
                order.order_products.some ( product => {
                   _total += get_total_price(
-                     product.order_group_product_price, 
+                     product.price, 
                      product.order_group_product_quantity_count, 
-                     product.order_group_product_discount_percent
+                     0
+                     // product.order_group_product_discount_percent
                   )
                });
             }
@@ -168,41 +175,77 @@ createApp({
       },
 
       gotoOrderFilter(filter){ window.gotoOrderFilter(filter); },
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
+
+      common_get_product_price( product, depth ){
+         console.log(product)
+         return window.common_get_product_price( {
+            quantity: product.order_group_product_quantity_count,
+            price: product.price,
+            has_discount: product.has_discount,
+            discount_from: product.discount_from,
+            discount_to: product.discount_to,
+            discount_percent: product.discount_percent,
+         }, depth );
+      },
       select_filter( filter_select ){ this.order_status_select = filter_select; },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id); },
-      goBack(){ window.goBack(); }
+      goBack(){ window.goBack(); },
+
+      async get_order_filter(paged){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_filter');
+         form.append('filter', this.filter);
+         form.append('paged', paged);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_ok' ){
+               // GROUP PRODUCT 
+               res.data.forEach(item => {
+                  if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
+                     this.orders.push( item );
+                  }
+               });
+            }
+         }
+      },
+
+      async handleScroll(){
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            await this.get_order_filter( this.paged++);
+         }
+      }
    },
 
-   computed: {
-
+   mounted() {
+      window.addEventListener('scroll', this.handleScroll);
+   },
+   beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll);
    },
 
    async created(){
 
       const urlParams = new URLSearchParams(window.location.search);
       const filter = urlParams.get('filter');
-      this.filter = filter;
 
+      this.filter = filter;
       this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_get_order_filter');
-      form.append('filter', filter);
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify( r ));
-         if( res.message == 'get_order_ok' ){
-            // GROUP PRODUCT 
-            this.orders.push(...res.data);
-         }
-         if( res.message == 'no_order_found'){
-            this.loading = true;
-         }
-      }
-      this.loading = false;
+      await this.get_order_filter(0);
+      // console.log(this.orders);
       window.appbar_fixed();
+      this.loading = false;
       
    },
 }).mount('#app');
