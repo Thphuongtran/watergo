@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false' class='page-nearby'>
+   <div class='page-nearby'>
 
        <div class='appbar'>
          <div class='appbar-top'>
@@ -28,7 +28,7 @@
             </div>
 
          </div>
-         <div class='appbar-bottom mb15'>
+         <div class='appbar-bottom pb15'>
             <div class="gr-btn style01">
                <button @click='select_product_type(product.label)' v-for='(product, keyProduct) in searchType' :key='keyProduct' :class='product.active == true ? "active" : ""'>
                   {{ product.label }}
@@ -68,7 +68,7 @@
                         <img :src="store.store_image.url">
                      </div>
                      <div class='content'>
-                        <div class='tt01'>{{ store.name }}</div>
+                        <div class='tt01'>{{ truncateUTF8String(store.name, 10) }}</div>
                         <div class='tt02'>
                            <span class='store-distance'>{{ mathCeilDistance(store.distance) }} km</span>
                            <svg v-if='store.avg_rating > 0' width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.32901 11.7286L3.77618 13.8689C3.61922 13.9688 3.45514 14.0116 3.28391 13.9973C3.11269 13.9831 2.96287 13.926 2.83446 13.8261C2.70604 13.7262 2.60616 13.6012 2.53482 13.4511C2.46348 13.301 2.44921 13.1335 2.49202 12.9486L3.43373 8.9035L0.287545 6.18536C0.144861 6.05695 0.0558259 5.91055 0.0204402 5.74618C-0.0149455 5.58181 -0.00438691 5.42143 0.0521161 5.26505C0.10919 5.1081 0.1948 4.97968 0.308948 4.8798C0.423095 4.77992 0.580048 4.71571 0.779806 4.68718L4.93192 4.32333L6.53712 0.513664C6.60846 0.342443 6.71918 0.214026 6.86928 0.128416C7.01939 0.0428054 7.17263 0 7.32901 0C7.48597 0 7.63921 0.0428054 7.78874 0.128416C7.93827 0.214026 8.049 0.342443 8.12091 0.513664L9.72611 4.32333L13.8782 4.68718C14.078 4.71571 14.2349 4.77992 14.3491 4.8798C14.4632 4.97968 14.5488 5.1081 14.6059 5.26505C14.663 5.422 14.6738 5.58266 14.6384 5.74704C14.6031 5.91141 14.5137 6.05752 14.3705 6.18536L11.2243 8.9035L12.166 12.9486C12.2088 13.1341 12.1945 13.3019 12.1232 13.452C12.0519 13.6021 11.952 13.7268 11.8236 13.8261C11.6952 13.926 11.5453 13.9831 11.3741 13.9973C11.2029 14.0116 11.0388 13.9688 10.8819 13.8689L7.32901 11.7286Z" fill="#FFC83A"/></svg>
@@ -88,19 +88,11 @@
 
    </div>
 
-   <div v-if='loading == true'>
-      <div class='progress-center'>
-         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div>
-   </div>
-
    <component-location-modal ref='component_location_modal'></component-location-modal>
-
    
 </div>
 
 <script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
-
 <script type='module'>
 
 var { createApp } = Vue;
@@ -135,27 +127,18 @@ createApp({
             }
          }
       },
-
       get_stores(){
          return this.stores.filter(item => {
-            
             if( item.store_type == 'both' ){
-               console.log('item for both ');
                return item.store_type == 'both';
             }else{
                var type = this.searchType.find(t => t.active == true);
-               if(type){
-                  console.log('item for ' + type);
-                  return type.value == item.store_type;
-               }else{
-                  return item;
-               }
+               if(type){ return type.value == item.store_type;
+               }else{ return item;}
             }
-
          }).sort((a, b) => a.distance - b.distance);
 
       },
-
       group_the_stores(){
          var _stores = [];
          for (let i = 0; i < this.get_stores.length; i += 3) {
@@ -164,9 +147,7 @@ createApp({
          }
          return _stores;
       },
-
       count_product_in_cart(){ return window.count_product_in_cart()},
-
    },
 
    methods: {
@@ -197,8 +178,7 @@ createApp({
          }
       },
 
-      truncateUTF8String(str) {
-         var maxLength = 10;
+      truncateUTF8String(str, maxLength) {
          if (str.length <= maxLength) {
             return str;
          } else {
@@ -210,20 +190,21 @@ createApp({
       },
 
 
-
-      async get_all_store_location(){
+      async get_all_store_location( lat, lng ){
          var form = new FormData();
          form.append('action', 'atlantis_get_store_nearby');
-         form.append('lat', this.latitude);
-         form.append('lng', this.longitude);
+         form.append('lat', lat);
+         form.append('lng', lng);
          var r = await window.request(form);
          if(r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'store_location_found' ){
-               this.stores.push(...res.data);
-               // res.data.forEach( store => {
-               //    var _itemExists 
-               // });
+               res.data.forEach( store => {
+                  var _itemExists = this.stores.some( item => item.id == store.id);
+                  if( ! _itemExists ){
+                     this.stores.push(store);
+                  }
+               });
             }
          }
       },
@@ -311,35 +292,13 @@ createApp({
 
          this.isToggle = !this.isToggle;
 
-         var appbar = document.getElementsByClassName('appbar');
-         var appbarHeight = 0.0;
-         var storeWrapper = document.getElementsByClassName('store-wrapper');
-         var storeList = document.getElementsByClassName('store-list');
-         var mapContainer = document.getElementById('mapContainer');
-
-         if( appbar != undefined ){
-            appbarHeight = appbar[0].clientHeight;
-         }
-
-         var _heightWrapper = window.innerHeight - appbarHeight;
-
-         storeWrapper[0].style.height = _heightWrapper + 'px';
-
-         var _bottom_bar = 40.0;
-
-         var _body = _heightWrapper * 0.8 - _bottom_bar;
-         var _footer = _heightWrapper * 0.2;
+         this.caculator_height_body_and_map();
 
          if( this.isToggle == true ){
-            _body = ( _heightWrapper - 15.0) * 0.5;
-            _footer = _heightWrapper * 0.5;
+            $('.store-list').css('height', 280.0);
          }else{
-            _body = ( _heightWrapper - 15.0) * 0.8;
-            _footer = _heightWrapper * 0.2;
+            $('.store-list').css('height', 100.0);
          }
-
-         mapContainer.style.height = _body + 'px';
-         storeList[0].style.height = _footer + 'px';
 
          this.map.getViewPort().resize();
 
@@ -355,7 +314,7 @@ createApp({
                var _rating = item.avg_rating != null ? this.ratingNumber( item.avg_rating) : 0;
 
                item.id_maker = this.map.addObject(this.marker_store( 
-                  this.truncateUTF8String(item.name), 
+                  this.truncateUTF8String(item.name, 10), 
                   _rating, 
                   { lat: _latitude, lng: _longitude }
                )).getId();
@@ -366,58 +325,41 @@ createApp({
          }
       },
 
-      get_location_store(lat, lng){
-         this.map.setCenter({
-            lat: lat, lng: lng
-         });
-         this.map.setZoom(14);
+      caculator_height_body_and_map(){
+
+         (function($){
+            var appbarHeight  = $('.appbar').height();
+            var _heightApp = $(window).height() - appbarHeight;
+
+            $('.store-wrapper').css('height', _heightApp);
+
+         })(jQuery);
+         
       },
 
-      location_changes(){
-         this.get_current_location();
-         const newCenter = this.map.getCenter();
-         console.log('dragend event');
-         console.log(newCenter);
-         alert('Location change : lat ' + this.latitude + ' lng ' + this.longitude );
+      // update location to get new store
+      async location_changes(){
+         var newCenter = this.map.getCenter();
+         async function delayedAction() {
+            if( newCenter ){
+               await this.get_all_store_location(newCenter.lat, newCenter.lng);
+            }
+         }
+         delayedAction = delayedAction.bind(this);
+         if (this.timeoutId) { clearTimeout(this.timeoutId); }
+         this.timeoutId = setTimeout(delayedAction, 1500);
       }
 
    },
 
-   created(){
-      
-   },
-
-   update(){
-      
-   },
 
    async mounted(){
 
       window.appbar_fixed();
       this.get_current_location();
-      await this.get_all_store_location();
+      await this.get_all_store_location(this.latitude, this.longitude);
 
-      var appbar = document.getElementsByClassName('appbar');
-      var appbarHeight = 0.0;
-      var storeWrapper = document.getElementsByClassName('store-wrapper');
-      var storeList = document.getElementsByClassName('store-list');
-      var mapContainer = document.getElementById('mapContainer');
-
-      if( appbar != undefined ){
-         appbarHeight = appbar[0].clientHeight;
-      }
-
-
-      var _heightWrapper = window.innerHeight - appbarHeight;
-
-      var _bottom_bar = 40.0;
-
-      var _body   = _heightWrapper * 0.8 - _bottom_bar;
-      var _footer = _heightWrapper * 0.2;
-
-      storeWrapper[0].style.height = _heightWrapper + 'px';
-      mapContainer.style.height = _body + 'px';
-      storeList[0].style.height = _footer + 'px';
+      this.caculator_height_body_and_map();
      
       var platform = new H.service.Platform({
          apikey: this.keyID
@@ -432,8 +374,6 @@ createApp({
             pixelRatio: window.devicePixelRatio || 1
          }
       );
-
-      var prevLocation = 0.0;
 
       window.addEventListener('resize', () => map.getViewPort().resize());
       var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
@@ -450,8 +390,6 @@ createApp({
       map.addEventListener("dragend", this.location_changes);
 
 
-      
-
       if( this.get_stores.length > 0 ){
          
          this.get_stores.forEach((item ) => {
@@ -460,7 +398,7 @@ createApp({
 
             var _rating = item.avg_rating != null ? this.ratingNumber( item.avg_rating) : 0;
             item.id_maker = map.addObject(this.marker_store( 
-               this.truncateUTF8String(item.name),
+               this.truncateUTF8String(item.name, 10),
                _rating, 
                { lat: _latitude, lng: _longitude }
             )).getId();
@@ -469,13 +407,20 @@ createApp({
 
          map.setZoom(14);
       }
-
-      this.map = map;
-
-      
+      this.map = map;      
    }
 
 })
 .component('component-location-modal', LocationModal)
 .mount('#app');
+
+
+
+$(document).ready(function(){
+   var _height_store_list = $('.list-wrapping.isToggle').height();
+
+   $(document).click('#toggleMap', function(){
+      console.log(_height_store_list)
+   })
+})
 </script>

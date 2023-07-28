@@ -39,44 +39,22 @@ function atlantis_share_link() {
       );
 
       if (is_wp_error($response)) {
-         // wp_json_send_error( ['message' => 'bug']);
-         // wp_die();
+         wp_json_send_error( ['message' => 'share_error']);
+         wp_die();
 
       } else {
          $short_url = json_decode(wp_remote_retrieve_body($response));
 
-         // if (isset($short_url->error)) {
-         //    echo "error";
-         // } else {
-         //    echo $short_url->shortLink;
-         // }
+         if (isset($short_url->error)) {
+            wp_json_send_error( ['message' => 'share_error']);
+            wp_die();
+         } else {
+            wp_send_json_success(['message' => 'share_success', 'data' => $short_url->shortLink ]);
+            wp_die();
+         }
 
-         wp_send_json_success(['message' => 'share_success', 'data' => $short_url ]);
-         wp_die();
       }
-
-      // $headers = array('Content-Type: application/json');
-
-      // $ch = curl_init ();
-      // curl_setopt ( $ch, CURLOPT_URL, $url );
-      // curl_setopt ( $ch, CURLOPT_POST, true );
-      // curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
-      // curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-      // curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
-
-      // $data = curl_exec ( $ch );
-      // curl_close ( $ch );
-
-      // $short_url = json_decode($data);
-      // if(isset($short_url->error)){
-      //    echo "error";
-      // } else {
-      //    echo $short_url->shortLink;
-      // }
-
       
-
-      // die();
    }
 
 }

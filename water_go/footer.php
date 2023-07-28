@@ -16,11 +16,9 @@
       form.append('action', 'atlantis_share_link');
       form.append('link', link );
       var r = await window.request(form);
-      console.log(r);
       if( r != undefined ){
          var res = JSON.parse( JSON.parse( r ));
          if( res.message == 'share_success' ){
-
             var shareData = {
                title: 'WaterGo',
                text: '',

@@ -39,8 +39,9 @@ function atlantis_get_store_id(){
 function atlantis_get_store_nearby(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_store_nearby' ){
 
-      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
-      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+      $lat     = isset($_POST['lat'])     ? $_POST['lat'] : 10.780900239854994;
+      $lng     = isset($_POST['lng'])     ? $_POST['lng'] : 106.7226271387539;
+      $how_far = isset($_POST['how_far']) ? $_POST['how_far'] : 5; // 5km default
 
       if($lat == 0.0 && $lng == 0.0){
          wp_send_json_error(['message' => 'store_location_not_found']);
@@ -54,9 +55,8 @@ function atlantis_get_store_nearby(){
                sin(radians($lat)) * sin(radians(latitude))
             )) AS distance
          FROM wp_watergo_store
-         HAVING distance <= 8 -- Adjust the distance value as desired (in kilometers)
+         HAVING distance <= $how_far -- Adjust the distance value as desired (in kilometers)
          ORDER BY distance ASC
-         LIMIT 10
       ";
       global $wpdb;
       $res = $wpdb->get_results($sql);
