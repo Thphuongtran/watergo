@@ -1,6 +1,6 @@
 <div id='authentication'>
 
-   <div v-if='loading == false' class='page-auth-register'>
+   <div v-show='loading == false' class='page-auth-register'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -32,13 +32,17 @@
 
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='inputEmail' type="email" placeholder='Enter your email'>
+            <div class='form-group-email'>
+               <input v-model='inputEmail' type="email" placeholder='Enter you email'>
+               <button class='btn-email-verify' @click='btn_verify_email_and_sendcode' class='btn-text' :class='isCodeSend == true ? "is-send": ""' >Verify</button>
+            </div>
          </div>
          
-         <p>
+         <!-- <p>
             <button @click='btn_verify_email_and_sendcode' class='btn-text' >Verify your email</button>
-         </p>
-         <p v-if='isCodeSend' class='t-second-12'>
+         </p> -->
+
+         <p v-show='isCodeSend' class='t-second-12 text-code-resend'>
             We have sent a code to your email. <button @click='btn_verify_email_and_sendcode' class='btn-text'>Resend</button>
          </p>
 
@@ -61,13 +65,11 @@
             </label>
          </div>
 
-         <p class='t-red mt10'>
-            {{ res_text_sendcode }}
-         </p>
+         <p class='t-red mt15'>{{ res_text_sendcode }}</p>
 
-         <div class='form-group'>
+         <div class='form-group' :class='term_conditions == false ? "disable" : "" '>
             <button @click='btn_register' class='btn btn-primary'>Sign Up</button>
-            <button @click='goBack' class='btn btn-second mt15'>Log In</button>
+            <button @click='btn_goto_login' class='btn btn-second mt15'>Log In</button>
          </div>
 
          <p class='t-second t-center mt25'>Or log in with</p>
@@ -82,13 +84,13 @@
 
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
-   <div v-if='banner_open == true' class='banner'>
+   <div v-show='banner_open == true' class='banner'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -122,7 +124,7 @@ createApp({
 
          res_text_sendcode: '',
 
-         term_conditions: false,
+         term_conditions: true,
 
          // CODE VERIFY
          isCodeSend: false,
@@ -135,6 +137,21 @@ createApp({
 
    methods: {
       goBack(){ window.goBack()},
+
+      verify_email( email ){
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if (emailRegex.test(email)) {
+            return true;
+         }else{
+            return false;
+         }
+      },
+
+      btn_goto_login(){
+         if( this.term_conditions == true ){
+            window.goBack()
+         }
+      },
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
       
@@ -170,52 +187,54 @@ createApp({
       },
 
       async btn_verify_email_and_sendcode(){
+         this.loading = true;
          this.code01 = '';
          this.code02 = '';
          this.code03 = '';
          this.code04 = '';
+         
+         if( this.inputEmail != '' && this.inputEmail.length > 0 ){
+            if( this.verify_email(this.inputEmail) == true ){
+               var form = new FormData();
+               form.append('action', 'atlantis_send_code_verification');
+               form.append('email', this.inputEmail);
+               form.append('event', 'email_non_exists');
+               var r = await window.request(form);
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify(r));
+                     this.loading = false;
 
-         if( this.inputEmail != ''){
-            this.loading = true;
-            var form = new FormData();
-            form.append('action', 'atlantis_send_code_verification');
-            form.append('email', this.inputEmail);
-            form.append('event', 'email_non_exists');
-            var r = await window.request(form);
-            console.log(r);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify(r));
-                  this.loading = false;
+                  if( res.message == 'email_is_not_correct_format' ){
+                     this.res_text_sendcode = 'Email is not correct format.';
+                  }
+                  else if( res.message == 'email_already_exists' ){
+                     this.res_text_sendcode = 'Email already register.';
+                  }
+                  else if( res.message == 'sendcode_success' ){
+                     this.res_text_sendcode = '';
+                     this.isCodeSend = true;
+                  }
 
-               if( res.message == 'email_is_not_correct_format' ){
-                  this.res_text_sendcode = 'Email is not correct format.';
+               }else{
+                  this.res_text_sendcode = 'Get Code Verify Error.';
                }
-               else if( res.message == 'email_already_exists' ){
-                  this.res_text_sendcode = 'Email already register.';
-               }
-               else if( res.message == 'sendcode_success' ){
-                  this.res_text_sendcode = '';
-                  this.isCodeSend = true;
-               }
-
             }else{
-               this.res_text_sendcode = 'Get Code Verify Error.';
-               this.loading = false;
+               this.res_text_sendcode = 'Email is not correct format.';
             }
-         }else{
-            this.loading = false;
          }
+         
+         this.loading = false;
 
          
       },
 
       async btn_register(){
          var code = this.code01 + this.code02 + this.code03 + this.code04;
-         if( this.inputUsername != '' && this.inputEmail != '' && this.inputPassowrd != '' ){
+         if( this.term_conditions == true ){
+            if( this.inputUsername != '' && this.inputEmail != '' && this.inputPassowrd != '' ){
+               this.loading = true;
 
-            if( this.term_conditions == true){
                if( code != '' ){
-                  this.loading = true;
                   var form = new FormData();
                   form.append('action', 'atlantis_register_user');
                   form.append('username', this.inputUsername);
@@ -230,26 +249,32 @@ createApp({
                         this.banner_open = true;
                         // this.gotoNotification('register-success');
                      }
-                     else if( res.message == 'resgiter_error' ){
+
+                     if( res.message == 'resgiter_error' ){
                         this.res_text_sendcode = 'Register Error.'; 
-                        this.loading = false;
                      }
+                     if( res.message == 'email_already_exists' ){
+                        this.res_text_sendcode = 'Email already exists.';
+                     }
+                     if( res.message == 'user_exists' ){
+                        this.res_text_sendcode = 'Username already exists.'; 
+                     }
+                     if( res.message == 'code_is_not_match' ){
+                        this.res_text_sendcode = 'Code is not match.';
+                     }
+
+
                   }else{
                      this.res_text_sendcode = 'Register Error.';   
-                     this.loading = false;
                   }
                }else{
-                  this.loading = false;
                   this.res_text_sendcode = 'Email is not verify.';
                }
             }else{
-               this.loading = false;
-               this.res_text_sendcode = 'Please agree Terms and Conditions.';
+               this.res_text_sendcode = 'All field must be not empty.';
             }
-         }else{
-            this.loading = false;
-            this.res_text_sendcode = 'All field must be not empty.';
          }
+         this.loading = false;
       },
 
    }

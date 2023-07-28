@@ -59,10 +59,10 @@
                   </div>
                   <div class='order-price'>
                      <span class='price'>
-                        {{ common_price_after_quantity_from_group_order(product) }}
+                        {{ common_price_after_discount_and_quantity_from_group_order(product) }}
                      </span>
                      <span v-show='product.order_group_product_discount_percent != 0' class='od-price-discount'>
-                        {{ common_price_after_discount_and_quantity_from_group_order(product) }}
+                        {{ common_price_after_quantity_from_group_order(product) }}
                      </span>
                   </div>
                </div>

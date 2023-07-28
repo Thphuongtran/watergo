@@ -113,10 +113,10 @@
                </div>
                <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
                   <span class='price'>
-                     {{ common_price_after_quantity_from_group_order(product) }}
+                     {{ common_price_after_discount_and_quantity_from_group_order(product) }}
                   </span>
                   <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
-                     {{ common_price_after_discount_and_quantity_from_group_order(product) }}
+                     {{ common_price_after_quantity_from_group_order(product) }}
                   </span>
                </div>
             </div>

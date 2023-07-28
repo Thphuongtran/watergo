@@ -59,7 +59,7 @@
 
 <div id='authentication'>
 
-   <div v-if='loading == false' class='page-authentication'>
+   <div v-show='loading == false' class='page-authentication'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -83,23 +83,23 @@
          </div>
 
          <div class='heading-01 t-center'>
-               <span>Log In</span>
-               <div class="dropdown dropdown-language">
-                <div class="dropdown-toggle" @click="toggleDropdown">
-                  <div class="selected-option">
-                    <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
-                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                     </svg>
-                  </div>
-                  <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
-                    <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
-                      <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
-                      {{ language.name }}
-                    </li>
-                  </ul>
-                </div>
+            <span>Log In</span>
+            <div class="dropdown dropdown-language">
+               <div class="dropdown-toggle" @click="toggleDropdown">
+               <div class="selected-option">
+                  <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                </div>
+               <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
+                  <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
+                     <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
+                     {{ language.name }}
+                  </li>
+               </ul>
+               </div>
+            </div>
          </div>
            
          <div class='form-group'>
@@ -116,7 +116,7 @@
             <button @click='gotoAuthForgetPassword' class='btn-text'>Forget Password</button>
          </p>
          
-         <p class='t-red mt10'>
+         <p class='t-red mt10 mb10'>
             {{ res_text_sendcode }}
          </p>
 
@@ -135,7 +135,7 @@
       </div>
       
    </div>
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -165,6 +165,7 @@ createApp({
          showDropdown: false
       }
    },
+
    created() {
      this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
    },
@@ -181,22 +182,23 @@ createApp({
          this.showDropdown = false;
          this.toggleDropdown();
       },
-      changeLanguage(language){
+      async changeLanguage(language){
          var form = new FormData();
          form.append('action', 'app_change_language');
          form.append('language', language);
-         var r = window.request(form);
+         var r = await window.request(form);
          console.log('get current locale')
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
-            if( res.message == 'change_language_successfully' && window.appBridge != undefined ){
+            if( res.message == 'change_language_successfully'){
                if( window.appBridge != undefined ){
-                  window.appBridge.setLanguage(res.lang);
+                  window.appBridge.setLanguage(res.data);
                   window.appBridge.close('refresh');
                }
             }
          }
       },
+
       getFlagImage(languageId) {
          if (languageId === 'en_US') {
            return get_template_directory_uri + '/assets/images/flag-us.svg';
@@ -207,6 +209,7 @@ createApp({
          }
          return '';
       },
+
       async getLocale(){
          var form = new FormData();
          form.append('action', 'get_current_locale');

@@ -1,5 +1,10 @@
+<?php 
+// echo '<pre>';
+//    print_r(getallheaders());
+// echo '</pre>';
+?>
 <!DOCTYPE html>
-<html lang="">
+<html>
 <head>
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">

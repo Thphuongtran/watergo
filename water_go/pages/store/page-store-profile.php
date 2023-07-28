@@ -125,7 +125,6 @@ createApp({
 
          store_image: ''
 
-
       }
    },
 

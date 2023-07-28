@@ -56,7 +56,6 @@ function atlantis_reviews(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_reviews' ){
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
-
       $limit = 10;
       $paged = $paged * $limit;
 
@@ -70,7 +69,6 @@ function atlantis_reviews(){
             wp_watergo_reviews.*,
             user.user_login as user_username,
             user.display_name as user_display_name
-         
          FROM wp_watergo_reviews
          
          LEFT JOIN wp_users as user
@@ -78,6 +76,7 @@ function atlantis_reviews(){
 
          WHERE wp_watergo_reviews.related_id = {$store_id} 
          AND wp_watergo_reviews.review_page = 'review-store'
+         ORDER BY wp_watergo_reviews.id DESC
          LIMIT $paged, $limit
       ";
 

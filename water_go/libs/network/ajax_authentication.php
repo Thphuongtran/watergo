@@ -79,18 +79,20 @@ function atlantis_register_user(){
       $get_code = get_transient( 'verification_code_' . $email );
       
       $error = [];
-
-      // if ( ! filter_var($email, FILTER_VALIDATE_EMAIL) && email_exists($email) ){
-      if ( ! is_email($email) && email_exists($email) ){
-         $error['email'] = 'Email is not invalid';
+      
+      if ( email_exists($email) ){
+         wp_send_json_error([ 'message' => 'email_already_exists']);
+         wp_die();
       }
 
       if(  username_exists( $username) !== false ){
-         $error['username'] = 'Username already exists';
+         wp_send_json_error([ 'message' => 'user_exists']);
+         wp_die();
       }
       
       if( $code == '' || $code == null || $code == 0 || $code != $get_code){
-         $error['code'] = 'Verify Error';
+         wp_send_json_error([ 'message' => 'code_is_not_match']);
+         wp_die();
       }
 
       if( !empty( $error ) ){

@@ -6,6 +6,7 @@ add_action( 'wp_ajax_atlantis_testing', 'atlantis_testing' );
 add_action( 'wp_ajax_nopriv_atlantis_get_images', 'atlantis_get_images' );
 add_action( 'wp_ajax_atlantis_get_images', 'atlantis_get_images' );
 
+
 /**
  * @access GET ORDER BY user_id | store_id | filter by order_status
  */
@@ -338,7 +339,7 @@ function func_atlantis_get_images($related_id, $attachment_type, $limit = true){
    if($attachment_type == 'user_avatar'){
       $url = THEME_URI . '/assets/images/avatar-dummy.png';
    }
-   return [ 'id'  => null, 'url' => $url ];
+   return [ 'id'  => null, 'url' => $url, 'dummy' => 1 ];
 }
 
 /**

@@ -67,7 +67,9 @@
                <div 
                   @click='gotoProductDetail(product.id)' 
                   class='product-design' 
-                  v-for='(product, index) in filter_product ' :key='index'>
+                  v-for='(product, index) in filter_product ' :key='index'
+                  :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
+               >
                   <div class='img'>
                      <img :src='product.product_image.url'>
                      <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
@@ -75,12 +77,12 @@
                   <div class='box-wrapper'>
                      <p class='tt01'>{{ product.name }} </p>
                      <p class='tt02'>{{ product.name_second }}</p>
-                     <div class='gr-price' :class="product.has_discount == true ? 'has_discount' : '' ">
+                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                         <span class='price'>
-                           {{ common_get_product_price(product )}}
+                           {{ common_price_after_discount(product ) }}
                         </span>
-                        <span v-if='product.has_discount == true' class='price-sub'>
-                           {{ common_get_product_price(product, 0) }}
+                        <span v-if='has_discount(product) == true' class='price-sub'>
+                           {{ common_price_show_currency(product.price) }}
                         </span>
                      </div>
                   </div>
@@ -147,7 +149,8 @@ createApp({
       },
 
       has_discount( product ){return window.has_discount(product);},
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent );},
+      common_price_show_currency(p){ return window.common_price_show_currency(p) },
+      common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
       ratingNumber(rating){ return parseInt(rating).toFixed(1); },
  

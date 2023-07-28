@@ -60,13 +60,18 @@
 
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='inputEmail' type="email" placeholder='Enter your email'>
+            <!-- <input v-model='inputEmail' type="email" placeholder='Enter your email'> -->
+
+            <div class='form-group-email mb10'>
+               <input v-model='inputEmail' type="email" placeholder='Enter you email'>
+               <button class='btn-email-verify' @click='btn_verify_email_and_sendcode' class='btn-text' :class='isCodeSend == true ? "is-send": ""' >Verify</button>
+            </div>
          </div>
          
-         <p>
+         <!-- <p>
             <button @click='btn_verify_email_and_sendcode' class='btn-text' >Verify your email</button>
-         </p>
-         <p v-if='isCodeSend' class='t-second-12'>
+         </p> -->
+         <p v-show='isCodeSend' class='t-second-12 text-code-resend'>
             We have sent a code to your email. <button @click='btn_verify_email_and_sendcode' class='btn-text'>Resend</button>
          </p>
 
@@ -163,6 +168,15 @@ createApp({
 
    methods: {
 
+      verify_email( email ){
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if (emailRegex.test(email)) {
+            return true;
+         }else{
+            return false;
+         }
+      },
+
       btn_select_type_product( type ){
          // force all
          if(this.select_type_product_text != type ){
@@ -210,40 +224,42 @@ createApp({
       },
 
       async btn_verify_email_and_sendcode(){
+         this.loading = true;
          this.code01 = '';
          this.code02 = '';
          this.code03 = '';
          this.code04 = '';
 
-         if( this.inputEmail != ''){
-            this.loading = true;
-            var form = new FormData();
-            form.append('action', 'atlantis_send_code_verification');
-            form.append('email', this.inputEmail);
-            form.append('event', 'email_non_exists');
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify(r));
-                  this.loading = false;
+         if( this.inputEmail != '' && this.inputEmail.length > 0){
+            if( this.verify_email(this.inputEmail) == true ){
+               var form = new FormData();
+               form.append('action', 'atlantis_send_code_verification');
+               form.append('email', this.inputEmail);
+               form.append('event', 'email_non_exists');
+               var r = await window.request(form);
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify(r));
+                     this.loading = false;
 
-               if( res.message == 'email_is_not_correct_format' ){
-                  this.res_text_sendcode = 'Email is not correct format.';
-               }
-               else if( res.message == 'email_already_exists' ){
-                  this.res_text_sendcode = 'Email already register.';
-               }
-               else if( res.message == 'sendcode_success' ){
-                  this.res_text_sendcode = '';
-                  this.isCodeSend = true;
-               }
+                  if( res.message == 'email_is_not_correct_format' ){
+                     this.res_text_sendcode = 'Email is not correct format.';
+                  }
+                  if( res.message == 'email_already_exists' ){
+                     this.res_text_sendcode = 'Email already register.';
+                  }
+                  if( res.message == 'sendcode_success' ){
+                     this.res_text_sendcode = '';
+                     this.isCodeSend = true;
+                  }
 
+               }else{
+                  this.res_text_sendcode = 'Get Code Verify Error.';
+               }
             }else{
-               this.res_text_sendcode = 'Get Code Verify Error.';
-               this.loading = false;
+               this.res_text_sendcode = 'Email is not correct format.';
             }
-         }else{
-            this.loading = false;
          }
+         this.loading = false;
 
          
       },
@@ -253,8 +269,6 @@ createApp({
          var code = this.code01 + this.code02 + this.code03 + this.code04;
          if( this.term_conditions == true){
             this.loading = true;
-
-            // taiemzo002z@gmail.com
 
             if( 
                this.inputOwner != '' && 
@@ -270,7 +284,6 @@ createApp({
 
                   var form = new FormData();
                   form.append('action', 'atlantis_store_register');
-                  
                   form.append('owner', this.inputOwner);
                   form.append('storeType', this.select_type_product_text);
                   form.append('storeName', this.inputStoreName);

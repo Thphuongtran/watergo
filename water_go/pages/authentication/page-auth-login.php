@@ -58,7 +58,7 @@
 </style>
 <div id='authentication'>
 
-   <div v-if='page_welcome == true' class='banner page-welcome'>
+   <div v-show='page_welcome == true' class='banner page-welcome'>
       <div class='banner-head'>
          <div class='heading'>WELCOME !</div>
          <p class='ttl'>Please login to explode more</p>
@@ -73,7 +73,7 @@
       </div>
    </div>
 
-   <div v-if='loading == false' class='page-authentication'>
+   <div v-show='loading == false' class='page-authentication'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -98,23 +98,23 @@
          </div>
 
          <div class='heading-01 t-center'>
-               <span>Log In</span>
-               <div class="dropdown dropdown-language">
-                <div class="dropdown-toggle" @click="toggleDropdown">
-                  <div class="selected-option">
-                    <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
-                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                     </svg>
-                  </div>
-                  <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
-                    <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
-                      <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
-                      {{ language.name }}
-                    </li>
-                  </ul>
-                </div>
+            <span>Log In</span>
+            <div class="dropdown dropdown-language">
+               <div class="dropdown-toggle" @click="toggleDropdown">
+               <div class="selected-option">
+                  <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                </div>
+               <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
+                  <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
+                     <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
+                     {{ language.name }}
+                  </li>
+               </ul>
+               </div>
+            </div>
          </div>
            
          <div class='form-group'>
@@ -131,9 +131,7 @@
             <button @click='gotoAuthForgetPassword' class='btn-text'>Forget Password</button>
          </p>
          
-         <p class='t-red mt10'>
-            {{ res_text_sendcode }}
-         </p>
+         <p class='t-red mt10 mb10'>{{ res_text_sendcode }}</p>
 
          <div class='form-check style01'>
             <label class='justify-center'>
@@ -142,7 +140,7 @@
             </label>
          </div>
 
-         <div class='form-group'>
+         <div class='form-group' :class='term_conditions == false ? "disable" : "" '>
             <button @click='btn_login' class='btn btn-primary'>Log In</button>
             <button @click='gotoAuthRegister' class='btn btn-second mt15'>Sign Up</button>
          </div>
@@ -159,7 +157,7 @@
       </div>
       
    </div>
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -176,7 +174,7 @@ createApp({
          inputEmail: '',
          inputPassword: '',
          res_text_sendcode: '',
-         term_conditions: true,  
+         term_conditions: true,
          page_welcome: true,
          languages: [
            { id: 'en_US', name: 'English'},
@@ -188,12 +186,7 @@ createApp({
          showDropdown: false
       }
    },
-   created() {
-     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
-   },
-   mounted() {
-      this.getLocale();
-   },
+   
    methods: {
       toggleDropdown() {
          this.showDropdown = !this.showDropdown;
@@ -203,23 +196,28 @@ createApp({
          this.changeLanguage(language.id);
          this.showDropdown = false;
          this.toggleDropdown();
-   },
-      changeLanguage(language){
+      },
+
+      async changeLanguage(language){
          var form = new FormData();
-         form.append('action', 'app_change_language');
+         form.append('action', 'app_change_language_callback');
          form.append('language', language);
-         var r = window.request(form);
+         var r = await window.request(form);
+
          console.log('get current locale')
+         console.log(r)
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
-            if( res.message == 'change_language_successfully' && window.appBridge != undefined ){
+            if( res.message == 'change_language_successfully' ){
                if( window.appBridge != undefined ){
-                  window.appBridge.setLanguage(res.lang);
+                  window.appBridge.setLanguage(res.data);
                   window.appBridge.close('refresh');
                }
             }
          }
       },
+
       getFlagImage(languageId) {
          if (languageId === 'en_US') {
            return get_template_directory_uri + '/assets/images/flag-us.svg';
@@ -230,10 +228,12 @@ createApp({
          }
          return '';
       },
+
       async getLocale(){
          var form = new FormData();
-         form.append('action', 'get_current_locale');
+         form.append('action', 'get_current_locale_callback');
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'current_locale_found' ){
@@ -242,6 +242,7 @@ createApp({
             }
          }
       },
+      
       login_social_apple(){
          try{ window.appBridge.socialLogin('A'); // google
          }catch{}
@@ -261,11 +262,15 @@ createApp({
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
 
       gotoAuthForgetPassword(){ window.gotoAuthForgetPassword()},
-      gotoAuthRegister(){ window.gotoAuthRegister()},
+      gotoAuthRegister(){ 
+         if( this.term_conditions == true ){ 
+            window.gotoAuthRegister()
+         }
+      },
 
       async btn_login(){
-         if( this.inputEmail != '' && this.inputPassword != ''){
-            if( this.term_conditions == true ){
+         if( this.term_conditions == true ){
+            if( this.inputEmail != '' && this.inputPassword != ''){
                this.loading = true;
                var form = new FormData();
                form.append('action', 'atlantis_login');
@@ -294,10 +299,8 @@ createApp({
                   this.res_text_sendcode = 'Email or password is incorrect';   
                }
             }else{
-               this.res_text_sendcode = 'Please agree Terms and Conditions.';
+               this.res_text_sendcode = 'Username or Password must be not empty.';
             }
-         }else{
-            this.res_text_sendcode = 'Username or Password must be not empty.';
          }
          this.loading = false;
          
@@ -316,9 +319,11 @@ createApp({
 
       },
    },
-   mounted(){
-      
-   }
+
+   async created() {
+     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+     await this.getLocale();
+   },
 
 }).mount('#authentication');
 

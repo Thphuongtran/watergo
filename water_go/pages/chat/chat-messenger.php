@@ -30,7 +30,16 @@
                <div class='contents'>
                   <div class='tt01'>{{ product.name }}</div>
                   <div class='tt02'>{{ product.name_second }}</div>
-                  <div class='tt03'>{{ common_get_product_price(product, 0) }}</div>
+                  <div class='tt03'>
+                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                        <span class='price'>
+                           {{ common_price_show_currency(product.price) }}
+                        </span>
+                        <span v-if='has_discount(product) == true' class='price-sub'>
+                           {{ common_price_after_discount(product ) }}
+                        </span>
+                     </div>
+                  </div>
                </div>
             </div>
          </div>
@@ -119,7 +128,9 @@ createApp({
 
       goBack(){ window.goBack();},
       order_formatDate(t){ return window.order_formatDate(t)},
-      common_get_product_price( p, d ){ return window.common_get_product_price( p, d ); },
+      has_discount( product ){ return window.has_discount(product); },
+      common_price_show_currency(p){ return window.common_price_show_currency(p) },
+      common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
       get_avatar_user_chat( messenger ){
          if( messenger.user_role == 'store' ){
@@ -368,6 +379,8 @@ createApp({
       setInterval( async () => {
          await this.get_new_messenger_per_second();
       }, 5000);
+
+      console.log(this.product)
 
       
       this.loading = false; 

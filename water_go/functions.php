@@ -170,18 +170,17 @@ function callback_from_login_social(){
 
 add_action('init', 'language_custom');
 function language_custom($locale) {
-  $locale = "vi";
-  $headers = array_change_key_case(getallheaders(),CASE_LOWER);
-  if (isset($headers["app_language"]) && !empty($headers["app_language"])) {  
-    $locale = $headers["app_language"];
-    
-  } else if(isset($_COOKIE['site_lang'])){
-    $locale = $_COOKIE['site_lang'];
-  }
-
-  if($locale == "en") $locale = "en_US";
-
-  switch_to_locale($locale);
+   $locale = "vi";
+   $headers = array_change_key_case(getallheaders(),CASE_LOWER);
+   if (isset($headers["app_language"]) && !empty($headers["app_language"])) {  
+      $locale = $headers["app_language"];
+      // echo 'USE APPLANGUAGE ' . $locate;
+   } else if(isset($_COOKIE['site_lang'])){
+      $locale = $_COOKIE['site_lang'];
+      // echo 'USE SITELANG ' . $locate;
+   }
+   if($locale == "en") $locale = "en_US";
+   switch_to_locale($locale);
 }
 
 function adjustDay($day) {

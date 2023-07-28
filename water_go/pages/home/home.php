@@ -82,7 +82,9 @@
                      <ul>
                         <li 
                            @click='gotoProductDetail(product.id)'
-                           v-for='(product, index) in productRecommend' :key='index' class='product-design'>
+                           v-for='(product, index) in productRecommend' :key='index' class='product-design'
+                           :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
+                        >
                            <div class='img'>
                               <img :src='product.product_image.url'>
                               <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
@@ -112,7 +114,9 @@
                      <ul>
                         <li 
                            @click='gotoStoreDetail(store.id)'
-                           v-for='(store, index) in storeNearby' :key='index' class='product-design store-style'>
+                           v-for='(store, index) in storeNearby' :key='index' class='product-design store-style'
+                           :class='store.store_image.dummy != undefined ? "img-dummy" : "" '
+                        >
                            <div class='img'>
                               <img :src='store.store_image.url'>
                            </div>
@@ -250,9 +254,11 @@ createApp({
    },
 
    computed: {
-      
-
       count_product_in_cart(){ return window.count_product_in_cart(); }
+   },
+
+   update(){
+      console.log('Location Realtime ' + location_realtime);
    },
 
    async created(){

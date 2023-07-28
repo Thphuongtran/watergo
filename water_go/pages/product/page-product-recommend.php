@@ -36,7 +36,9 @@
          <div class='grid-masonry'>
             <div @click='gotoProductDetail(product.id)' 
                class='product-design' 
-               v-for='(product, index) in filter_products' :key='index'>
+               v-for='(product, index) in filter_products' :key='index'
+               :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
+            >
                <div class='img'>
                   <img :src='product.product_image.url'>
                   <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>

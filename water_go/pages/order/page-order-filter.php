@@ -241,7 +241,7 @@ createApp({
       this.filter = filter;
       this.loading = true;
       await this.get_order_filter(0);
-      console.log(this.orders);
+      // console.log(this.orders);
       window.appbar_fixed();
       this.loading = false;
       

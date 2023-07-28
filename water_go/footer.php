@@ -1,6 +1,6 @@
    <?php wp_footer(); ?>
    <script>
-
+      
    // function callbackResume(data){        
    //    if ( data != "undefined" && data != "" ) {
    //       if (data == 'refresh') {
@@ -10,22 +10,31 @@
    //       }
    //    }
    // }
+   
+
 
    async function native_share_link( link ){
+
       var form = new FormData();
       form.append('action', 'atlantis_share_link');
       form.append('link', link );
       var r = await window.request(form);
       if( r != undefined ){
-         var res = JSON.parse( JSON.parse( r ));
+         var res = JSON.parse( JSON.stringify( r ));
          if( res.message == 'share_success' ){
             var shareData = {
                title: 'WaterGo',
                text: '',
                url: link
             };
-            // navigator.share(shareData);
-            navigator.share(shareData);
+            if (navigator.canShare) {
+               navigator.share(shareData);
+               alert('ok');
+            } else {
+               // Handle the case where the function is not supported
+               alert("Web Share API not supported in this browser.");
+            }
+            
          }
       }
    }

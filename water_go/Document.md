@@ -77,3 +77,4 @@ appBridge.navigateTo("Order"),
 appBridge.navigateTo("Me")
 
 common_get_product_price
+common_get_price_order

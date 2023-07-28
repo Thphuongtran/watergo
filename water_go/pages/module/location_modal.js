@@ -26,23 +26,28 @@ const LocationModal = {
          }
       },
 
-      get_current_location(){
-         if( window.appBridge !== undefined ){
-            window.appBridge.getLocation().then( (data) => {
-               if (Object.keys(data).length === 0) {
-                  //alert("Error-1 :Không thể truy cập vị trí");
-                  this.modal_location_turned_off = true;
-                  window.bodyScrollToggle('add');
-               }else{
-                  let lat = data.lat;
-                  let lng = data.lng;
-                  if( lat != 37.4226711 ){
-                     this.latitude = lat;
-                     this.longitude =lng;
+      get_current_location(){ 
+
+         setInterval( () => {
+            if( window.appBridge !== undefined ){
+               window.appBridge.getLocation().then( (data) => {
+                  if (Object.keys(data).length === 0) {
+                     //alert("Error-1 :Không thể truy cập vị trí");
+                     this.modal_location_turned_off = true;
+                     window.bodyScrollToggle('add');
+                     this.location_realtime = false;
+                  }else{
+                     
+                     // let lat = data.lat;
+                     // let lng = data.lng;
+                     // this.latitude  = lat;
+                     // this.longitude = lng;
+                     
                   }
-               }
-            }).catch((e) => { alert(e); })
-         }
+               }).catch((e) => { alert(e); })
+            }
+         }, 1500);
+
       },
    },
 

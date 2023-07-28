@@ -72,10 +72,10 @@
                   </div>
                   <div class='order-price'>
                      <span class='price' >
-                        {{ common_price_after_quantity(product) }}
+                        {{ common_price_after_discount_and_quantity(product) }}
                      </span>
                      <span v-show='has_discount(product) == true' class='od-price-discount'>
-                        {{ common_price_after_discount_and_quantity(product) }}
+                        {{ common_price_after_quantity(product) }}
                      </span>
                   </div>
                </div>

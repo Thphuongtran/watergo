@@ -19,7 +19,9 @@
          <div class='grid-masonry'>
             <div @click='gotoStoreDetail(store.id)' 
                class='product-design' 
-               v-for='(store, index) in stores' :key='index'>
+               v-for='(store, index) in stores' :key='index'
+               :class='store.store_image.dummy != undefined ? "img-dummy" : "" '
+            >
                <div class='img'>
                   <img :src='store.store_image.url'>
                </div>

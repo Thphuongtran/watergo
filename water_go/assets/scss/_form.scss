@@ -451,3 +451,38 @@
       margin-bottom: 40px;
    }
 }
+
+
+.form-group-email{
+   display: flex;
+   flex-flow: row nowrap;
+   position: relative;
+   
+   input{
+      padding-right: 100px;
+   }
+   
+   .btn-email-verify{
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 8;
+      height: 100%;
+      border-top-right-radius: 5px; 
+      border-bottom-right-radius: 5px;
+      border: none;
+      outline: none;
+      width: 84px;
+      background: rgba(204, 204, 204, 1);
+      color: white;
+      font-size: 14px;
+      font-weight: 400;
+      border-bottom: 1px solid black;
+      border-right: 1px solid black;
+      border-top: 1px solid black;
+      
+      &.is-send{
+         background: #1A1A1A;
+      }
+   }
+}

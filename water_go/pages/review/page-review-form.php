@@ -107,26 +107,22 @@ createApp({
 
       async submit(){
          this.loading = true;
-         var form = new FormData();
-         form.append('action', 'atlantis_add_review');
-         form.append('contents', this.review_text);
-         form.append('related_id', this.related_id);
-         form.append('review_page', this.review_page);
-         form.append('rating', this.rating_select);
-         
          if( this.related_id != 0 && this.review_text != '' && this.review_page != '' && this.rating_select > 0){
+            var form = new FormData();
+            form.append('action', 'atlantis_add_review');
+            form.append('contents', this.review_text);
+            form.append('related_id', this.related_id);
+            form.append('review_page', this.review_page);
+            form.append('rating', this.rating_select);
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r));
                if( res.message == 'review_insert_ok'){
                   this.banner_open = true;
                }
-            }else{
-               this.loading = false;
             }
-         }else{
-            this.loading = false;
          }
+         this.loading = false;
          
 
       },

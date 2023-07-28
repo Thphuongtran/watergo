@@ -396,10 +396,15 @@ function common_price_after_discount( product ){
       var currentDate = new Date();
       var discount_from = new Date(product.discount_from);
       var discount_to   = new Date(product.discount_to);
-      discount_from.setHours(0,0,0);
-      discount_to.setHours(0,0,0);
+      currentDate.setHours(0,0,0,0);
+      discount_from.setHours(0,0,0,0);
+      discount_to.setHours(0,0,0,0);
+      currentDate    = parseInt(currentDate.getTime() / 1000);
+      discount_from  = parseInt(discount_from.getTime() / 1000);
+      discount_to    = parseInt(discount_to.getTime() / 1000);
 
       var discount_percent = product.discount_percent;
+
       if (currentDate >= discount_from && currentDate <= discount_to) {
          price = price - ( price * ( discount_percent / 100 ) );
       }
@@ -418,11 +423,15 @@ function common_price_after_discount_and_quantity( product ){
       var currentDate = new Date();
       var discount_from = new Date(product.discount_from);
       var discount_to   = new Date(product.discount_to);
-      discount_from.setHours(0,0,0);
-      discount_to.setHours(0,0,0);
+      currentDate.setHours(0,0,0,0);
+      discount_from.setHours(0,0,0,0);
+      discount_to.setHours(0,0,0,0);
+      currentDate    = parseInt(currentDate.getTime() / 1000);
+      discount_from  = parseInt(discount_from.getTime() / 1000);
+      discount_to    = parseInt(discount_to.getTime() / 1000);
 
       var discount_percent = product.discount_percent;
-      if (currentDate >= discount_from && currentDate <= discount_to) {
+      if ( currentDate >= discount_from && currentDate <= discount_to ) {
          price = price - ( price * ( discount_percent / 100 ) );
          price = price * quantity;
       }else{
@@ -546,15 +555,18 @@ function gotoHome(){
 
 
 function has_discount( product ){
+      
    if( product.has_discount == 0 ) return false;
    var currentDate = new Date();
-
    var discount_from = new Date(product.discount_from);
    var discount_to   = new Date(product.discount_to);
-   discount_from.setHours(0,0,0);
-   discount_to.setHours(0,0,0);
-
-   if (currentDate >= discount_from && currentDate <= discount_to) {
+   currentDate.setHours(0,0,0,0);
+   discount_from.setHours(0,0,0,0);
+   discount_to.setHours(0,0,0,0);
+   currentDate    = parseInt(currentDate.getTime() / 1000);
+   discount_from  = parseInt(discount_from.getTime() / 1000);
+   discount_to    = parseInt(discount_to.getTime() / 1000);
+   if ( currentDate >= discount_from && currentDate <= discount_to ) {
       return true;
    }else{
       return false;
