@@ -516,7 +516,8 @@ p{
 
 }
 
-.badge-discount, .badge-out-of-stock{
+.badge-discount, 
+.badge-out-of-stock{
    width: 36px;
    height: 14px;
    line-height: 14px;
@@ -537,8 +538,21 @@ p{
    }
 }
 
+.badge-discount{
+   &.size-large{
+      width: 60px;
+      height: 26px;
+      line-height: 26px;
+   }
+}
+
 .badge-out-of-stock{
    width: auto;
+   &.size-large{
+      width: 82px;
+      height: 26px;
+      line-height: 26px;
+   }
 }
 
 .product-design{

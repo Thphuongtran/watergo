@@ -31,8 +31,8 @@
                      </li>
                   </ul>
                </div>
-               <span v-show='has_discount(product) == true' class='badge-discount bottom left'>-{{ product.discount_percent }}%</span>
-               <span v-show='product.stock == 0' class='badge-out-of-stock bottom right'>Out of Stock</span>
+               <span v-show='has_discount(product) == true' class='badge-discount bottom left size-large'>-{{ product.discount_percent }}%</span>
+               <span v-show='product.stock == 0' class='badge-out-of-stock bottom right size-large'>Out of Stock</span>
             </div>
             
          </div>

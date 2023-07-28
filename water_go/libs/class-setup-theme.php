@@ -42,6 +42,8 @@ function developerThemeConstruct() {
 	// Support Html5
 	// add_theme_support('html5');
 
+   add_image_size( 'medium', 200, 200, true );
+
 	// Make theme available for translation
 	// Translations can be filed in the /languages/ directory
 	load_theme_textdomain( TEXTDOMAIN, THEME_DIR . '/languages' );
@@ -111,6 +113,7 @@ function developerThemeConstruct() {
    add_filter( 'wp_title', 'rw_title', 10, 3 );
    // remove WP version from RSS
    add_filter( 'the_generator', function(){ return ''; } );
+
 
 }
 

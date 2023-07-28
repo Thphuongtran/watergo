@@ -315,7 +315,8 @@ function func_atlantis_get_images($related_id, $attachment_type, $limit = true){
       $attachment = [];
 
       foreach( $res as $k => $vl ){
-         $url = wp_get_attachment_image_url($vl->attachment_id);
+         // make image crop size 200x200
+         $url = wp_get_attachment_image_url($vl->attachment_id, 'medium');
          $attachment[$k]['url']  = $url;
          $attachment[$k]['id']   = $vl->attachment_id;
       }
