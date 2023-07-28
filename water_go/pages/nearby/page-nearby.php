@@ -294,10 +294,17 @@ createApp({
 
          this.caculator_height_body_and_map();
 
+         var appbarHeight  = $('.appbar').height();
+         var _heightApp = $(window).height() - appbarHeight;
+         
+
+
          if( this.isToggle == true ){
             $('.store-list').css('height', 280.0);
+            $('#mapContainer').css('height', _heightApp - 280.0);
          }else{
             $('.store-list').css('height', 100.0);
+            $('#mapContainer').css('height', _heightApp - 100.0);
          }
 
          this.map.getViewPort().resize();

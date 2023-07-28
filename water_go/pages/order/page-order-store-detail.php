@@ -47,14 +47,10 @@
                   </div>
                   <div class='order-price'>
                      <span class='price'>
-                        {{ 
-                           common_get_price_order(product, product.order_group_product_discount_percent) 
-                        }}
+                        {{ common_price_after_quantity_from_group_order(product) }}
                      </span>
                      <span v-if='product.order_group_product_discount_percent != 0' class='od-price-discount'>
-                        {{ 
-                           common_get_price_order(product, product.order_group_product_discount_percent) 
-                        }}
+                        {{ common_price_after_discount_and_quantity_from_group_order(product) }}
                      </span>
                   </div>
                </div>
@@ -203,6 +199,8 @@ createApp({
    },
 
    methods: {
+      common_price_after_quantity_from_group_order(p){ return common_price_after_quantity_from_group_order(p) },
+      common_price_after_discount_and_quantity_from_group_order(p){ return common_price_after_discount_and_quantity_from_group_order(p) },
       
       add_extra_space_order_time_shipping_time(n){ return window.add_extra_space_order_time_shipping_time(n)},
       calculateDistance(lat1, lon1, lat2, lon2){ return window.calculateDistance(lat1, lon1, lat2, lon2)},
@@ -227,8 +225,7 @@ createApp({
 
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
-      has_discount( product ){ return window.has_discount( product ); },
-      common_get_price_order( price, discount_percent ){ return window.common_get_price_order( price, discount_percent ); },
+      
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
       order_formatDate(timestamp){ return window.order_formatDate(timestamp)},
       get_fulldate_from_day(day ){ return window.get_fulldate_from_day(day) },

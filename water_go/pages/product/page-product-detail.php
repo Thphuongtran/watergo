@@ -31,8 +31,8 @@
                      </li>
                   </ul>
                </div>
-               <span v-if='product.has_discount == 1' class='badge-discount bottom left'>-{{ product.discount_percent }}%</span>
-               <span v-if='product.stock == 0' class='badge-out-of-stock bottom right'>Out of Stock</span>
+               <span v-show='has_discount(product) == true' class='badge-discount bottom left'>-{{ product.discount_percent }}%</span>
+               <span v-show='product.stock == 0' class='badge-out-of-stock bottom right'>Out of Stock</span>
             </div>
             
          </div>
@@ -42,14 +42,16 @@
                <p class='tt01'>{{ product.name }}</p>
                <p class='tt02'>{{ product.name_second }}</p>
                <p class='tt03'> {{ product.description }}</p>
-               <div class='gr-price' :class="product.has_discount == 1 ? 'has_discount' : '' ">
+               
+               <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                   <span class='price'>
-                     {{ common_get_product_price(product) }}
+                     {{ common_price_after_discount(product ) }}
                   </span>
-                  <span v-if='product.has_discount == 1' class='price-sub'>
-                     {{ common_get_product_price(product, 0) }}
+                  <span v-if='has_discount(product) == true' class='price-sub'>
+                     {{ common_price_show_currency(product.price) }}
                   </span>
                </div>
+
                <div class='entry-quantity'>
                   <p>Quantity</p>
                   <div class='quantity-event'>
@@ -115,14 +117,17 @@
                      </div>
                      <p class='tt01'>{{ product.name }} </p>
                      <p class='tt02'>{{ product.name_second }}</p>
-                     <div class='gr-price' :class="product.has_discount == 1 ? 'has_discount' : '' ">
+                     
+
+                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                         <span class='price'>
-                           {{ common_get_product_price(product) }}
+                           {{ common_price_after_discount(product ) }}
                         </span>
-                        <span v-if='product.has_discount == 1' class='price-sub'>
-                           {{ common_get_product_price(product, 0) }}
+                        <span v-if='has_discount(product) == true' class='price-sub'>
+                           {{ common_price_show_currency(product.price) }}
                         </span>
                      </div>
+
                   </li>
                </ul>
             </div>
@@ -212,8 +217,10 @@ createApp({
 
       buttonCloseModal_store_working(){ this.modal_store_working = false; },
       buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false; },
-      has_discount( product ){ return window.has_discount(product); },
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price( price, discount_percent ) },
+      
+      has_discount( product ){ return window.has_discount( product ); },
+      common_price_after_discount(p){ return common_price_after_discount(p) },
+      common_price_show_currency(p){ return common_price_show_currency(p) },
 
       addToCart( isJustShowModal ){
 

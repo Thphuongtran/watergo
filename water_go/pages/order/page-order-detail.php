@@ -59,10 +59,10 @@
                   </div>
                   <div class='order-price'>
                      <span class='price'>
-                        {{ common_get_price_order(product, product.order_group_product_discount_percent) }}
+                        {{ common_price_after_quantity_from_group_order(product) }}
                      </span>
-                     <span v-if='product.order_group_product_discount_percent != 0' class='od-price-discount'>
-                        {{ common_get_price_order(product) }}
+                     <span v-show='product.order_group_product_discount_percent != 0' class='od-price-discount'>
+                        {{ common_price_after_discount_and_quantity_from_group_order(product) }}
                      </span>
                   </div>
                </div>
@@ -125,13 +125,11 @@
             :class='get_layout_text_price'
          >
             <p class='price-total' :class='order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
-            
             <button 
                v-if='
                   ( order_status == "complete" || order_status == "cancel" ) 
                   && order_is_out_of_stock == false
                '
-
                @click='buttonReOrder' 
                class='btn-primary'>Re-Order</button>
          </div>
@@ -180,10 +178,8 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-
          <h3>Order Successfully</h3>
       </div>
-
       <div class='banner-footer'>
          <button @click='goBackReOrder' >Exit</button>
       </div>
@@ -225,14 +221,15 @@ createApp({
 
    methods: {
 
+      common_price_after_quantity_from_group_order(p){ return common_price_after_quantity_from_group_order(p) },
+      common_price_after_discount_and_quantity_from_group_order(p){ return common_price_after_discount_and_quantity_from_group_order(p) },
+
       add_extra_space_order_time_shipping_time(n){ return window.add_extra_space_order_time_shipping_time(n)},
 
-      common_get_price_order( p, d ){ return window.common_get_price_order( p, d ); },
 
       buttonCloseModal_store_out_of_stock(){ this.popup_out_of_stock = false; },
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
-      has_discount( product ){ return window.has_discount( product ); },
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
       order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
       get_fulldate_from_day(day ){ return window.get_fulldate_from_day(day) },

@@ -113,10 +113,10 @@
                </div>
                <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
                   <span class='price'>
-                     {{ common_get_price_order(product, product.order_group_product_discount_percent) }}
+                     {{ common_price_after_quantity_from_group_order(product) }}
                   </span>
                   <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
-                     {{ common_get_price_order(product) }}
+                     {{ common_price_after_discount_and_quantity_from_group_order(product) }}
                   </span>
                </div>
             </div>
@@ -255,6 +255,9 @@ createApp({
    },
 
    methods: {
+      common_price_after_discount_and_quantity_from_group_order(p){ return window.common_price_after_discount_and_quantity_from_group_order(p)},
+      common_price_after_quantity_from_group_order(p){ return window.common_price_after_quantity_from_group_order(p)},
+
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoChat(){ window.gotoChat(); },
 
@@ -397,8 +400,6 @@ createApp({
             }
          });
       },
-
-      common_get_price_order(p, discount ){return window.common_get_price_order(p, discount)},
 
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
@@ -553,10 +554,10 @@ createApp({
       order_filter(){
          var _filter_orders = this.orders;
          if(this.order_by_filter_select.value == 'asc'){
-            _filter_orders.sort((a,b) => a.order_time_created - b.order_time_created );
+            _filter_orders.sort((a,b) => a.order_id - b.order_id );
          }
          if(this.order_by_filter_select.value == 'desc'){
-            _filter_orders.sort((a,b) => b.order_time_created - a.order_time_created );
+            _filter_orders.sort((a,b) => b.order_id - a.order_id );
          }
          if( _filter_orders.length == 0 ){ return []; }
          return _filter_orders;

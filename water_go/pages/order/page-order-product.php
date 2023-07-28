@@ -72,10 +72,10 @@
                   </div>
                   <div class='order-price'>
                      <span class='price' >
-                        {{ common_get_product_price(product) }}
+                        {{ common_price_after_quantity(product) }}
                      </span>
-                     <span class='od-price-discount' v-if='has_discount(product) == true'>
-                        {{ common_get_product_price(product, 0) }}
+                     <span v-show='has_discount(product) == true' class='od-price-discount'>
+                        {{ common_price_after_discount_and_quantity(product) }}
                      </span>
                   </div>
                </div>
@@ -276,17 +276,11 @@ createApp({
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       gotoDeliveryAddress(){ window.gotoDeliveryAddress()},
+
       has_discount( product ){ return window.has_discount( product ); },
-      common_get_product_price( product, depth ){ 
-         return window.common_get_product_price({
-            price: product.price,
-            quantity: product.product_quantity_count,
-            has_discount: product.has_discount,
-            discount_to: product.discount_to,
-            discount_from: product.discount_from,
-            discount_percent: product.discount_percent
-         }, depth);
-      },
+      common_price_after_discount_and_quantity(p){ return window.common_price_after_discount_and_quantity(p)},
+      common_price_after_quantity(p){ return window.common_price_after_quantity(p)},
+      
 
       /**
        * @access DATE FUNCTION
@@ -711,6 +705,8 @@ createApp({
             price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
          };
       },
+
+      
    },
 
    async created(){
@@ -1010,6 +1006,7 @@ createApp({
                   }
                });
             });
+            setTimeout(() => {}, 200);
          }
       }
 

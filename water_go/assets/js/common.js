@@ -388,62 +388,91 @@ function shortenNumber(number) {
 /**
  * @access UPDATE Put product and output print
  */
-function common_get_product_price( product, depth = null ){  
-   var price            = product.price != undefined ? product.price : 0;
-   if( price == 0) return ' 0đ';
-   if( depth == 0 ) return parseInt(price).toLocaleString('vi-VN') + ' đ';
 
-   var quantity         = product.quantity != undefined ? product.quantity : 0;
-   var has_discount     = product.has_discount != undefined ? product.has_discount : 0;
-   var discount_from    = product.discount_from != undefined ? product.discount_from : 0;
-   var discount_to      = product.discount_to != undefined ? product.discount_to : 0;
-   var discount_percent = product.discount_percent != undefined ? product.discount_percent : 0;
+function common_price_after_discount( product ){
+   var price = product.price;
 
-   if( has_discount == 0 ){
-      if( quantity == 0 ){
-         return parseInt(price).toLocaleString('vi-VN') + ' đ';
-      }else{
-         price = price * quantity;
-         return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   if( product.has_discount == 1){
+      var currentDate = new Date();
+      var discount_from = new Date(product.discount_from);
+      var discount_to   = new Date(product.discount_to);
+      discount_from.setHours(0,0,0);
+      discount_to.setHours(0,0,0);
+
+      var discount_percent = product.discount_percent;
+      if (currentDate >= discount_from && currentDate <= discount_to) {
+         price = price - ( price * ( discount_percent / 100 ) );
       }
+
+      return parseInt(price).toLocaleString('vi-VN') + ' đ';
    }
-
-   // has discount - check time discount
-   var currentDate = new Date();
-   discount_from = new Date(product.discount_from);
-   discount_to   = new Date(product.discount_to);
-   discount_from.setHours(0,0,0);
-   discount_to.setHours(0,0,0);
-
-   if (currentDate >= discount_from && currentDate <= discount_to) {
-      price = price - ( price * ( discount_percent / 100 ) );
-   }
-   
-   // if time is expire
-   if( quantity != 0 ){ price = price * quantity; }
-
    return parseInt(price).toLocaleString('vi-VN') + ' đ';
 }
+
+function common_price_after_discount_and_quantity( product ){
+
+   var price      = product.price      != undefined ? product.price : 0;
+   var quantity   = product.quantity   == undefined ? product.product_quantity_count : product.quantity;
+   
+   if( product.has_discount == 1){
+      var currentDate = new Date();
+      var discount_from = new Date(product.discount_from);
+      var discount_to   = new Date(product.discount_to);
+      discount_from.setHours(0,0,0);
+      discount_to.setHours(0,0,0);
+
+      var discount_percent = product.discount_percent;
+      if (currentDate >= discount_from && currentDate <= discount_to) {
+         price = price - ( price * ( discount_percent / 100 ) );
+         price = price * quantity;
+      }else{
+         price = price * quantity;
+      }
+
+      return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   }
+
+   price = price * quantity;
+   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+}
+
+function common_price_after_quantity( product){
+   var price      = product.price      != undefined ? product.price : 0;
+   var quantity   = product.quantity   == undefined ? product.product_quantity_count : product.quantity;
+   price          = price * quantity;
+   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+}
+
+/**
+ * @access FOR ORDER STORE
+ */
+function common_price_after_discount_and_quantity_from_group_order( product ){
+   var price            = product.order_group_product_price;
+   var quantity         = product.order_group_product_quantity_count;
+   var discount_percent = product.order_group_product_discount_percent;
+   price = price - ( price * ( discount_percent / 100 ) );
+   price = price * quantity;
+   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+}
+
+function common_price_after_quantity_from_group_order( product){
+   var price      = product.order_group_product_price;
+   var quantity   = product.order_group_product_quantity_count;
+   price          = price * quantity;
+   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+}
+
+
+
 
 function add_extra_space_order_time_shipping_time(shipping_time){
    var [ start, end ] = shipping_time.split('-');
    return start + ' - ' + end;
 }
 
-function common_get_price_order(product, discount_percent){
-   var price = product.order_group_product_price != undefined ? product.order_group_product_price : 0;
-   var quantity = product.order_group_product_quantity_count != undefined ? product.order_group_product_quantity_count : 0;
-   var discount_percent = discount_percent != undefined ? parseInt( discount_percent ) : 0;
+function common_price_show_currency(price){ return parseInt(price).toLocaleString('vi-VN') + ' đ'; }
 
-   if(discount_percent == 0){
-      price * quantity;
-   }else{
-      price_discount = price - ( price * ( discount_percent / 100 ) );
-      price = price_discount * quantity;
-   }
 
-   return parseInt(price).toLocaleString('vi-VN') + ' đ'; 
-}
 
 function get_fulldate_from_day( day ){
    const currentDate = new Date(); // Get the current date

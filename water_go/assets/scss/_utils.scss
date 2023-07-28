@@ -2938,10 +2938,17 @@ p{
    .price{
       margin-right: 8px;
    }
-   .sub-price{
+   .price-sub{
       margin-left: 0 !important;
       line-height: 2.0;
    }
+
+   &.product-in-cart{
+      .sub-price{
+         margin-left: 0 !important;
+         line-height: 2.2;
+      }
+   }   
 }
 
 .input_quantity{

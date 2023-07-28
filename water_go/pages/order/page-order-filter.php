@@ -49,10 +49,10 @@
                </div>
                <div class='prod-price' :class='product.has_discount != 0 ? "has-discount" : ""'>
                   <span class='price'>
-                     {{ common_get_product_price(product, 0) }}
+                     {{ common_price_show_currency(product.price) }}
                   </span>
                   <span v-if='product.has_discount != 0' class='sub-price'>
-                     <!-- {{ common_get_price_order(product) }} -->
+                     
                   </span>
                </div>
             </div>
@@ -112,6 +112,15 @@ createApp({
    },
 
    methods: {
+      common_price_show_currency(p){return common_price_show_currency(p)},
+
+      get_price_after_discount( p ){
+         var price      = p.price;
+         var discount   = p.order_group_product_discount_percent;
+         var quantity   = p.order_group_product_quantity_count;
+      },
+
+      common_price_after_discount_and_quantity_from_group_order(p){ return common_price_after_discount_and_quantity_from_group_order(p) },
 
       async buttonCloseModal_delete_confirm(){
          this.loading = true;
@@ -175,9 +184,6 @@ createApp({
       },
 
       gotoOrderFilter(filter){ window.gotoOrderFilter(filter); },
-
-      common_get_product_price(p, d){ return window.common_get_product_price(p, d) },
-      common_get_price_order( product, discount_percent ){ return window.common_get_price_order( product , discount_percent ); },
 
       select_filter( filter_select ){ this.order_status_select = filter_select; },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },

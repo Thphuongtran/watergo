@@ -43,14 +43,16 @@
                <div class='box-wrapper'>
                   <p class='tt01'>{{ product.name }} </p>
                   <p class='tt02'>{{ product.name_second }}</p>
+
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
-                        {{ common_get_product_price(product) }}
+                        {{ common_price_after_discount(product ) }}
                      </span>
                      <span v-if='has_discount(product) == true' class='price-sub'>
-                        {{ common_get_product_price(product, 0) }}
+                        {{ common_price_show_currency(product.price) }}
                      </span>
                   </div>
+
                </div>
             </div>
          </div>
@@ -148,8 +150,10 @@ createApp({
          }
       },
 
-      has_discount( product ){ return window.has_discount(product); },
-      common_get_product_price( price, discount_percent ){return window.common_get_product_price(price, discount_percent)},
+      has_discount( product ){ return window.has_discount( product ); },      
+      common_price_show_currency(p){ return common_price_show_currency(p) },
+      common_price_after_discount(p){ return common_price_after_discount(p) },
+      
       
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id);},
       goBack(){ window.goBack(); },

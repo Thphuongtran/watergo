@@ -68,3 +68,12 @@ taikhoanstore1
 taikhoanstore2
 admin
 
+
+
+# Code Native
+appBridge.navigateTo("Home"), 
+appBridge.navigateTo("Nearby"), 
+appBridge.navigateTo("Order"), 
+appBridge.navigateTo("Me")
+
+common_get_product_price

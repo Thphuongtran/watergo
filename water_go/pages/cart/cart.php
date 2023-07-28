@@ -89,12 +89,12 @@
                      </div>
                      <div class='content'>
                         <div class='product-name'>{{ product.name }}</div>
-                        <div class='product-price'>
+                        <div class='product-price product-in-cart'>
                            <span class='price'>
-                              {{ common_get_product_price(product) }}
+                              {{ common_price_after_discount(product ) }}
                            </span>
-                           <span v-if='product.has_discount == 1' class='sub-price'>
-                              {{ common_get_product_price(product, 0) }}
+                           <span v-show='has_discount(product) == true' class='sub-price'>
+                              {{ common_price_show_currency( product.price ) }}
                            </span>
                         </div>
                      </div>
@@ -163,6 +163,10 @@ createApp({
    },
    methods: {
 
+      has_discount( product ){ return window.has_discount( product ); },      
+      common_price_show_currency(p){ return common_price_show_currency(p) },
+      common_price_after_discount(p){ return common_price_after_discount(p) },
+
       select_all_item(){
          this.select_all_value = !this.select_all_value;
          this.carts.forEach( store => {
@@ -222,7 +226,7 @@ createApp({
 
       },
 
-      common_get_product_price( p, d ){ return window.common_get_product_price( p, d ); },
+      
 
       cart_stream(){
          var _isAllSelected = this.carts.every(store => store.store_select === true);
@@ -430,8 +434,10 @@ createApp({
       }
 
       this.loading = false;
-
       window.appbar_fixed();
+
+      // console.log(this.carts)
+
    },
 
    mounted(){

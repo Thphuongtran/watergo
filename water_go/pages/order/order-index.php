@@ -63,10 +63,10 @@
                </div>
                <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
                   <span class='price'>
-                     {{ common_get_price_order(product, product.order_group_product_discount_percent ) }}
+                     {{ common_price_after_quantity_from_group_order(product) }}
                   </span>
                   <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
-                     {{ common_get_price_order(product) }}
+                     {{ common_price_after_discount_and_quantity_from_group_order(product) }}
                   </span>
                </div>
             </div>
@@ -115,6 +115,9 @@ createApp({
 
    methods: {
 
+      common_price_after_discount_and_quantity_from_group_order(p){ return window.common_price_after_discount_and_quantity_from_group_order(p)},
+      common_price_after_quantity_from_group_order(p){ return window.common_price_after_quantity_from_group_order(p)},
+
       gotoChat(){ window.gotoChat(); },
       async get_notification_count(){
          var form = new FormData();
@@ -127,8 +130,6 @@ createApp({
             }
          }
       },
-
-      common_get_price_order( p, d ){return window.common_get_price_order( p, d );},
 
       select_filter( filter_select ){ 
          this.order_status_filter.some(item => {

@@ -91,10 +91,10 @@
                            <p class='tt02'>{{ product.name_second }}</p>
                            <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                               <span class='price'>
-                                 {{ common_get_product_price(product) }}
+                                 {{ common_price_after_discount(product ) }}
                               </span>
                               <span v-if='has_discount(product) == true' class='price-sub'>
-                                 {{ common_get_product_price(product, 0) }}
+                                 {{ common_price_show_currency( product.price ) }}
                               </span>
                            </div>
                         </li>
@@ -174,12 +174,15 @@ createApp({
 
    methods: {
 
+      has_discount( product ){ return window.has_discount( product ); },      
+      common_price_show_currency(p){ return common_price_show_currency(p) },
+      common_price_after_discount(p){ return common_price_after_discount(p) },
+      
       ratingNumber(rating){ return parseFloat(rating).toFixed(1); },
       mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoSearch(){ window.gotoSearch()},
-      has_discount( product ){ return window.has_discount( product ); },      
-      common_get_product_price( p, d ){ return window.common_get_product_price( p, d ); },
+
       gotoProductRecommend(){ window.gotoProductRecommend(); },
       gotoNearbyStore(){ window.gotoNearbyStore() },
       gotoProductWater(){window.gotoProductWater() },
@@ -247,6 +250,8 @@ createApp({
    },
 
    computed: {
+      
+
       count_product_in_cart(){ return window.count_product_in_cart(); }
    },
 
@@ -299,19 +304,7 @@ createApp({
       //       }
       //    }
       // }
-      if( window.callbackResume() != undefined ){
-         if( window.callbackResume(data) ){
-            alert(data);
-         }
-      }
-
-      
-
    },
-
-   mounted(){
-      
-   }
 
 })
 .component('component-location-modal', LocationModal)

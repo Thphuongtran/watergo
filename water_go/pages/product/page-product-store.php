@@ -82,14 +82,14 @@
                <div class='tt1'>{{ product.name }}</div>
                <div class='tt2'>{{ product.name_second }}</div>
                <div class='tt3'>
+
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
-                        {{ common_get_product_price(product ) }}
+                        {{ common_price_after_discount(product ) }}
                      </span>
                      <span v-if='has_discount(product) == true' class='price-sub'>
-                        {{ common_get_product_price(product, 0 ) }}
+                        {{ common_price_show_currency(product.price) }}
                      </span>
-
                   </div>
 
                   <button @click='gotoProductStoreEdit("edit", get_product_tab_value, product.id, store_id )' class="btn-action-view">View</button>
@@ -238,8 +238,11 @@ createApp({
          return 'out_of_stock';
       },
 
-      has_discount(product){ return window.has_discount(product)},
-      common_get_product_price(price, discount_number){ return window.common_get_product_price(price, discount_number )},
+      has_discount( product ){ return window.has_discount( product ); },
+      common_price_show_currency(p){ return common_price_show_currency(p) },
+      common_price_after_discount(p){ return common_price_after_discount(p) },
+
+
       gotoChat(){ window.gotoChat()},
       gotoProductAdd(){ window.gotoProductAdd(this.product_tab_value) },
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
