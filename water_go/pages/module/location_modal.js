@@ -44,7 +44,7 @@ const LocationModal = {
                      // this.longitude = lng;
                      
                   }
-               }).catch((e) => { alert(e); })
+               }).catch((e) => { })
             }
          }, 1500);
 

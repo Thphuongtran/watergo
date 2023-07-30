@@ -809,7 +809,29 @@ p{
          }
       }
    }
+
    
+
+   &.brand-resize{
+      li{
+         min-width: auto;
+         padding: 5px 15px;
+         white-space: nowrap;
+      }
+   }
+   
+}
+
+@media screen and (max-width: 375px){
+   .navbar{
+      &.auto-resize-375{
+         li{
+            min-width: auto;
+            padding: 10px 15px;
+            white-space: nowrap;
+         }
+      }
+   }
 }
 
 .grid-masonry{

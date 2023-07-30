@@ -49,7 +49,7 @@
       <ul class='list-tile order'>
          <li  
             v-for='(store, index) in carts' :key='index'>
-            <div class='shop-detail add-arrow'>
+            <div @click='gotoStoreDetail(store.store_id)' class='shop-detail add-arrow'>
                <div class='logo'>
                   <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/>
@@ -273,6 +273,8 @@ createApp({
          window.reset_cart_to_select_false();
          window.goBack(true);
       },
+
+      gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       gotoDeliveryAddress(){ window.gotoDeliveryAddress()},

@@ -1,6 +1,7 @@
 <div id='app'>
 
    <div v-show='loading == false' class='page-delivery-address'>
+
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
@@ -34,7 +35,8 @@
 
       <ul class='list-tile col3' v-if='delivery_address.length > 0'>
          <li 
-            v-for='(delivery, index) in delivery_address' :key='index'>
+            v-for='(delivery, index) in delivery_address' :key='index'
+         >
             <div @click='change_default_delivery_address(delivery.id )' class='leading'>
                <div class="radio-button" :class='delivery.primary == true ? "active" : ""'></div>
             </div>
@@ -69,7 +71,40 @@ createApp({
       return{
          loading: false,
          delivery_address: [],
+         delivery_id_primary: 0
       }
+   },
+
+   watch: {
+
+      delivery_id_primary: async function( delivery_id ){
+         var find = this.delivery_address.some( item => item.primary == 1 && item.id == delivery_id );
+         
+         if( ! find ){
+            this.loading = true;
+            var form = new FormData();
+            form.append('action', 'atlantis_user_change_delivery_address_quick');
+            form.append('delivery_address_id', delivery_id);
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r ));
+               if( res.message == 'delivery_address_primary_ok' ){
+                  // force all to false primary
+                  this.delivery_address.forEach(item => {
+                     if( item.id == delivery_id ){
+                        item.primary = 1;
+                     }else{
+                        item.primary = 0;
+                     }
+                  });
+               }
+            }
+            setTimeout(() => {
+               this.loading = false;
+            }, 300);
+         }
+      }
+
    },
 
    methods: {
@@ -78,28 +113,8 @@ createApp({
       gotoDeliveryAddressEdit(delivery_id){ window.gotoDeliveryAddressEdit(delivery_id)},
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       
-      async change_default_delivery_address( delivery_id ){
-         this.loading = true;
-         setTimeout(() => {}, 300);
-         var delivery_id = parseInt( delivery_id );
-         var form = new FormData();
-         form.append('action', 'atlantis_user_change_delivery_address_quick');
-         form.append('delivery_address_id', delivery_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'delivery_address_primary_ok' ){
-               // force all to false primary
-               this.delivery_address.forEach(item => {
-                  if( item.id == delivery_id ){
-                     item.primary = 1;
-                  }else{
-                     item.primary = 0;
-                  }
-               });
-            }
-         }
-         this.loading = false;
+      change_default_delivery_address( delivery_id ){
+         this.delivery_id_primary = delivery_id;
       },
 
       async get_delivery_address(){
@@ -107,7 +122,6 @@ createApp({
          form.append('action', 'atlantis_user_delivery_address');
          form.append('event', 'get');
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_delivery_address_ok' ){

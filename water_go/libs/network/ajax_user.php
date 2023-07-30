@@ -177,8 +177,9 @@ function atlantis_user_change_delivery_address_quick(){
          wp_send_json_success([ 'message' => 'delivery_address_primary_ok']);
          wp_die();
       }
-         wp_send_json_error(['message' => 'delivery_address_not_found' ]);
-         wp_die();
+      
+      wp_send_json_error(['message' => 'delivery_address_not_found' ]);
+      wp_die();
    }
 }
 

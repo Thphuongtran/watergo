@@ -132,30 +132,48 @@ function func_atlantis_get_order_fullpack( $args ){
 
 }
 
+
+
 /**
  * @access GET ORDER NUMBER
  */
+
+function func_get_order_number_in_by_order_id( $order_id ){
+   global $wpdb;
+   $sql_order_number = "SELECT order_number FROM wp_watergo_order WHERE order_id = $order_id ";
+   $res_order_number = $wpdb->get_results($sql_order_number);
+   if( empty( $res_order_number ) ){
+      return 0;
+   }
+   return $res_order_number[0]->order_number;
+}
 
 function func_atlantis_get_order_number( $order_id ){
    $sql = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id LIMIT 1";
    global $wpdb;
    $res = $wpdb->get_results($sql);
-
+   
    if ( ! empty( $res ) ) {
 
       if( $res[0]->order_repeat_type == 'weekly' || $res[0]->order_repeat_type == 'monthly' ){
          $number_repeat = '';
+         $order_number = 0;
 
          if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
             $number_repeat = '-' . $res[0]->order_repeat_count;
+            $order_number  = func_get_order_number_in_by_order_id($res[0]->order_repeat_order_id_parent);
+         }else{
+            $order_number  = func_get_order_number_in_by_order_id($res[0]->order_repeat_order_id_parent);
          }
-         
-         $numberWithZeros = str_pad( $res[0]->order_repeat_order_id, 4, "0", STR_PAD_LEFT) . $number_repeat;
+
+         $numberWithZeros = str_pad( $order_number, 4, "0", STR_PAD_LEFT) . $number_repeat;
          return $numberWithZeros;
       }
    }
 
-   $numberWithZeros = str_pad( $order_id, 4, "0", STR_PAD_LEFT);
+   $order_number = func_get_order_number_in_by_order_id($order_id);
+
+   $numberWithZeros = str_pad( $order_number , 4, "0", STR_PAD_LEFT);
    return $numberWithZeros;
 }
 

@@ -208,7 +208,7 @@ createApp({
                   this.latitude = data.lat;
                   this.longitude = data.lng;
                }
-            }).catch((e) => { alert(e); })
+            }).catch((e) => { })
          }
       },
 

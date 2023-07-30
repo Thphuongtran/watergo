@@ -147,6 +147,11 @@
 			flex-flow: row wrap;
 			padding-bottom: 8px;
 
+         .logo{
+            display: flex;
+            align-items: center;
+         }
+
          &.add-arrow{
             position: relative;
             &:after{

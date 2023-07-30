@@ -232,7 +232,7 @@ createApp({
       get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
 
-      goBack(){ window.goBack() },
+      goBack(){ window.goBack(true) },
 
       async btn_order_status( order_status ){
 

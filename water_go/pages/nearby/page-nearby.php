@@ -174,7 +174,7 @@ createApp({
                      this.longitude =lng;
                   }
                }
-            }).catch((e) => { alert(e); })
+            }).catch((e) => { })
          }
       },
 
@@ -333,15 +333,11 @@ createApp({
       },
 
       caculator_height_body_and_map(){
-
          (function($){
             var appbarHeight  = $('.appbar').height();
             var _heightApp = $(window).height() - appbarHeight;
-
             $('.store-wrapper').css('height', _heightApp);
-
          })(jQuery);
-         
       },
 
       // update location to get new store
@@ -351,10 +347,11 @@ createApp({
             if( newCenter ){
                await this.get_all_store_location(newCenter.lat, newCenter.lng);
             }
+            console.log(newCenter)
          }
+         var timeoutId = setTimeout(delayedAction, 1500);
+         if (timeoutId) { clearTimeout(timeoutId); }
          delayedAction = delayedAction.bind(this);
-         if (this.timeoutId) { clearTimeout(this.timeoutId); }
-         this.timeoutId = setTimeout(delayedAction, 1500);
       }
 
    },

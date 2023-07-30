@@ -30,7 +30,7 @@
             </div>
 
             <div class='box-category'>
-               <ul class='navbar'>
+               <ul class='navbar auto-resize-375'>
                   <li @click='select_category(cat.id)' 
                      v-for='(cat, index) in categoryIce' :key='index' 
                      :class='cat.active == true ? "active" : ""'>
@@ -44,7 +44,6 @@
 
 
       <div class='overlay-layer'>
-         
          
          <div class='inner'>
             <div class='grid-masonry'>
@@ -116,7 +115,7 @@ createApp({
                   this.latitude = data.lat;
                   this.longitude = data.lng;
                }
-            }).catch((e) => { alert(e); })
+            }).catch((e) => { })
          }
       },
 

@@ -56,6 +56,18 @@ add_action( 'wp_ajax_nopriv_atlantis_get_all_time_shipping_from_order', 'atlanti
 add_action( 'wp_ajax_atlantis_get_all_time_shipping_from_order', 'atlantis_get_all_time_shipping_from_order' );
 
 
+/**
+ * @access CREATE ORDER NUMBER
+ */
+function func_generator_order_number( $store_id){
+   global $wpdb;
+   $sql = "SELECT COUNT(order_number) as order_number FROM wp_watergo_order WHERE order_store_id = $store_id LIMIT 1";
+   $res = $wpdb->get_results($sql);
+   if( $res[0]->order_number == null || $res[0]->order_number == 0 ) return 1;
+   return $res[0]->order_number + 1;
+
+}
+
 // USE FOR NO AJAX LOCAL PHP ONLY
 
 function return_order_with_group_products( $array_orders ){
@@ -79,15 +91,6 @@ function return_order_with_group_products( $array_orders ){
 
       } else {
          // Item with the order_id or hash_id does not exist, create a new entry
-         if( $item->store_order_time_shipping_id ){
-            // $final[$key]['store_order_time_shipping_id'] = $item->store_order_time_shipping_id;
-         }
-         if( $item->store_latitude ){
-            // $final[$key]['store_latitude'] = $item->store_latitude;
-         }
-         if( $item->store_longitude ){
-            // $final[$key]['store_longitude'] = $item->store_longitude;
-         }
 
          $final[$key] = [
             'order_id'                 => $item->order_id,
@@ -255,7 +258,7 @@ function atlantis_add_order(){
       $hash_id = bin2hex(random_bytes(64));
 
       $delivery_address = isset($_POST['delivery_address']) ? $_POST['delivery_address'] : '';
-      $delivery_data = isset($_POST['delivery_data']) ? $_POST['delivery_data'] : '';
+      $delivery_data    = isset($_POST['delivery_data'])    ? $_POST['delivery_data'] : '';
       /**
        * @access OUTPUT
          {
@@ -296,25 +299,29 @@ function atlantis_add_order(){
          $delivery_data != '' && 
          $productSelected != '') {
 
+         $delivery_address       = json_encode( stripslashes( $delivery_address), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+
          foreach( $carts as $k => $cart ){
             
-            $hash_id = bin2hex(random_bytes(64));
+            $hash_id          = bin2hex(random_bytes(64));
             $query_check_hash = $wpdb->prepare("SELECT COUNT(*) FROM wp_watergo_order_group WHERE hash_id = %s", (String) $hash_id);
-            $check_hash = $wpdb->get_var($query_check_hash);
-            $store_id = $cart->store_id;
+            $check_hash       = $wpdb->get_var($query_check_hash);
+            $store_id         = $cart->store_id;   
+            $order_number     = func_generator_order_number($store_id);
 
-            $delivery_new = [];            
+            // wp_send_json_success(['message' => 'bug', 'order_number' => $order_number]);
+            // wp_die();
 
-            $delivery_data_convert = json_decode( stripslashes($delivery_data));
-            $delivery_address = json_encode( stripslashes( $delivery_address), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
+            $delivery_data_convert  = json_decode( stripslashes($delivery_data));
+            
             $dayOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
             
             if( $check_hash == 0 ){
                $wpdb->insert('wp_watergo_order', [
-                  'order_by'                 => $user_id,
+                  'order_number'             => (int) $order_number,
                   'order_store_id'           => $store_id,
+                  'order_by'                 => $user_id,
                   'order_delivery_type'      => $delivery_type,
                   'order_payment_method'     => 'cash',
                   'order_status'             => 'ordered',
@@ -592,8 +599,6 @@ function atlantis_get_order_schedule(){
          WHERE wp_watergo_store.id = $store_id
          AND wp_watergo_order.order_status = 'confirmed'
          -- AND wp_watergo_order.order_id NOT IN ($placeholders)
-         
-         
       ";
 
       if( $filter == 'once' ){
@@ -603,17 +608,15 @@ function atlantis_get_order_schedule(){
             )
          ";
       }
+
       if( $filter == 'weekly'){
          $sql .= " AND wp_watergo_order.order_delivery_type = 'weekly' ";
       }
       if( $filter == 'monthly'){
          $sql .= " AND wp_watergo_order.order_delivery_type = 'monthly' ";
       }
-
       $sql .= "AND wp_watergo_order_time_shipping.order_time_shipping_datetime = '$datetime'";
-
       // DATE TIME
-
 
       $sql .= " 
          ORDER BY wp_watergo_order.order_id DESC
@@ -638,7 +641,6 @@ function atlantis_get_order_schedule(){
             $orders[$k]['order_number'] = $get_order_number;
             $orders[$k]['order_time_shipping'] = func_atlantis_get_order_time_shipping_single_record( $vl['store_order_time_shipping_id'] );
          }
-
          wp_send_json_success(['message' => 'get_order_ok', 'data' => $orders]);
          wp_die();         
       }
@@ -930,6 +932,7 @@ function atlantis_clone_order( $order_id, $order_time_shipping_id ){
    if(empty($get_hash_check)) return [];
 
    $sql_clone = "INSERT INTO wp_watergo_order(
+      order_number,
       hash_id,
       order_by,
       order_store_id,
@@ -945,6 +948,7 @@ function atlantis_clone_order( $order_id, $order_time_shipping_id ){
       order_time_delivery
    )
    SELECT 
+      order_number,
       '$hash_id',
       order_by,
       order_store_id,

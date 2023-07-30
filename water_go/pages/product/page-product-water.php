@@ -29,14 +29,14 @@
                </ul>
             </div>
 
-            <ul class='navbar'>
+            <ul class='navbar auto-resize-375'>
                <li @click='select_category(cat.id)' 
                   v-for='(cat, index) in categoryWater' :key='index' 
                   :class='cat.active == true ? "active" : ""'>
                   {{ cat.name }}
                </li>
             </ul>
-            <ul class='navbar style01'>
+            <ul class='navbar brand-resize style01 '>
                <li @click='select_brand(brand.id)' 
                   v-for='(brand, index) in brandWater' :key='index'
                   :class='brand.active == true ? "active" : ""'>
@@ -49,8 +49,8 @@
 
       <div class='inner'>
          <div class='grid-masonry'>
-            <div @
-               click='gotoProductDetail(product.id)' 
+            <div 
+               @click='gotoProductDetail(product.id)' 
                class='product-design' 
                v-for='(product, index) in filter_products ' :key='index'
                :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
@@ -104,7 +104,7 @@ createApp({
          categoryWater: [],
          brandWater: [],
 
-         arg_get_product: null,
+         arg_get_product: 0,
          
       }
    },
@@ -123,7 +123,7 @@ createApp({
                   this.latitude = data.lat;
                   this.longitude = data.lng;
                }
-            }).catch((e) => { alert(e); })
+            }).catch((e) => { })
          }
       },
 
@@ -161,7 +161,7 @@ createApp({
          });
       },
 
-      get_text_filter(  ){
+      get_text_filter(){
 
          switch( this.sortFeatureCurrentValue ){
             case 0: return 'nearest'; break;
@@ -182,7 +182,6 @@ createApp({
                this.categoryWater.push( ...res.data);
             }
          }
-
       },
 
       async load_brand(){
@@ -205,14 +204,11 @@ createApp({
          const scrollPosition       = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight         = window.innerHeight;
          const documentHeight       = document.documentElement.scrollHeight;
-
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            
             await this.load_product_sort( this.get_text_filter(), this.paged++ );
-
          }
       },
 
@@ -229,9 +225,8 @@ createApp({
          form.append('paged', paged);
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
-
          var r = await window.request(form);
-         console.log(r)
+         // console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -304,10 +299,11 @@ createApp({
          
       this.get_current_location();
       this.loading = true;
-      await this.load_product_sort('nearest', 0);
 
+      await this.load_product_sort('nearest', 0);
       await this.load_category();
       await this.load_brand();
+
       this.loading = false;
 
       window.appbar_fixed();
