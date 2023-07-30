@@ -232,9 +232,6 @@ createApp({
             // product_image in visible
          },
 
-         // CHECK USE HAS DISCOUNT
-         ref_history_has_discount: 0,
-
          category: [],
          uploadImages: [],
          productImages: [],
@@ -330,8 +327,17 @@ createApp({
       async btn_action_product( event ){
          
          this.loading = true;
-         var _discount_from = this.$refs.discount_from.value;
-         var _discount_to = this.$refs.discount_to.value;
+         var _discount_from   = this.$refs.discount_from.value != undefined || this.$refs.discount_from.value != '' ? this.$refs.discount_from.value : 0;
+         var _discount_to     = this.$refs.discount_to.value != undefined || this.$refs.discount_to.value != '' ? this.$refs.discount_to.value : 0;
+
+         if( this.product.discount_from != null && this.product.discount_from != 0){
+            _discount_from = window.reverse_system_datetime_to_date(this.product.discount_from);
+         }
+         if( this.product.discount_to != null && this.product.discount_to != 0){
+            _discount_to = window.reverse_system_datetime_to_date(this.product.discount_to);
+         }
+         
+         var _submit          = true;
 
          var form = new FormData();
          form.append('action', 'atlantis_action_product_store');
@@ -339,33 +345,44 @@ createApp({
          form.append('product_type', this.product_type);
          form.append('store_id', this.store_id);
          form.append('product_id', this.product_id);
-         form.append('list_attachment_id_delete', JSON.stringify(this.list_attachment_id_delete) );
 
-         // FOR EVENT EDIT
-         if( event == 'edit' ){
-            // WHEN USER WANT REMOVE DISCOUNT
-            if(this.ref_history_has_discount == 1 && this.product.has_discount == 0){
-               form.append('has_discount',      0);
-               form.append('discount_percent',  0);
-               form.append('discount_from',     0);
-               form.append('discount_to',       0);
-               form.append('force_remove_has_discount', 1);
+         if( this.uploadImages.length > 0 ){
+            this.uploadImages.forEach( file => form.append('uploadImages[]', file.file ));
+         }
+         
+         if( this.list_attachment_id_delete.length > 0 && event == 'edit' ){
+            form.append('list_attachment_id_delete', JSON.stringify(this.list_attachment_id_delete) );
+         }
+
+         var _has_discount = 0;
+
+         if( this.product.has_discount == 1 ){
+            if( _discount_from != null && _discount_to != null ){
+               _has_discount = 1;
+            }else{
+               _has_discount                 = 0;
+               this.product.discount_percent = 0;
+               _submit = false;
             }
          }
+
+         form.append('has_discount',      _has_discount);
+         form.append('discount_percent',  this.product.discount_percent);
+         form.append('discount_from',     _discount_from);
+         form.append('discount_to',       _discount_to);
 
          /**
           * @access PRODUCT TYPE {ICE}
           */
-         if( this.product_type  == 'ice' ){
+         if( this.product_type  == 'ice' && _submit == true){
             // check all is empty?
             if(
                this.select_category.value == 0 ||
-               ( this.product.price == 0 || this.product.price == null ) ||
-               ( this.product.stock == 0 || this.product.stock == null ) ||
+               this.product.price == null ||
+               this.product.stock == null ||
                this.ice_weight.value == 0 ||
                this.product.length_width == '' ||
-               this.product.description == '' || 
-               (this.uploadImages.length == 0 && this.productImages.length == 0)
+               this.product.description == ''
             ){
                this.text_error = 'All field must be not empty.';
             }else{
@@ -376,40 +393,16 @@ createApp({
                form.append('ice_weight', this.ice_weight.value);
                form.append('length_width', this.product.length_width);
                form.append('product_description', this.product.description);
-               
-               this.uploadImages.forEach( file => form.append('uploadImages[]', file.file ));
 
-               var _submit = false;
-
-               // CHECK IF DISCOUNT HAS ENABLE
-               if( this.product.has_discount == true ){
-                  if( 
-                     ( _discount_from == undefined || _discount_from == '' ) ||
-                     ( _discount_to == undefined || _discount_to == '' ) ||
-                     ( this.product.discount_percent == 0 || this.product.discount_percent == null ) 
-                  ){
-                     this.text_error = 'All field must be not empty.';
-                  }else{
-                     this.text_error = '';
-                     form.append('has_discount',      1);
-                     form.append('discount_percent',  this.product.discount_percent);
-                     form.append('discount_from',     _discount_from);
-                     form.append('discount_to',       _discount_to);
-                     _submit = true;
-                  }
-               }else{
-                  _submit = true;
-               }
-
-               if( _submit == true ){
-                  var r = await window.request(form);
-                  if( r != undefined ){
-                     var res = JSON.parse( JSON.stringify( r ));
-                     if( res.message == 'action_product_ok'){
-                        this.goBack();
-                     }
+               var r = await window.request(form);
+               console.log(r)
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify( r ));
+                  if( res.message == 'action_product_ok'){
+                     this.goBack();
                   }
                }
+
             }
 
          }
@@ -417,17 +410,16 @@ createApp({
          /**
           * @access PRODUCT TYPE {WATER}
           */
-         if( this.product_type == 'water' ){
+         if( this.product_type == 'water' && _submit == true){
             // check all is empty?
             if(
                this.select_category.value == 0 ||
                this.water_brand.value == 0 ||
-               ( this.product.price == 0 || this.product.price == null ) ||
-               ( this.product.stock == 0 || this.product.stock == null ) ||
+               this.product.price == null ||
+               this.product.stock == null ||
                this.water_quantity.value == 0 ||
                this.water_volume.value == 0 ||
-               this.product.description == '' || 
-               this.uploadImages.length == 0
+               this.product.description == ''
             ){
                this.text_error = 'All field must be not empty.';
             }else{
@@ -439,42 +431,14 @@ createApp({
                form.append('water_quantity', this.water_quantity.value);
                form.append('water_volume', this.water_volume.value);
                form.append('product_description', this.product.description);
-               
-               this.uploadImages.forEach( file => form.append('uploadImages[]', file.file ) );
 
-               var _submit = false;
-
-               // CHECK IF DISCOUNT HAS ENABLE
-               if( this.product.has_discount == true ){
-                  if( 
-                     ( _discount_from == undefined || _discount_from == '' ) ||
-                     ( _discount_to == undefined || _discount_to == '' ) ||
-                     ( this.product.discount_percent == 0 || this.product.discount_percent == null ) 
-                  ){
-                     this.text_error = 'All field must be not empty.';
-                  }else{
-                     this.text_error = '';
-                     form.append('has_discount',      1);
-                     form.append('discount_percent',  this.product.discount_percent);
-                     form.append('discount_from',     _discount_from);
-                     form.append('discount_to',       _discount_to);
-                     _submit = true;
-                  }
-               }else{
-                  _submit = true;
-               }
-
-               if( _submit == true ){
-                  var r = await window.request(form);
-                  if( r != undefined ){
-                     var res = JSON.parse( JSON.stringify( r ));
-                     if( res.message == 'action_product_ok' ){
-                        this.goBack();
-                     }
+               var r = await window.request(form);
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify( r ));
+                  if( res.message == 'action_product_ok' ){
+                     this.goBack();
                   }
                }
-
-               
 
             }
          }
@@ -512,18 +476,17 @@ createApp({
             if( res.message == 'product_found' ){
                this.product = res.data;
 
-               this.select_category.value = this.product.category;
-               this.water_brand.value = this.product.brand;
-               this.water_quantity.value = this.product.quantity;
-               this.water_volume.value = this.product.volume;
-               this.water_volume.value = this.product.volume;
-               this.ice_weight.value = this.product.weight;
+               this.select_category.value    = this.product.category;
+               this.water_brand.value        = this.product.brand;
+               this.water_quantity.value     = this.product.quantity;
+               this.water_volume.value       = this.product.volume;
+               this.water_volume.value       = this.product.volume;
+               this.ice_weight.value         = this.product.weight;
 
                // FILL DISCOUNT
                if(this.product.has_discount == 1){
-                  $('#discount_from').attr('value', this.product.discount_from);
-                  $('#discount_to').attr('value', this.product.discount_to);
-                  this.ref_history_has_discount = 1;
+                  $('#discount_from').attr('value', window.reverse_system_datetime_to_date(this.product.discount_from) );
+                  $('#discount_to').attr('value', window.reverse_system_datetime_to_date(this.product.discount_to) );
                }
 
                // PRODUCT IMAGE

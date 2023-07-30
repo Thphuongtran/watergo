@@ -79,6 +79,15 @@ function reverse_date_to_system_datetime( inputDate){
    return false;
 }
 
+function reverse_system_datetime_to_date( inputDate){
+   if(inputDate != undefined && inputDate != null ){
+      var [y, m, d] = inputDate.split('-');
+      const formattedDate = `${d}/${m}/${y}`;
+      return formattedDate;
+   }
+   return false;
+}
+
 
 /**
  * @access REVERSE DATE TO yyyy-mm-dd hh:ii:ss to  dd-mm-yyyy hh:ii

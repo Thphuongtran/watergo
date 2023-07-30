@@ -124,6 +124,9 @@ function atlantis_action_product_store(){
       $discount_from    = isset($_POST['discount_from']) ? $_POST['discount_from'] : 0;
       $discount_to      = isset($_POST['discount_to']) ? $_POST['discount_to'] : 0;
 
+
+      
+
       if( $discount_from != null || $discount_from != 0 ){
          $discount_from = DateTime::createFromFormat('d/m/Y', $discount_from);
          if( $discount_from != false ){
@@ -157,11 +160,15 @@ function atlantis_action_product_store(){
 
       $arg_discount = [];
       if( $has_discount == 1 ){
-         $arg_discount['has_discount'] = $has_discount;
-         $arg_discount['discount_percent'] = $discount_percent;
-         $arg_discount['discount_from'] = $discount_from;
-         $arg_discount['discount_to'] = $discount_to;
+         $arg_discount['has_discount']       = $has_discount;
+         $arg_discount['discount_percent']   = $discount_percent;
+         $arg_discount['discount_from']      = $discount_from;
+         $arg_discount['discount_to']        = $discount_to;
       }
+
+      // wp_send_json_success(['message' => 'bug', 'arg_discount' => $arg_discount ]);
+      // wp_die();
+
 
       /**
       *  @access ADD PRODUCT
