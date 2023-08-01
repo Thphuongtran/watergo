@@ -12,6 +12,7 @@ html{
 }
 
 .d-block{display: block;}
+.d-none{ display: none !important; }
 
 .remove-scrollbar{
    &::-webkit-scrollbar{
@@ -272,6 +273,10 @@ p{
       line-height: 30px;
       padding: 0 10px;
       border-radius: 5px;
+   }
+
+   &.disable{
+      opacity: 0.5;
    }
 }
 .btn-second{
@@ -2332,6 +2337,13 @@ p{
       margin-right: 2px;
    }
 
+   &.store_active{
+      border: 1px solid #2790F9;
+      .store{
+         color: #2790F9;
+      }
+   }
+
 
 }
 
@@ -3039,10 +3051,16 @@ p{
 
 .text-nowrap{
    white-space: nowrap;
-   text-wrap: nowrap;
 }
 
 .justify-center{
-   justify-content: center;
    padding-left: 0 !important;
+}
+
+
+.box-search-reccommend{
+   max-height: 150px;
+   overflow-y: scroll;
+   padding-top: 10px;
+   font-size: 12px;
 }

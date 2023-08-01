@@ -1,5 +1,12 @@
 <div id='app'>
-   <div v-if='loading == false && orders != null' class='page-order'>
+
+   <div v-if="loading == true">
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
+   </div>
+
+   <div v-if="loading == false" class='page-order'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -34,15 +41,14 @@
             </div>
          </div>
          <div class='appbar-bottom'>
-            <ul v-if='order_status_filter.length > 0' class='navbar style02'>
+            <ul class='navbar style02'>
                <li @click='select_filter(filter.value)' v-for='(filter, index) in order_status_filter' :key='index' 
                   :class='filter.active == true ? "active" : ""'>{{ filter.label }}</li>
             </ul>
          </div>
       </div>
 
-
-      <ul v-if='orders.length > 0' class='list-order'>
+      <ul v-if='orders.length > 0' class='list-order' >
          <li v-for='(order, orderKey) in orders' :key='orderKey'>
 
             <div class='order-head'>
@@ -81,26 +87,23 @@
 
    </div>
 
-   <div v-if='loading == true'>
-      <div class='progress-center'>
-         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div>
-   </div>
+
 </div>
 
-<script type='module'>
+<script type='text/javascript'>
 
 var { createApp } = Vue;
 
 createApp({
    data (){
       return {
-         loading: false,
+         loading: true,
          notification_count: 0,
          isCancel: false,
          paged: 0,
          order_status: 'ordered',
          orders: [],
+         orders_count: 0,
          
          order_status_filter: [ 
             { label: 'Ordered', value: 'ordered', active: true },
@@ -187,7 +190,7 @@ createApp({
          const windowTop = window.pageYOffset || document.documentElement.scrollTop;
          const scrollEndThreshold = 50; // Adjust this value as needed
          const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-         const windowHeight = window.innerHeight;
+         const windowHeight   = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
@@ -197,13 +200,11 @@ createApp({
       },
 
       async get_order(order_status, paged){
-
          var form = new FormData();
          form.append('action', 'atlantis_get_order_user');
          form.append('paged', paged );
          form.append('order_status', order_status);
          var r = await window.request(form);
-         // console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
@@ -217,13 +218,6 @@ createApp({
 
       }
    }, 
-
-   mounted() {
-      window.addEventListener('scroll', this.handleScroll);
-   },
-   beforeDestroy() {
-      window.removeEventListener('scroll', this.handleScroll);
-   },
 
    computed: {
       count_product_in_cart(){ return window.count_product_in_cart(); },
@@ -242,13 +236,19 @@ createApp({
 
    async created(){
       this.loading = true;
-      await this.get_notification_count();
-      await this.get_order( this.order_status, 0)
+      setTimeout( async () => {
+         await this.get_order( this.order_status, 0);
+         await this.get_notification_count();
+         this.loading = false;
+      }, 400);
       // console.log(this.orders)
-      this.loading = false;
 
       window.appbar_fixed();
    },
+
+   mounted() { window.addEventListener('scroll', this.handleScroll); },
+   beforeDestroy() {window.removeEventListener('scroll', this.handleScroll); },
+
    
 }).mount('#app');
 </script>

@@ -63,30 +63,6 @@ function convertToShortNumber($num) {
 // echo convertToShortNumber(1234); // Output: "1.2k"
 // echo convertToShortNumber(12345); // Output: "12.3k"
 
-function generateProduct(){
-   // global $wpdb;
-
-   // // FOR WATER
-   $description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
-
-   // $products = [
-   //    [
-   //       'store_type' => 'ice',
-   //       'owner' => 'Blue Wave',
-   //       'name' => 'Blue Wave',
-   //       'description' => $description,
-   //       'address' => '07624 Westend Point',
-   //       'phone' => 8888888888,
-   //       'email' => 'cdomeny7@amazon.co.jp',
-   //    ],
-   // ];
-
-   // foreach($products as $product){
-   //    $wpdb->insert('wp_watergo_store', $product);
-   // }
-
-
-}
 
 function remove_trailing_slash_from_query_string( $redirect_url, $requested_url ) {
   if ( false !== strpos( $requested_url, '?') ) {

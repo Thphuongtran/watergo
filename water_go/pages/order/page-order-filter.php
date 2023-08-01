@@ -1,5 +1,12 @@
 <div id='app'>
-   <div v-show='loading == false' class='page-order-filter'>
+
+   <div v-if="loading == true">
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div> 
+   </div>
+
+   <div v-if="loading == false" class='page-order-filter'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -10,8 +17,8 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p v-if='filter == "weekly"' class='leading-title'>Weekly order list</p>
-               <p v-if='filter == "monthly"' class='leading-title'>Monthly order list</p>
+               <p v-if='filter != "" && filter == "weekly"' class='leading-title'>Weekly order list</p>
+               <p v-if='filter != "" && filter == "monthly"' class='leading-title'>Monthly order list</p>
             </div>
          </div>
       </div>
@@ -25,11 +32,11 @@
          <path d="M61.5 65H56.25H51" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
          </svg>
 
-         <p v-if='filter == "weekly"' class='t-thrid'>There is no weekly order</p>
-         <p v-if='filter == "monthly"'class='t-thrid'>There is no monthly order</p>
+         <p v-show='filter == "weekly"' class='t-thrid'>There is no weekly order</p>
+         <p v-show='filter == "monthly"'class='t-thrid'>There is no monthly order</p>
       </div>
 
-      <ul class='list-order'>
+      <ul v-if="orders.length > 0" class='list-order'>
          <li v-for='(order, orderKey) in orders' :key='orderKey'>
 
             <div class='order-head'>
@@ -76,16 +83,12 @@
       </ul>
    </div>
 
-   <div v-show='loading == true'>
-      <div class='progress-center'>
-         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div> 
-   </div>
+   
 
-   <div v-show='popup_delete_all_item == true' class='modal-popup open'>
+   <div v-show="popup_delete_all_item == true" class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p v-if='filter == "weekly"' class='heading'>Are you sure to delete this<br> weekly order?</p>
-         <p v-if='filter == "monthly"' class='heading'>Are you sure to delete this<br> monthly order?</p>
+         <p v-if='filter != "" && filter == "weekly"' class='heading'>Are you sure to delete this<br> weekly order?</p>
+         <p v-if='filter != "" && filter == "monthly"' class='heading'>Are you sure to delete this<br> monthly order?</p>
          <div class='actions'>
             <button @click='buttonCloseModal_delete_all_item' class='btn btn-outline'>Cancel</button>
             <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'>Delete</button>
@@ -103,7 +106,7 @@ createApp({
    data (){
       return {
          popup_delete_all_item: false,
-         loading: false,
+         loading: true,
          filter: '',
          orders: [],
          order_id_delete: null,
@@ -234,16 +237,20 @@ createApp({
    },
 
    async created(){
+      this.loading = true;
 
       const urlParams = new URLSearchParams(window.location.search);
       const filter = urlParams.get('filter');
 
       this.filter = filter;
-      this.loading = true;
-      await this.get_order_filter(0);
-      // console.log(this.orders);
+
+      setTimeout( async () => {
+         await this.get_order_filter(0);
+         this.loading = false;
+      }, 400);
+
       window.appbar_fixed();
-      this.loading = false;
+
       
    },
 }).mount('#app');

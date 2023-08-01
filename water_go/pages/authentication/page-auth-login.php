@@ -1,61 +1,3 @@
-<style>
-   .heading-01 {
-      position: relative;
-   }
-   .dropdown-language {
-     position: absolute;
-     right: 0;
-     display: inline-block;
-     top: 10px;
-   }
-
-   .dropdown-language img {
-      width: 28px;
-      margin-right: 10px;
-   }
-
-   .dropdown-toggle {
-     cursor: pointer;
-   }
-
-   .selected-option {
-     display: flex;
-     align-items: center;
-     padding: 0;
-   }
-
-   .dropdown-menu {
-     position: absolute;
-     top: 100%;
-     right: 0;
-     margin-top: 8px;
-     padding: 0;
-     list-style: none;
-     background-color: #fff;
-     border: 1px solid #ccc;
-     border-radius: 4px;
-     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-     min-width: 150px;
-     z-index: 1;
-     display: none;
-   }
-
-   .dropdown-menu.show {
-     display: block;
-   }
-
-   .dropdown-menu li {
-      display: flex;
-      font-size: 13px;
-      font-weight: normal;
-     padding: 8px 16px;
-     cursor: pointer;
-   }
-
-   .dropdown-menu li.selected {
-     background-color: #f0f0f0;
-   }
-</style>
 <div id='authentication'>
 
    <div v-show='page_welcome == true' class='banner page-welcome'>
@@ -97,8 +39,7 @@
             <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
          </div>
 
-         <div class='heading-01 t-center'>
-            <span>Log In</span>
+         <div class='box-language t-center'>
             <div class="dropdown dropdown-language">
                <div class="dropdown-toggle" @click="toggleDropdown">
                <div class="selected-option">
@@ -116,6 +57,8 @@
                </div>
             </div>
          </div>
+
+         <div class='heading-01 t-center'>Log In</div>
            
          <div class='form-group'>
             <span>Email</span>
@@ -140,8 +83,8 @@
             </label>
          </div>
 
-         <div class='form-group' :class='term_conditions == false ? "disable" : "" '>
-            <button @click='btn_login' class='btn btn-primary'>Log In</button>
+         <div class='form-group'>
+            <button @click='btn_login' class='btn btn-primary' :class='term_conditions == false ? "disable" : "" '>Log In</button>
             <button @click='gotoAuthRegister' class='btn btn-second mt15'>Sign Up</button>
          </div>
 
@@ -262,11 +205,7 @@ createApp({
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
 
       gotoAuthForgetPassword(){ window.gotoAuthForgetPassword()},
-      gotoAuthRegister(){ 
-         if( this.term_conditions == true ){ 
-            window.gotoAuthRegister()
-         }
-      },
+      gotoAuthRegister(){ window.gotoAuthRegister()},
 
       async btn_login(){
          if( this.term_conditions == true ){

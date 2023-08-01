@@ -56,6 +56,7 @@ function atlantis_get_store_nearby(){
             )) AS distance
          FROM wp_watergo_store
          HAVING distance <= $how_far -- Adjust the distance value as desired (in kilometers)
+         -- HAVING distance <= 1 -- testinng current store
          ORDER BY distance ASC
       ";
       global $wpdb;

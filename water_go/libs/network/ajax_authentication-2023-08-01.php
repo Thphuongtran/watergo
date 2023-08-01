@@ -262,9 +262,6 @@ function atlantis_store_register(){
       $email      = isset($_POST['email']) ? $_POST['email'] : '';
       $password   = isset($_POST['password']) ? $_POST['password'] : '';
       $code       = isset($_POST['code']) ? $_POST['code'] : '';
-      
-      $latitude   = isset($_POST['latitude']) ? $_POST['latitude']   : 10.780900239854994;
-      $longitude  = isset($_POST['longitude']) ? $_POST['longitude'] : 106.7226271387539;
 
       if( $owner == '' && $storeName == '' && $address == '' && $phone == '' && $email == '' && $password == '' && $storeType == '' && $code == '' ){
          wp_json_send_error([ 'message' => 'all_field_empty' ]);
@@ -317,6 +314,37 @@ function atlantis_store_register(){
 
       // MAKE THIS USER TO STORE USER
       update_user_meta($user_id, 'user_store', true);
+
+      // GET LOCATION FROM USER WHEN POSIBLE
+      $url_request = 'https://geocode.search.hereapi.com/v1/geocode';
+      $keyID = 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k';
+
+      $query_params = [
+         'q'      => $address,
+         'apiKey' => $keyID
+      ];
+
+      $url = add_query_arg($query_params, $url_request);
+      $response = wp_remote_get($url);
+      $body = wp_remote_retrieve_body($response);
+
+      $latitude   = 0;
+      $longitude  = 0;
+
+      if( $body != null && $body != '' ){
+         $body             = json_decode( $body);
+         $latitude         = $body->items[0]->position->lat;
+         $longitude        = $body->items[0]->position->lng;
+
+         if($latitude == null ){
+            $latitude = 0;
+         }
+
+         if($longitude == null ){
+            $longitude = 0;
+         }
+      }
+
 
       // INSERT TO STORE DB
       global $wpdb;

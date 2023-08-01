@@ -21,6 +21,25 @@
             <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo_business.svg'; ?>">
          </div>
 
+         <div class='box-language t-center'>
+            <div class="dropdown dropdown-language">
+               <div class="dropdown-toggle" @click="toggleDropdown">
+               <div class="selected-option">
+                  <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </div>
+               <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
+                  <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
+                     <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
+                     {{ language.name }}
+                  </li>
+               </ul>
+               </div>
+            </div>
+         </div>
+
          <div class='heading-01 t-center'>Sign Up</div>
 
          <div class='form-group style-checkbox-business'>
@@ -50,8 +69,21 @@
 
          <div class='form-group'>
             <span>Address</span>
-            <input v-model='inputAddress' type="text" placeholder='Enter address'>
+            <input v-model='inputAddress' type="text" placeholder='Enter address' autocomplete='off' 
+               @blur='select_address_focus_out'
+               @focus='select_address_focus_in'
+            >
+            <ul v-show='box_search == true' class='box-search-reccommend'>
+               <li
+                  v-if='searchRes.length > 0'
+                  v-for='(address, addressKey) in searchRes' :key='addressKey'
+                  @click='select_address(address)'
+               >
+                  {{ address.title }}
+               </li>
+            </ul>
          </div>
+
 
          <div class='form-group'>
             <span>Phone</span>
@@ -60,17 +92,12 @@
 
          <div class='form-group'>
             <span>Email</span>
-            <!-- <input v-model='inputEmail' type="email" placeholder='Enter your email'> -->
-
             <div class='form-group-email mb10'>
                <input v-model='inputEmail' type="email" placeholder='Enter you email'>
                <button class='btn-email-verify' @click='btn_verify_email_and_sendcode' class='btn-text' :class='isCodeSend == true ? "is-send": ""' >Verify</button>
             </div>
          </div>
          
-         <!-- <p>
-            <button @click='btn_verify_email_and_sendcode' class='btn-text' >Verify your email</button>
-         </p> -->
          <p v-show='isCodeSend' class='t-second-12 text-code-resend'>
             We have sent a code to your email. <button @click='btn_verify_email_and_sendcode' class='btn-text'>Resend</button>
          </p>
@@ -98,8 +125,8 @@
             {{ res_text_sendcode }}
          </p>
 
-         <div class='form-group mb50' :class='term_conditions == false ? "disable" : ""'>
-            <button @click='btn_register' class='btn btn-primary'>Sign Up</button>
+         <div class='form-group mb50'>
+            <button @click='btn_register' class='btn btn-primary' :class='term_conditions == false ? "disable" : ""'>Sign Up</button>
             <button @click='goBack' class='btn btn-second mt15'>Log In</button>
          </div>
 
@@ -154,8 +181,7 @@ createApp({
          inputPassword: '',
 
          res_text_sendcode: '',
-
-         term_conditions: false,
+         term_conditions: true,
 
          // CODE VERIFY
          isCodeSend: false,
@@ -163,10 +189,118 @@ createApp({
          code02: '',
          code03: '',
          code04: '',
+
+         // LANGUAGE
+         languages: [
+           { id: 'en_US', name: 'English'},
+           { id: 'vi', name: 'Vietnamese'},
+           { id: 'ko_KR', name: 'Korean'},
+         ],
+
+         selectedLanguage: {},
+         currentLocale: '',
+         showDropdown: false,
+
+         // SEARCH
+         box_search: false,
+         // allowSearch: true,
+         searchRes: [],
+         latitude: 0,
+         longitude: 0,
+      }
+   },
+
+   watch: {
+      inputAddress: async function( address ){
+         if( address != undefined && address != '' ){
+            setTimeout( () => { this.searchLocation(address); }, 500);
+         }else{
+            this.searchRes = [];
+         }
       }
    },
 
    methods: {
+      select_address_focus_out(){ setTimeout( () => { this.box_search = false; }, 100); },
+      select_address_focus_in(){ this.box_search = true; },
+
+      select_address( address ){
+         this.inputAddress = address.title;
+         this.latitude     = address.position.lat;
+         this.longitude    = address.position.lng;
+         this.searchRes    = [];
+      },
+
+      searchLocation( searchQuery ) {
+         var apiKey  = 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k';
+         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=10`;
+
+         fetch(url)
+            .then( response => response.json() )
+            .then( data => {
+               if ( data.items.length > 0 ) {
+                  this.searchRes = data.items;
+               } else {
+                  // console.log('Location not found');
+                  this.searchRes = [];
+               }
+            })
+            .catch(error => {
+               this.searchRes = [];
+               // console.error('Error:', error);
+               // console.log('An error occurred. Please try again.');
+            });
+      },
+
+      toggleDropdown() {
+         this.showDropdown = !this.showDropdown;
+      },
+      selectLanguage(language) {
+         this.selectedLanguage = language;
+         this.changeLanguage(language.id);
+         this.showDropdown = false;
+         this.toggleDropdown();
+      },
+      async changeLanguage(language){
+         var form = new FormData();
+         form.append('action', 'app_change_language_callback');
+         form.append('language', language);
+         var r = await window.request(form);
+         console.log('get current locale')
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'change_language_successfully'){
+               if( window.appBridge != undefined ){
+                  window.appBridge.setLanguage(res.data);
+                  window.appBridge.close('refresh');
+               }
+            }
+         }
+      },
+
+      getFlagImage(languageId) {
+         if (languageId === 'en_US') {
+           return get_template_directory_uri + '/assets/images/flag-us.svg';
+         } else if (languageId === 'vi') {
+           return get_template_directory_uri + '/assets/images/flag-vi.svg';
+         } else if (languageId === 'ko_KR') {
+           return get_template_directory_uri + '/assets/images/flag-kr.svg';
+         }
+         return '';
+      },
+
+      async getLocale(){
+         var form = new FormData();
+         form.append('action', 'get_current_locale_callback');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'current_locale_found' ){
+               this.currentLocale = res.data;
+               //this.selectLanguage(this.languages.find(language => language.id === this.currentLocale) || this.languages[0]);
+            }
+         }
+      },
 
       verify_email( email ){
          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -200,9 +334,8 @@ createApp({
          }
       },
 
-      goBackForce(){ window.goBack(); },
-      goBack(){ if(this.term_conditions == true) { window.goBack(); } },
-
+      goBackForce(){ window.goBack() },
+      goBack(){ window.goBack() },
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
       
       moveFocus(event, nextInput){
@@ -327,7 +460,12 @@ createApp({
 
       },
 
-   }
+   },
+
+   async created() {
+     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+     await this.getLocale();
+   },
 
 }).mount('#authentication');
 

@@ -30,8 +30,15 @@
          </div>
          <div class='appbar-bottom pb15'>
             <div class="gr-btn style01">
-               <button @click='select_product_type(product.label)' v-for='(product, keyProduct) in searchType' :key='keyProduct' :class='product.active == true ? "active" : ""'>
-                  {{ product.label }}
+               <button 
+                  @click='select_product_type("water")'
+                  :class='searchTypeValue == "water" ? "active" : ""'>
+                  Water
+               </button>
+               <button 
+                  @click='select_product_type("ice")' 
+                  :class='searchTypeValue == "ice" ? "active" : ""'>
+                  Ice
                </button>
             </div>
          </div>
@@ -57,16 +64,14 @@
          <div class='store-list'>
             <div class='list-wrapping' :class='isToggle == true ? "isToggle" : ""'>
 
-               <div class='column' 
+               <div v-if='group_the_stores.length > 0' class='column' 
                   v-for='(storeGroup, keyGroupStore) in group_the_stores' :key='keyGroupStore'>
 
                   <div 
                      @click='gotoStoreDetail(store.id)'
                      class='store-item' v-for='( store, keyStore ) in storeGroup'>
 
-                     <div class='leading'>
-                        <img :src="store.store_image.url">
-                     </div>
+                     <div class='leading'><img :src="store.store_image.url"></div>
                      <div class='content'>
                         <div class='tt01'>{{ truncateUTF8String(store.name, 10) }}</div>
                         <div class='tt02'>
@@ -110,12 +115,17 @@ createApp({
          message_count: 0,
 
          searchType: [
-            {label: 'Water', value: 'water', active: true},
-            {label: 'Ice', value: 'ice', active: false}
-         ]
+            {label: 'Water', value: 'water', active: true },
+            {label: 'Ice', value: 'ice', active: false }
+         ],
+         searchTypeValue: 'water',
+
       }
    },
+
+
    computed: {
+
       async get_messages_count(){
          var form_message_count = new FormData();
          form_message_count.append('action', 'atlantis_count_messages');
@@ -127,6 +137,7 @@ createApp({
             }
          }
       },
+
       get_stores(){
          return this.stores.filter(item => {
             if( item.store_type == 'both' ){
@@ -139,12 +150,29 @@ createApp({
          }).sort((a, b) => a.distance - b.distance);
 
       },
+
       group_the_stores(){
+
          var _stores = [];
-         for (let i = 0; i < this.get_stores.length; i += 3) {
-            const group = this.get_stores.slice(i, i + 3);
-            _stores.push(group);
+         if(this.get_stores.length > 0  ){
+            for (let i = 0; i < this.get_stores.length; i += 3) {
+               const group = this.get_stores.slice(i, i + 3);
+               _stores.push(group);
+            }
          }
+
+         // if( _stores[0] != undefined ){
+         //    _stores[0].forEach( store => {
+         //       if( this.map != null ){
+         //          var mapObjects = this.map.getObjects();
+         //          var mapObject = mapObjects.some( (obj) => obj.getId() == store.id_maker);
+         //          if( mapObject ){
+         //             store.store_active = true;
+         //          }
+         //       }
+         //    });
+         // }
+
          return _stores;
       },
       count_product_in_cart(){ return window.count_product_in_cart()},
@@ -189,7 +217,6 @@ createApp({
          }
       },
 
-
       async get_all_store_location( lat, lng ){
          var form = new FormData();
          form.append('action', 'atlantis_get_store_nearby');
@@ -205,29 +232,35 @@ createApp({
                      this.stores.push(store);
                   }
                });
+               
             }
          }
       },
 
-
       select_product_type( type ){
-         this.searchType.some( item => {
-            if( item.label == type ){
-               item.active = !item.active;
-            }else{
-               item.active = false;
-            }
-         });
-         this.map.removeObjects(this.map.getObjects());
-         this.fill_maker_to_map();
+         if( this.searchTypeValue != type ){
+            this.searchTypeValue = type;
+            this.searchType.some( item => {
+               if( item.value == type ){
+                  item.active = !item.active;
+               }else{
+                  item.active = false;
+               }
+            });
+            this.map.removeObjects(this.map.getObjects());
+            this.fill_maker_to_map();
+         }
 
       },
 
-      marker_store(store_name, rating, location){
+      marker_store(store_name, rating, location, store_active = false){
 
          // Create the outer div element with class 'location'
          var locationDiv = document.createElement('div');
          locationDiv.classList.add('marker-store');
+         if( store_active == true ){
+            locationDiv.classList.add('store_active');
+         }
 
          // Create the store span element
          var storeSpan = document.createElement('span');
@@ -291,13 +324,9 @@ createApp({
       toggleMap(){
 
          this.isToggle = !this.isToggle;
-
          this.caculator_height_body_and_map();
-
          var appbarHeight  = $('.appbar').height();
          var _heightApp = $(window).height() - appbarHeight;
-         
-
 
          if( this.isToggle == true ){
             $('.store-list').css('height', 280.0);
@@ -306,30 +335,38 @@ createApp({
             $('.store-list').css('height', 100.0);
             $('#mapContainer').css('height', _heightApp - 100.0);
          }
-
          this.map.getViewPort().resize();
 
       },
 
+      // THIS FUNCTION WILL RE-LIFE CYCLE
       fill_maker_to_map(){
+
          if( this.get_stores.length > 0 ){
-         
-            this.get_stores.forEach((item ) => {
+            this.get_stores.every( item => item.store_active = false);
+
+            this.get_stores.forEach((item, itemIndex ) => {
                var _latitude = parseFloat(item.latitude);
                var _longitude = parseFloat(item.longitude);
-
                var _rating = item.avg_rating != null ? this.ratingNumber( item.avg_rating) : 0;
+
+               if( itemIndex < 3 ){
+                  item.store_active = true;
+               }else{
+                  item.store_active = false;
+               }
 
                item.id_maker = this.map.addObject(this.marker_store( 
                   this.truncateUTF8String(item.name, 10), 
                   _rating, 
-                  { lat: _latitude, lng: _longitude }
+                  { lat: _latitude, lng: _longitude },
+                  item.store_active
                )).getId();
-
             });
 
             this.map.setZoom(14);
          }
+
       },
 
       caculator_height_body_and_map(){
@@ -342,16 +379,23 @@ createApp({
 
       // update location to get new store
       async location_changes(){
+
          var newCenter = this.map.getCenter();
          async function delayedAction() {
             if( newCenter ){
                await this.get_all_store_location(newCenter.lat, newCenter.lng);
             }
-            console.log(newCenter)
          }
-         var timeoutId = setTimeout(delayedAction, 1500);
-         if (timeoutId) { clearTimeout(timeoutId); }
          delayedAction = delayedAction.bind(this);
+         if (timeoutId) { clearTimeout(timeoutId); }
+         var timeoutId = setTimeout(delayedAction, 1500);
+         
+         // RE LIFE CYCLE
+         if( this.map != null){
+            this.map.removeObjects(this.map.getObjects());
+            this.fill_maker_to_map();
+         }
+         
       }
 
    },
@@ -393,38 +437,35 @@ createApp({
       // Event listener for the map "dragend" event (when the map is panned/moved)
       map.addEventListener("dragend", this.location_changes);
 
-
       if( this.get_stores.length > 0 ){
          
-         this.get_stores.forEach((item ) => {
+         this.get_stores.forEach( (item, itemIndex ) => {
             var _latitude = parseFloat(item.latitude);
             var _longitude = parseFloat(item.longitude);
-
             var _rating = item.avg_rating != null ? this.ratingNumber( item.avg_rating) : 0;
+            item.store_active = false;
+
+            if( itemIndex < 3){
+               item.store_active = true;
+            }
+
             item.id_maker = map.addObject(this.marker_store( 
                this.truncateUTF8String(item.name, 10),
                _rating, 
-               { lat: _latitude, lng: _longitude }
+               { lat: _latitude, lng: _longitude },
+               item.store_active
             )).getId();
 
          });
 
          map.setZoom(14);
       }
-      this.map = map;      
+      this.map = map;
+
    }
 
 })
 .component('component-location-modal', LocationModal)
 .mount('#app');
 
-
-
-$(document).ready(function(){
-   var _height_store_list = $('.list-wrapping.isToggle').height();
-
-   $(document).click('#toggleMap', function(){
-      console.log(_height_store_list)
-   })
-})
 </script>

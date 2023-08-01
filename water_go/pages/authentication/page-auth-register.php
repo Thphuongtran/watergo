@@ -17,10 +17,27 @@
 
       <div class='inner style01'>
 
-         
-
          <div class='t-center'>
             <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
+         </div>
+
+         <div class='box-language t-center'>
+            <div class="dropdown dropdown-language">
+               <div class="dropdown-toggle" @click="toggleDropdown">
+               <div class="selected-option">
+                  <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </div>
+               <ul class="dropdown-menu" :class="{ 'show': showDropdown }">
+                  <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
+                     <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
+                     {{ language.name }}
+                  </li>
+               </ul>
+               </div>
+            </div>
          </div>
 
          <div class='heading-01 t-center'>Sign Up</div>
@@ -67,8 +84,8 @@
 
          <p class='t-red mt15'>{{ res_text_sendcode }}</p>
 
-         <div class='form-group' :class='term_conditions == false ? "disable" : "" '>
-            <button @click='btn_register' class='btn btn-primary'>Sign Up</button>
+         <div class='form-group'>
+            <button @click='btn_register' class='btn btn-primary' :class='term_conditions == false ? "disable" : "" '>Sign Up</button>
             <button @click='btn_goto_login' class='btn btn-second mt15'>Log In</button>
          </div>
 
@@ -132,10 +149,74 @@ createApp({
          code02: '',
          code03: '',
          code04: '',
+
+         // LANGUAGE
+         languages: [
+           { id: 'en_US', name: 'English'},
+           { id: 'vi', name: 'Vietnamese'},
+           { id: 'ko_KR', name: 'Korean'},
+         ],
+         selectedLanguage: {},
+         currentLocale: '',
+         showDropdown: false
+
+
       }
    },
 
    methods: {
+      toggleDropdown() {
+         this.showDropdown = !this.showDropdown;
+      },
+      selectLanguage(language) {
+         this.selectedLanguage = language;
+         this.changeLanguage(language.id);
+         this.showDropdown = false;
+         this.toggleDropdown();
+      },
+      async changeLanguage(language){
+         var form = new FormData();
+         form.append('action', 'app_change_language_callback');
+         form.append('language', language);
+         var r = await window.request(form);
+         console.log('get current locale')
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'change_language_successfully'){
+               if( window.appBridge != undefined ){
+                  window.appBridge.setLanguage(res.data);
+                  window.appBridge.close('refresh');
+               }
+            }
+         }
+      },
+
+      getFlagImage(languageId) {
+         if (languageId === 'en_US') {
+           return get_template_directory_uri + '/assets/images/flag-us.svg';
+         } else if (languageId === 'vi') {
+           return get_template_directory_uri + '/assets/images/flag-vi.svg';
+         } else if (languageId === 'ko_KR') {
+           return get_template_directory_uri + '/assets/images/flag-kr.svg';
+         }
+         return '';
+      },
+
+      async getLocale(){
+         var form = new FormData();
+         form.append('action', 'get_current_locale_callback');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'current_locale_found' ){
+               this.currentLocale = res.data;
+               //this.selectLanguage(this.languages.find(language => language.id === this.currentLocale) || this.languages[0]);
+            }
+         }
+      },
+      // 
+
+
       goBack(){ window.goBack()},
 
       verify_email( email ){
@@ -147,11 +228,7 @@ createApp({
          }
       },
 
-      btn_goto_login(){
-         if( this.term_conditions == true ){
-            window.goBack()
-         }
-      },
+      btn_goto_login(){ window.goBack() },
 
       toggle_term_conditions(){ this.term_conditions = !this.term_conditions;},
       
@@ -277,7 +354,12 @@ createApp({
          this.loading = false;
       },
 
-   }
+   },
+
+   async created() {
+     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+     await this.getLocale();
+   },
 
 }).mount('#authentication');
 
