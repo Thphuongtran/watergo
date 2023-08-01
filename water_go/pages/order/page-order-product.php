@@ -267,17 +267,19 @@ createApp({
    methods: { 
       goBack(){ 
          window.reset_cart_to_select_false();
+         localStorage.setItem( 'watergo_order_delivery_address', '[]' );
          window.goBack(true);
       },
       goBackRefresh(){ 
          window.reset_cart_to_select_false();
+         localStorage.setItem( 'watergo_order_delivery_address', '[]' );
          window.goBack(true);
       },
 
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
-      gotoDeliveryAddress(){ window.gotoDeliveryAddress()},
+      gotoDeliveryAddress(){ window.gotoDeliveryAddress(true)},
 
       has_discount( product ){ return window.has_discount( product ); },
       common_price_after_discount_and_quantity(p){ return window.common_price_after_discount_and_quantity(p)},
@@ -716,7 +718,28 @@ createApp({
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('re_order_id');
 
-      await this.get_delivery_address_primary();
+      var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
+
+      if( _order_delivery_address != undefined && _order_delivery_address.length > 0 ){
+
+         // alert(_order_delivery_address[0].id);
+
+         this.delivery_address_primary = {
+            id: _order_delivery_address[0].id,
+            name: _order_delivery_address[0].name,
+            phone: _order_delivery_address[0].phone,
+            address: _order_delivery_address[0].address,
+            user_id: _order_delivery_address[0].user_id,
+            primary: _order_delivery_address[0].primary,
+            latitude: _order_delivery_address[0].latitude,
+            longitude: _order_delivery_address[0].longitude,
+         }
+
+         console.log( this.delivery_address_primary )
+      }else{
+         await this.get_delivery_address_primary();
+      }
+
 
       // INIT TIME PICKER FOR USER
       this.delivery_type.once = true;
@@ -945,6 +968,7 @@ createApp({
                            }
                         }
                      }
+
                   });
                }
 

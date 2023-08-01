@@ -38,7 +38,14 @@
             v-for='(delivery, index) in delivery_address' :key='index'
          >
             <div @click='change_default_delivery_address(delivery.id )' class='leading'>
-               <div class="radio-button" :class='delivery.primary == true ? "active" : ""'></div>
+               <div 
+                  class="radio-button" 
+                  :class='[
+                     delivery.is_order_select == true && is_order_select == true ? "active" : "",
+                     delivery.primary == true && order_delivery_address == false ? "active" : "",
+                  ]'
+               >
+               </div>
             </div>
             <div @click='change_default_delivery_address(delivery.id )' class='content'>
                <div class='tt01'>{{ delivery.address }}</div>
@@ -71,7 +78,11 @@ createApp({
       return{
          loading: false,
          delivery_address: [],
-         delivery_id_primary: 0
+         delivery_id_primary: 0,
+         is_order_select: false,
+
+         order_delivery_address: false
+
       }
    },
 
@@ -108,13 +119,29 @@ createApp({
    },
 
    methods: {
+
       goBack(){ window.goBack(true) },
       gotoDeliveryAddressAdd(){ window.gotoDeliveryAddressAdd()},
       gotoDeliveryAddressEdit(delivery_id){ window.gotoDeliveryAddressEdit(delivery_id)},
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       
       change_default_delivery_address( delivery_id ){
-         this.delivery_id_primary = delivery_id;
+
+         if( this.is_order_select == false ){
+            this.delivery_id_primary = delivery_id;
+         }else{
+
+            // ORDER SELECT
+            var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
+            var _delivery                 = this.delivery_address.find( item => item.id == delivery_id );
+
+            if( _delivery){
+               _order_delivery_address[0] = _delivery;
+               localStorage.setItem('watergo_order_delivery_address', JSON.stringify(_order_delivery_address));
+               window.goBack(true);
+            }
+
+         }
       },
 
       async get_delivery_address(){
@@ -126,6 +153,7 @@ createApp({
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_delivery_address_ok' ){
                if( res.data != undefined ){
+                  res.data.forEach( item => item.is_order_select = false );
                   this.delivery_address.push( ...res.data);
                }
             }
@@ -134,8 +162,31 @@ createApp({
    },
 
    async created(){
+
+      var urlParams = new URLSearchParams(window.location.search);
+      var is_order_select = urlParams.get('is_order_select');
+
       this.loading = true;
       await this.get_delivery_address();
+
+      if( is_order_select != undefined && is_order_select != null){
+         this.is_order_select = true;
+         var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
+
+         if(_order_delivery_address != undefined && _order_delivery_address.length > 0 ){
+            this.order_delivery_address = true;
+
+            this.delivery_address.forEach( address => {
+               if( address.id == _order_delivery_address[0].id ){
+                  address.is_order_select = true;
+               }else{
+                  address.is_order_select = false;
+               }
+            });
+         }
+      }
+
+
       this.loading = false;
 
       window.appbar_fixed();

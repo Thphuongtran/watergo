@@ -67,6 +67,7 @@ function atlantis_ping_user_to_get_last_message(){
 }
 
 function atlantis_load_conversation(){
+
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_conversation' ){
 
       $host_chat = '';
@@ -100,14 +101,28 @@ function atlantis_load_conversation(){
          $_store_id           = $cons->store_id;
          // HOST IS STORE => GET USER INFO
          if( $host_chat == 'store'){
-            $sql_info = "SELECT user_id, meta_value as name
+            $sql_info = "SELECT 
+                  
+                  wp_usermeta.user_id, 
+                  wp_usermeta.meta_value as name,
+                  wp_users.display_name 
+
                FROM wp_usermeta
-               WHERE user_id = $_user_id AND meta_key = 'first_name'
+
+               LEFT JOIN wp_users
+               ON wp_users.ID = wp_usermeta.user_id
+               
+               WHERE wp_usermeta.user_id = $_user_id AND wp_usermeta.meta_key = 'first_name'
             ";
          }
          // HOST IS USER => GET STORE INFO
          if( $host_chat == 'user'){
-            $sql_info = "SELECT id as user_id, name FROM wp_watergo_store WHERE id = $_store_id";
+            $sql_info = "SELECT 
+               id as user_id, name 
+               FROM wp_watergo_store 
+               -- LEFT JOIN wp_users
+               -- ON wp_users.ID = wp_usermeta.user_id
+            WHERE id = $_store_id";
          }
 
          $get_info = $wpdb->get_results( $sql_info );

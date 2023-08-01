@@ -69,7 +69,7 @@
 
          <div class='form-group'>
             <span>Address</span>
-            <input v-model='inputAddress' type="text" placeholder='Enter address' autocomplete='off' 
+            <input v-model='inputAddress' type="text" placeholder='Enter address' 
                @blur='select_address_focus_out'
                @focus='select_address_focus_in'
             >
@@ -203,7 +203,6 @@ createApp({
 
          // SEARCH
          box_search: false,
-         // allowSearch: true,
          searchRes: [],
          latitude: 0,
          longitude: 0,
@@ -213,10 +212,14 @@ createApp({
    watch: {
       inputAddress: async function( address ){
          if( address != undefined && address != '' ){
-            setTimeout( () => { this.searchLocation(address); }, 500);
+            if (searchTimeout) { clearTimeout(searchTimeout); }
+            var searchTimeout = setTimeout(async () => {
+               await this.searchLocation(address);
+            }, 1000);
          }else{
             this.searchRes = [];
          }
+
       }
    },
 
@@ -231,9 +234,9 @@ createApp({
          this.searchRes    = [];
       },
 
-      searchLocation( searchQuery ) {
-         var apiKey  = 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k';
-         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=10`;
+      async searchLocation( searchQuery ) {
+         var apiKey  = 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
+         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
 
          fetch(url)
             .then( response => response.json() )
@@ -424,7 +427,10 @@ createApp({
                   form.append('phone', this.inputPhone);
                   form.append('email', this.inputEmail);
                   form.append('password', this.inputPassword);
+                  form.append('latitude', this.latitude);
+                  form.append('longitude', this.longitude);
                   form.append('code', code);
+
                   var r = await window.request(form);
                   if( r != undefined ){
                      var res = JSON.parse( JSON.stringify( r ));
@@ -447,6 +453,7 @@ createApp({
                      if( res.message == 'register_ok' ){
                         this.banner_open = true;
                      }
+
                   }
 
                }else{

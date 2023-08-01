@@ -27,8 +27,24 @@
             </div>
             <div class='form-group style01'>
                <span>Address</span>
-               <input v-model='delivery_address_location' type="text">
+               <input 
+                  v-model='delivery_address_location' type="text"
+                  @blur='select_address_focus_out'
+                  @focus='select_address_focus_in'
+               >
+
+               <ul v-show='box_search == true' class='box-search-reccommend'>
+                  <li
+                     v-if='searchRes.length > 0'
+                     v-for='(address, addressKey) in searchRes' :key='addressKey'
+                     @click='select_address(address)'
+                  >
+                     {{ address.title }}
+                  </li>
+               </ul>
+
             </div>
+
             <div class='form-group switch'>
                <p>Select as default address</p>
                <label class="toggle-switch">
@@ -71,6 +87,7 @@
 var { createApp } = Vue;
 
 createApp({
+   
    data(){
       return{
          loading: false,
@@ -83,11 +100,64 @@ createApp({
          delivery_address_primary: false,
 
          popup_confirm_delete: false,
+
+         // SEARCH
+         box_search: false,
+         searchRes: [],
+         latitude: 0,
+         longitude: 0,
          
       }
    },
 
+   watch: {
+      delivery_address_location: async function(address){
+         if( address != undefined && address != '' ){
+            if (searchTimeout) { clearTimeout(searchTimeout); }
+            var searchTimeout = setTimeout(async () => {
+               await this.searchLocation(address);
+            }, 1000);
+
+         }else{
+            this.searchRes = [];
+         }
+      }
+   },
+
    methods: {
+
+      // SEARCH
+      select_address_focus_out(){ setTimeout( () => { this.box_search = false; }, 100); },
+      select_address_focus_in(){ this.box_search = true; },
+      select_address( address ){
+         this.delivery_address_location = address.title;
+         this.latitude     = address.position.lat;
+         this.longitude    = address.position.lng;
+         this.searchRes    = [];
+      },
+      
+      async searchLocation( searchQuery ) {
+         var apiKey  = 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
+         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
+
+         fetch(url)
+            .then( response => response.json() )
+            .then( data => {
+               if ( data.items.length > 0 ) {
+                  this.searchRes = data.items;
+               } else {
+                  // console.log('Location not found');
+                  this.searchRes = [];
+               }
+            })
+            .catch(error => {
+               this.searchRes = [];
+               // console.error('Error:', error);
+               // console.log('An error occurred. Please try again.');
+            });
+      },
+
+
       popup_deleteDeliveryAddress(){this.popup_confirm_delete = true;},
       buttonModalCancel(){ this.popup_confirm_delete = false; },
       async buttonModalConfirm(){ 
@@ -103,14 +173,6 @@ createApp({
 
       async updateDeliveryAddress(){
          this.loading = true;
-         var _get_address = await this.get_location_from_address(this.delivery_address_location);
-         var _latitude = 0;
-         var _longitude = 0;
-         if(_get_address != undefined ){
-            var _res_address = JSON.parse( JSON.stringify( _get_address ));
-            var _latitude = _res_address.items[0].position.lat;
-            var _longitude = _res_address.items[0].position.lng;
-         }
 
          var form = new FormData();
          var _primary = this.delivery_address_primary == true ? 1 : 0;
@@ -118,6 +180,7 @@ createApp({
          form.append('event', 'update');
          if( this.delivery_address_name != '' &&
             this.delivery_address_phone != '' &&
+
             this.delivery_address_location != ''){
                var _phoneNumberString = String( this.delivery_address_phone);
             if( this.validatePhoneNumber( _phoneNumberString) == false ){
@@ -126,25 +189,29 @@ createApp({
 
             }else{
                this.text_res = '';
-               form.append('longitude', _longitude);
-               form.append('latitude', _latitude);
+               form.append('longitude', this.longitude);
+               form.append('latitude', this.latitude);
 
                form.append('name', this.delivery_address_name);
                form.append('phone', this.delivery_address_phone);
                form.append('address', this.delivery_address_location);
                form.append('primary', _primary);
                form.append('id_delivery', this.delivery_address_id);
+
+               // if( _primary == 1 ){
+               //    localStorage.setItem( 'watergo_order_delivery_address', '[]' );
+               // }
+
                var r = await window.request( form);
 
                if(r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'update_delivery_address_ok' ){
                      this.goBack();
-                     // if( window.appBridge != undefined ){
-                     //    window.appBridge.refresh();
-                     // }
+
                   }
                }
+
             }
          }else{
             this.text_res = 'Field must be not empty.';
@@ -174,10 +241,13 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_delivery_address_ok'){
-               this.delivery_address_name = res.data.name;
-               this.delivery_address_phone = res.data.phone;
-               this.delivery_address_location = res.data.address;
-               this.delivery_address_primary = res.data.primary == 1 ? true : false;
+               this.delivery_address_name       = res.data.name;
+               this.delivery_address_phone      = res.data.phone;
+               this.delivery_address_location   = res.data.address;
+               this.delivery_address_primary    = res.data.primary == 1 ? true : false;
+               this.latitude                    = res.data.latitude;
+               this.longitude                   = res.data.longitude;
+
             }
          }
       },

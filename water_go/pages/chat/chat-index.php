@@ -39,7 +39,7 @@
             </div>
             <div class='contents'>
                <div class='tt01'>
-                  <div class='name-chat'>{{ cons.name }}</div>
+                  <div class='name-chat'>{{ get_username(cons) }}</div>
                   <div v-if='cons.timestamp != 0' class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
                </div>
                <div class='tt02'>{{ cons.content }}</div>
@@ -79,6 +79,13 @@ createApp({
       goBack(){ window.goBack(); },
       getTimeDifference(datetimeInput){ return window.getTimeDifference(datetimeInput); },
       shortString(str){ return window.shortString(str)},
+
+      get_username( user ){
+         console.log(user)
+         if( user.name == undefined || user.name == null ){
+            return user.display_name;
+         }
+      },
 
       gotoChatMessenger(obj){ 
          var _user_id = null;

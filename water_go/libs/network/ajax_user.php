@@ -354,6 +354,7 @@ function atlantis_get_user_login_data(){
             'user_email' => $user->data->user_email,
             'first_name' => $first_name,
             'delivery_address' => $delivery_address,
+            'display_name' => $user->data->display_name
          ];
 
          $final['user_avatar'] = func_atlantis_get_images($user->data->ID, 'user_avatar', true);

@@ -101,7 +101,8 @@
       <div class='break-line'></div>
 
       <div class='box-func-order-detail-store'>
-         <button 
+         
+         <!-- <button 
             @click='gotoChatMessenger' 
             class='btn-chat'>
             <span class='icon'>
@@ -116,7 +117,8 @@
                </svg>
             </span>
             <span class='text'>Chat</span>
-         </button>
+         </button> -->
+
          <a :href='"tel:" + order.order_delivery_address.phone' class='btn-call'>
             <span class='icon'>
                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -301,7 +303,7 @@ createApp({
       form.append('action', 'atlantis_get_order_detail');
       form.append('order_id', parseInt(order_id));
       var r = await window.request(form);
-      console.log(r);
+
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify(r));
 
@@ -321,22 +323,38 @@ createApp({
                _store_lat = parseFloat(_store_res.data.latitude);
                _store_lng = parseFloat(_store_res.data.longitude);
             }
+
+            var _order_delivery_address = res.data.order_delivery_address;
+            if( _order_delivery_address != undefined && _order_delivery_address != null ){
+               if( _order_delivery_address.latitude != undefined && _order_delivery_address.longitude){
+                  var latitude = _order_delivery_address.latitude;
+                  var longitude = _order_delivery_address.longitude;
+                  var _caculator_distance = this.calculateDistance(
+                     _store_lat, _store_lng,
+                     latitude, longitude
+                  );
+                  this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
+               }
+
+            }
          }
 
-         var _order_address = res.data.order_delivery_address.address;
-         var _r = await window.get_location_from_address(_order_address);
 
-         if( _r != undefined ){
-            var _res = JSON.parse( JSON.stringify( _r ));
-            // caculator distance 
-            var _lat = _res.items[0].position.lat;
-            var _lng = _res.items[0].position.lng;
-            var _caculator_distance = this.calculateDistance(
-               _store_lat, _store_lng,
-               _lat, _lng
-            );
-            this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
-         }
+
+
+         // var _r = await window.get_location_from_address(_order_address);
+
+         // if( _r != undefined ){
+         //    var _res = JSON.parse( JSON.stringify( _r ));
+         //    // caculator distance 
+         //    var _lat = _res.items[0].position.lat;
+         //    var _lng = _res.items[0].position.lng;
+         //    var _caculator_distance = this.calculateDistance(
+         //       _store_lat, _store_lng,
+         //       _lat, _lng
+         //    );
+         //    this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
+         // }
 
       }
       

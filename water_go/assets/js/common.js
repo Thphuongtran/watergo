@@ -118,10 +118,18 @@ function reset_cart_to_select_false(){
 }
 
 function check_cart_is_exists(){
-   var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+   var _cartItems                = JSON.parse(localStorage.getItem('watergo_carts'));
+   var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
+
+   localStorage.setItem('watergo_order_delivery_address', '[]');
+
    if( _cartItems == undefined ){
       localStorage.setItem('watergo_carts', '[]');
    }
+   // if( _order_delivery_address == undefined){
+   //    localStorage.setItem('watergo_order_delivery_address', '[]');
+   // }
+
 }
 
 function explode_product_metadata( product_metadata ){
@@ -1046,8 +1054,12 @@ function gotoPageStoreAdverstising(){
 /**
  * @access DELIVERY ADDRESS
  */
-function gotoDeliveryAddress(){
-   window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-index&appt=N';
+function gotoDeliveryAddress( order_select = false ){
+   if( order_select == true){
+      window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-index&is_order_select=1&appt=N';
+   }else{
+      window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-index&appt=N';
+   }
 }
 function gotoDeliveryAddressEdit( delivery_id ){
    window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-edit&delivery_id=' + delivery_id +'&appt=N';
