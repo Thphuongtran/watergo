@@ -115,7 +115,8 @@ function atlantis_action_product_store(){
 
       $category_id = isset($_POST['category_id']) ? $_POST['category_id'] : 0; // from category table
       $price = isset($_POST['price']) ? $_POST['price'] : 0;
-      $stock = isset($_POST['stock']) ? $_POST['stock'] : 0;
+      // $stock = isset($_POST['stock']) ? $_POST['stock'] : 0;
+      $mark_out_of_stock = isset($_POST['mark_out_of_stock']) ? $_POST['mark_out_of_stock'] : 0;
 
       // IF DISCOUNT ENABLE
       $has_discount     = isset($_POST['has_discount']) ? $_POST['has_discount'] : 0;
@@ -175,11 +176,12 @@ function atlantis_action_product_store(){
       */
 
       $args = [
-         'store_id'        => $store_id,
-         'product_type'    => $product_type,
-         'description'     => $product_description,
-         'price'           => $price,
-         'stock'           => $stock,
+         'store_id'           => $store_id,
+         'product_type'       => $product_type,
+         'description'        => $product_description,
+         'price'              => $price,
+         'mark_out_of_stock'  => $mark_out_of_stock
+         // 'stock'           => $stock,
       ];
 
       

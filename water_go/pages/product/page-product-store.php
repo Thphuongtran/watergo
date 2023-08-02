@@ -98,7 +98,7 @@
                <div class='tt4'>
                   <div class='product-analytics'>
                      <div class='product-sold'>Sold: <span class='t-primary'>{{ product.sold }}</span></div>
-                     <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div>
+                     <!-- <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div> -->
                   </div>
                   <div class='product-bagde'>
                      <div v-if='product_is_availble(product) == "availble" ' class='availble'>Availble</div>
@@ -193,7 +193,10 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found'){
                res.data.forEach( product => {
-                  if( product.stock > 0 ) {
+                  // if( product.stock > 0 ) {
+                  if( product.mark_out_of_stock == null ) product.mark_out_of_stock;
+                  
+                  if( product.mark_out_of_stock == 0 ) {
                      product.is_availble = true;
                   }else{
                      product.is_availble = false;
@@ -235,7 +238,10 @@ createApp({
 
 
       product_is_availble( product ){
-         if(product.stock > 0 ) return 'availble';
+         if(product.mark_out_of_stock == null){
+            product.mark_out_of_stock = 0;
+         }
+         if( product.mark_out_of_stock == 0 ) return 'availble';
          return 'out_of_stock';
       },
 

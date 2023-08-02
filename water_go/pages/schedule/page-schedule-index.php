@@ -74,7 +74,6 @@
 
                <div class='order-item-title-container-tile02'>
                   <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>Delivery Immediately </p>
-
                   <p 
                      v-if="order.order_delivery_type == 'once_date_time'"
                      class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} </p>
@@ -91,7 +90,7 @@
             <div class='order-item-discount text-sm'>
                <p>{{ total_product_in_order( order )}} products</p>
                <p>Total: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
-               <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p>
+               <!-- <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p> -->
             </div>
          </div>
       </div>
@@ -309,22 +308,22 @@ createApp({
          form.append('paged', paged );
          form.append('datetime', String( datetime) );
          var r = await window.request(form);
-         console.log(r)
+         // console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
 
                res.data.forEach(item => {
                   if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
-                     var _store_lat = item.store_latitude;
-                     var _store_lng = item.store_longitude;
-                     var _user_lat  = item.order_delivery_address.latitude;
-                     var _user_lng  = item.order_delivery_address.longitude;
+                     // var _store_lat = item.store_latitude;
+                     // var _store_lng = item.store_longitude;
+                     // var _user_lat  = item.order_delivery_address.latitude;
+                     // var _user_lng  = item.order_delivery_address.longitude;
                      
-                     item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
-                     if(item.address_kilometer > 0 ){
-                        item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
-                     }
+                     // item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
+                     // if(item.address_kilometer > 0 ){
+                     //    item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
+                     // }
                      this.orders.push(item);
                   }
                });

@@ -60,7 +60,7 @@
       </ul>
 
       <div class='box-delivery-time'>
-         <p class='tt01'>Select delivery time</p>
+         <p class='tt01'>Delivery time</p>
          <p class='tt02'>{{ get_delivery_time_activity }}</p>
          <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'>Immediately (within 1 hour) </p>
          <div 

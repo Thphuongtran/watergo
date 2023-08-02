@@ -24,6 +24,28 @@ add_action( 'wp_ajax_atlantis_get_product_sort', 'atlantis_get_product_sort' );
 add_action( 'wp_ajax_nopriv_atlantis_check_product_discount', 'atlantis_check_product_discount' );
 add_action( 'wp_ajax_atlantis_check_product_discount', 'atlantis_check_product_discount' );
 
+add_action( 'wp_ajax_nopriv_atlantis_is_product_out_of_stock', 'atlantis_is_product_out_of_stock' );
+add_action( 'wp_ajax_atlantis_is_product_out_of_stock', 'atlantis_is_product_out_of_stock' );
+
+function atlantis_is_product_out_of_stock(){
+
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_is_product_out_of_stock' ){
+      $product_id       = isset($_POST['product_id'])       ? $_POST['product_id'] : 0;
+      $stock_quantity   = isset($_POST['stock_quantity'])   ? $_POST['stock_quantity'] : 0;
+
+      $res = func_is_product_out_of_stock($product_id, $stock_quantity);
+
+      if( $res == true ){
+         wp_send_json_success(['message' => 'product_can_order']);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'product_is_out_of_stock' ]);
+      wp_die();
+
+   }
+
+}
 
 // function atlantis_load_product_recommend_home(){
 //    global $wpdb;

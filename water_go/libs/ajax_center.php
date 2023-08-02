@@ -591,6 +591,21 @@ function findNextClosestDay_byMonthly($arr, $_current_order_time_shipping_day) {
    return null;
 }
 
+/**
+ * @access CHECK PRODUCT IS NOT OUT OF STOCK
+ */
+
+function func_is_product_out_of_stock( $product_id, $stock_quantity ){
+   global $wpdb;
+   $sql = "SELECT COUNT(*) as is_out_of_stock FROM wp_watergo_products WHERE id = $product_id AND stock >= $stock_quantity";
+   $res = $wpdb->get_results($sql);
+   
+   if( $res[0]->is_out_of_stock == 1 ){
+      return true;
+   }
+   return false;
+}
+
 require_once THEME_DIR . '/libs/network/ajax_upload.php';
 require_once THEME_DIR . '/libs/network/ajax_product.php';
 require_once THEME_DIR . '/libs/network/ajax_store.php';

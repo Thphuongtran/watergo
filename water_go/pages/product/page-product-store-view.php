@@ -49,16 +49,14 @@
                </select>
             </div>
 
-            <div class='group-form-control'>
-               <div class='form-control'>
-                  <div class='form-title'>Price</div>
-                  <input v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ'>
-               </div>
-               <div class='form-control'>
+            <div class='form-control'>
+               <div class='form-title'>Price</div>
+               <input v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ'>
+            </div>
+               <!-- <div class='form-control'>
                   <div class='form-title'>Stock</div>
                   <input v-model='product.stock' type="text" pattern='[0-9]*' placeholder='0' :disabled='product.mark_out_of_stock == true ? true : false'>
-               </div>
-            </div>
+               </div> -->
 
             <div class='form-checkbox form-check check-discount'>
                <label>
@@ -140,6 +138,7 @@
                      <svg width="104" height="107" viewBox="0 0 104 107" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <rect x="1" y="1" width="102" height="105" rx="4" fill="white" stroke="#2790F9" stroke-width="2" stroke-dasharray="20 20"/>
                      </svg>
+
                      <span>Add Photo</span>
                   </label>
                </li>
@@ -168,9 +167,9 @@
                </li>
             </ul>
 
-            <div v-show='action =="edit"' class='form-checkbox form-check check-out-of-stock'>
+            <div class='form-checkbox form-check check-out-of-stock'>
                <label>
-                  <input @click='mark_out_of_stock' :checked='product.mark_out_of_stock == true ? true : false' type='checkbox'>
+                  <input @click='mark_out_of_stock' :checked='product.mark_out_of_stock == 1 ? true : false' type='checkbox'>
                   <span class='text'>Mark as out of stock</span>
                </label>
             </div>
@@ -229,6 +228,7 @@ createApp({
             length_width: '',
             has_discount: 0,
             discount_percent: null,
+            mark_out_of_stock: 0,
             // product_image in visible
          },
 
@@ -345,6 +345,8 @@ createApp({
          form.append('product_type', this.product_type);
          form.append('store_id', this.store_id);
          form.append('product_id', this.product_id);
+         form.append('mark_out_of_stock', this.product.mark_out_of_stock);
+
 
          if( this.uploadImages.length > 0 ){
             this.uploadImages.forEach( file => form.append('uploadImages[]', file.file ));
@@ -379,7 +381,7 @@ createApp({
             if(
                this.select_category.value == 0 ||
                this.product.price == null ||
-               this.product.stock == null ||
+               // this.product.stock == null ||
                this.ice_weight.value == 0 ||
                this.product.length_width == '' ||
                this.product.description == ''
@@ -389,7 +391,7 @@ createApp({
                this.text_error = '';
                form.append('category_id', this.select_category.value );
                form.append('price', this.product.price );
-               form.append('stock', this.product.stock );
+               // form.append('stock', this.product.stock );
                form.append('ice_weight', this.ice_weight.value);
                form.append('length_width', this.product.length_width);
                form.append('product_description', this.product.description);
@@ -416,7 +418,7 @@ createApp({
                this.select_category.value == 0 ||
                this.water_brand.value == 0 ||
                this.product.price == null ||
-               this.product.stock == null ||
+               // this.product.stock == null ||
                this.water_quantity.value == 0 ||
                this.water_volume.value == 0 ||
                this.product.description == ''
@@ -427,7 +429,7 @@ createApp({
                form.append('category_id', this.select_category.value );
                form.append('water_brand', this.water_brand.value );
                form.append('price', this.product.price );
-               form.append('stock', this.product.stock );
+               // form.append('stock', this.product.stock );
                form.append('water_quantity', this.water_quantity.value);
                form.append('water_volume', this.water_volume.value);
                form.append('product_description', this.product.description);
@@ -461,8 +463,12 @@ createApp({
          }
       },
       mark_out_of_stock(){
-         this.product.mark_out_of_stock = !this.product.mark_out_of_stock;
-         this.product.stock = 0; 
+         if( this.product.mark_out_of_stock == 0 ){
+            this.product.mark_out_of_stock = 1;
+         }else{
+            this.product.mark_out_of_stock = 0;
+         }
+         // this.product.stock = 0; 
       },
 
       async get_product(product_id){
@@ -571,7 +577,12 @@ createApp({
       if( action == 'edit' ){
          await this.get_product(product_id);
          this.leading_title = this.product.name;
+         if( this.product.mark_out_of_stock == null ){
+            this.product.mark_out_of_stock = 0;
+         }
       }
+
+      
 
       await this.get_product_category();
 

@@ -180,8 +180,8 @@ createApp({
    methods: {
 
       has_discount( product ){ return window.has_discount( product ); },      
-      common_price_show_currency(p){ return common_price_show_currency(p) },
-      common_price_after_discount(p){ return common_price_after_discount(p) },
+      common_price_show_currency(p){ return window.common_price_show_currency(p) },
+      common_price_after_discount(p){ return window.common_price_after_discount(p) },
       
       ratingNumber(rating){ return parseFloat(rating).toFixed(1); },
       mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },

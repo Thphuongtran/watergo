@@ -216,12 +216,6 @@
    </div>
    
 
-   <div v-show="loading == true">
-      <div class='progress-center'>
-         <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
-      </div>
-   </div>
-
    <div v-show='banner_open == true' class='banner' :class='banner_open == true ? "z-index-5" : ""'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -232,6 +226,19 @@
       </div>
       <div class='banner-footer'>
          <button @click='goBackRefresh' class='btn btn-outline'>Exit</button>
+      </div>
+   </div>
+
+   <div v-if='modal_store_out_of_stock == true' class='modal-popup open'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
+      </div>
+   </div>
+
+   <div v-show="loading == true">
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
       </div>
    </div>
 </div>
@@ -262,9 +269,14 @@ createApp({
          // FOR RE-ORDER
          time_shipping: [],
 
+         // modal out of stock
+         modal_store_out_of_stock: false,
+
       }
    },
    methods: { 
+      buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false },
+
       goBack(){ 
          window.reset_cart_to_select_false();
          localStorage.setItem( 'watergo_order_delivery_address', '[]' );
@@ -547,7 +559,6 @@ createApp({
       async buttonPlaceOrder(){
 
          var _currentDate = new Date();
-      
          var _watergo_carts = JSON.parse(localStorage.getItem('watergo_carts'));
 
          var _productSelected = this.carts.filter( store => {
@@ -581,10 +592,10 @@ createApp({
             form.append('delivery_type', delivery_type );
             form.append('productSelected', JSON.stringify( _productSelected ) );
 
-            var r = await window.request(form);
-            console.log(r);
 
-            if( r != undefined ){
+            var r = await window.request(form);
+
+            if( r != undefined  ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'insert_order_ok' ){
 
@@ -605,9 +616,9 @@ createApp({
                }else{
                   this.loading = false;
                }
-            }else{
-               this.loading = false;
             }
+
+            this.loading = false;
 
          }
 
@@ -1113,6 +1124,8 @@ createApp({
       }
 
       
+
+
       
       this.loading = false;
       window.appbar_fixed();

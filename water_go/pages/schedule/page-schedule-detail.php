@@ -26,7 +26,7 @@
                <p class='tt01'>Delivery address</p>
                <p class='tt03'>{{ order.order_delivery_address.address }}</p>
                <p class='tt02'>{{ order.order_delivery_address.name }} | (+84) {{ removeZeroLeading( order.order_delivery_address.phone ) }}</p>
-               <span v-if='order.address_kilometer > 0' class='address-kilometer'>{{order.address_kilometer}}km</span>
+               <!-- <span v-if='order.address_kilometer > 0' class='address-kilometer'>{{order.address_kilometer}}km</span> -->
             </div>
          </div>
       </div>
@@ -49,12 +49,13 @@
                   </div>
                   <div class='order-price'>
                      <span class='price'>
-                        {{ common_get_price_order(product) }}
+                        {{ common_price_after_discount_and_quantity_from_group_order( product ) }}
                      </span>
                      <span v-if='product.order_group_product_discount_percent != 0' class='od-price-discount'>
-                        {{ common_get_price_order(product, 0) }}
+                        {{ common_price_after_quantity_from_group_order( product ) }}
                      </span>
                   </div>
+
                </div>
 
 
@@ -98,7 +99,7 @@
       </div>
 
       <div class='box-extra-function'>
-         <div @click='gotoChatMessenger' class='b-chat'>
+         <!-- <div @click='gotoChatMessenger' class='b-chat'>
             <button class='btn-action'>
                <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3473 0H3.06939C2.25531 0 1.47458 0.334446 0.898939 0.929764C0.323301 1.52508 -8.7738e-05 2.33251 -8.7738e-05 3.17441V9.52324C-8.7738e-05 9.94011 0.0793056 10.3529 0.233561 10.738C0.387817 11.1232 0.613913 11.4731 0.898939 11.7679C1.18397 12.0627 1.52234 12.2965 1.89475 12.456C2.26715 12.6155 2.6663 12.6977 3.06939 12.6977H4.91107H9.46249H15.3473C16.1614 12.6977 16.9421 12.3632 17.5177 11.7679C18.0934 11.1726 18.4168 10.3652 18.4168 9.52324V3.17441C18.4168 2.33251 18.0934 1.52508 17.5177 0.929764C16.9421 0.334446 16.1614 0 15.3473 0ZM15.3473 1.26977H3.06939C2.58094 1.26977 2.1125 1.47043 1.76712 1.82762C1.42174 2.18482 1.2277 2.66927 1.2277 3.17441V9.52324C1.2277 10.0284 1.42174 10.5128 1.76712 10.87C2.1125 11.2272 2.58094 11.4279 3.06939 11.4279H15.3473C15.8357 11.4279 16.3042 11.2272 16.6496 10.87C16.9949 10.5128 17.189 10.0284 17.189 9.52324V3.17441C17.189 2.66927 16.9949 2.18482 16.6496 1.82762C16.3042 1.47043 15.8357 1.26977 15.3473 1.26977Z" fill="#2790F9"/>
@@ -111,7 +112,7 @@
                </svg>
                <span class='text'>Chat</span>
             </button>
-         </div>
+         </div> -->
          <div class='b-call'>
             <a :href='"tel:" + order.order_delivery_address.phone' class='btn-action'>
                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -204,7 +205,13 @@ createApp({
       },
 
       has_discount( product ){ return window.has_discount( product ); },
-      common_get_price_order( price, discount_percent ){ return window.common_get_price_order( price, discount_percent ); },
+
+      common_price_after_discount_and_quantity_from_group_order(p){ return window.common_price_after_discount_and_quantity_from_group_order(p)},
+      common_price_after_quantity_from_group_order(p){ return window.common_price_after_quantity_from_group_order(p)},
+
+      // common_price_show_currency(p){ return window.common_price_show_currency(p) },
+      // common_price_after_discount(p){ return window.common_price_after_discount(p) },
+
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
 
       order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
@@ -215,18 +222,18 @@ createApp({
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
-         console.log(r);
+         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
                this.order = res.data;
-               var _address_kilometer = window.calculateDistance(
-                  this.latitude,
-                  this.longitude,
-                  this.order.order_delivery_address.latitude,
-                  this.order.order_delivery_address.longitude,
-               );
-               this.order.address_kilometer = parseFloat(_address_kilometer).toFixed(1);
+               // var _address_kilometer = window.calculateDistance(
+               //    this.latitude,
+               //    this.longitude,
+               //    this.order.order_delivery_address.latitude,
+               //    this.order.order_delivery_address.longitude,
+               // );
+               // this.order.address_kilometer = parseFloat(_address_kilometer).toFixed(1);
             }
          }
       },
@@ -281,6 +288,7 @@ createApp({
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
 
+      // console.log(this.order);
 
       this.loading = false;
       window.appbar_fixed();

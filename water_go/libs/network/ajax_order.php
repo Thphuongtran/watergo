@@ -448,7 +448,6 @@ function atlantis_add_order(){
 
                }
 
-
                foreach( $cart->products as $k => $product ){
 
                   $product_id                = (int) $product->product_id;
@@ -475,13 +474,16 @@ function atlantis_add_order(){
                   // REDUCE STOCK PER ITEM ORDER
                   $sql_get_stock    = "SELECT stock FROM wp_watergo_products WHERE id = $product->product_id";
                   $res_stock        = $wpdb->get_results($sql_get_stock);
-                  $_reducer_stock   = null; 
-                  if( !empty( $res_stock ) ){
+
+                  $_reducer_stock   = 0; 
+                  if( $res_stock[0]->stock != null && $res_stock[0]->stock > 0 ){
                      $_reducer_stock = $res_stock[0]->stock - $product->product_quantity_count;
-                     if( $_reducer_stock != null ){
-                        $wpdb->update( 'wp_watergo_products', ['stock' => $_reducer_stock ], ['id' => $product->product_id]  );
+                     if( $_reducer_stock >= 0 ){
+                        $wpdb->update( 'wp_watergo_products', ['stock' => $_reducer_stock ], ['id' => $product->product_id ] );
                      }
                   }
+                  // wp_send_json_success(['message' => 'bug', 'reducer_stock' => $_reducer_stock, 'product_quantity_count' => $product->product_quantity_count]);
+                  // wp_die();
                }
 
             }
@@ -554,9 +556,14 @@ function atlantis_get_order_schedule(){
       $limit      = 6;
       $paged      = isset($_POST['paged']) ? $_POST['paged'] : 0;
       $paged      = $paged * $limit;
-
       $filter     = isset($_POST['filter']) ? $_POST['filter'] : '';
       $datetime   = isset($_POST['datetime']) ? $_POST['datetime'] : '';
+
+      // wp_send_json_success(['message' => 'bug', 'param' => [
+      //    'filter' => $filter,
+      //    'datetime' => $datetime,
+      // ] ]);
+      // wp_die();
 
       // $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
       // $product_id_already_exists = json_decode( $product_id_already_exists );
@@ -579,7 +586,6 @@ function atlantis_get_order_schedule(){
          wp_watergo_store.latitude as store_latitude,
          -- longitude
          wp_watergo_store.longitude as store_longitude,
-            
          -- order_time_shipping_id
          wp_watergo_order.order_time_shipping_id as store_order_time_shipping_id
 

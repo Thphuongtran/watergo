@@ -27,6 +27,17 @@ add_action( 'wp_ajax_atlantis_get_review', 'atlantis_get_review' );
 add_action( 'wp_ajax_nopriv_atlantis_update_review', 'atlantis_update_review' );
 add_action( 'wp_ajax_atlantis_update_review', 'atlantis_update_review' );
 
+add_action( 'wp_ajax_nopriv_atlantis_is_user_has_review_store', 'atlantis_is_user_has_review_store' );
+add_action( 'wp_ajax_atlantis_is_user_has_review_store', 'atlantis_is_user_has_review_store' );
+
+
+function atlantis_is_user_has_review_store(){
+   if(isset($_POST['action'])  && $_POST['action'] == 'atlantis_is_user_has_review_store' ){
+
+   }
+}
+
+
 function atlantis_get_total_review(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_total_review' ){
       $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;

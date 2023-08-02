@@ -102,7 +102,7 @@
                         <button @click="minQuantityCount(product.product_id)" class='btn-action'>
                            <svg width="16" height="3" viewBox="0 0 16 3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 2.28571H1.14286C0.839753 2.28571 0.549063 2.16531 0.334735 1.95098C0.120408 1.73665 0 1.44596 0 1.14286C0 0.839752 0.120408 0.549063 0.334735 0.334735C0.549063 0.120408 0.839753 0 1.14286 0H14.8571C15.1602 0 15.4509 0.120408 15.6653 0.334735C15.8796 0.549063 16 0.839752 16 1.14286C16 1.44596 15.8796 1.73665 15.6653 1.95098C15.4509 2.16531 15.1602 2.28571 14.8571 2.28571Z" fill="#2790F9"/></svg>
                         </button>
-                        <input class='input_quantity' type="number" pattern='[0-9]*' :value="product.product_quantity_count" :max="product.stock">
+                        <input @change='input_quantity' :id='product.product_id' ref='input_quantity' class='input_quantity' type="number" pattern='[0-9]*' :value="product.product_quantity_count">
                         <button @click="plusQuantityCount(product.product_id)" class='btn-action'>
                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 9.14286H9.14286V14.8571C9.14286 15.1602 9.02245 15.4509 8.80812 15.6653C8.59379 15.8796 8.30311 16 8 16C7.6969 16 7.40621 15.8796 7.19188 15.6653C6.97755 15.4509 6.85714 15.1602 6.85714 14.8571V9.14286H1.14286C0.839753 9.14286 0.549063 9.02245 0.334735 8.80812C0.120408 8.59379 0 8.30311 0 8C0 7.6969 0.120408 7.40621 0.334735 7.19188C0.549063 6.97755 0.839753 6.85714 1.14286 6.85714H6.85714V1.14286C6.85714 0.839753 6.97755 0.549062 7.19188 0.334735C7.40621 0.120407 7.6969 0 8 0C8.30311 0 8.59379 0.120407 8.80812 0.334735C9.02245 0.549062 9.14286 0.839753 9.14286 1.14286V6.85714H14.8571C15.1602 6.85714 15.4509 6.97755 15.6653 7.19188C15.8796 7.40621 16 7.6969 16 8C16 8.30311 15.8796 8.59379 15.6653 8.80812C15.4509 9.02245 15.1602 9.14286 14.8571 9.14286Z" fill="#2790F9"/></svg>
                         </button>
@@ -164,8 +164,29 @@ createApp({
    methods: {
 
       has_discount( product ){ return window.has_discount( product ); },      
-      common_price_show_currency(p){ return common_price_show_currency(p) },
-      common_price_after_discount(p){ return common_price_after_discount(p) },
+      common_price_show_currency(p){ return window.common_price_show_currency(p) },
+      common_price_after_discount(p){ return window.common_price_after_discount(p) },
+
+      input_quantity( e ){
+         var el = e.target;
+         var product_id             = el.getAttribute('id');
+         var product_quantity_count = el.value;
+
+         if( product_quantity_count > 0 ){
+            for (let storeIndex = this.carts.length - 1; storeIndex >= 0; storeIndex--) {
+               var store = this.carts[storeIndex];
+               if (store.products.length !== 0) {
+                  for( var productIndex = 0; productIndex < store.products.length; productIndex++ ){
+
+                     if( this.carts[storeIndex].products[productIndex].product_id == product_id ){
+                        this.carts[storeIndex].products[productIndex].product_quantity_count = parseInt(product_quantity_count);
+                     }
+                  }
+               }
+            }
+         }
+
+      },
 
       select_all_item(){
          this.select_all_value = !this.select_all_value;
@@ -258,9 +279,7 @@ createApp({
          this.carts.some(( store ) => {
             store.products.find(product => {
                if( product.product_id == product_id ){
-                  if( product.product_quantity_count < product.stock ) {
                      product.product_quantity_count++;
-                  }
                }
             });
          });
@@ -417,14 +436,15 @@ createApp({
                      _carts[i].products[x].discount_percent = res.data.discount_percent;
                      _carts[i].products[x].has_discount     = res.data.has_discount;
                      _carts[i].products[x].name             = res.data.name;
-                     _carts[i].products[x].stock            = res.data.stock;
                      _carts[i].products[x].price            = res.data.price;
 
+                     // _carts[i].products[x].stock            = res.data.stock;
                      // Check if stock is 0 and remove the product from _carts
-                     if (_carts[i].products[x].stock == 0) {
-                        _carts[i].products.splice(x, 1);
-                        x--; // Decrement x to handle the next product correctly after the removal
-                     }
+                     // if (_carts[i].products[x].stock == 0) {
+                     //    _carts[i].products.splice(x, 1);
+                        // x--; // Decrement x to handle the next product correctly after the removal
+                     // }
+
                   }
                   
                }

@@ -1604,6 +1604,12 @@ p{
 		}
 		.meta{
 			margin-top: 10px;
+         display: flex;
+         align-items: center;
+
+         svg{
+            margin-right: 5px;
+         }
 		}
 	}
 }
@@ -1681,11 +1687,11 @@ p{
 	}
 
 	.btn-review-order{
-		position: fixed;
-		bottom: 70px;
-		width: 90%;
-		left: 50%;
-		transform: translateX(-50%);
+		// position: fixed;
+		// bottom: 70px;
+		// width: 90%;
+		// left: 50%;
+		// transform: translateX(-50%);
       line-height: 40px;
       height: 40px;
       color: #FFC83A;

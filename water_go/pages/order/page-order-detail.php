@@ -23,7 +23,7 @@
 
       <div class='break-line'></div> 
 
-      <div class='inner'>
+      <div v-show='order_delivery_address != null' class='inner'>
          <div class='list-tile delivery-address style-order'>
             <div class='content'>
                <p class='tt01'>Delivery address</p>
@@ -71,7 +71,7 @@
       </ul>
 
       <div class='box-delivery-time'>
-         <p class='tt01'>Select delivery time</p>
+         <p class='tt01'>Delivery time</p>
          <p class='tt02'>{{ get_delivery_time_activity }}</p>
          <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'>Immediately (within 1 hour) </p>
          <div 
@@ -111,9 +111,10 @@
 
       <div class='order-bottomsheet'>
          
-         <button @click='gotoReview("review-store", order.store_id )'
-            v-if='order_status == "complete"'
-            class='btn btn-outline btn-review-order'>Review Store</button>
+         <div v-if='order_status == "complete"' class='btn_cancel_order_wrapper'>
+            <button @click='gotoReview("review-store", order.store_id )'
+               class='btn btn-outline btn-review-order'>Review Store</button>
+         </div>
          
          <div v-if='order_status == "ordered" || order_status == "confirmed"' class='btn_cancel_order_wrapper'>
             <button @click='btn_cancel_order' v-if='order_status == "ordered" || order_status == "confirmed"' 
@@ -125,10 +126,7 @@
          >
             <p class='price-total' :class='order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
-               v-if='
-                  ( order_status == "complete" || order_status == "cancel" ) 
-                  && order_is_out_of_stock == false
-               '
+               v-if='order_status == "complete" || order_status == "cancel"'
                @click='buttonReOrder' 
                class='btn-primary'>Re-Order</button>
          </div>
@@ -297,8 +295,11 @@ createApp({
       },
 
       buttonReOrder(){
-
-         window.gotoPageReOrder(this.order.order_id);
+         if( this.order_is_out_of_stock == false ){
+            window.gotoPageReOrder(this.order.order_id);
+         }else{
+            this.popup_out_of_stock = true;
+         }
 
          // if( this.order_is_out_of_stock == false ){
          //    this.loading = true;
@@ -431,7 +432,7 @@ createApp({
                var _res = JSON.parse( JSON.stringify( _r ) );
                if( _res.message == 'reorder_out_of_stock' ){
                   this.order_is_out_of_stock = true;
-                  this.popup_out_of_stock = true;
+                  // this.popup_out_of_stock = true;
                }
             }
 

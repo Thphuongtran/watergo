@@ -140,7 +140,30 @@ function explode_product_metadata( product_metadata ){
  * @access CART
  */
 
-function add_quantity_to_cart( product_id, quantity, maxStock ) {
+function add_quantity_to_cart( product_id, quantity ) {
+   if( product_id != undefined && quantity > 0 ){
+      var _findProduct = get_product_from_cart(product_id);
+      if( _findProduct != null ){
+         var _quantity_product = _findProduct.product_quantity_count; 
+         var new_quantity = _quantity_product + quantity;
+         
+         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+         _carts.forEach( store => {
+            store.products.forEach( product => {
+               if( product.product_id == product_id ){
+                  product.product_quantity_count = new_quantity;
+               }
+            });
+         });
+         localStorage.setItem('watergo_carts', JSON.stringify(_carts));
+         return true;
+      }
+      return false;
+   }
+   return false;
+}
+
+function add_quantity_to_cart_with_stock( product_id, quantity, maxStock ) {
    if( product_id != undefined && quantity > 0 && maxStock > 0 ){
       var _findProduct = get_product_from_cart(product_id);
       if( _findProduct != null ){
@@ -605,7 +628,7 @@ function get_total_price( price, quantity, discount){
 
 function timestamp_to_date(timestamp) {
    var date = new Date(timestamp * 1000);
-   var day = date.getDate();
+   var day = date.getDate().toString().padStart(2, '0');
    var month = (date.getMonth() + 1).toString().padStart(2, '0');
    var year = date.getFullYear();
    return day + '/' + month + '/' + year;
