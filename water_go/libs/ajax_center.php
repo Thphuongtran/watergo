@@ -6,7 +6,6 @@ add_action( 'wp_ajax_atlantis_testing', 'atlantis_testing' );
 add_action( 'wp_ajax_nopriv_atlantis_get_images', 'atlantis_get_images' );
 add_action( 'wp_ajax_atlantis_get_images', 'atlantis_get_images' );
 
-
 /**
  * @access GET ORDER BY user_id | store_id | filter by order_status
  */
@@ -48,9 +47,7 @@ function func_atlantis_get_order_fullpack( $args ){
 
 
    if( $limit != -1){
-      $sql .= " 
-         ORDER BY order_id DESC
-         LIMIT $paged, $limit";
+      $sql .= " ORDER BY order_id DESC LIMIT $paged, $limit";
    }
 
    global $wpdb;
@@ -249,11 +246,15 @@ function func_atlantis_get_product_by( $args ){
             'product_id'   => $vl->id,
          ]);
 
+         $description = $products[$k]->description;
+
          $products[$k]->category_name  = $category['category_name'];
          $products[$k]->brand_name     = $category['brand_name'];
          $products[$k]->quantity_name  = $category['quantity_name'];
          $products[$k]->volume_name    = $category['volume_name'];
          $products[$k]->weight_name    = $category['weight_name'];
+
+         $products[$k]->description    = stripcslashes($description);
 
          $products[$k]->name           = $category['name'];
          $products[$k]->name_second    = $category['name_second'];

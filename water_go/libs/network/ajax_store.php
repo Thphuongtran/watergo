@@ -144,6 +144,7 @@ function atlantis_find_store(){
 
       foreach( $res as $k => $vl ){
          $res[$k]->store_image = func_atlantis_get_images($vl->id, 'store', true);
+         $res[$k]->description = stripcslashes($res[$k]->description);
       }
 
       if( empty( $res ) ){
@@ -246,32 +247,16 @@ function atlantis_store_profile_edit(){
          wp_die();
       }
 
-      $url_request = 'https://geocode.search.hereapi.com/v1/geocode';
-      $keyID = 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k';
+      $latitude   = 0;
+      $longitude  = 0;
 
-      $query_params = [
-         'q'      => $address,
-         'apiKey' => $keyID
-      ];
+      $res_location = func_atlantis_get_location( $address );
 
-      $url = add_query_arg($query_params, $url_request);
-      $response = wp_remote_get($url);
-      $body = wp_remote_retrieve_body($response);
+      $latitude   = $res_location['latitude'];
+      $longitude  = $res_location['longitude'];
 
-      if( !empty($body) && $body != '' ){
-         $body             = json_decode( $body);
-         $position         = [];
-         if( $body->items[0]->position->lat != null ){
-            $position['lat'] = $body->items[0]->position->lat;
-         }else{
-            $position['lat'] = 0.0;
-         }
-         if( $body->items[0]->position->lng != null ){
-            $position['lng'] = $body->items[0]->position->lng;
-         }else{
-            $position['lng'] = 0.0;
-         }
-      }
+      // wp_send_json_success(['message' => 'bug', 'res' => $res_location]);
+      // wp_die();
       
       $updated = $wpdb->update('wp_watergo_store', [
          'owner'        => $owner,
@@ -279,8 +264,8 @@ function atlantis_store_profile_edit(){
          'description'  => $description,
          'address'      => $address,
          'phone'        => $phone,
-         'latitude'     => $position['lat'],
-         'longitude'    => $position['lng']
+         'latitude'     => $latitude,
+         'longitude'    => $longitude
       ], ['id' => $id ]);
 
       // UPDATE EMAIL USER

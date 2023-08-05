@@ -439,6 +439,23 @@
 			display: flex;
 			flex-flow: row nowrap;
 			align-items: center;
+         max-width: 165px;
+         width: auto;
+
+         &.exapend-size{
+            max-width: 100%;
+            width: 100%;
+         }
+
+         .form-check-order{
+            width: 14px; height: 14px;
+            display: flex;
+            align-items: center;
+            input{
+               top: 0;
+            }
+         }
+
 			.leading{
 				margin-left: 6px;
 				span{
@@ -783,7 +800,8 @@
             color: #2790F9;
             border: 1px solid #2790F9;
          }
-         .out_of_stock{
+
+         .out-of-stock{
             color: #7B7D83;
             border: 1px solid #7B7D83;
          }

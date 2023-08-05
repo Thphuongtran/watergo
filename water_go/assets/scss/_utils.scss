@@ -14,6 +14,11 @@ html{
 .d-block{display: block;}
 .d-none{ display: none !important; }
 
+.photo-upload-default{
+   // width: 104px !important; height: 107px !important;
+   object-fit: contain !important;
+}
+
 .remove-scrollbar{
    &::-webkit-scrollbar{
       display: none;
@@ -631,6 +636,8 @@ p{
 
       svg{
          margin-right: 5px;
+         position: relative;
+         top: -1px;
       }
    }
 
@@ -716,6 +723,20 @@ p{
 	flex-flow: row nowrap;
 	overflow-x: scroll;
    border-bottom: 1px solid #DADADA;
+
+   &.single-tab{
+      li{
+         padding: 10px 15px;
+         padding-top: 0;
+         text-align: left;
+         &.active{
+            border-bottom: none ;
+            &:after{display: none ;}
+            color: #7B7D83;
+         }
+      }
+   }
+
 	li{
 		min-width: 25%;
 		width: auto;
@@ -725,6 +746,7 @@ p{
       text-align: center;
       position: relative;
       padding: 10px 0;
+
       &:after{
          content: '';
          position: absolute;
@@ -739,6 +761,9 @@ p{
          border-bottom: 1px solid #2790F9;
          color: #2790F9;
          &:after{display: block;}
+      }
+      &.disable{
+         display: none;
       }
 	}
 
@@ -2504,7 +2529,7 @@ p{
 	background: none;
 	border: none;
 	font-weight: 400;
-	font-size: 12px;
+	font-size: 13px;
 }
 
 .btn-action-confirm{
@@ -2574,6 +2599,7 @@ p{
 				padding: 0 8px;
 				font-weight: 600;
 				font-size: 16px;
+            white-space: nowrap;
 			}
 			.text-order-type{
 				font-weight: 500;
@@ -2904,13 +2930,17 @@ p{
    align-items: center;
    
    .datetime-display{
-      width: 100%;
+      // width: 100%;
       white-space: nowrap;
       z-index: 1;
-      text-align: center;
       color: #252831;
       font-size: 14px;
       font-weight: 400;
+      border: none;
+      outline: none;
+      display: block;
+      width: auto;
+      
    }
    
    select{
@@ -2979,16 +3009,7 @@ p{
    margin-bottom: 15px;
    
    
-   .rank-up{
-      color: #13E800;
-      font-weight: 600px;
-      font-size: 16px;
-   }
-   .rank-down{
-      color: #FF5656;
-      font-weight: 600px;
-      font-size: 16px;
-   }
+   
    
    .highlight{
       color: #2790F9;
@@ -3005,11 +3026,26 @@ p{
       flex-flow: row nowrap;
       align-items: center;
    }
-   
+
+   .rank-sum{
+      font-weight: 600px;
+      font-size: 16px;
+   }
+
    .rank{
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
+      &.up{
+         .rank-sum{
+            color: #13E800;
+         }
+      }
+      &.down{
+         .rank-sum{
+            color: #FF5656;
+         }
+      }
    }
 }
 
@@ -3070,3 +3106,4 @@ p{
    font-size: 12px;
    font-weight: 400;
 }
+

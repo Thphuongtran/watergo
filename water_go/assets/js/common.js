@@ -2,6 +2,96 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+function get_start_and_end_of_year(year) {
+   function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so we add 1 and pad with leading zeros if needed
+      const day = String(date.getDate()).padStart(2, '0'); // Pad with leading zeros if needed
+
+      return `${year}-${month}-${day}`;
+   }
+   
+   // Validate the input year
+   if (typeof year !== 'number' || isNaN(year) || year < 1) {
+      throw new Error("Invalid year. Please provide a valid positive number for the year.");
+   }
+
+   // Create an array to store the start and end days for each month
+   const monthsData = [];
+
+   for (let monthNumber = 1; monthNumber <= 12; monthNumber++) {
+      const startDate = new Date(year, monthNumber - 1, 1);
+      const endDate = new Date(year, monthNumber, 0); // Note: Day 0 gives the last day of the previous month
+
+      const startDay = formatDate(startDate);
+      const endDay = formatDate(endDate);
+
+      monthsData.push({ startDay, endDay });
+   }
+
+   return monthsData;
+}
+
+function get_start_and_end_of_month(monthNumber) {
+
+   function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so we add 1 and pad with leading zeros if needed
+      const day = String(date.getDate()).padStart(2, '0'); // Pad with leading zeros if needed
+
+      return `${year}-${month}-${day}`;
+   }
+
+   // Validate the input month number (1 to 12)
+   if (monthNumber < 1 || monthNumber > 12) {
+      throw new Error("Invalid month number. Please provide a number between 1 and 12.");
+   }
+
+   // Create a new Date object for the provided month and the current year
+   const currentDate = new Date();
+   const currentYear = currentDate.getFullYear();
+   const startDate   = new Date(currentYear, monthNumber - 1, 1);
+   const endDate     = new Date(currentYear, monthNumber, 0); // Note: Day 0 gives the last day of the previous month
+
+   // Format dates as "YYYY-MM-DD"
+   const startDay = formatDate(startDate);
+   const endDay = formatDate(endDate);
+
+   return {
+      startDay: startDay,
+      endDay: endDay,
+      currentYear: currentYear
+   };
+}
+
+function get_start_and_end_of_month_current() {
+   function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so we add 1 and pad with leading zeros if needed
+      const day = String(date.getDate()).padStart(2, '0'); // Pad with leading zeros if needed
+
+      return `${year}-${month}-${day}`;
+   }
+
+   // Get the current date
+   const currentDate = new Date();
+   const currentYear = currentDate.getFullYear();
+   const currentMonth = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+
+   // Get the start day of the current month
+   const startDate = new Date(currentYear, currentMonth - 1, 1); // First day of the current month
+   const startDay = formatDate(startDate);
+
+   // Format the current day as "YYYY-MM-DD"
+   const currentDay = formatDate(currentDate);
+
+   return {
+      startDay: startDay,
+      currentDay: currentDay,
+      currentYear: currentYear,
+      currentMonth: currentMonth
+   };
+}
  
 
 function removeZeroLeading(number) {
@@ -37,35 +127,34 @@ function getPastDaysInMonth() {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
   const pastDaysArray = [];
-
   for (let day = 1; day <= daysInMonth; day++) {
     const checkDate = new Date(currentYear, currentMonth, day);
     if (checkDate < currentDate) {
       pastDaysArray.push(day);
     }
   }
-
   return pastDaysArray;
 }
 
-/**
- * @access REVERSE DATE (dd/mm/yyyy) to (yyyy-mm-dd)
-//  */
-// function reverse_date_to_system_datetime( inputDate){
-//    if(inputDate != undefined && inputDate != null ){
-//       const dateObj = new Date(inputDate);
-//       const day = dateObj.getDate().toString().padStart(2, '0');
-//       const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-//       const year = dateObj.getFullYear().toString();
-//       const hours = dateObj.getHours().toString().padStart(2, '0');
-//       const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-//       const formattedDate = `${year}-${month}-${day}`;
-//       return formattedDate;
-//    }
-//    return false;
-// }
+function isValidDateFormat(dateString) {
+  // Attempt to parse the date using JavaScript's Date object
+  const dateObj = new Date(dateString);
+  // Check if the parsed date is a valid date
+  // The condition isNaN(dateObj) will be true if dateObj is an Invalid Date
+  if (isNaN(dateObj) || dateObj === undefined ) {
+    return false;
+  }
+  // Check if the date string matches the parsed date
+  // This is an additional check to ensure that the date format is correct
+  // Some browsers may still parse invalid date strings, so we double-check here
+  const formattedDate = dateObj.toISOString().slice(0, 10); // Format: "yyyy-mm-dd"
+  return dateString === formattedDate;
+}
+
+function get_key_map(){
+   return 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
+}
 
 /**
  * @access REVERSE DATE (dd/mm/yyyy) to (yyyy-mm-dd)
@@ -432,7 +521,7 @@ function shortenNumber(number) {
 function common_price_after_discount( product ){
    var price = product.price;
 
-   if( product.has_discount == 1){
+   if( product.has_discount == 1 && product.discount_percent > 0 ){
       var currentDate = new Date();
       var discount_from = new Date(product.discount_from);
       var discount_to   = new Date(product.discount_to);
@@ -459,7 +548,7 @@ function common_price_after_discount_and_quantity( product ){
    var price      = product.price      != undefined ? product.price : 0;
    var quantity   = product.quantity   == undefined ? product.product_quantity_count : product.quantity;
    
-   if( product.has_discount == 1){
+   if( product.has_discount == 1 && product.discount_percent > 0 ){
       var currentDate = new Date();
       var discount_from = new Date(product.discount_from);
       var discount_to   = new Date(product.discount_to);
@@ -477,10 +566,8 @@ function common_price_after_discount_and_quantity( product ){
       }else{
          price = price * quantity;
       }
-
       return parseInt(price).toLocaleString('vi-VN') + ' đ';
    }
-
    price = price * quantity;
    return parseInt(price).toLocaleString('vi-VN') + ' đ';
 }
@@ -595,8 +682,9 @@ function gotoHome(){
 
 
 function has_discount( product ){
-      
-   if( product.has_discount == 0 ) return false;
+   if( product.has_discount == null || parseInt(product.has_discount) == 0 ) return false;
+   if( product.has_discount == 1 && parseInt( product.discount_percent ) == 0 ) return false;
+
    var currentDate = new Date();
    var discount_from = new Date(product.discount_from);
    var discount_to   = new Date(product.discount_to);

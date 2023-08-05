@@ -28,7 +28,7 @@ const LocationModal = {
 
       get_current_location(){ 
 
-         setInterval( () => {
+         // setInterval( () => {
             if( window.appBridge !== undefined ){
                window.appBridge.getLocation().then( (data) => {
                   if (Object.keys(data).length === 0) {
@@ -37,7 +37,8 @@ const LocationModal = {
                      window.bodyScrollToggle('add');
                      this.location_realtime = false;
                   }else{
-                     
+                     this.modal_location_turned_off = false;
+                     window.bodyScrollToggle('remove');
                      // let lat = data.lat;
                      // let lng = data.lng;
                      // this.latitude  = lat;
@@ -46,7 +47,7 @@ const LocationModal = {
                   }
                }).catch((e) => { })
             }
-         }, 1500);
+         // }, 1500);
 
       },
    },

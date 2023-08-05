@@ -198,7 +198,7 @@ function atlantis_current_datetime(){
    return $formatted_datetime;
 }
 
-function atlantis_current_date_only(){
+function atlantis_current_date_only( $format = 'Y-m-d'){
    // Create a new DateTime object with the current time in the server's default timezone
    $server_timezone = new DateTimeZone(date_default_timezone_get());
    $current_datetime = new DateTime('now', $server_timezone);
@@ -208,6 +208,10 @@ function atlantis_current_date_only(){
    $current_datetime->setTimezone($utc_plus_7_timezone);
 
    // Format the date and time as 'YYYY-MM-DD HH:mm:ss'
-   $formatted_datetime = $current_datetime->format('Y-m-d');
+   $formatted_datetime = $current_datetime->format($format);
    return $formatted_datetime;
+}
+
+function get_key_map(){
+   return 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
 }

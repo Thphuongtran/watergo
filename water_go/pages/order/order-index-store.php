@@ -79,12 +79,11 @@
          <li 
             :class='"order-status-" + order_status_current'
             v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
-            <label @click='select_item(order.order_id)' class='order-head'>
-               <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check'><input disabled type='checkbox' :checked='order.select'></div>
-               <!--  -->
-               <span class='text-order-number'>#{{ order.order_number }}</span>
-               <span class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</span>
-            </label>
+            <div @click='select_item(order.order_id)' class='order-head'>
+               <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check form-check-order'><input type='checkbox' :checked='order.select'></div>
+               <div class='text-order-number'>#{{ order.order_number }}</div>
+               <div class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</div>
+            </div>
             <div class='order-time'>
                <span class='tt01'>Ordered Time: </span>
                <span class='tt02'>{{ order_formatDate(order.order_time_created) }}</span>
@@ -299,7 +298,7 @@ createApp({
          form.append('status', order_status);
          form.append('timestamp', timestamp);
          var r = await window.request(form);
-         console.log(r)
+         // console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -381,6 +380,7 @@ createApp({
       },
 
       select_item( order_id ){
+         console.log('order_id ' + order_id);
          this.is_select_all = false;
          this.orders.forEach(order => {
             if( order.order_id == order_id ){

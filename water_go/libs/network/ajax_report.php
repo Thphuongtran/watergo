@@ -269,105 +269,194 @@ function getFirstAndLastDayOfMonth($month) {
 }
 
 /**
- * @access 2
+ * @access VERSION 2
  */
 
-add_action( 'wp_ajax_nopriv_atlantis_get_order_report', 'atlantis_get_order_report' );
-add_action( 'wp_ajax_atlantis_get_order_report', 'atlantis_get_order_report' );
+function func_atlantis_build_query_report( $store_id, $date_from, $date_to ){
+   $sql_profit = "SELECT 
+      wp_watergo_order_group.order_group_product_price as price,
+      wp_watergo_order_group.order_group_product_discount_percent as discount,
+      wp_watergo_order_group.order_group_product_quantity_count as quantity
+      FROM wp_watergo_order
+      LEFT JOIN wp_watergo_order_group
+      ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
+      WHERE order_status = 'complete' AND order_store_id = $store_id
+      AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '$date_from' 
+      AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '$date_to'
+   ";
+   $sql_sold = "SELECT COUNT(order_id) AS sold
+      FROM wp_watergo_order
+      WHERE order_status = 'complete' AND order_store_id = $store_id
+      AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '$date_from' 
+      AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '$date_to'
+   ";
+   $sql_cancel = "SELECT COUNT(order_id) AS cancel
+      FROM wp_watergo_order
+      WHERE order_status = 'cancel' AND order_store_id = $store_id
+      AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') >= '$date_from' 
+      AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') <= '$date_to'
+   ";
 
-function atlantis_get_order_report(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_order_report'){
-      $datetime = isset($_POST['datetime']) ? $_POST['datetime'] : '';
-      $datetype = isset($_POST['datetype']) ? $_POST['datetype'] : '';
-      $store_id      = func_get_store_id_from_current_user();
+   global $wpdb;
+   $profit  = $wpdb->get_results($sql_profit);
+   $sold    = $wpdb->get_results($sql_sold);
+   $cancel  = $wpdb->get_results($sql_cancel);
 
-      $current_date = atlantis_current_date_only();
+   $data = [
+      'profit' => 0,
+      'sold'   => 0,
+      'cancel' => 0
+   ];
 
-
-      $sql_today_profit = "SELECT 
-         wp_watergo_order_group.order_group_product_price as price,
-         wp_watergo_order_group.order_group_product_discount_percent as discount,
-         wp_watergo_order_group.order_group_product_quantity_count as quantity
-         FROM wp_watergo_order
-         LEFT JOIN wp_watergo_order_group
-         ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
-         WHERE order_status = 'complete' AND order_store_id = $store_id
-         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '2022-01-01' 
-         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '2023-07-30'
-      ";
-      $sql_today_sold = "SELECT COUNT(order_id) AS sold
-         FROM wp_watergo_order
-         WHERE order_status = 'complete' AND order_store_id = $store_id
-         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') >= '$current_date' 
-         AND DATE_FORMAT(order_time_completed, '%Y-%m-%d') <= '$current_date'
-      ";
-      $sql_today_cancel = "SELECT COUNT(order_id) AS cancel
-         FROM wp_watergo_order
-         WHERE order_status = 'cancel' AND order_store_id = $store_id
-         AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') >= '$current_date' 
-         AND DATE_FORMAT(order_time_cancel, '%Y-%m-%d') <= '$current_date'
-      ";
-
-      global $wpdb;
-
-      $today_profit  = $wpdb->get_results( $sql_today_profit );
-      $total_profit  = 0;
-      foreach( $today_profit as $k => $p ){
-         $price = $p->price - ( ( $p->price * $p->discount ) / 100 );
+   if( !empty( $profit)){
+      $total_profit = 0;
+      foreach( $profit as $k => $p ){
+         $price = $p->price - ( $p->price * ( $p->discount  / 100 ) );
          $total_profit += $price * $p->quantity;
       }
+      $data['profit'] = $total_profit;
+   }
 
-      $today_sold    = $wpdb->get_results( $sql_today_sold );
-      $today_cancel  = $wpdb->get_results( $sql_today_cancel );
-
-      // END VALUE FROM CURRENT DATETIME
-      $sold_past     = 0;
-      $cancel_past   = 0;
-      $profit_past   = 0;
-
-
-      if( $datetype == 'day' ){
-         $day = getFullDate($datetime);
-         $sql = sql_atlantis_brand_report([
-            'order_status' => 'complete',
-            'from_date'    => $day['day_from'],
-            'current_date' => $day['day_current']
-         ]);
+   if( !empty( $sold)){
+      if( $sold[0]->sold != null && $sold[0]->sold > 0 ){
+         $data['sold'] = (int) $sold[0]->sold;
       }
+   }
 
-
-
-      if( $datetype == 'month' ){
-         $month = getFirstAndLastDayOfMonth($datetime);
-         $sql_from_month = sql_atlantis_brand_report([
-            'order_status' => 'complete',
-            'from_date'    => $month['month_start'],
-            'current_date' => $month['month_end']
-         ]);
-         $sql_from_month = sql_atlantis_brand_report([
-            'order_status' => 'complete',
-            'from_date'    => $month['month_start'],
-            'current_date' => $month['month_end']
-         ]);
-         
+   if( !empty( $cancel)){
+      if( $cancel[0]->cancel != null && $cancel[0]->cancel > 0 ){
+         $data['cancel'] = (int) $cancel[0]->cancel;
       }
+   }
 
-      if( $datetype == 'year' ){
+   return $data;
 
-      }
+}
 
-      wp_send_json_success(['message' => 'bug', 'data' => 
-         [
-            'today_profit' => $total_profit,
-            'today_sold'   => $today_sold[0]->sold,
-            'today_cancel' => $today_cancel[0]->cancel,
-            'datetime'     => $datetime,
-            'datetype'     => $datetype,
-            'day'          => $day,
-            'month'          => $month,
-            
+add_action( 'wp_ajax_nopriv_atlantis_get_today_order_report', 'atlantis_get_today_order_report' );
+add_action( 'wp_ajax_atlantis_get_today_order_report', 'atlantis_get_today_order_report' );
+
+function atlantis_get_today_order_report(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_today_order_report'){
+
+      $store_id      = func_get_store_id_from_current_user();
+      $current_date  = atlantis_current_date_only();
+      $res           = func_atlantis_build_query_report($store_id, $current_date, $current_date);
+
+      wp_send_json_success(['message' => 'get_order_ok', 'data' => $res ]);
+      wp_die();
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_range_day_order_report', 'atlantis_get_range_day_order_report' );
+add_action( 'wp_ajax_atlantis_get_range_day_order_report', 'atlantis_get_range_day_order_report' );
+
+function atlantis_get_range_day_order_report(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_range_day_order_report'){
+      $store_id         = func_get_store_id_from_current_user();
+      $current_date     = atlantis_current_date_only();
+
+      $date_from        = isset($_POST['date_from'])  ? $_POST['date_from'] : 0;
+      $date_to          = isset($_POST['date_to'])    ? $_POST['date_to'] : 0;
+
+      $day              = func_atlantis_build_query_report($store_id, $date_from, $date_to);
+      $day_current      = func_atlantis_build_query_report($store_id, $current_date, $current_date);
+
+      wp_send_json_success(['message' => 'get_order_ok', 
+         'data' => [
+
+            'report_range' => [
+               'profit' => $day['profit'],
+               'sold'   => $day['sold'],
+               'cancel' => $day['cancel'],
+            ],
+            'report_today' => [
+               'profit' => $day_current['profit'],
+               'sold'   => $day_current['sold'],
+               'cancel' => $day_current['cancel'],
+            ]
          ]
       ]);
+      wp_die();
+
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_get_range_month_order_report', 'atlantis_get_range_month_order_report' );
+add_action( 'wp_ajax_atlantis_get_range_month_order_report', 'atlantis_get_range_month_order_report' );
+
+function atlantis_get_range_month_order_report(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_range_month_order_report' ){
+      $store_id                  = func_get_store_id_from_current_user();
+
+      // start - end day of month
+      $start_day_month           = isset($_POST['start_day_month']) ? $_POST['start_day_month'] : 0;
+      $end_day_month             = isset($_POST['end_day_month']) ? $_POST['end_day_month'] : 0;
+      
+      // start - end day of current month
+      $start_day_month_current   = isset($_POST['start_day_month_current']) ? $_POST['start_day_month_current'] : 0;
+      $end_day_month_current     = isset($_POST['end_day_month_current']) ? $_POST['end_day_month_current'] : 0;
+
+      $month                     = func_atlantis_build_query_report($store_id, $start_day_month, $end_day_month);
+      $month_current             = func_atlantis_build_query_report($store_id, $start_day_month_current, $end_day_month_current);
+
+      wp_send_json_success(['message' => 'get_order_ok', 
+         'data' => [
+
+            'report_range' => [
+               'profit' => $month['profit'],
+               'sold'   => $month['sold'],
+               'cancel' => $month['cancel'],
+            ],
+            'report_today' => [
+               'profit' => $month_current['profit'],
+               'sold'   => $month_current['sold'],
+               'cancel' => $month_current['cancel'],
+            ]
+         ]
+      ]);
+
+      wp_die();
+
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_range_year_order_report', 'atlantis_get_range_year_order_report' );
+add_action( 'wp_ajax_atlantis_get_range_year_order_report', 'atlantis_get_range_year_order_report' );
+
+function atlantis_get_range_year_order_report(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_range_year_order_report' ){
+      $store_id            = func_get_store_id_from_current_user();
+
+      $start_day           = isset($_POST['start_day']) ? $_POST['start_day'] : 0;
+      $end_day             = isset($_POST['end_day']) ? $_POST['end_day'] : 0;
+
+      $current_start_day   = isset($_POST['current_start_day']) ? $_POST['current_start_day'] : 0;
+      $current_end_day     = isset($_POST['current_end_day']) ? $_POST['current_end_day'] : 0;
+
+      $year                = func_atlantis_build_query_report($store_id, $start_day, $end_day);
+      $year_current        = func_atlantis_build_query_report($store_id, $current_start_day, $current_end_day);
+
+      wp_send_json_success(['message' => 'get_order_ok', 
+         'data' => [
+            'report_range' => [
+               'profit' => $year['profit'],
+               'sold'   => $year['sold'],
+               'cancel' => $year['cancel'],
+            ],
+            'report_today' => [
+               'profit' => $year_current['profit'],
+               'sold'   => $year_current['sold'],
+               'cancel' => $year_current['cancel'],
+            ]
+         ]
+      ]);
+
+      wp_die();
 
    }
 }

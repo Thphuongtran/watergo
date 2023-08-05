@@ -125,22 +125,19 @@ function atlantis_action_product_store(){
       $discount_from    = isset($_POST['discount_from']) ? $_POST['discount_from'] : 0;
       $discount_to      = isset($_POST['discount_to']) ? $_POST['discount_to'] : 0;
 
-
       
-
-      if( $discount_from != null || $discount_from != 0 ){
-         $discount_from = DateTime::createFromFormat('d/m/Y', $discount_from);
-         if( $discount_from != false ){
-            $discount_from = $discount_from->format('Y-m-d');
-         }
-
-      }
-      if( $discount_to != null || $discount_to != 0 ){
-         $discount_to = DateTime::createFromFormat('d/m/Y', $discount_to);
-         if( $discount_to != false ){
-            $discount_to = $discount_to->format('Y-m-d');
-         }
-      }
+      // if( $discount_from != null || $discount_from != 0 ){
+      //    $discount_from = DateTime::createFromFormat('d/m/Y', $discount_from);
+      //    if( $discount_from != false ){
+      //       $discount_from = $discount_from->format('Y-m-d');
+      //    }
+      // }
+      // if( $discount_to != null || $discount_to != 0 ){
+      //    $discount_to = DateTime::createFromFormat('d/m/Y', $discount_to);
+      //    if( $discount_to != false ){
+      //       $discount_to = $discount_to->format('Y-m-d');
+      //    }
+      // }
 
       $product_description = isset($_POST['product_description']) ? $_POST['product_description'] : '';
 
@@ -165,6 +162,11 @@ function atlantis_action_product_store(){
          $arg_discount['discount_percent']   = $discount_percent;
          $arg_discount['discount_from']      = $discount_from;
          $arg_discount['discount_to']        = $discount_to;
+      }else if( $has_discount == 0 || $has_discount == null ){
+         $arg_discount['has_discount']       = 0;
+         $arg_discount['discount_percent']   = 0;
+         $arg_discount['discount_from']      = 0;
+         $arg_discount['discount_to']        = 0;
       }
 
       // wp_send_json_success(['message' => 'bug', 'arg_discount' => $arg_discount ]);
@@ -178,13 +180,16 @@ function atlantis_action_product_store(){
       $args = [
          'store_id'           => $store_id,
          'product_type'       => $product_type,
-         'description'        => $product_description,
+         'description'        => (String) $product_description,
          'price'              => $price,
-         'mark_out_of_stock'  => $mark_out_of_stock
+         'mark_out_of_stock'  => $mark_out_of_stock,
+         'created_at'         => atlantis_current_date_only('Y-m-d H:m:s')
          // 'stock'           => $stock,
       ];
 
-      
+      // wp_send_json_success(['message' => 'bug', 'res' => $args ]);
+      // wp_die();
+
 
       if(!empty($arg_discount)){
          $args = array_merge($args, $arg_discount);
@@ -215,7 +220,7 @@ function atlantis_action_product_store(){
                foreach($list_attachment as $k => $attachment_id ){
                   $wpdb->insert('wp_watergo_attachment', [
                      'attachment_id'   => $attachment_id,
-                     'related_id'      => $product_id,
+                     'related_id'      => $_product_id_insert,
                      'attachment_type' => 'product'
                   ]);
                }

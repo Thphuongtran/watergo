@@ -25,7 +25,7 @@
                <p class='tt01'>Delivery address</p>
                <p class='tt03'>{{ order.order_delivery_address.address }}</p>
                <p class='tt02'>{{ order.order_delivery_address.name }} | (+84) {{ removeZeroLeading( order.order_delivery_address.phone ) }}</p>
-               <span v-if='address_kilometer > 0' class='address-kilometer'>{{address_kilometer}}km</span>
+               <!-- <span v-if='address_kilometer > 0' class='address-kilometer'>{{address_kilometer}}km</span> -->
             </div>
          </div>
       </div>
@@ -69,7 +69,7 @@
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
                '
-            v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
+            v-for='( date_time, date_time_key ) in order.order_time_shipping' :key='date_time_key'
             class='display_delivery_time'>
 
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
@@ -309,35 +309,37 @@ createApp({
 
          this.order = res.data;
 
+         console.log(this.order)
+
          // CACULATOR LOCATION FROM USER ADDRESS TO KILOMETERS
-         var form_get_store_location = new FormData();
-         form_get_store_location.append('action', 'atlantis_get_location_of_store');
-         form_get_store_location.append('store_id', this.order.store_id);
+         // var form_get_store_location = new FormData();
+         // form_get_store_location.append('action', 'atlantis_get_location_of_store');
+         // form_get_store_location.append('store_id', this.order.store_id);
 
-         var _store = await window.request(form_get_store_location);
-         var _store_lat = 0.0;
-         var _store_lng = 0.0;
-         if(_store != undefined){
-            var _store_res = JSON.parse( JSON.stringify( _store ));
-            if( _store_res.message == 'store_found'){
-               _store_lat = parseFloat(_store_res.data.latitude);
-               _store_lng = parseFloat(_store_res.data.longitude);
-            }
+         // var _store = await window.request(form_get_store_location);
+         // var _store_lat = 0.0;
+         // var _store_lng = 0.0;
+         // if(_store != undefined){
+         //    var _store_res = JSON.parse( JSON.stringify( _store ));
+         //    if( _store_res.message == 'store_found'){
+         //       _store_lat = parseFloat(_store_res.data.latitude);
+         //       _store_lng = parseFloat(_store_res.data.longitude);
+         //    }
 
-            var _order_delivery_address = res.data.order_delivery_address;
-            if( _order_delivery_address != undefined && _order_delivery_address != null ){
-               if( _order_delivery_address.latitude != undefined && _order_delivery_address.longitude){
-                  var latitude = _order_delivery_address.latitude;
-                  var longitude = _order_delivery_address.longitude;
-                  var _caculator_distance = this.calculateDistance(
-                     _store_lat, _store_lng,
-                     latitude, longitude
-                  );
-                  this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
-               }
+         //    var _order_delivery_address = res.data.order_delivery_address;
+         //    if( _order_delivery_address != undefined && _order_delivery_address != null ){
+         //       if( _order_delivery_address.latitude != undefined && _order_delivery_address.longitude){
+         //          var latitude = _order_delivery_address.latitude;
+         //          var longitude = _order_delivery_address.longitude;
+         //          var _caculator_distance = this.calculateDistance(
+         //             _store_lat, _store_lng,
+         //             latitude, longitude
+         //          );
+         //          this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
+         //       }
 
-            }
-         }
+         //    }
+         // }
 
 
 

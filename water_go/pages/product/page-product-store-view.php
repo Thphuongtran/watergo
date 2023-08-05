@@ -37,6 +37,12 @@
                      v-for='(cat, catIndex) in get_category' :key='catIndex'
                      :value="{ value: cat.id }">{{ cat.name }}</option>
                </select>
+               <span class='icon-select'>
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+
             </div>
 
             <div v-show='product_type == "water"' class='form-title'>Brand</div>
@@ -47,6 +53,11 @@
                      v-for='(brand, brandIndex) in get_brand' :key='brandIndex'
                      :value="{ value: brand.id }">{{ brand.name }}</option>
                </select>
+               <span class='icon-select'>
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
             </div>
 
             <div class='form-control'>
@@ -90,14 +101,27 @@
                <select v-model='ice_weight'>
                   <option :value="{ value: 0 }" disabled>Select Weight</option>
                   <option 
-                     v-for='(ice_weight, ice_weightIndex) in get_ice_weight' :key='ice_weightIndex'
-                     :value="{ value: ice_weight.id }">{{  ice_weight.name }}</option>
+                     v-for='( ice_weight_item, ice_weightIndex) in get_ice_weight' :key='ice_weightIndex'
+                     :value="{ value: ice_weight_item.id }">{{  ice_weight_item.name }}</option>
                </select>
+               <span class='icon-select'>
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
             </div>
 
             <div v-show='product_type == "ice"' class='form-title'>Length * Width</div>
             <div v-show='product_type == "ice"' class='form-control'>
-               <input v-model='product.length_width' type="text" placeholder='_____ * _____ mm'>
+               <!-- <input v-model='product.length_width' type="text" placeholder='_____ * _____ mm'> -->
+               <div class='form-type-length-width'>
+                  <div class='form-type-length-width-wrapper'>
+                  <input v-model='size_length' class='type-length' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
+                  <span class='placeholder'>*</span>
+                  <input v-model='size_width' class='type-width' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
+                  <span class='placeholder'> mm</span>
+                  </div>
+               </div>
             </div>
             <!-- END SIZE ICE -->
 
@@ -110,6 +134,11 @@
                      v-for='(water_quantity, water_quantityIndex) in get_water_quantity' :key='water_quantityIndex'
                      :value="{ value: water_quantity.id }">{{ water_quantity.name }}</option>
                </select>
+               <span class='icon-select'>
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
             </div>
 
             <div v-show='product_type == "water"' class='form-title small-size'>Water Volume</div>
@@ -120,6 +149,11 @@
                      v-for='(water_volume, water_volumeIndex) in get_water_volume' :key='water_volumeIndex'
                      :value="{ value: water_volume.id }">{{ water_volume.name }}</option>
                </select>
+               <span class='icon-select'>
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
             </div>
 
             <!-- END SIZE WATER -->
@@ -135,11 +169,7 @@
                <li class='upload'>
                   <label>
                      <input id='UploadPhoto' type="file" multiple @change="handleFileUpload" />
-                     <svg width="104" height="107" viewBox="0 0 104 107" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <rect x="1" y="1" width="102" height="105" rx="4" fill="white" stroke="#2790F9" stroke-width="2" stroke-dasharray="20 20"/>
-                     </svg>
-
-                     <span>Add Photo</span>
+                     <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo.png' ?>">
                   </label>
                </li>
                <!-- IMAGE FROM PRODUCT WHEN EDIT -->
@@ -167,7 +197,7 @@
                </li>
             </ul>
 
-            <div class='form-checkbox form-check check-out-of-stock'>
+            <div v-if='action == "edit"' class='form-checkbox form-check check-out-of-stock'>
                <label>
                   <input @click='mark_out_of_stock' :checked='product.mark_out_of_stock == 1 ? true : false' type='checkbox'>
                   <span class='text'>Mark as out of stock</span>
@@ -177,8 +207,8 @@
             <div class='t-red'>{{ text_error }}</div>
 
             <div class='form-button'>
-               <button @click='btn_action_product("add")' v-if='action == "add"' class='btn btn-primary'>Add</button>
-               <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary'>Save</button>
+               <button @click='btn_action_product("add")' v-if='action == "add"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'>Add</button>
+               <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'>Save</button>
                <button @click='btn_modal_open' v-if='action == "edit"' class='btn btn-outline'>Delete</button>
             </div>
 
@@ -211,6 +241,7 @@
 var { createApp } = Vue;
 createApp({
    data (){
+
       return {
          popup_delete_product: false,
          loading: false,
@@ -232,6 +263,11 @@ createApp({
             // product_image in visible
          },
 
+         is_can_action: false,
+
+         size_length: null,
+         size_width: null,
+
          category: [],
          uploadImages: [],
          productImages: [],
@@ -241,23 +277,178 @@ createApp({
          water_brand: { value: 0 },
          water_quantity: { value: 0 },
          water_volume: { value: 0 },
-         water_volume: { value: 0 },
 
          ice_weight: { value: 0 },
 
          action: '',
          product_type: '',
          leading_title: '',
-         text_error: ''
+         text_error: '',
 
+         check_error: {
+            select_category:  false,
+            price:            false,
+            description:      false,
+            // water
+            water_brand:      false,
+            water_quantity:   false,
+            water_volume:     false,
+            // ice
+            ice_weight:       false,
+            size_length:      false,
+            size_width:       false,
+            //
+            has_discount:     false,
+
+            // image upload
+            uploadImages:     false,
+            productImages:    false,
+         }
       }
    },
 
    watch: {
-      
+
+      'product.category': function( val ){
+         if( val.value != 0){ this.check_error.select_category = true; }
+      },
+      select_category: function(val){
+         if( val.value != 0){ this.check_error.select_category = true; }
+      },
+      // water
+      'product.brand': function( val ){
+         if( val != null && val != 0){ this.check_error.water_brand = true; }
+      },
+      water_brand: function( val ){
+         if( val.value != null && val.value != 0 ){ this.check_error.water_brand = true; }
+      },
+      'product.quantity': function( val ){
+         if( val != null && val != 0){ this.check_error.water_quantity = true; }
+      },
+      water_quantity: function( val ){
+         if( val.value != 0){ this.check_error.water_quantity = true; }
+      },
+      'product.volume': function ( val ){
+         if( val != null && val != 0){ this.check_error.water_volume = true; }
+      },
+      water_volume: function( val ){
+         if( val.value != 0){ this.check_error.water_volume = true; }
+      },
+      // ice
+      'product.weight': function( val ){
+         if( val != null && val != 0 ){ this.check_error.ice_weight = true; }
+      },
+      ice_weight: function( val ){
+         if( val.value != 0 ){ this.check_error.ice_weight = true; }
+      },
+
+      length_width: function( val ){
+         if(val != undefined && val != null && val != ''){
+            this.check_error.size_length = true;
+            this.check_error.size_width = true;
+         }else{
+            this.check_error.size_length = false;
+            this.check_error.size_width = false;
+         }
+      },
+
+      size_length: function ( val ){
+         if(val != undefined && val != null && val != ''){this.check_error.size_length = true;
+         }else{this.check_error.size_length = false;}
+      },
+      size_width: function ( val ){
+         if(val != undefined && val != null && val != ''){this.check_error.size_width = true;
+         }else{this.check_error.size_width = false;}
+      },
+      'product.price': function( val ){
+         if(val != undefined && val != null && val != ''){this.check_error.price = true;
+         }else{this.check_error.price = false;}
+      },
+      'product.description': function( val ){
+         if(val != undefined && val != null && val != ''){this.check_error.description = true;
+         }else{this.check_error.description = false;}
+      },
+      'product.has_discount': function( val ){
+         // discount_to
+         if(val == 1 ){
+            this.check_error.has_discount = true;
+         }else{
+            this.check_error.has_discount = false;
+         }
+      },
+
+      'product.discount_percent': function ( val ){
+         if( val >= 100 ){
+            this.product.discount_percent = 100;
+         }
+      },
+
+      uploadImages: {
+         handler( image ){
+            if( image.length > 0 ){
+               this.check_error.uploadImages = true;
+            }else{
+               this.check_error.uploadImages = false;
+            }
+         },
+         deep: true
+      },
+
+      productImages: {
+         handler( image ){
+            if( image.length > 0 ){
+               this.check_error.productImages = true;
+            }else{
+               this.check_error.productImages = false;
+            }
+         },
+         deep: true
+      },
+
+      check_error: {
+         handler( val ){
+            if( this.product_type == 'ice'){
+               if(
+                  val.select_category == true &&
+                  val.price == true &&
+                  val.description == true &&
+                  ( val.uploadImages == true || val.productImages == true) &&
+                  val.ice_weight == true &&
+                  val.size_length == true &&
+                  val.size_width == true
+               ){
+                  this.is_can_action = true;
+               }else{
+                  this.is_can_action = false;
+               }
+            }
+
+            if( this.product_type == 'water'){
+               if(
+                  val.select_category == true &&
+                  val.price == true &&
+                  val.description == true &&
+                  ( val.uploadImages == true || val.productImages == true) &&
+                  val.water_brand == true &&
+                  val.water_quantity == true &&
+                  val.water_volume == true
+               ){
+                  this.is_can_action = true;
+               }else{
+                  this.is_can_action = false;
+               }
+            }
+
+         },
+         deep: true,
+      },
+
+
+
    },
 
    computed: {
+
       get_category(){
          return this.category.filter( cat => {
             if( cat.category == 'water_category' && this.product_type == 'water' ){
@@ -325,19 +516,32 @@ createApp({
       },
 
       async btn_action_product( event ){
-         
-         this.loading = true;
-         var _discount_from   = this.$refs.discount_from.value != undefined || this.$refs.discount_from.value != '' ? this.$refs.discount_from.value : 0;
-         var _discount_to     = this.$refs.discount_to.value != undefined || this.$refs.discount_to.value != '' ? this.$refs.discount_to.value : 0;
+
+         var _discount_from   = 0;
+         var _discount_to     = 0;
 
          if( this.product.discount_from != null && this.product.discount_from != 0){
-            _discount_from = window.reverse_system_datetime_to_date(this.product.discount_from);
+            _discount_from = window.reverse_date_to_system_datetime(this.product.discount_from);
          }
+
+         if( this.$refs.discount_from.value != undefined && this.$refs.discount_from.value != '' ) {
+            _discount_from = window.reverse_date_to_system_datetime(this.$refs.discount_from.value);
+         }
+
          if( this.product.discount_to != null && this.product.discount_to != 0){
-            _discount_to = window.reverse_system_datetime_to_date(this.product.discount_to);
+            _discount_to = window.reverse_date_to_system_datetime(this.product.discount_to) ;
          }
-         
-         var _submit          = true;
+
+         if( this.$refs.discount_to.value != undefined && this.$refs.discount_to.value != '' ){            
+            _discount_to =  window.reverse_date_to_system_datetime( this.$refs.discount_to.value );
+         }
+
+         if(_discount_from == undefined || _discount_from == null ){
+            _discount_from = null;
+         }
+         if(_discount_to == undefined || _discount_to == null ){
+            _discount_to = null;
+         }
 
          var form = new FormData();
          form.append('action', 'atlantis_action_product_store');
@@ -347,7 +551,6 @@ createApp({
          form.append('product_id', this.product_id);
          form.append('mark_out_of_stock', this.product.mark_out_of_stock);
 
-
          if( this.uploadImages.length > 0 ){
             this.uploadImages.forEach( file => form.append('uploadImages[]', file.file ));
          }
@@ -356,95 +559,75 @@ createApp({
             form.append('list_attachment_id_delete', JSON.stringify(this.list_attachment_id_delete) );
          }
 
-         var _has_discount = 0;
-
-         if( this.product.has_discount == 1 ){
-            if( _discount_from != null && _discount_to != null ){
-               _has_discount = 1;
-            }else{
-               _has_discount                 = 0;
-               this.product.discount_percent = 0;
-               _submit = false;
-            }
+         if( this.product.has_discount == undefined || this.product.has_discount == null || this.product.has_discount == 0 ){
+            this.product.has_discount     = 0;
+            this.product.discount_percent = 0;
+            _discount_from                = 0;
+            _discount_to                  = 0;
          }
 
-         form.append('has_discount',      _has_discount);
+         form.append('has_discount',      this.product.has_discount);
          form.append('discount_percent',  this.product.discount_percent);
          form.append('discount_from',     _discount_from);
          form.append('discount_to',       _discount_to);
 
+         // console.log(this.check_error);
+
          /**
-          * @access PRODUCT TYPE {ICE}
-          */
-         if( this.product_type  == 'ice' && _submit == true){
-            // check all is empty?
-            if(
-               this.select_category.value == 0 ||
-               this.product.price == null ||
-               // this.product.stock == null ||
-               this.ice_weight.value == 0 ||
-               this.product.length_width == '' ||
-               this.product.description == ''
-            ){
-               this.text_error = 'All field must be not empty.';
-            }else{
-               this.text_error = '';
-               form.append('category_id', this.select_category.value );
-               form.append('price', this.product.price );
-               // form.append('stock', this.product.stock );
-               form.append('ice_weight', this.ice_weight.value);
-               form.append('length_width', this.product.length_width);
-               form.append('product_description', this.product.description);
+         *  @access PRODUCT TYPE {ICE}
+         */
+         if( this.product_type == 'ice' && this.is_can_action == true ){
 
-               var r = await window.request(form);
-               console.log(r)
-               if( r != undefined ){
-                  var res = JSON.parse( JSON.stringify( r ));
-                  if( res.message == 'action_product_ok'){
-                     this.goBack();
-                  }
+            this.loading = true;
+            form.append('category_id', this.select_category.value );
+            form.append('price', this.product.price );
+            form.append('ice_weight', this.ice_weight.value);
+            this.product.length_width = this.size_length + '*' + this.size_width;
+            form.append('length_width', this.product.length_width);
+            form.append('product_description', this.product.description);
+
+            var r = await window.request(form);
+
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r ));
+               if( res.message == 'action_product_ok'){
+                  this.goBack();
+               }else{
+                  this.loading = false;
                }
+            }else{
+               this.loading = false;
+            }
+         }
+         
+         /**
+         *  @access PRODUCT TYPE {WATER}
+         */
 
+         if( this.product_type == 'water' && this.is_can_action == true ){
+            this.loading = true;
+            form.append('category_id',          this.select_category.value );
+            form.append('water_brand',          this.water_brand.value );
+            form.append('price',                this.product.price );
+            form.append('water_quantity',       this.water_quantity.value);
+            form.append('water_volume',         this.water_volume.value);
+            form.append('product_description',  this.product.description);
+
+            var r = await window.request(form);
+            // console.log(r)
+
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r ));
+               if( res.message == 'action_product_ok'){
+                  this.goBack();
+               }else{
+                  this.loading = false;
+               }
+            }else{
+               this.loading = true;
             }
 
          }
-
-         /**
-          * @access PRODUCT TYPE {WATER}
-          */
-         if( this.product_type == 'water' && _submit == true){
-            // check all is empty?
-            if(
-               this.select_category.value == 0 ||
-               this.water_brand.value == 0 ||
-               this.product.price == null ||
-               // this.product.stock == null ||
-               this.water_quantity.value == 0 ||
-               this.water_volume.value == 0 ||
-               this.product.description == ''
-            ){
-               this.text_error = 'All field must be not empty.';
-            }else{
-               this.text_error = '';
-               form.append('category_id', this.select_category.value );
-               form.append('water_brand', this.water_brand.value );
-               form.append('price', this.product.price );
-               // form.append('stock', this.product.stock );
-               form.append('water_quantity', this.water_quantity.value);
-               form.append('water_volume', this.water_volume.value);
-               form.append('product_description', this.product.description);
-
-               var r = await window.request(form);
-               if( r != undefined ){
-                  var res = JSON.parse( JSON.stringify( r ));
-                  if( res.message == 'action_product_ok' ){
-                     this.goBack();
-                  }
-               }
-
-            }
-         }
-
 
       },
 
@@ -468,7 +651,6 @@ createApp({
          }else{
             this.product.mark_out_of_stock = 0;
          }
-         // this.product.stock = 0; 
       },
 
       async get_product(product_id){
@@ -477,6 +659,7 @@ createApp({
          form.append('product_id', product_id);
          form.append('limit_image', 0);
          var r = await window.request(form);
+         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'product_found' ){
@@ -486,13 +669,16 @@ createApp({
                this.water_brand.value        = this.product.brand;
                this.water_quantity.value     = this.product.quantity;
                this.water_volume.value       = this.product.volume;
-               this.water_volume.value       = this.product.volume;
                this.ice_weight.value         = this.product.weight;
 
                // FILL DISCOUNT
                if(this.product.has_discount == 1){
-                  $('#discount_from').attr('value', window.reverse_system_datetime_to_date(this.product.discount_from) );
-                  $('#discount_to').attr('value', window.reverse_system_datetime_to_date(this.product.discount_to) );
+                  if( this.product.discount_from != null && this.product.discount_from != 0 ) {
+                     $('#discount_from').attr('value', window.reverse_system_datetime_to_date(this.product.discount_from) );
+                  }
+                  if( this.product.discount_to != null && this.product.discount_to != 0 ){
+                     $('#discount_to').attr('value', window.reverse_system_datetime_to_date(this.product.discount_to) );
+                  }
                }
 
                // PRODUCT IMAGE
@@ -580,9 +766,14 @@ createApp({
          if( this.product.mark_out_of_stock == null ){
             this.product.mark_out_of_stock = 0;
          }
-      }
 
-      
+         if( product_type == 'ice' && this.product.length_width != null && this.product.length_width.length != '' ){
+            var [_length, _width]   = this.product.length_width.split('*');
+            this.size_length        = _length;
+            this.size_width         = _width;
+         }
+
+      }
 
       await this.get_product_category();
 

@@ -48,7 +48,7 @@
                
                <div class='order-store-header style01 border-bottom-large ' stlye=''>
                   <div class='datepicker-wrapper'>
-                     <input @click='datePicker(true)' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' disable readonly>
+                     <input @click='datePicker(true)' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' readonly>
                      <span class='icon-dropdown'></span>
                   </div>
                   <div class='count-order'>Total order: <span>{{ get_total_orders_count }}</span></div>
@@ -73,16 +73,18 @@
                </div>
 
                <div class='order-item-title-container-tile02'>
-                  <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>Delivery Immediately </p>
+                  <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>
+                     Delivery Immediately {{ order.order_time_shipping.order_time_shipping_time }}
+                  </p>
                   <p 
                      v-if="order.order_delivery_type == 'once_date_time'"
-                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} </p>
+                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'weekly'"
-                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }}</p>
+                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'monthly'"
-                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }}</p>
+                     class='text-xsm'>Delivery on {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                </div>
 
 
@@ -129,6 +131,13 @@ createApp({
       }
    },
 
+   watch: {
+      datePickerValue: async function ( date ){
+      //    // var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
+      //    await this.schedule_load_product('all', date, 0);
+      }
+   },
+
    methods: {
 
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
@@ -137,7 +146,6 @@ createApp({
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
-
 
       async get_notification_count(){
          var form = new FormData();
@@ -182,18 +190,16 @@ createApp({
 
       total_product_price_in_order( order ){
          var _total_price = 0;
+
          order.order_products.forEach( product => {
             var discount_percent = parseInt(product.order_group_product_discount_percent);
             var price            = parseInt(product.order_group_product_price);
             var quantity         = parseInt(product.order_group_product_quantity_count);
 
             if( discount_percent == undefined || discount_percent == null || discount_percent == 0){
-               _total_price += price;
-            }else{
-               discount_percent = 10; // vi du 10%
-               _total_price += price - ( price * ( discount_percent / 100 ) );
+               discount_percent = 0;
             }
-            _total_price = _total_price * quantity;
+            _total_price = ( price - ( price * ( discount_percent / 100 ) ) ) * quantity;
          });
          return _total_price.toLocaleString('vi-VN') + ' đ';;
       },
@@ -278,6 +284,7 @@ createApp({
 
             for (let i = 0; i < query.length; i++) {
                query[i].addEventListener("mousedown", () => {
+                  var _getDatePicker = $('#datepicker').val();
                   setTimeout(() => {
                      var _getDatePicker = $('#datepicker').val();
                      this.orders = [];
@@ -299,16 +306,14 @@ createApp({
 
       },
 
-
       async schedule_load_product(filter, datetime, paged){
-
          var form = new FormData();
          form.append('action', 'atlantis_get_order_schedule');
          form.append('filter', filter);
          form.append('paged', paged );
          form.append('datetime', String( datetime) );
          var r = await window.request(form);
-         // console.log(r)
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
@@ -329,7 +334,6 @@ createApp({
                });
 
             }
-
          }
 
       },
@@ -354,9 +358,7 @@ createApp({
          }
       },
 
-
    },
-
    
 
    async created(){
@@ -379,12 +381,8 @@ createApp({
 
    },
 
-   mounted() {
-      window.addEventListener('scroll', this.handleScroll);
-   },
-   beforeDestroy() {
-      window.removeEventListener('scroll', this.handleScroll);
-   },
+   mounted() { window.addEventListener('scroll', this.handleScroll); },
+   beforeDestroy() {window.removeEventListener('scroll', this.handleScroll); },
 
    computed: {
       filter_order(){

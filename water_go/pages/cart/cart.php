@@ -48,7 +48,7 @@
             <path d="M82.6032 112.053C82.6299 113.899 81.1553 115.417 79.3096 115.443C77.4639 115.47 75.946 113.996 75.9192 112.15C75.8925 110.304 77.367 108.786 79.2128 108.759C81.0585 108.733 82.5764 110.207 82.6032 112.053Z" fill="white" stroke="black" stroke-width="0.5"/>
             </svg>
             <p class="t-thrid">There is no product in your cart</p>
-            <button @click='goBack' class='btn btn-outline mt30'>Go Shopping Now</button>
+            <button @click='goBackHome' class='btn btn-outline mt30'>Go Shopping Now</button>
          </div>
       </div>
 
@@ -162,6 +162,10 @@ createApp({
       }
    },
    methods: {
+
+      goBackHome(){ 
+         window.appBridge.navigateTo("Home");
+      },
 
       has_discount( product ){ return window.has_discount( product ); },      
       common_price_show_currency(p){ return window.common_price_show_currency(p) },

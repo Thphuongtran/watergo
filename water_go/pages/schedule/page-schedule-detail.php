@@ -73,7 +73,9 @@
                order.order_delivery_type == "monthly"
                '
             v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
-            class='display_delivery_time'>
+            class='display_delivery_time'
+            :class='order.order_time_shipping_id == date_time.order_time_shipping_id ? "highlight" : ""'
+         >
 
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
@@ -125,7 +127,6 @@
       </div>
 
 
-
       <div class='order-bottomsheet'>
          <div class='product-detail-bottomsheet t-right'>
             <p class='price-total'>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
@@ -138,14 +139,6 @@
    <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div>
-   </div>
-
-   
-   <div v-show='popup_out_of_stock == true' class='modal-popup open'>
-      <div class='modal-wrapper'>
-         <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
       </div>
    </div>
    
@@ -161,12 +154,6 @@ createApp({
    data (){
       return {
          loading: false,
-         banner_open: false,
-         popup_out_of_stock: false,
-         order_is_out_of_stock: false,
-
-         latitude: 10.780900239854994,
-         longitude: 106.7226271387539,
 
          order_time_shipping: [],
 
@@ -188,29 +175,10 @@ createApp({
          });
       },
 
-      get_current_location(){
-
-         if( window.appBridge != undefined ){
-            window.appBridge.getLocation().then( (data) => {
-               if (Object.keys(data).length === 0) {
-                  // alert("Error-1 :Không thể truy cập vị trí");
-               }else{
-                  let lat = data.lat;
-                  let lng = data.lng;
-                  this.latitude = data.lat;
-                  this.longitude = data.lng;
-               }
-            }).catch((e) => { })
-         }
-      },
-
       has_discount( product ){ return window.has_discount( product ); },
 
       common_price_after_discount_and_quantity_from_group_order(p){ return window.common_price_after_discount_and_quantity_from_group_order(p)},
       common_price_after_quantity_from_group_order(p){ return window.common_price_after_quantity_from_group_order(p)},
-
-      // common_price_show_currency(p){ return window.common_price_show_currency(p) },
-      // common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
 
@@ -236,6 +204,20 @@ createApp({
                // this.order.address_kilometer = parseFloat(_address_kilometer).toFixed(1);
             }
          }
+      },
+
+      async get_order_timeshipping( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_time_shipping');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ) );
+            if( res.message == 'order_time_found' ){
+               this.order_time_shipping.push(...res.data);
+            }
+         }
+
       },
 
       goBack(){ window.goBack();},
@@ -282,11 +264,14 @@ createApp({
 
    async created(){
       this.loading = true;
-      this.get_current_location();
+      // this.get_current_location();
 
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
+      await this.get_order_timeshipping(order_id);
+
+      console.log(this.order)
 
       // console.log(this.order);
 

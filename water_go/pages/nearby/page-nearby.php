@@ -106,7 +106,7 @@ createApp({
    data (){
       return {
          loading: false,
-         keyID: 'nJEYTwZNrpgfDSKEA4VzYO2R-NNL1grWFpf3y60aK1k',
+         keyID: window.get_key_map(),
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
          isToggle: false,

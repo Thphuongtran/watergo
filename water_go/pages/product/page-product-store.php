@@ -38,8 +38,15 @@
 
          <div class='appbar-bottom'>
 
-            <ul class='navbar style-expaned'>
-               <li @click='product_tab_select(tab.value)' v-for='( tab, index ) in product_tab' :key='index' :class='tab.active == true ? "active" : ""'>
+            <ul class='navbar style-expaned' :class='is_single_tab == true ? "single-tab" : "" '>
+               <li 
+                  @click='product_tab_select(tab.value)'
+                  v-for='( tab, index ) in product_tab' :key='index' 
+                  :class='[
+                     tab.active == true ? "active" : "",
+                     tab.shown == false ? "disable" : ""
+                  ]'
+               >
                   {{ tab.label }}
                </li>
             </ul>
@@ -75,6 +82,7 @@
       <ul v-if='filter_products.length > 0' class='list-type-product'>
          <li 
             v-for='( product, productIndex) in filter_products' :key='productIndex'
+            @click='gotoProductStoreEdit("edit", get_product_tab_value, product.id, store_id )'
          >
             <div class='product-l'>
                <div class='product-image'><img :src='product.product_image.url'></div>
@@ -84,7 +92,9 @@
                <div class='tt2'>{{ product.name_second }}</div>
                <div class='tt3'>
 
-                  <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                  <div 
+                     class='gr-price' 
+                     :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
                         {{ common_price_after_discount(product ) }}
                      </span>
@@ -93,7 +103,7 @@
                      </span>
                   </div>
 
-                  <button @click='gotoProductStoreEdit("edit", get_product_tab_value, product.id, store_id )' class="btn-action-view">View</button>
+                  <!-- <button class="btn-action-view">View</button> -->
                </div>
                <div class='tt4'>
                   <div class='product-analytics'>
@@ -102,7 +112,7 @@
                   </div>
                   <div class='product-bagde'>
                      <div v-if='product_is_availble(product) == "availble" ' class='availble'>Availble</div>
-                     <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'>Out Of Stock</div>
+                     <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'>Out of Stock</div>
                   </div>
                </div>
             </div>
@@ -134,8 +144,8 @@ createApp({
          product_tab_filter_select: { value: '' },
 
          product_tab: [
-            { label: 'Water', value: 'water', active: false},
-            { label: 'Ice', value: 'ice', active: false}
+            { label: 'Water', value: 'water', shown: false, active: false},
+            { label: 'Ice', value: 'ice', shown: false, active: false}
          ],
          product_tab_value: '',
 
@@ -146,17 +156,24 @@ createApp({
 
    watch: {
       product_tab_value: async function( val ){
-         if( val != undefined && val != ''){
+         var find_product_tab_active = this.product_tab.find( item => item.active == true );
+         if( find_product_tab_active.value == val ){
             this.loading = true;
             this.products = [];
             await this.get_product_from_type_product( val );
             this.loading = false;
          }
       },
-
    },
 
    computed: {
+
+      is_single_tab(){
+         if( this.product_tab[0].shown == false || this.product_tab[1].shown == false  ){
+            return true;
+         }
+         return false;
+      },
 
       get_product_tab_value(){
          var find = this.product_tab.find( item => item.active == true );
@@ -171,7 +188,8 @@ createApp({
          if(this.product_tab_filter_select.value == 'out_of_stock'){
             return _filter.filter( p => p.is_availble == false );
          }
-         if( this.productSearch != '' ){m
+         if( this.productSearch != '' ){
+            console.log( this.productSearch );
             return _filter.filter( p => p.name.toLowerCase().includes( this.productSearch.toLowerCase()) );
          }
          return _filter;
@@ -193,8 +211,8 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found'){
                res.data.forEach( product => {
-                  // if( product.stock > 0 ) {
-                  if( product.mark_out_of_stock == null ) product.mark_out_of_stock;
+
+                  if( product.mark_out_of_stock == null ) product.mark_out_of_stock = 0;
                   
                   if( product.mark_out_of_stock == 0 ) {
                      product.is_availble = true;
@@ -202,6 +220,7 @@ createApp({
                      product.is_availble = false;
                   }
                   this.products.push( product);
+
                });
             }
 
@@ -224,14 +243,22 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_type_product_ok' ){
                var _type = res.data;
-               if( _type == 'ice'){
-                  this.product_tab[1].active = true;
-               } else if(  _type == 'water' ){
+
+               if( _type == 'both' ){
                   this.product_tab[0].active = true;
-               } else if( _type == 'both' ){
-                  this.product_tab[0].active = true;
+                  this.product_tab[0].shown = true;
+                  this.product_tab[1].shown = true;
                }
-               
+               if( _type == 'water' ){
+                  this.product_tab[0].active = true;
+                  this.product_tab[0].shown = true;
+                  this.product_tab[1].shown = false;
+               }
+               if( _type == 'ice' ){
+                  this.product_tab[1].active = true;
+                  this.product_tab[0].shown = false;
+                  this.product_tab[1].shown = true;
+               }
             }
          }
       },
@@ -301,6 +328,8 @@ createApp({
       await this.get_store_id();
       var _findTabSelected = this.product_tab.find( item => item.active );
       await this.get_product_from_type_product( _findTabSelected.value );
+      this.product_tab_value = _findTabSelected.value;
+
       setTimeout( () => { 
          this.loading = false;
          window.appbar_fixed();

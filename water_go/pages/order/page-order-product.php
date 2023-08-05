@@ -746,7 +746,6 @@ createApp({
             longitude: _order_delivery_address[0].longitude,
          }
 
-         console.log( this.delivery_address_primary )
       }else{
          await this.get_delivery_address_primary();
       }
@@ -761,7 +760,9 @@ createApp({
       ){
          $('#buttonPlaceOrder').removeClass('disabled');
       }
-      $('.select_delivery_time').attr('delivery-data', '{"once_date":[],"weekly":[],"monthly":[]}');
+
+      var _delivery_data_sample = { once_date: [], weekly: [], monthly: [], };
+      $('.select_delivery_time').attr('delivery-data', JSON.stringify(_delivery_data_sample));
       $('.select_delivery_time').attr('delivery-type', 'once_immediately');
 
       this.loading = true;
@@ -958,12 +959,24 @@ createApp({
                         var get_day_monthly = $(_monthly_object[i]).find('.btn_select_monthly').val();
                         var get_time_monthly = $(_monthly_object[i]).find('.btn_select_monthly_time option:selected').val();
 
+                        var _datetime_for_monthly =  window.compare_day_with_currentDate(get_day_monthly);
+                        // var _datetime_reverse = reverse_date_to_system_datetime(_datetime_for_monthly);
+
                         _delivery_data.monthly[i] = {
                            day: get_day_monthly,
                            time: get_time_monthly,
-                           datetime: window.compare_day_with_currentDate(get_day_monthly)
+                           datetime: _datetime_for_monthly
                         };
+
+                        // console.log('datetime from monthly')
+                        // console.log(_datetime_reverse);
                      }
+
+                     _delivery_data.monthly.forEach( _monthItem => {
+                        var _datetime_reverse = reverse_date_to_system_datetime(_monthItem.datetime);
+                        var isDate = window.isValidDateFormat(_datetime_reverse);
+                        
+                     });
 
                      if( _delivery_data.monthly.length == 0 ){
                         $('#buttonPlaceOrder').addClass('disabled');
@@ -1033,7 +1046,7 @@ createApp({
                         this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
                         this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
                         this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
-                        this.carts[storeIndex].products[productIndex].stock            = res.data.stock;
+                        // this.carts[storeIndex].products[productIndex].stock            = res.data.stock;
                         this.carts[storeIndex].products[productIndex].price            = res.data.price;
                         this.carts[storeIndex].products[productIndex].product_metadata = {
                            product_name: res.data.name,
@@ -1110,7 +1123,7 @@ createApp({
                   discount_to: _find_product.discount_to,
                   discount_from: _find_product.discount_from,
                   discount_percent: _find_product.discount_percent,
-                  stock: _find_product.stock,
+                  // stock: _find_product.stock,
                   price: _find_product.price,
                   product_metadata: {
                      product_name: _find_product.name,

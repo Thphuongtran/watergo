@@ -472,16 +472,16 @@ function atlantis_add_order(){
                   ]);
 
                   // REDUCE STOCK PER ITEM ORDER
-                  $sql_get_stock    = "SELECT stock FROM wp_watergo_products WHERE id = $product->product_id";
-                  $res_stock        = $wpdb->get_results($sql_get_stock);
+                  // $sql_get_stock    = "SELECT stock FROM wp_watergo_products WHERE id = $product->product_id";
+                  // $res_stock        = $wpdb->get_results($sql_get_stock);
 
-                  $_reducer_stock   = 0; 
-                  if( $res_stock[0]->stock != null && $res_stock[0]->stock > 0 ){
-                     $_reducer_stock = $res_stock[0]->stock - $product->product_quantity_count;
-                     if( $_reducer_stock >= 0 ){
-                        $wpdb->update( 'wp_watergo_products', ['stock' => $_reducer_stock ], ['id' => $product->product_id ] );
-                     }
-                  }
+                  // $_reducer_stock   = 0; 
+                  // if( $res_stock[0]->stock != null && $res_stock[0]->stock > 0 ){
+                  //    $_reducer_stock = $res_stock[0]->stock - $product->product_quantity_count;
+                  //    if( $_reducer_stock >= 0 ){
+                  //       $wpdb->update( 'wp_watergo_products', ['stock' => $_reducer_stock ], ['id' => $product->product_id ] );
+                  //    }
+                  // }
                   // wp_send_json_success(['message' => 'bug', 'reducer_stock' => $_reducer_stock, 'product_quantity_count' => $product->product_quantity_count]);
                   // wp_die();
                }
@@ -727,6 +727,7 @@ function atlantis_get_order_time_shipping(){
       ";
       global $wpdb;
       $res = $wpdb->get_results($sql);
+      
       if( !empty($res)){
          wp_send_json_success(['message' => 'order_time_found', 'data' => $res ]);
          wp_die();

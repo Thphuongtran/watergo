@@ -463,6 +463,8 @@ function atlantis_get_product_sort(){
          $res[$k]->volume_name = $category['volume_name'];
          $res[$k]->weight_name = $category['weight_name'];
 
+         $res[$k]->description    = stripcslashes($res[$k]->description);
+
          $res[$k]->name = $category['name'];
          $res[$k]->name_second = $category['name_second'];
 

@@ -256,6 +256,8 @@
       // color: #7B7D83;
       font-size: 16px;
       font-weight: 400;
+      color: #252831;
+      appearance: none;
 
       &:disabled{
          color: #252831;
@@ -265,6 +267,16 @@
       //    color: #252831;
       // }
 
+   }
+
+   .form-select{
+      position: relative;
+      .icon-select{
+         position: absolute;
+         top: 50%;
+         right: 15px;
+         transform: translateY(-50%);
+      }
    }
    
    textarea{
@@ -303,7 +315,9 @@
       }
       
       &.check-discount{
-         margin-bottom: 10px;
+         margin-bottom: 32px;
+         margin-top: 24px;
+         width: 120px;
       }
       
       &.check-out-of-stock{
@@ -368,14 +382,14 @@
       
       li{
          width: 104px;
-         height: 104px;
+         height: 107px;
          margin-right: 10px;
-         margin-bottom: 15px;
+         margin-bottom: 10px;
 
          img{
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
          }
 
          &.image{
@@ -396,7 +410,6 @@
       }
       
    }
-
 
    .form-button{
       width: 90%;
@@ -485,4 +498,60 @@
          background: #1A1A1A;
       }
    }
+}
+
+
+
+.form-type-length-width{
+   height: 44px; 
+   padding: 0 10px;
+   background: #F5F5F5;
+   outline: none;
+   border-radius: 8px;
+   position: relative;
+   z-index: 1;
+   display: flex;
+   flex-flow: row nowrap;
+   
+   
+   .placeholder{
+      color: #7B7D83;
+      font-size: 16px;
+      font-weight: 400;
+   }
+
+   .form-type-length-width-wrapper{
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      z-index: 2;
+      position: absolute;
+      width: 100%;
+      padding: 0 8px;
+      line-height: 1.7;
+      height: 42px;
+      left: 0;
+   }
+   
+   .type-length,
+   .type-width{
+      text-align: center;
+      background: none;
+      width: 55px;
+      padding: 0 6px;
+
+      &::placeholder{
+         color: #7B7D83;
+         font-size: 16px;
+         font-weight: 400;
+         font-family: "monospace", sans-serif;
+      }
+   }
+
+   .type-length{
+      padding-left: 0;
+   }
+
+   
+   
 }

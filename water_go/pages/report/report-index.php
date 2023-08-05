@@ -1,17 +1,16 @@
-<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
-<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-
 <div id='app'>
 
-   <div v-show='loading == false ' class='page-report'>
+   <div v-if='loading == false ' class='page-report'>
       <div class='appbar style01'>
          <div class='appbar-top'>
             <div class='leading'>
-               <p class='leading-title'>
+
+               <div class='leading-title'>
                   Report
 
                   <div class='datetime-wrapper'>
                      <span @click='btn_open_datetime' class='datetime-display'>{{display_datetime}}</span>
+                     <!-- <input @click='timePicker' id='timePicker' class='datetime-display'> -->
 
                      <ul v-show='open_datetime' class='dropdown-datetime'>
                         <li
@@ -30,7 +29,6 @@
                         >
                            {{ date }}   
                         </li>
-
                      </ul>
 
                      <ul v-show='open_dateyear' class='dropdown-datetime'>
@@ -44,17 +42,10 @@
                         </svg>
                      </div>
                   </div>
-               </p>
+               </div>
+
             </div>
             <div class='action'>
-               <div @click='gotoCart' class='btn-badge'>
-                  <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9.05036 18.4583C9.05036 18.7244 8.97134 18.9846 8.82329 19.2058C8.67524 19.4271 8.46481 19.5996 8.21861 19.7015C7.97241 19.8033 7.7015 19.83 7.44014 19.778C7.17878 19.7261 6.9387 19.5979 6.75027 19.4098C6.56184 19.2216 6.43352 18.9818 6.38153 18.7208C6.32954 18.4597 6.35622 18.1892 6.4582 17.9433C6.56018 17.6974 6.73288 17.4873 6.95445 17.3394C7.17602 17.1915 7.43652 17.1126 7.703 17.1126C8.06034 17.1126 8.40305 17.2544 8.65573 17.5067C8.9084 17.7591 9.05036 18.1014 9.05036 18.4583ZM17.7119 17.1126C17.4455 17.1126 17.185 17.1915 16.9634 17.3394C16.7418 17.4873 16.5691 17.6974 16.4672 17.9433C16.3652 18.1892 16.3385 18.4597 16.3905 18.7208C16.4425 18.9818 16.5708 19.2216 16.7592 19.4098C16.9477 19.5979 17.1877 19.7261 17.4491 19.778C17.7105 19.83 17.9814 19.8033 18.2276 19.7015C18.4738 19.5996 18.6842 19.4271 18.8322 19.2058C18.9803 18.9846 19.0593 18.7244 19.0593 18.4583C19.0593 18.1014 18.9174 17.7591 18.6647 17.5067C18.412 17.2544 18.0693 17.1126 17.7119 17.1126ZM22.113 4.78659L19.3682 13.6976C19.2367 14.1303 18.9691 14.5091 18.605 14.778C18.241 15.0468 17.8 15.1914 17.3472 15.1903H8.0947C7.63433 15.1886 7.18695 15.0378 6.81974 14.7604C6.45253 14.4831 6.18533 14.0943 6.05826 13.6524L2.57823 1.48882C2.56669 1.44855 2.54231 1.41315 2.50878 1.38799C2.47525 1.36283 2.43442 1.3493 2.39248 1.34945H0.773728C0.620582 1.34945 0.473708 1.28869 0.365417 1.18054C0.257126 1.07238 0.196289 0.925697 0.196289 0.772746C0.196289 0.619796 0.257126 0.473109 0.365417 0.364957C0.473708 0.256804 0.620582 0.196045 0.773728 0.196045H2.39248C2.68501 0.196833 2.9694 0.292344 3.20296 0.468247C3.43652 0.64415 3.60667 0.890957 3.68787 1.17163L4.5088 4.04072H21.5615C21.6518 4.04081 21.7408 4.06204 21.8214 4.1027C21.902 4.14336 21.9719 4.20232 22.0255 4.27485C22.0791 4.34738 22.115 4.43146 22.1302 4.52033C22.1454 4.6092 22.1395 4.70039 22.113 4.78659ZM20.7801 5.19412H4.8389L7.16887 13.34C7.22639 13.5409 7.34788 13.7176 7.51493 13.8433C7.68199 13.969 7.88551 14.037 8.0947 14.0369H17.3443C17.5502 14.0369 17.7506 13.971 17.9162 13.8489C18.0818 13.7268 18.2038 13.5548 18.2644 13.3583L20.7801 5.19412Z" fill="#2790F9"/>
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M22.3002 4.84434L19.5556 13.7547C19.4118 14.2275 19.1191 14.6419 18.7213 14.9357C18.3234 15.2296 17.8413 15.3876 17.3465 15.3864H8.09448C7.59174 15.3845 7.10242 15.2198 6.70136 14.917C6.3003 14.6141 6.00841 14.1894 5.86961 13.7066L2.39029 1.54556H0.773518C0.568449 1.54556 0.371729 1.4642 0.226647 1.31931C0.0815564 1.1744 0 0.977815 0 0.77278C0 0.567745 0.0815563 0.371158 0.226647 0.226253C0.371729 0.0813567 0.568449 0 0.773518 0H2.39227C2.72716 0.000902557 3.05328 0.110242 3.32071 0.311653C3.58815 0.513066 3.78301 0.795701 3.87602 1.11717L4.65643 3.84467H21.5613C21.6822 3.8448 21.8016 3.87322 21.9095 3.92768C22.0174 3.98214 22.1111 4.06113 22.1829 4.15832C22.2548 4.25551 22.3028 4.36819 22.3232 4.48731C22.3436 4.60644 22.3357 4.72881 22.3002 4.84434ZM22.1128 4.78662L19.368 13.6976L22.1128 4.78662ZM18.2642 13.3583L20.7799 5.19416H4.83869L7.16866 13.3401C7.22618 13.5409 7.34767 13.7176 7.51472 13.8433C7.68178 13.9691 7.8853 14.037 8.09448 14.0369H17.3441C17.55 14.0369 17.7504 13.9711 17.916 13.8489C18.0816 13.7268 18.2036 13.5548 18.2642 13.3583ZM9.24622 18.4583C9.24622 18.7633 9.15567 19.0614 8.98604 19.3149C8.81642 19.5685 8.57535 19.766 8.29335 19.8827C8.01136 19.9993 7.70107 20.0299 7.40173 19.9704C7.10238 19.9109 6.82737 19.7641 6.6115 19.5485C6.39563 19.3329 6.24859 19.0582 6.18902 18.7591C6.12944 18.46 6.16002 18.15 6.27687 17.8682C6.39372 17.5865 6.59158 17.3457 6.8454 17.1763C7.09921 17.007 7.39758 16.9166 7.70279 16.9166C8.11205 16.9166 8.50461 17.0789 8.79408 17.368C9.08355 17.6572 9.24622 18.0493 9.24622 18.4583ZM16.8543 17.1763C17.1082 17.007 17.4065 16.9166 17.7117 16.9166C18.121 16.9166 18.5136 17.0789 18.803 17.368C19.0925 17.6571 19.2552 18.0493 19.2552 18.4583C19.2552 18.7633 19.1646 19.0614 18.995 19.3149C18.8254 19.5685 18.5843 19.766 18.3023 19.8827C18.0203 19.9993 17.71 20.0299 17.4107 19.9704C17.1113 19.9109 16.8363 19.7641 16.6205 19.5485C16.4046 19.3329 16.2575 19.0582 16.198 18.7591C16.1384 18.46 16.169 18.15 16.2858 17.8682C16.4027 17.5865 16.6005 17.3457 16.8543 17.1763ZM8.82308 19.2059C8.97113 18.9846 9.05015 18.7244 9.05015 18.4583C9.05015 18.1014 8.90819 17.7591 8.65552 17.5068C8.40284 17.2544 8.06013 17.1126 7.70279 17.1126C7.43631 17.1126 7.17581 17.1916 6.95424 17.3394C6.73266 17.4873 6.55997 17.6974 6.45799 17.9433C6.35601 18.1892 6.32933 18.4598 6.38132 18.7208C6.43331 18.9818 6.56163 19.2216 6.75006 19.4098C6.93849 19.598 7.17857 19.7261 7.43993 19.7781C7.70129 19.83 7.9722 19.8033 8.2184 19.7015C8.4646 19.5996 8.67503 19.4272 8.82308 19.2059ZM16.9632 17.3394C17.1848 17.1916 17.4453 17.1126 17.7117 17.1126C18.0691 17.1126 18.4118 17.2544 18.6645 17.5068C18.9171 17.7591 19.0591 18.1014 19.0591 18.4583C19.0591 18.7244 18.9801 18.9846 18.832 19.2059C18.684 19.4272 18.4735 19.5996 18.2273 19.7015C17.9812 19.8033 17.7102 19.83 17.4489 19.7781C17.1875 19.7261 16.9474 19.598 16.759 19.4098C16.5706 19.2216 16.4423 18.9818 16.3903 18.7208C16.3383 18.4598 16.365 18.1892 16.4669 17.9433C16.5689 17.6974 16.7416 17.4873 16.9632 17.3394ZM4.50859 4.04075H21.5613H4.50859ZM21.5613 4.04075C21.6516 4.04084 21.7406 4.06207 21.8212 4.10273L21.5613 4.04075ZM21.8212 4.10273C21.9017 4.1434 21.9716 4.20236 22.0253 4.27489L21.8212 4.10273ZM22.0253 4.27489C22.0789 4.34742 22.1147 4.43149 22.1299 4.52036L22.0253 4.27489ZM22.1299 4.52036C22.1451 4.60923 22.1393 4.70043 22.1128 4.78662L22.1299 4.52036Z" fill="#2790F9"/>
-                  </svg>
-
-                  <span class='badge' :class="count_product_in_cart > 0 ? 'enable' : '' ">{{ count_product_in_cart }}</span>
-               </div>
 
                <!-- <div @click='gotoChat' class='btn-badge ml10'>
                   <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,6 +59,14 @@
                   </svg>
                   <span class='badge' :class="message_count > 0 ? 'enable' : '' " >{{ message_count }}</span>
                </div> -->
+
+               <div @click='gotoNotificationIndex' class='btn-badge ml10'>
+                  <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16.1176 14.6055C16.577 15.3164 17.1289 15.9629 17.7587 16.5281V17.2473H0.826953V16.5278C1.44914 15.9599 1.99356 15.3122 2.44603 14.6015L2.46376 14.5737L2.47879 14.5443C2.99231 13.5401 3.30009 12.4435 3.38408 11.3188L3.38602 11.2928V11.2667L3.38602 8.22777L3.38602 8.22636C3.38312 6.7874 3.9018 5.39615 4.84599 4.31028C5.79017 3.22441 7.09589 2.51751 8.5213 2.32051L9.12547 2.23701V1.6271V0.821239C9.12547 0.789084 9.13824 0.758246 9.16098 0.735511C9.18371 0.712773 9.21455 0.7 9.24671 0.7C9.27886 0.7 9.3097 0.712773 9.33243 0.735509C9.35517 0.758248 9.36795 0.789086 9.36795 0.821239V1.6148V2.23105L9.97923 2.30915C11.4175 2.49291 12.7392 3.19556 13.696 4.28509C14.6527 5.37462 15.1787 6.77603 15.1751 8.22601V8.22777V11.2667V11.2928L15.177 11.3188C15.261 12.4435 15.5688 13.5401 16.0823 14.5443L16.0984 14.5758L16.1176 14.6055Z" stroke="#2790F9" stroke-width="1.4"/>
+                  <path d="M7.67493 18.5933C7.72887 18.9832 7.92209 19.3404 8.21891 19.599C8.51572 19.8576 8.89607 20 9.28972 20C9.68337 20 10.0637 19.8576 10.3605 19.599C10.6574 19.3404 10.8506 18.9832 10.9045 18.5933H7.67493Z" fill="#2790F9"/>
+                  </svg>
+                  <span v-if='notification_count > 0' class='badge'>{{notification_count}}</span>
+               </div>
 
             </div>
          </div>
@@ -85,41 +84,45 @@
       <div class='inner mt30'>
          
          <div class='box-profit'>
-            <div class='order-count'>SOLD: <span class='highlight'>{{ report.sold }}</span> Orders</div>
-            <div class='rank rank-up'>
-               <svg v-if='report.order_complete_Comparison > 0 && report.sold_rank == "low"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class='order-count'>SOLD: <span class='highlight'>{{ get_data_report.sold }}</span> Orders</div>
+            <div v-if='report_rank.rank != "today"' class='rank rank_sold' :class='get_data_report.rank_sold'>
+
+               <svg v-if='get_data_report.rank_sold == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
                </svg>
-               <svg v-if='report.order_complete_Comparison > 0 && report.sold_rank == "high"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+               <svg v-if='get_data_report.rank_sold == "down"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
                </svg>
-               <span v-if='report.order_complete_Comparison > 0' class='rank-sum'>{{ report.order_complete_Comparison }}</span>
+
+               <span v-if='get_data_report.sold_report > 0' class='rank-sum'>{{ get_data_report.sold_report }}</span>
             </div>
          </div>
 
          <div class='box-profit'>
-            <div class='order-count'>CANCELED: <span class='highlight'>{{ report.cancel }}</span> Orders</div>
-            <div class='rank rank-down'>
+            <div class='order-count'>CANCELED: <span class='highlight'>{{ get_data_report.cancel }}</span> Orders</div>
+            <div v-if='report_rank.rank != "today"' class='rank rank_cancel' :class='get_data_report.rank_cancel'>
 
-               <svg v-if='report.order_cancel_Comparison > 0 && report.cancel_rank == "low"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <svg v-if='get_data_report.rank_cancel == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
                </svg>
-               <svg v-if='report.order_cancel_Comparison > 0 && report.cancel_rank == "high"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+               <svg v-if='get_data_report.rank_cancel == "down"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
                </svg>
 
-               <span v-if='report.order_cancel_Comparison > 0' class='rank-sum'>{{ report.order_cancel_Comparison }}</span>
+               <span v-if='get_data_report.cancel_report > 0' class='rank-sum'>{{ get_data_report.cancel_report }}</span>
             </div>
          </div>
 
          <div class='box-profit'>
-            <div class='order-count'>TOTAL PROFIT: <span class='highlight'>{{ get_price_convert(report.profit) }}</span></div>
+            <div class='order-count'>TOTAL PROFIT: <span class='highlight'>{{ get_price_convert(get_data_report.profit) }}</span></div>
          </div>
 
       </div>
    </div>
 
-   <div v-show='loading == true'>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -135,6 +138,7 @@ createApp({
       return {
          loading: false,
          message_count: 0,
+         notification_count: 0,
          currentDate: new Date(),
          
          display_datetime: '',
@@ -155,15 +159,23 @@ createApp({
 
          final_datetime: '',
 
-         report: {
+         report_range: {
             sold: 0,
             cancel: 0,
-            order_complete_Comparison: 0,
-            order_cancel_Comparison: 0,
             profit: 0,
-            sold_rank: 'normal',
-            cancel_rank: 'normal'
          },
+
+         report_today: {
+            profit: 0,
+            sold: 0,
+            cancel: 0,
+         },
+
+         report_rank: {
+            rank: 'today',
+            sold: 0,
+            cancel: 0
+         }
          
       }
    },
@@ -193,6 +205,50 @@ createApp({
    },
 
    computed: {
+
+      get_data_report(){
+
+         var sold_report   = 0;
+         var cancel_report = 0;
+
+         var rank_sold     = 'normal';
+         var rank_cancel   = 'normal';
+
+         sold_report       = this.report_today.sold   - this.report_range.sold;
+         cancel_report     = this.report_today.cancel - this.report_range.cancel;
+
+         if( sold_report > 0 ){
+            rank_sold = 'up';
+         }else if( sold_report == 0 ){
+            rank_sold = 'normal';
+         }else if( sold_report < 0 ){
+            rank_sold = 'down';
+            sold_report = Math.abs(sold_report);
+         }
+
+         if( cancel_report > 0 ){
+            rank_cancel = 'up';
+         }else if( cancel_report == 0 ){
+            rank_cancel = 'normal';
+         }else if( cancel_report < 0 ){
+            rank_cancel = 'down';
+            cancel_report = Math.abs(cancel_report);
+         }
+
+         
+         return {
+            profit:        this.report_today.profit,
+            sold:          this.report_today.sold,
+            cancel:        this.report_today.cancel,
+
+            rank_sold:     rank_sold,
+            rank_cancel:   rank_cancel,
+
+            sold_report:   sold_report,
+            cancel_report: cancel_report,
+         };
+
+      },
 
       count_product_in_cart(){ return window.count_product_in_cart(); },
       getPastDaysInMonth(){ return window.getPastDaysInMonth(); },
@@ -231,31 +287,57 @@ createApp({
          }
       },
 
-      async select_date( date ){
+      async get_notification_count(){
+         var form = new FormData();
+         form.append('action', 'atlantis_notification_count');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if(res.message == 'notification_found' ){
+               this.notification_count = res.data;
+            }
+         }
+      },
 
-         var _datetype = '';
+      async select_date( date ){
+         // var _datetype = '';
          if( this.stream_datetime_value == 'd' ){
             this.open_datetime      = false;
             this.display_datetime   = this.get_full_current_datetime({ day: date });
-            _datetype = 'day';
+            this.report_rank.rank = 'day';
+            var currentDate = new Date();
+            var currentYear = currentDate.getFullYear();
+            var currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+            var day = String(date).padStart(2, '0'); // Pad with leading zeros if needed
+            var fullday = `${currentYear}-${currentMonth}-${day}`;
+            await this.get_order_range_day_report(fullday, fullday);
          }
+
          if( this.stream_datetime_value == 'm' ){
+            this.report_rank.rank = 'month';
             this.open_datemonth     = false;
             this.display_datetime   = this.get_full_current_datetime({ month: date });
-            _datetype = 'month';
+            var _start_and_end_of_month = window.get_start_and_end_of_month(date);
+            var _start_and_end_of_month_current = window.get_start_and_end_of_month_current();
+            await this.get_order_range_month_report(_start_and_end_of_month, _start_and_end_of_month_current);
          }
+
          if( this.stream_datetime_value == 'y' ){
+            this.report_rank.rank = 'month';
             this.open_dateyear      = false;
             this.display_datetime   = this.get_full_current_datetime({ year: date });
-            _datetype = 'year';
+
+            var start_day     = date + '-01-01';
+            var start_end     = date + '-12-31';
+
+            await this.get_order_range_year_report(start_day, start_end);
+
+            // console.log( window.get_start_and_end_of_year( date ) );
          }
-         
-         await this._re_get_order_report( date, _datetype );
 
       },
 
       select_filter_datetime(value){
-
          this.stream_datetime_value = value;
          this.open_datetime = false;
          this.open_datemonth = false;
@@ -275,12 +357,6 @@ createApp({
                this.message_count = parseInt(res.data);
             }
          }
-      },
-
-      async _re_get_order_report( datetime, datetype){
-         this.loading = true;
-         await this.get_order_report(datetime, datetype);
-         this.loading = false;
       },
 
       get_full_current_datetime( obj ){
@@ -316,32 +392,96 @@ createApp({
       },
 
       // 
-      async get_order_report( datetime, datetype ){
+      async get_totay_order_report(){
+         this.loading = true;
          var form = new FormData();
-         form.append('action', 'atlantis_get_order_report');
-         form.append('datetime', datetime );
-         form.append('datetype', datetype );
+         form.append('action', 'atlantis_get_today_order_report');
          var r = await window.request(form);
-         console.log( r );
+         window.appbar_fixed();
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_order_ok' ){
-               
-               this.report.sold     = res.data.sold;
-               this.report.cancel   = res.data.cancel;
-               this.report.profit   = res.data.profit;
-               this.report.order_complete_Comparison   = res.data.order_complete_Comparison;
-               this.report.order_cancel_Comparison     = res.data.order_cancel_Comparison;
+               this.report_today.sold     = res.data.sold;
+               this.report_today.cancel   = res.data.cancel;
+               this.report_today.profit   = res.data.profit;
+            }
+         }
+         this.loading = false;
+      },
 
-               this.report.sold_rank         = res.data.sold_rank;
-               this.report.cancel_rank       = res.data.cancel_rank;
-
+      // RANGE DAY
+      async get_order_range_day_report(date_from, date_to){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_range_day_order_report');
+         form.append('date_from', date_from);
+         form.append('date_to', date_to);
+         var r = await window.request(form);
+         window.appbar_fixed();
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'get_order_ok' ){
+               this.report_range = res.data.report_range;
+               this.report_today = res.data.report_today;
             }
          }
       },
 
+      // RANGE MONTH
+      async get_order_range_month_report( range_month, range_month_current ){
+         this.loading = true;
+         var form = new FormData();
+         form.append('action', 'atlantis_get_range_month_order_report');
+         form.append('start_day_month', range_month.startDay);
+         form.append('end_day_month', range_month.endDay);
 
-      // count_product_in_cart(){ return window.count_product_in_cart(); },
+         form.append('start_day_month_current', range_month_current.startDay);
+         form.append('end_day_month_current', range_month_current.currentDay);
+
+         var r = await window.request(form);
+         window.appbar_fixed();
+
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'get_order_ok' ){
+               this.report_range = res.data.report_range;
+               this.report_today = res.data.report_today;
+            }
+         }
+         this.loading = false;
+      },
+
+      // RANGE YEAR
+      async get_order_range_year_report( start_day, end_day ){
+         this.loading = true;
+         var form = new FormData();
+         form.append('action', 'atlantis_get_range_year_order_report');
+         form.append('start_day', start_day );
+         form.append('end_day', end_day );
+
+         var currentDate = new Date();
+         var currentYear = currentDate.getFullYear();
+
+         var current_start_year   = currentYear + '-01-01';
+         var current_end_year     = currentYear + '-12-31';
+
+         form.append('current_start_day', current_start_year );
+         form.append('current_end_day', current_end_year );
+
+         var r = await window.request(form);
+         window.appbar_fixed();
+
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'get_order_ok' ){
+               this.report_range = res.data.report_range;
+               this.report_today = res.data.report_today;
+            }
+         }
+         this.loading = false;
+      },
+
+
+
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
       goBack(){window.goBack(); }
@@ -350,10 +490,7 @@ createApp({
    async created(){
 
       this.loading = true;
-      await this.get_messages_count();
-      this.loading = false;
-
-      window.appbar_fixed();
+      // await this.get_messages_count();
 
       var _findFilter = this.filter_datetime.find(item => item.active == true);
 
@@ -364,9 +501,11 @@ createApp({
 
       // var _time_reverse = this.reverse_date_to_system_datetime(this.final_datetime);
 
-      await this.get_order_report();
+      await this.get_totay_order_report();
+      await this.get_notification_count();
 
-      
+      window.appbar_fixed();
+      this.loading = false;
 
    }
    

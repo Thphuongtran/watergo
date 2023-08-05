@@ -235,7 +235,7 @@ createApp({
       },
 
       async searchLocation( searchQuery ) {
-         var apiKey  = 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
+         var apiKey  = window.get_key_map();
          var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
 
          fetch(url)

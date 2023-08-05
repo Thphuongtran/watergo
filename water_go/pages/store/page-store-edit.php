@@ -122,9 +122,48 @@ createApp({
 
          previewAvatar: null,
          selectedImage: null,
+
+         // SEARCH
+         box_search: false,
+         searchRes: [],
+         latitude: 0,
+         longitude: 0,
+
+
       }
    },
+
    methods: {
+
+      select_address_focus_out(){ setTimeout( () => { this.box_search = false; }, 100); },
+      select_address_focus_in(){ this.box_search = true; },
+      select_address( address ){
+         this.inputAddress = address.title;
+         this.latitude     = address.position.lat;
+         this.longitude    = address.position.lng;
+         this.searchRes    = [];
+      },
+
+      async searchLocation( searchQuery ) {
+         var apiKey  = window.get_key_map();
+         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
+
+         fetch(url)
+            .then( response => response.json() )
+            .then( data => {
+               if ( data.items.length > 0 ) {
+                  this.searchRes = data.items;
+               } else {
+                  // console.log('Location not found');
+                  this.searchRes = [];
+               }
+            })
+            .catch(error => {
+               this.searchRes = [];
+               // console.error('Error:', error);
+               // console.log('An error occurred. Please try again.');
+            });
+      },
 
       async btn_update_store(){
          this.loading = true;
@@ -152,6 +191,8 @@ createApp({
             form.append('imageUpload[]', this.selectedImage);
 
             var r = await window.request(form);
+
+            console.log(r);
             
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
