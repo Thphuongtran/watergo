@@ -78,10 +78,14 @@ createApp({
          loading: false,
          products: [],
          sortFeatureOpen: false,
-         sortFeatureCurrentValue: 0,
+         sortFeatureCurrentValue: -1,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
          paged: 0,
+
+         list_id_products: [],
+
+         which_query: 'recommend', // recommend | discount | random
 
       }
    },
@@ -141,36 +145,107 @@ createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            await this.load_product_sort( this.get_text_filter(), this.paged++);
+            if( this.which_query == 'recommend' ){
+               await this.get_product_recommend( this.paged++);
+            }
+            if( this.which_query == 'discount' ){
+               await this.get_product_discount( this.paged++);
+            }
+            if( this.which_query == 'random' ){
+               await this.get_product_random( this.paged++);
+            }
          }
       },
 
-      async load_product_sort( filter, paged ){
-
-
-         var form = new FormData();
-         form.append('action', 'atlantis_load_product_recommend');
-         form.append('lat', this.latitude);
-         form.append('lng', this.longitude);
-         form.append('filter', filter );
-         form.append('paged', paged );
+      async get_product_recommend( paged ){
          
-         var r = await window.request(form);
-         console.log(r);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'product_found' ){
-               // this.products.push(...res.data );
-               res.data.forEach(item => {
-                  if (! this.products.some(existingItem => existingItem.id === item.id)) {
-                     this.products.push(item);
-                  }
-               });
-            }
+         if( this.which_query == 'recommend' ){
+            var form = new FormData();
+            form.append('action', 'atlantis_load_product_recommend');
+            form.append('lat', this.latitude);
+            form.append('lng', this.longitude);
+            form.append('paged', paged );
+            
+            var r = await window.request(form);
+            console.log(this.which_query);
+            console.log(r);
 
+            if( r != undefined ){
+
+               var res = JSON.parse( JSON.stringify( r));
+               if( res.message == 'product_found' ){
+                  // this.products.push(...res.data );
+                  res.data.forEach(item => {
+                     if (! this.products.some(existingItem => existingItem.id === item.id)) {
+                        this.products.push(item);
+                     }
+                  });
+               }else{
+                  this.which_query = 'discount';
+               }
+
+            }
          }
          
-      }
+      },
+
+      /**
+       * @access PRODUCT DISCOUNT
+       */
+      async get_product_discount( paged ){
+         if( this.which_query == 'discount' ){
+            var form = new FormData();
+            form.append('action', 'atlantis_load_product_recommend_discount');
+            form.append('lat', this.latitude);
+            form.append('lng', this.longitude);
+            form.append('paged', paged );
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'product_found' ){
+                  res.data.forEach(item => {
+                     if (! this.products.some(existingItem => existingItem.id === item.id)) {
+                        this.products.push(item);
+                     }
+                  });
+               }else{
+                  this.paged = 0;
+                  this.which_query = 'random';
+               }
+            }
+         }
+
+
+      },
+
+      /**
+       * @access PRODUCT RANDOM
+       */
+
+      async get_product_random( paged ){
+         if( this.which_query == 'random' ){
+            var form = new FormData();
+            form.append('action', 'atlantis_load_product_recommend_random');
+            form.append('lat', this.latitude);
+            form.append('lng', this.longitude);
+            form.append('paged', paged );
+            var r = await window.request(form);
+            console.log(r)
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'product_found' ){
+                  res.data.forEach(item => {
+                     if (! this.products.some(existingItem => existingItem.id === item.id)) {
+                        this.products.push(item);
+                     }
+                  });
+               }
+               
+            }
+         }
+      },
+
+
 
    },
 
@@ -206,25 +281,25 @@ createApp({
       sortFeatureCurrentValue: async function( val ){
 
          if( val == 0 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), 0);
-            this.loading = false;
-            window.appbar_fixed();
+            // this.products = [];
+            // this.loading = true;
+            // await this.get_product_recommend(this.get_text_filter(), 0);
+            // this.loading = false;
+            // window.appbar_fixed();
          }
          if( val == 1 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), 0);
-            this.loading = false;
-            window.appbar_fixed();
+            // this.products = [];
+            // this.loading = true;
+            // await this.get_product_recommend(this.get_text_filter(), 0);
+            // this.loading = false;
+            // window.appbar_fixed();
          }
          if( val == 2 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), 0);
-            this.loading = false;
-            window.appbar_fixed();
+            // this.products = [];
+            // this.loading = true;
+            // await this.get_product_recommend(this.get_text_filter(), 0);
+            // this.loading = false;
+            // window.appbar_fixed();
          }
       }
    },
@@ -239,7 +314,16 @@ createApp({
    async created() {
       this.get_current_location();
       this.loading = true;
-      await this.load_product_sort('nearest', [0]);
+      // await this.get_product_recommend('nearest', [0]);
+      if( this.which_query == 'recommend' ){
+         await this.get_product_recommend( 0 );
+      }
+      if( this.which_query == 'discount' ){
+         await this.get_product_discount( 0 );
+      }
+      if( this.which_query == 'random' ){
+         await this.get_product_random( 0 );
+      }
       
       this.loading = false;
       window.appbar_fixed();

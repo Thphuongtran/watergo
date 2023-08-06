@@ -32,6 +32,7 @@ function get_start_and_end_of_year(year) {
    return monthsData;
 }
 
+
 function get_start_and_end_of_month(monthNumber) {
 
    function formatDate(date) {

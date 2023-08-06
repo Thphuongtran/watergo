@@ -83,7 +83,7 @@
                      <ul>
                         <li 
                            @click='gotoProductDetail(product.id)'
-                           v-for='(product, index) in productRecommend' :key='index' class='product-design'
+                           v-for='(product, index) in productRecommend' :key='index' class='product-design small-size'
                            :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
                         >
                            <div class='img'>
@@ -115,7 +115,7 @@
                      <ul>
                         <li 
                            @click='gotoStoreDetail(store.id)'
-                           v-for='(store, index) in storeNearby' :key='index' class='product-design store-style'
+                           v-for='(store, index) in storeNearby' :key='index' class='product-design small-size store-style'
                            :class='store.store_image.dummy != undefined ? "img-dummy" : "" '
                         >
                            <div class='img'>
@@ -249,7 +249,47 @@ createApp({
                this.storeNearby.push( ...res.data );
             }
          }
-      },      
+      },
+
+       /**
+       * @access PRODUCT DISCOUNT
+       */
+      async get_product_discount( limit ){
+         var form = new FormData();
+         form.append('action', 'atlantis_load_product_recommend_discount');
+         form.append('perPage', limit);
+         var r = await window.request(form);
+         console.log(r)
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'product_found' ){
+               if( res.data.length < 10 ){
+                  var _rest_of = 10 - res.data.length;
+                  await this.get_product_random(_rest_of);
+               }else{
+                  this.productRecommend.push(...res.data );
+               }
+            }
+         }
+      },
+
+      /**
+       * @access PRODUCT RANDOM
+       */
+
+      async get_product_random( limit ){
+         var form = new FormData();
+         form.append('action', 'atlantis_load_product_recommend_random');
+         form.append('perPage', limit);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'product_found' ){
+               this.productRecommend.push(...res.data );
+            }
+            
+         }
+      },
 
 
    },
@@ -267,7 +307,6 @@ createApp({
       this.loading = true;
       window.check_cart_is_exists();
 
-
       this.get_current_location();
       await this.get_messages_count();
       await this.get_store_nearby();
@@ -276,15 +315,15 @@ createApp({
       form.append('action', 'atlantis_load_product_recommend');
       form.append('lat',this.latitude);
       form.append('lng',this.longitude);
-      form.append('paged',0);
-
+      form.append('paged', 0);
       var r = await window.request(form);
-      // console.log(r);
 
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r));
          if( res.message == 'product_found' ){
             this.productRecommend.push(...res.data );
+         }else{
+            await this.get_product_discount(10);
          }
       }
 

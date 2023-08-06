@@ -47,30 +47,6 @@ function atlantis_is_product_out_of_stock(){
 
 }
 
-// function atlantis_load_product_recommend_home(){
-//    global $wpdb;
-
-//    $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
-//    $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
-
-//    $paged         = isset($_POST['paged'] )        ? (int) $_POST['paged'] : 0;
-//    $perPage       = isset($_POST['perPage'] )      ? $_POST['perPage'] : 10;
-
-//    $paged = $paged * $perPage;
-
-//    $filter = isset($_POST['filter']) ? $_POST['filter'] : 'nearest';
-   
-//    $user_id = get_current_user_id();
-//    $sql_check_has_order_success = "SELECT COUNT(*) has_order_success FROM wp_watergo_order WHERE order_by = $user_id";
-//    $res_check_has_order_success = $wpdb->get_results($sql_check_has_order_success);
-
-//    // IF NO ORDER COMPLETE FROM USER
-//    if( $res_check_has_order_success[0]->has_order_success == 0 ){
-
-//    }
-
-// }
-
 /**
  * @access GET PRODUCT + PHOTO
  */
@@ -170,104 +146,154 @@ function atlantis_load_products(){
 }
 
 /*
-1. list all product when user order success
-2. if no order user make before, let make piority product discount
-3. if no discount product yet. just random product by location nearby
-
+   1. list all product when user order success
+   2. if no order user make before, let make piority product discount
+   3. if no discount product yet. just random product by location nearby
 */
+
+
 function atlantis_load_product_recommend(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_product_recommend' ){
 
+      $lat     = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng     = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
+      $paged   = isset($_POST['paged'] )   ? (int) $_POST['paged']   : 0;
+      $perPage = isset($_POST['perPage'] ) ? (int) $_POST['perPage'] : 10;
+
+      $paged   = $paged * $perPage;
+
+      $filter  = isset($_POST['filter']) ? $_POST['filter'] : '';
+      
       global $wpdb;
 
-      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
-      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
-
-      $paged         = isset($_POST['paged'] )        ? (int) $_POST['paged'] : 0;
-      $perPage       = isset($_POST['perPage'] )      ? $_POST['perPage'] : 10;
-
-      $paged = $paged * $perPage;
-
-      $filter = isset($_POST['filter']) ? $_POST['filter'] : 'nearest';
-      
       $user_id = get_current_user_id();
-      $sql_check_has_order_success = "SELECT COUNT(*) has_order_success FROM wp_watergo_order WHERE order_by = $user_id";
+      $sql_check_has_order_success = "SELECT COUNT(*) AS has_order_success FROM wp_watergo_order WHERE order_by = $user_id AND order_status = 'complete' ";
       $res_check_has_order_success = $wpdb->get_results($sql_check_has_order_success);
 
-      // IF NO ORDER COMPLETE FROM USER
-      if( $res_check_has_order_success[0]->has_order_success == 0 ){
+      $check = '';
 
-      }
+      // $user_id = 50; // demo
 
-      // ADD COLUMN CHECK
-      if( $filter == 'top_rated' ){
-         $column_option = "
-            , avg_rating
-         ";
-      }
-      if( $filter == 'nearest'){
-         $column_option = "
-            ,(6371 * acos(
-               cos(
-                  radians($lat)) * cos(radians(wp_watergo_store.latitude)) * 
-                  cos(radians(wp_watergo_store.longitude) - radians($lng)
-               ) + sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+      /**
+      *  @access HAS ORDER
+      */ 
+
+      if( $res_check_has_order_success[0]->has_order_success != null && $res_check_has_order_success[0]->has_order_success > 0 ){
+         $sql_has_order = "SELECT
+            wp_watergo_products.*,
+            wp_watergo_order.order_time_completed,
+            (6371 * acos(
+               cos(radians($lat)) * cos(radians(wp_watergo_store.latitude)) * cos(radians(wp_watergo_store.longitude) - radians($lng)) +
+               sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
             )) AS distance
-         ";
-      }
+            
 
-      // NO ORDER SUCCESS
-      // 1 get discount product
-      $sql = "SELECT 
-            wp_watergo_products.*
-            $column_option 
-         FROM wp_watergo_products
-      ";
+            FROM wp_watergo_order
+            LEFT JOIN wp_watergo_order_group ON wp_watergo_order_group.hash_id = wp_watergo_order.hash_id
+            LEFT JOIN wp_watergo_products ON wp_watergo_order_group.order_group_product_id = wp_watergo_products.id
+            LEFT JOIN wp_watergo_store ON wp_watergo_store.id = wp_watergo_order.order_store_id
 
-      // FILTER DISCOUNT FOR HOME PAGE
-      if( $filter == ''){
-         $sql .= "
-            ORDER BY wp_watergo_products.discount_percent DESC
-         ";
-      }
-
-
-      if( $filter == 'cheapest' ){
-         $sql .= " 
-            ORDER BY 
-               wp_watergo_products.discount_percent DESC,
-               wp_watergo_products.price ASC
-            ";
-      }
-
-      if( $filter == 'nearest' ){
-         $sql .= "
-            LEFT JOIN wp_watergo_store
-            ON wp_watergo_store.id = wp_watergo_products.store_id
-
-            ORDER BY 
-               wp_watergo_products.discount_percent DESC,
-               distance ASC
-            ";
-      }
-      if( $filter == 'top_rated' ){
-         $sql .= " 
             LEFT JOIN (
                SELECT related_id, AVG(rating) AS avg_rating
                FROM wp_watergo_reviews
                GROUP BY related_id
             ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
 
-            ORDER BY 
-               wp_watergo_products.discount_percent DESC,
-               avg_rating DESC
-            ";
+            WHERE wp_watergo_order.order_by = $user_id 
+            AND order_status = 'complete'
+            GROUP BY wp_watergo_products.id
+            ORDER BY wp_watergo_order.order_time_completed DESC
+            LIMIT $paged, 10
+
+         ";
+
+         $res = $wpdb->get_results( $sql_has_order);
+
+         if( ! empty( $res ) ){
+            foreach( $res as $k => $vl ){
+               $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
+               $category = func_atlantis_get_product_category([
+                  'category'     => $vl->category,
+                  'brand'        => $vl->brand,
+                  'quantity'     => $vl->quantity,
+                  'volume'       => $vl->volume,
+                  'weight'       => $vl->weight,
+                  'product_type' => $vl->product_type,
+                  'product_id'   => $vl->id
+               ]);
+
+               $res[$k]->category_name = $category['category_name'];
+               $res[$k]->brand_name = $category['brand_name'];
+               $res[$k]->quantity_name = $category['quantity_name'];
+               $res[$k]->volume_name = $category['volume_name'];
+               $res[$k]->weight_name = $category['weight_name'];
+
+               $res[$k]->name = $category['name'];
+               $res[$k]->name_second = $category['name_second'];
+            }
+         }
+
+         wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
+         wp_die();
+
+      /**
+       * @access NO ORDER SUCCESS
+       *  */
       }
 
-      $sql .= " LIMIT $paged,10 ";
-      $res = $wpdb->get_results($sql);
+      wp_send_json_error(['message' => 'product_not_found']);
+      wp_die();
+      
+   }
+}
 
-      if( ! empty( $res )){
+
+add_action( 'wp_ajax_nopriv_atlantis_load_product_recommend_discount', 'atlantis_load_product_recommend_discount' );
+add_action( 'wp_ajax_atlantis_load_product_recommend_discount', 'atlantis_load_product_recommend_discount' );
+
+function atlantis_load_product_recommend_discount(){
+   if ( $_POST['action'] && $_POST['action'] == 'atlantis_load_product_recommend_discount' ){
+
+      $paged   = isset($_POST['paged'] )   ? (int) $_POST['paged']   : 0;
+      $perPage = isset($_POST['perPage'] ) ? (int) $_POST['perPage'] : 10;
+
+      $lat     = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng     = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
+      $paged   = $paged * $perPage;
+
+      $current_time = atlantis_current_date_only();
+
+      $sql = "SELECT 
+         wp_watergo_products.*,
+         (6371 * acos(
+            cos(radians($lat)) * cos(radians(wp_watergo_store.latitude)) * cos(radians(wp_watergo_store.longitude) - radians($lng)) +
+            sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+         )) AS distance
+
+         FROM wp_watergo_products
+
+         LEFT JOIN wp_watergo_store
+         ON wp_watergo_store.id = wp_watergo_products.store_id
+
+         LEFT JOIN (
+            SELECT related_id, AVG(rating) AS avg_rating
+            FROM wp_watergo_reviews
+            GROUP BY related_id
+         ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
+
+         WHERE DATE_FORMAT(discount_to, '%Y-%m-%d') >= '$current_time'
+         AND has_discount = 1
+         ORDER BY wp_watergo_products.discount_percent DESC
+         LIMIT $paged, 10
+      ";
+
+      global $wpdb;
+
+      $res = $wpdb->get_results( $sql );
+
+      if( !empty( $res ) ){
          foreach( $res as $k => $vl ){
             $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
             $category = func_atlantis_get_product_category([
@@ -289,18 +315,89 @@ function atlantis_load_product_recommend(){
             $res[$k]->name = $category['name'];
             $res[$k]->name_second = $category['name_second'];
          }
-      }
 
-      if( empty( $res ) ){
-         wp_send_json_error(['message' => 'product_not_found 1',  ]);
+         wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
          wp_die();
       }
 
-      wp_send_json_success(['message' => 'product_found', 'data' => $res, 'sql' => $sql ]);
+      wp_send_json_error(['message' => 'product_not_found']);
       wp_die();
-      
+
    }
 }
+
+add_action( 'wp_ajax_nopriv_atlantis_load_product_recommend_random', 'atlantis_load_product_recommend_random' );
+add_action( 'wp_ajax_atlantis_load_product_recommend_random', 'atlantis_load_product_recommend_random' );
+
+function atlantis_load_product_recommend_random(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_product_recommend_random'){
+      $paged   = isset($_POST['paged'] )   ? (int) $_POST['paged']   : 0;
+      $perPage = isset($_POST['perPage'] ) ? (int) $_POST['perPage'] : 10;
+
+      $lat     = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng     = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
+      $paged   = $paged * $perPage;
+
+      $sql = "SELECT 
+         wp_watergo_products.*,
+         (6371 * acos(
+            cos(radians($lat)) * cos(radians(wp_watergo_store.latitude)) * cos(radians(wp_watergo_store.longitude) - radians($lng)) +
+            sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+         )) AS distance
+
+         FROM wp_watergo_products
+
+         LEFT JOIN wp_watergo_store
+         ON wp_watergo_store.id = wp_watergo_products.store_id
+
+         LEFT JOIN (
+            SELECT related_id, AVG(rating) AS avg_rating
+            FROM wp_watergo_reviews
+            GROUP BY related_id
+         ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
+         
+         ORDER BY RAND() DESC
+         LIMIT $paged, 10
+      ";
+
+      global $wpdb;
+
+      $res = $wpdb->get_results( $sql );
+
+      if( !empty( $res ) ){
+         foreach( $res as $k => $vl ){
+            $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
+            $category = func_atlantis_get_product_category([
+               'category'     => $vl->category,
+               'brand'        => $vl->brand,
+               'quantity'     => $vl->quantity,
+               'volume'       => $vl->volume,
+               'weight'       => $vl->weight,
+               'product_type' => $vl->product_type,
+               'product_id'   => $vl->id
+            ]);
+
+            $res[$k]->category_name = $category['category_name'];
+            $res[$k]->brand_name = $category['brand_name'];
+            $res[$k]->quantity_name = $category['quantity_name'];
+            $res[$k]->volume_name = $category['volume_name'];
+            $res[$k]->weight_name = $category['weight_name'];
+
+            $res[$k]->name = $category['name'];
+            $res[$k]->name_second = $category['name_second'];
+         }
+
+         wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'product_not_found']);
+      wp_die();
+
+   }
+}
+
 
 function atlantis_find_product(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_find_product' ){
@@ -505,6 +602,7 @@ function atlantis_get_all_product_by_store(){
          wp_send_json_error(['message' => 'product_not_found 2']);
          wp_die();
       }
+
       wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
       wp_die();
       
