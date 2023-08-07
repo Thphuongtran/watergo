@@ -215,3 +215,9 @@ function atlantis_current_date_only( $format = 'Y-m-d'){
 function get_key_map(){
    return 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
 }
+
+
+add_filter('wp_mail_from_name', 'custom_wp_mail_from_name');
+function custom_wp_mail_from_name($from_name) {
+    return 'Watergo';
+}

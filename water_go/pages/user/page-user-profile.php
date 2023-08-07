@@ -222,13 +222,15 @@ createApp({
             if( res.message == 'review_delete_ok' ){
                this.reviews.some( (item, index ) => {
                   if( item.id == this.review_id ){
-                     this.reviews.splice(1, index);
+                     if( window.appBridge != undefined ){
+                        window.appBridge.refresh();
+                     }
                   }
                });
             }
          }
-         this.btn_popup_cancel();
-         this.loading = false;
+         // this.btn_popup_cancel();
+         // this.loading = false;
       },
 
       btn_popup_cancel(){ 

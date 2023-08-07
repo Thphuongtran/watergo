@@ -91,7 +91,7 @@
                         <div class='product-name'>{{ product.name }}</div>
                         <div class='product-price product-in-cart'>
                            <span class='price'>
-                              {{ common_price_after_discount(product ) }}
+                              {{ common_price_after_discount( product ) }}
                            </span>
                            <span v-show='has_discount(product) == true' class='sub-price'>
                               {{ common_price_show_currency( product.price ) }}

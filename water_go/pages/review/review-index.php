@@ -25,7 +25,7 @@
          <li v-for='(review, reviewKey ) in reviews ' :key='reviewKey'>
             <div class='tile-review-head'>
                <div class='leading'>
-                  <img :src="review.user_avatar">
+                  <img :src="review.user_avatar.url">
                </div>
                <div class='content'>
                   <div class='tt01'>{{ review.user_username }}</div>
@@ -155,6 +155,8 @@ createApp({
       await this.findReview(store_id, 0);
       await this.get_total_review(store_id);
       await this.get_review_rating_average(store_id);
+
+      console.log(this.reviews)
 
       this.loading = false;
 

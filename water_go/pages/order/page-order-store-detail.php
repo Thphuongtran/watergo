@@ -69,17 +69,16 @@
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
                '
-            v-for='( date_time, date_time_key ) in order.order_time_shipping' :key='date_time_key'
-            class='display_delivery_time'>
-
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
-
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
-
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
+            v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
+            class='display_delivery_time'
+            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
+            >
+               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>Date {{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
          </div>
       </div>
 
@@ -92,10 +91,15 @@
       <div class='break-line'></div>
       <div class='box-time-order'>
          <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
+         <p v-if='order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'>Confirmed Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
+         <p v-if='order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+         <!-- <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
          <p v-if='order.order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
          <p v-if='order.order_time_confirmed > 0 ' class='heading-03'>Confirm Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed) }}</span></p>
          <p v-if='order.order_time_delivery > 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order.order_time_completed > 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order.order_time_completed > 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p> -->
       </div>
 
       <div class='break-line'></div>
@@ -188,6 +192,7 @@ createApp({
          loading: false,
          popup_confirm_cancel: false,
          address_kilometer: 0.0,
+         time_shipping: [],
          
          reason_cancel: [
             {label: 'Reason 1', active: false},
@@ -236,6 +241,19 @@ createApp({
 
       goBack(){ window.goBack(true) },
 
+      async get_time_shipping_order(order_id){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_all_time_shipping_from_order');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'time_shipping_found'){
+               this.time_shipping.push(...res.data);
+            }
+         }
+      },
+
       async btn_order_status( order_status ){
 
          var ods = [ parseInt(this.order.order_id )];
@@ -263,6 +281,12 @@ createApp({
    },
 
    computed: {
+
+      filter_time_shipping(){
+         return this.time_shipping;
+         // .sort( ( a, b ) => a.order_time_shipping_datetime < b.order_time_shipping_datetime  );
+      },
+
       get_delivery_time_activity(){
          var _delivery_type = '';
          if( this.order.order_delivery_type == 'once_immediately' ){
@@ -308,6 +332,8 @@ createApp({
          var res = JSON.parse( JSON.stringify(r));
 
          this.order = res.data;
+
+         await this.get_time_shipping_order(this.order.order_id);
 
          console.log(this.order)
 

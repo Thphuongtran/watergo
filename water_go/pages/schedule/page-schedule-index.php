@@ -108,9 +108,7 @@
 
 <script>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
 
@@ -185,7 +183,13 @@ createApp({
       },
 
       total_product_in_order( order ){
-         return order.order_products != undefined && order.order_products.length > 0 ? order.order_products.length : 0;
+         var _total = 0;
+         if( order.order_products != undefined && order.order_products.length > 0 ){
+            order.order_products.forEach( item => {
+               _total += parseInt(item.order_group_product_quantity_count);
+            });
+         }
+         return _total;
       },
 
       total_product_price_in_order( order ){
@@ -252,16 +256,21 @@ createApp({
             $(document).ready(function(){
 
                $('.ui-date-picker-wrapper').addClass('active');
+               $('.ui-date-picker-wrapper').addClass('schedule-datepicker');
+
+               
                
                $('#datepicker').datepicker({
                   dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
                   onSelect: function(dateText, inst){
                      if(dateText != undefined || dateText != '' || dateText != null){
                         $('#datepicker').attr('value', dateText); 
+                        app.datePickerValue = dateText;
                      }
                   },
                   onClose: function(dateText, inst){
                      $('.ui-date-picker-wrapper').removeClass('active');
+                     $('.ui-date-picker-wrapper').removeClass('schedule-datepicker');
                   }
                });
 

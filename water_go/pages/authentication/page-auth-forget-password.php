@@ -118,7 +118,7 @@
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'>Exit</button>
+         <button @click='goBack' class='btn btn-primary'>Log In</button>
       </div>
    </div>
 

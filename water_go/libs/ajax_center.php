@@ -189,6 +189,8 @@ function func_atlantis_get_product_by( $args ){
    $get_by_product_type    = isset( $args['get_by_product_type'] ) ? $args['get_by_product_type'] : null;
    // exclude id
    $exclude_id             = isset($args['exclude_id']) ? $args['exclude_id'] : 0;
+
+   $image_size             = isset( $args['image_size']) ? $args['image_size'] : 'medium';
    
    // limit
    $limit = isset($args['limit']) ? $args['limit'] : 10;
@@ -235,7 +237,7 @@ function func_atlantis_get_product_by( $args ){
    if( !empty($products ) ){
       foreach($products as $k => $vl){
 
-         $products[$k]->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image);
+         $products[$k]->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
          $category = func_atlantis_get_product_category([
             'category'     => $vl->category,
             'brand'        => $vl->brand,
@@ -320,7 +322,7 @@ function func_atlantis_get_product_category( $args ){
 /**
  * @access GET IMAGE PRODUCT -> LIMIT == FALSE -> get all image by product_id
  */
-function func_atlantis_get_images($related_id, $attachment_type, $limit = true){
+function func_atlantis_get_images($related_id, $attachment_type, $limit = true, $image_size = 'medium'){
    global $wpdb;
    $sql = "SELECT attachment_id FROM wp_watergo_attachment WHERE related_id = $related_id AND attachment_type = '$attachment_type' 
       ORDER BY id ASC
@@ -335,7 +337,7 @@ function func_atlantis_get_images($related_id, $attachment_type, $limit = true){
 
       foreach( $res as $k => $vl ){
          // make image crop size 200x200
-         $url = wp_get_attachment_image_url($vl->attachment_id, 'medium');
+         $url = wp_get_attachment_image_url($vl->attachment_id, $image_size);
          $attachment[$k]['url']  = $url;
          $attachment[$k]['id']   = $vl->attachment_id;
       }
@@ -596,12 +598,12 @@ function findNextClosestDay_byMonthly($arr, $_current_order_time_shipping_day) {
  * @access CHECK PRODUCT IS NOT OUT OF STOCK
  */
 
-function func_is_product_out_of_stock( $product_id, $stock_quantity ){
+function func_is_product_out_of_stock( $product_id ){
    global $wpdb;
-   $sql = "SELECT COUNT(*) as is_out_of_stock FROM wp_watergo_products WHERE id = $product_id AND stock >= $stock_quantity";
+   $sql = "SELECT COUNT(*) as is_out_of_stock FROM wp_watergo_products WHERE id = $product_id AND mark_out_of_stock = 1";
    $res = $wpdb->get_results($sql);
    
-   if( $res[0]->is_out_of_stock == 1 ){
+   if( $res[0]->is_out_of_stock != null && $res[0]->is_out_of_stock == 0 ){
       return true;
    }
    return false;

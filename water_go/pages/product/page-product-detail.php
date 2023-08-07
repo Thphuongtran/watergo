@@ -112,7 +112,7 @@
             </div>
             <div class='list-horizontal'>
                <ul>
-                  <li @click='gotoProductDetail(product.id)' v-for='(product, index) in product_by_store' class='product-design'>
+                  <li @click='gotoProductDetail(product.id)' v-for='(product, index) in product_by_store' class='product-design small-size '>
                      <div class='img'>
                         <img :src='product.product_image.url'>
                         <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
@@ -302,6 +302,7 @@ createApp({
          form.append('action', 'atlantis_find_product');
          form.append('product_id', product_id);
          form.append('limit_image', 0);
+         form.append('image_size', 'large');
          var r = await window.request(form);
 
          if( r != undefined ){

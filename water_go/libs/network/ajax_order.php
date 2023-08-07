@@ -39,6 +39,7 @@ add_action( 'wp_ajax_atlantis_get_order_store', 'atlantis_get_order_store' );
 add_action( 'wp_ajax_nopriv_atlantis_get_order_time_shipping', 'atlantis_get_order_time_shipping' );
 add_action( 'wp_ajax_atlantis_get_order_time_shipping', 'atlantis_get_order_time_shipping' );
 
+
 // FOR ORDER REPEAT
 add_action( 'wp_ajax_nopriv_atlantis_get_order_number', 'atlantis_get_order_number' );
 add_action( 'wp_ajax_atlantis_get_order_number', 'atlantis_get_order_number' );
@@ -144,7 +145,7 @@ function atlantis_is_product_out_of_stock_from_order(){
          wp_watergo_order_group.order_group_id, 
          wp_watergo_order_group.order_group_product_id,
          wp_watergo_order_group.order_group_product_quantity_count,
-         wp_watergo_products.stock
+         wp_watergo_products.mark_out_of_stock
          FROM wp_watergo_order_group
          LEFT JOIN wp_watergo_order
          ON wp_watergo_order.hash_id = wp_watergo_order_group.hash_id
@@ -162,24 +163,14 @@ function atlantis_is_product_out_of_stock_from_order(){
          wp_die();
       }
 
-      $total_product = count($res);
-      $check_stock = 0;
-
       foreach( $res as $k => $vl ){
-         $stock = $vl->stock;
-         $quantity = $vl->order_group_product_quantity_count;
-         // if stock > quantity
-         if( $stock >= $quantity ){
-            $check_stock++;
+         if( $vl->mark_out_of_stock == 1 ){
+            wp_send_json_error(['message' => 'reorder_out_of_stock' ]);
+            wp_die();
          }
       }
 
-      if( $total_product == $check_stock){
-         wp_send_json_success(['message' => 'order_can_reorder' ]);   
-         wp_die();
-      }
-
-      wp_send_json_error(['message' => 'reorder_out_of_stock' ]);
+      wp_send_json_success(['message' => 'order_can_reorder' ]);
       wp_die();
 
 

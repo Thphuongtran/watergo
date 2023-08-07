@@ -82,7 +82,7 @@
                '
             v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
             class='display_delivery_time'
-            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id && time_shipping.length > 1 ? "highlight" : ""'
+            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
             >
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
@@ -102,22 +102,23 @@
       <div class='break-line'></div>
       <div class='box-time-order'>
          <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
-         <p v-if='order_status == "cancel"' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
-         <p v-if='order_status == "delivering"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order_status == "complete"' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order_status == "complete"' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'>Confirmed Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
+         <p v-if='order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
       </div>
 
 
       <div class='order-bottomsheet'>
          
-         <div v-if='order_status == "complete"' class='btn_cancel_order_wrapper'>
+         <div v-if='order_status == "complete" && can_review == true' class='btn_cancel_order_wrapper'>
             <button @click='gotoReview("review-store", order.store_id )'
                class='btn btn-outline btn-review-order'>Review Store</button>
          </div>
          
          <div v-if='order_status == "ordered" || order_status == "confirmed"' class='btn_cancel_order_wrapper'>
-            <button @click='btn_cancel_order' v-if='order_status == "ordered" || order_status == "confirmed"' 
+            <button @click='btn_cancel_order' 
+               v-if='order_status == "ordered" || order_status == "confirmed"' 
                class='btn btn-outline btn-cancel-order'>Cancel</button>
          </div>
 
@@ -195,6 +196,8 @@ createApp({
          banner_open: false,
          popup_out_of_stock: false,
          order_is_out_of_stock: false,
+
+         can_review: false,
 
          popup_confirm_cancel: false,
 
@@ -332,7 +335,7 @@ createApp({
       get_status_activity( status ){
          switch( status ){
             case 'ordered' : return 'Pending'; break;
-            case 'confirmed' : return 'Confirmed'; break;
+            case 'confirmed' : return 'Prepare'; break;
             case 'delivering' : return 'Delivering'; break;
             case 'complete' : return 'Complete'; break;
             case 'cancel' : return 'Cancel'; break;
@@ -350,6 +353,19 @@ createApp({
                this.time_shipping.push(...res.data);
             }
          }
+      },
+
+      async is_can_review( store_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_is_user_has_review_store');
+         form.append('store_id', store_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'review_not_found' ){
+               this.can_review = true;
+            }
+         }
       }
 
    },
@@ -362,10 +378,9 @@ createApp({
             return "t-right";
          }else{
             // IF CANCEL WITH repeat
-            if( this.order.order_status == "cancel" && this.order.order_repeat_id != 0 ){
-               return "t-right";
+            if( this.order.order_status == "cancel"){
+               return "t-left";
             }
-            return "";
          }
 
       },
@@ -417,6 +432,7 @@ createApp({
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
       await this.get_time_shipping_order(order_id);
+      await this.is_can_review(this.order.store_id);
 
       console.log(this.order)
 
@@ -432,7 +448,6 @@ createApp({
                var _res = JSON.parse( JSON.stringify( _r ) );
                if( _res.message == 'reorder_out_of_stock' ){
                   this.order_is_out_of_stock = true;
-                  // this.popup_out_of_stock = true;
                }
             }
 

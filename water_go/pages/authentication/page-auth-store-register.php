@@ -1,3 +1,8 @@
+<style type="text/css">
+   .pac-logo:after{display: none}
+   .form-group input{font-size: 16px;}
+   .form-group .btn{line-height: 38px;}
+</style>
 <div id='authentication'>
 
    <div v-show='loading == false' class='page-auth-register'>
@@ -69,19 +74,12 @@
 
          <div class='form-group'>
             <span>Address</span>
-            <input v-model='inputAddress' type="text" placeholder='Enter address' 
+           <!--  <input v-model='inputAddress' type="text" placeholder='Enter address' 
                @blur='select_address_focus_out'
                @focus='select_address_focus_in'
-            >
-            <ul v-show='box_search == true' class='box-search-reccommend'>
-               <li
-                  v-if='searchRes.length > 0'
-                  v-for='(address, addressKey) in searchRes' :key='addressKey'
-                  @click='select_address(address)'
-               >
-                  {{ address.title }}
-               </li>
-            </ul>
+            > -->
+            <input type="text" name="" id="search-address">
+
          </div>
 
 
@@ -151,14 +149,15 @@
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBackForce' class='btn btn-outline'>Exit</button>
+         <button @click='goBackForce' class='btn btn-primary'>Log In</button>
       </div>
    </div>
 
 </div>
 
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script>
 <script>
-
+var address = lat = lng = "";
 var { createApp } = Vue;
 createApp({
    data (){
@@ -209,17 +208,13 @@ createApp({
       }
    },
 
-   watch: {
-      inputAddress: async function( address ){
-         if( address != undefined && address != '' ){
-            if (searchTimeout) { clearTimeout(searchTimeout); }
-            var searchTimeout = setTimeout(async () => {
-               await this.searchLocation(address);
-            }, 1000);
+ watch : {
+      inputEmail : function(val){
+         if(this.verify_email(val)){
+            $(".btn-email-verify").addClass("is-send");
          }else{
-            this.searchRes = [];
+            $(".btn-email-verify").removeClass("is-send");
          }
-
       }
    },
 
@@ -227,33 +222,12 @@ createApp({
       select_address_focus_out(){ setTimeout( () => { this.box_search = false; }, 100); },
       select_address_focus_in(){ this.box_search = true; },
 
-      select_address( address ){
-         this.inputAddress = address.title;
-         this.latitude     = address.position.lat;
-         this.longitude    = address.position.lng;
-         this.searchRes    = [];
-      },
-
-      async searchLocation( searchQuery ) {
-         var apiKey  = window.get_key_map();
-         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
-
-         fetch(url)
-            .then( response => response.json() )
-            .then( data => {
-               if ( data.items.length > 0 ) {
-                  this.searchRes = data.items;
-               } else {
-                  // console.log('Location not found');
-                  this.searchRes = [];
-               }
-            })
-            .catch(error => {
-               this.searchRes = [];
-               // console.error('Error:', error);
-               // console.log('An error occurred. Please try again.');
-            });
-      },
+      // select_address( address ){
+      //    this.inputAddress = address;
+      //    this.latitude     = lat;
+      //    this.longitude    = lng;
+      //    this.searchRes    = [];
+      // },
 
       toggleDropdown() {
          this.showDropdown = !this.showDropdown;
@@ -401,7 +375,6 @@ createApp({
       },
 
       async btn_register(){
-         
          var code = this.code01 + this.code02 + this.code03 + this.code04;
          if( this.term_conditions == true){
             this.loading = true;
@@ -410,10 +383,9 @@ createApp({
                this.inputOwner != '' && 
                this.select_type_product_text != '' &&
                this.inputStoreName != '' &&
-               this.inputAddress != '' &&
                this.inputPhone != '' &&
                this.inputEmail != '' && 
-               this.inputPassword != ''
+               this.inputPassword != '' && address != "" && lat != "" && lng != ""
             ){
 
                if( code != '' ){
@@ -423,12 +395,12 @@ createApp({
                   form.append('owner', this.inputOwner);
                   form.append('storeType', this.select_type_product_text);
                   form.append('storeName', this.inputStoreName);
-                  form.append('address', this.inputAddress );
+                  form.append('address', address );
                   form.append('phone', this.inputPhone);
                   form.append('email', this.inputEmail);
                   form.append('password', this.inputPassword);
-                  form.append('latitude', this.latitude);
-                  form.append('longitude', this.longitude);
+                  form.append('latitude', lat);
+                  form.append('longitude', lng);
                   form.append('code', code);
 
                   var r = await window.request(form);
@@ -459,7 +431,9 @@ createApp({
                }else{
                   this.res_text_sendcode = 'Email is not verify.';
                }
-            }else{
+            }else if( address == "" || lat == "" || lng == ""){
+               this.res_text_sendcode = 'Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất';
+            } else{
                this.res_text_sendcode = 'All field must be not empty.';
             }
             this.loading = false;
@@ -475,5 +449,31 @@ createApp({
    },
 
 }).mount('#authentication');
+
+
+function initialize() {
+   const input = document.getElementById('search-address');
+   const options = {
+      componentRestrictions: { country: "vn" },
+   };
+   const autocomplete = new google.maps.places.Autocomplete(input, options);
+
+// Lắng nghe sự kiện khi người dùng chọn một địa chỉ từ danh sách
+   google.maps.event.addListener(autocomplete, 'place_changed', function () {
+      const selectedPlace = autocomplete.getPlace();
+      if (selectedPlace && selectedPlace.geometry && selectedPlace.geometry.location) {
+         lat = selectedPlace.geometry.location.lat();
+         lng = selectedPlace.geometry.location.lng();
+         address = selectedPlace.formatted_address;
+
+      }
+   });
+
+   input.addEventListener('keydown', function (event) {
+      address = lat = lng = "";
+   });
+}
+
+   google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>

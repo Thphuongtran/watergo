@@ -31,9 +31,8 @@ function atlantis_is_product_out_of_stock(){
 
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_is_product_out_of_stock' ){
       $product_id       = isset($_POST['product_id'])       ? $_POST['product_id'] : 0;
-      $stock_quantity   = isset($_POST['stock_quantity'])   ? $_POST['stock_quantity'] : 0;
 
-      $res = func_is_product_out_of_stock($product_id, $stock_quantity);
+      $res = func_is_product_out_of_stock($product_id);
 
       if( $res == true ){
          wp_send_json_success(['message' => 'product_can_order']);
@@ -404,6 +403,8 @@ function atlantis_find_product(){
       $product_id    = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
       $limit_image   = isset($_POST['limit_image']) ? $_POST['limit_image'] : true;
       // $paged         = isset($_POST['paged']) ? $_POST['paged'] : 0;
+      $image_size    = isset($_POST['image_size']) ? $_POST['image_size'] : 'medium';
+      
       if($product_id == 0 ){
          wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
@@ -412,6 +413,7 @@ function atlantis_find_product(){
          'id'           => $product_id,
          'get_by'       => 'product_id',
          'limit_image'  => $limit_image == 1 ? true : false,
+         'image_size'   => $image_size
          // 'paged'        => $paged
       ]);
       if( empty($product )){

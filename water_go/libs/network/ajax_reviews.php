@@ -30,10 +30,23 @@ add_action( 'wp_ajax_atlantis_update_review', 'atlantis_update_review' );
 add_action( 'wp_ajax_nopriv_atlantis_is_user_has_review_store', 'atlantis_is_user_has_review_store' );
 add_action( 'wp_ajax_atlantis_is_user_has_review_store', 'atlantis_is_user_has_review_store' );
 
-
 function atlantis_is_user_has_review_store(){
    if(isset($_POST['action'])  && $_POST['action'] == 'atlantis_is_user_has_review_store' ){
+      $user_id    = get_current_user_id();
+      $store_id   = isset($_POST['store_id']) ? (int) $_POST['store_id'] : 0;
+      $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
 
+      global $wpdb;
+      $sql = "SELECT COUNT(*) as has_review FROM wp_watergo_reviews WHERE user_id = $user_id AND related_id = $store_id LIMIT 1";
+
+      $res = $wpdb->get_results($sql);
+
+      if( $res[0]->has_review != null && $res[0]->has_review > 0 ){
+         wp_send_json_success(['message' => 'review_found' ]);
+         wp_die();
+      }
+      wp_send_json_error(['message' => 'review_not_found']);
+      wp_die();
    }
 }
 

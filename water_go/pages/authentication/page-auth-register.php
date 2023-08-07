@@ -118,7 +118,7 @@
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'>Exit</button>
+         <button @click='goBack' class='btn btn-primary'>Log In</button>
       </div>
    </div>
 
@@ -161,6 +161,15 @@ createApp({
          showDropdown: false
 
 
+      }
+   },
+   watch : {
+      inputEmail : function(val){
+         if(this.verify_email(val)){
+            $(".btn-email-verify").addClass("is-send");
+         }else{
+            $(".btn-email-verify").removeClass("is-send");
+         }
       }
    },
 

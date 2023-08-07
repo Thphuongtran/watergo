@@ -240,3 +240,42 @@
       margin: 0;
    }
 }
+
+
+.ui-date-picker-wrapper{
+	&.datepicker-monthly{
+		.ui-state-highlight:after{
+			display: none;
+		}
+		.ui-state-highlight{
+			color: #454545;
+		}
+		
+		.ui-state-disabled.datepicker-month-selected{
+			position: relative;
+			opacity: 1;
+			
+			.ui-state-default{
+				color: white !important;
+			}
+			
+			&:after{
+				content: '';
+				position: absolute;
+				z-index: -1;
+				width: 26px;
+				height: 26px;
+				background: #2790F9;
+				left: 50%;
+				top: 2px;
+				transform: translateX(-50%);
+				border-radius: 25px;
+			}
+		}
+		
+	}
+	
+	.ui-datepicker-other-month{
+		visibility: hidden;
+	}
+}

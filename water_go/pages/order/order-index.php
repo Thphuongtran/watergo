@@ -55,7 +55,7 @@
             <div class='order-head exapend-size'>
                <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/><path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/></svg>
                <div class='leading'><span>{{ order.store_name }}</span></div>
-               <div class='status'>{{ order.order_status }}</div>
+               <div class='status'>{{ change_name_status(order.order_status) }}</div>
             </div>
 
             <div 
@@ -183,6 +183,14 @@ createApp({
          return _total;
       },
 
+      change_name_status( status ){
+         if( status == 'confirmed' ){
+            return 'Prepare';
+         }else{
+            return status;
+         }
+      },
+
       gotoCart(){ window.gotoCart(); },
       gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id); },
       gotoOrderFilter(filter){ window.gotoOrderFilter(filter); },
@@ -206,6 +214,7 @@ createApp({
          form.append('paged', paged );
          form.append('order_status', order_status);
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
