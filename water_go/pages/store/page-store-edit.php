@@ -1,6 +1,11 @@
+<style type="text/css">
+   .pac-logo:after{display: none}
+   .form-group input{font-size: 16px;}
+   .form-group .btn{line-height: 38px;}
+</style>
 <div id='app'>
 
-   <div v-if='loading == false' class='page-edit'>
+   <div v-show='loading == false' class='page-edit'>
 
       <div class='appbar fixed'>
 
@@ -70,7 +75,7 @@
 
          <div class='form-group'>
             <span>Address</span>
-            <input v-model='address' type="text" placeholder='Enter address'>
+            <input id='search-address' v-model='address' type="text" placeholder='Enter address'>
          </div>
 
          <div class='form-group'>
@@ -91,21 +96,25 @@
 
       </div>
 
-
-
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
+
 </div>
-<script type='module'>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script>
+<script>
+
+var address = lat = lng = "";
 
 var { createApp } = Vue;
 
 createApp({
+   
    data (){
       return {
          loading: false,
@@ -129,41 +138,33 @@ createApp({
          latitude: 0,
          longitude: 0,
 
+      }
+   },
 
+
+
+   watch : {
+
+      email : function(val){
+         if(this.verify_email(val)){
+            $(".btn-email-verify").addClass("is-send");
+         }else{
+            $(".btn-email-verify").removeClass("is-send");
+         }
       }
    },
 
    methods: {
 
-      select_address_focus_out(){ setTimeout( () => { this.box_search = false; }, 100); },
-      select_address_focus_in(){ this.box_search = true; },
-      select_address( address ){
-         this.inputAddress = address.title;
-         this.latitude     = address.position.lat;
-         this.longitude    = address.position.lng;
-         this.searchRes    = [];
+      verify_email( email ){
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if (emailRegex.test(email)) {
+            return true;
+         }else{
+            return false;
+         }
       },
 
-      async searchLocation( searchQuery ) {
-         var apiKey  = window.get_key_map();
-         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
-
-         fetch(url)
-            .then( response => response.json() )
-            .then( data => {
-               if ( data.items.length > 0 ) {
-                  this.searchRes = data.items;
-               } else {
-                  // console.log('Location not found');
-                  this.searchRes = [];
-               }
-            })
-            .catch(error => {
-               this.searchRes = [];
-               // console.error('Error:', error);
-               // console.log('An error occurred. Please try again.');
-            });
-      },
 
       async btn_update_store(){
          this.loading = true;
@@ -175,7 +176,7 @@ createApp({
             this.name != '' &&
             this.address != '' &&
             this.phone != '' &&
-            this.email != '' 
+            this.email != '' && address != "" && lat != "" && lng != ""
          ){
             
             var form = new FormData();
@@ -189,10 +190,10 @@ createApp({
             form.append('email', this.email);
             form.append('description', this.description);
             form.append('imageUpload[]', this.selectedImage);
+            form.append('latitude', lat);
+            form.append('longitude', lng);
 
             var r = await window.request(form);
-
-            console.log(r);
             
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -221,9 +222,10 @@ createApp({
             }
 
             this.loading = false;
-         }else{
-            this.text_err = 'All field must be not empty.';
-
+         }else if( address == "" || lat == "" || lng == ""){
+            this.res_text_sendcode = 'Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất';
+         } else{
+            this.res_text_sendcode = 'All field must be not empty.';
          }
 
 
@@ -264,11 +266,9 @@ createApp({
 
       },
 
-      goBack(){ window.goBack(); },
+      goBack(){ window.goBack(true); },
    },
-   computed: {
-      
-   },
+
    async created(){
       this.loading = true;
 
@@ -277,5 +277,32 @@ createApp({
 
       window.appbar_fixed();
    }
+
 }).mount('#app');
+
+
+function initialize() {
+   var input = document.getElementById('search-address');
+   var options = {
+      componentRestrictions: { country: "vn" },
+   };
+   var autocomplete = new google.maps.places.Autocomplete(input, options);
+
+   google.maps.event.addListener(autocomplete, 'place_changed', function () {
+      var selectedPlace = autocomplete.getPlace();
+      if (selectedPlace && selectedPlace.geometry && selectedPlace.geometry.location) {
+         lat = selectedPlace.geometry.location.lat();
+         lng = selectedPlace.geometry.location.lng();
+         address = selectedPlace.formatted_address;
+      }
+   });
+
+   input.addEventListener('keydown', function (event) {
+      address = lat = lng = "";
+   });
+
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
 </script>

@@ -19,6 +19,8 @@ html{
    object-fit: contain !important;
 }
 
+option.weekly_day_disable{ display: none !important; }
+
 .remove-scrollbar{
    &::-webkit-scrollbar{
       display: none;
@@ -3126,3 +3128,10 @@ p{
    font-weight: 400;
 }
 
+
+
+.hightlight-order{
+   color: #2790F9;
+   font-weight: 500;
+   font-size: 14px;
+}

@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false && store != null' class="page-store-detail">
+   <div v-show='loading == false && store != null' class="page-store-detail">
    
       <div class='product-detail-wrapper'>
          <div class='product-header'>
@@ -24,7 +24,7 @@
       <div class="inner">
          <div class='product-design product-detail'>
             <p class='tt01'>{{ store.name }}</p>
-            <p class='tt02'>{{ get_distance_from_location }}</p>
+            <p class='tt02' v-if='user_current_is_store == false'>{{ get_distance_from_location }}</p>
             <p class='tt03'> {{ store.description }}</p>
          </div>
 
@@ -95,7 +95,7 @@
 
    </div>
 
-   <div v-if="loading == true">
+   <div v-show="loading == true">
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
       </div>
@@ -194,10 +194,8 @@ createApp({
 
       async findReview(){
          var form = new FormData();
-         form.append('action', 'atlantis_reviews');
+         form.append('action', 'atlantis_get_review_store');
          form.append('store_id', this.store_id);
-         form.append('page', this.page);
-         form.append('limit', this.limit);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -274,11 +272,28 @@ createApp({
          
       },
 
-      gotoProductDetail(product_id){window.gotoProductDetail(product_id)},
-      gotoStoreDetail(store_id){window.gotoStoreDetail(store_id)},
+      async mark_user_read_notification(hash_id){
+         var form = new FormData();
+         form.append('action', 'atlantis_notification_mark_read_notification_hash_id');
+         form.append('hash_id', hash_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'notification_mark_read' ){
+               console.log('notification_mark_read ok');
+            }
+         }
+      },
+
+      gotoProductDetail(product_id){
+         if( this.user_current_is_store == false ){
+            window.gotoProductDetail(product_id);   
+         }
+      },
       goBack(){ window.goBack() },
       gotoReviewIndex( store_id){ window.gotoReviewIndex(store_id);},
       gotoPageStoreEdit(){ window.gotoPageStoreEdit()},
+
 
    },
 
@@ -286,14 +301,19 @@ createApp({
    computed: {
       get_distance_from_location(){
 
-         var _distance = calculateDistance(
-            this.latitude,
-            this.longitude,
-            this.store.latitude,
-            this.store.longitude
-         );
+         setTimeout( () => {
 
-         return parseFloat(_distance).toFixed(1) + ' km';
+            if( this.user_current_is_store == false ){
+               var _distance = calculateDistance(
+                  this.latitude,
+                  this.longitude,
+                  this.store.latitude,
+                  this.store.longitude
+               );
+
+               return parseFloat(_distance).toFixed(1) + ' km';
+            }
+         }, 200);
       },
 
       filter_product(){
@@ -314,8 +334,15 @@ createApp({
    },
 
    async created(){
+      this.loading = true;
       const urlParams = new URLSearchParams(window.location.search);
       this.store_id = urlParams.get('store_id');
+      const hash_id = urlParams.get('hash_id');
+
+
+      if( hash_id != undefined ){
+         await this.mark_user_read_notification(hash_id);
+      }
       
       await this.findStore(this.store_id);
       await this.get_all_product_by_store()
@@ -325,6 +352,7 @@ createApp({
 
       window.appbar_fixed();
 
+      this.loading = false;
    }
 
 }).mount('#app');

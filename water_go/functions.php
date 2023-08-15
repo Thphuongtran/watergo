@@ -221,3 +221,85 @@ add_filter('wp_mail_from_name', 'custom_wp_mail_from_name');
 function custom_wp_mail_from_name($from_name) {
     return 'Watergo';
 }
+
+function pv_update_user_token(){
+    $current_user_id = get_current_user_id();
+
+    if($current_user_id != 0){
+       $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+       if(!empty($headers["app_push_token"]) && $headers["app_push_token"] != "Token not found"){
+          global $wpdb;
+          $table = $wpdb->prefix."bj_user_push_token";
+          $token = $headers["app_push_token"];
+          $check_user_exist = $wpdb->get_results ( $wpdb->prepare(" SELECT * FROM  {$table} WHERE  user_id = %d ",$current_user_id) ,ARRAY_A);
+         
+          if (!empty($check_user_exist)){
+             $result = $wpdb->update($table , ["token" => $token,"status" => ""], ["user_id" => $current_user_id],["%s","%s"],["%d"]);     
+          }else{
+             $result = $wpdb->insert($table,["user_id" => $current_user_id,"token" => $token],["%d","%s"]);
+         
+         }
+       }
+    }
+
+}
+
+function bj_push_notification($user_id, $title, $content, $link = "#"){
+    if($user_id == get_current_user_id()) return;
+    global $wpdb; 
+    $table = $wpdb->prefix.'bj_user_push_token';
+    
+    $result = $wpdb->get_results( $wpdb->prepare(" SELECT token FROM  {$table} WHERE  user_id = %d AND status ='' LIMIT 1",$user_id) ,ARRAY_A);
+
+    if(!empty($result)){
+        $user_token = $result[0]["token"];
+    }else{
+        return;
+    }
+
+    $url = 'http://ultramommy.net:8080/push-noti';
+    $body = array(
+        "app"     => "watergo",
+        "token"   => $user_token,
+        "body"    => $content,
+        "title"   => $title,
+        "link"    => $link
+    );
+    
+   $headers = array('Content-Type: application/json');
+  
+   $ch = curl_init ();
+   curl_setopt ( $ch, CURLOPT_URL, $url );
+   curl_setopt ( $ch, CURLOPT_POST, true );
+   curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+   curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+   curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($body) );
+
+   $data = curl_exec ( $ch );
+   curl_close ( $ch );   
+   return json_decode($data);
+
+   // $res = wp_remote_post($url, array(
+   //    'headers' => $headers,
+   //    'body'    => json_encode($body),
+   // ));
+
+   // print_r($res);
+
+   // if (is_wp_error($response)) {
+   //    return null; // Handle the error as needed
+   // }
+
+   // $data = wp_remote_retrieve_body($response);
+   // return json_decode($data);
+}
+
+
+function addZeroLeadingNumber( $number ){
+   if ($number < 1000) {
+      $formattedNumber = sprintf('%04d', $number);
+   } else {
+      $formattedNumber = $number;
+   }
+   return $formattedNumber;
+}

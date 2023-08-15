@@ -63,11 +63,17 @@
             We have sent a code to your email. <button @click='btn_verify_email_and_sendcode' class='btn-text'>Resend</button>
          </p>
 
-         <div v-if='isCodeSend' class='box-code-verify'>
+         <!-- <div v-if='isCodeSend' class='box-code-verify'> 
             <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
             <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
             <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
             <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
+         </div> -->
+         <div v-if="isCodeSend" class="box-code-verify">
+            <input @input="moveFocus($event, 'code01')" @keydown.delete="moveFocus($event, 'code01')" @keydown.backspace="moveFocusBack($event, 'code01')" ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+            <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+            <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+            <input @keydown.delete="moveFocus($event, 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
          </div>
 
          <div class='form-group mt10'>
@@ -254,13 +260,24 @@ createApp({
          }catch{}
       },
 
-      moveFocus(event, nextInput){
-         var input = event.target;
-         var id = event.target.id;
-         if (event.key === "Backspace" && !input.value && input.previousElementSibling) {
-            input.previousElementSibling.focus();
-         } else if (input.value && input.nextElementSibling) {
-            input.nextElementSibling.focus();
+      // moveFocus(event, nextInput){
+      //    var input = event.target;
+      //    var id = event.target.id;
+      //    if (event.key === "Backspace" && !input.value && input.previousElementSibling) {
+      //       input.previousElementSibling.focus();
+      //    } else if (input.value && input.nextElementSibling) {
+      //       input.nextElementSibling.focus();
+      //    }
+      // },
+
+      moveFocus(event, nextField) {
+         if (event.target.value.length >= 1) {
+            this.$refs[nextField].focus();
+         }
+      },
+      moveFocusBack(event, prevField) {
+         if (event.target.value.length === 0) {
+            this.$refs[prevField].focus();
          }
       },
 
@@ -332,7 +349,12 @@ createApp({
                   if(r != undefined ){
                      var res = JSON.parse( JSON.stringify(r));
                      if( res.message == 'register_ok'){
-                        this.banner_open = true;
+                        id = res.id;
+                        id = id.toString();
+                        window.appBridge.loginSuccess();                 
+                        window.appBridge.setUserToken(id); 
+                        window.appBridge.navigateTo("Home");
+                        //this.banner_open = true;
                         // this.gotoNotification('register-success');
                      }
 

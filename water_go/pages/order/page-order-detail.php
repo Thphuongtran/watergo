@@ -27,8 +27,8 @@
          <div class='list-tile delivery-address style-order'>
             <div class='content'>
                <p class='tt01'>Delivery address</p>
-               <p class='tt03'>{{ order_delivery_address.address }}</p>
-               <p class='tt02'>{{ order_delivery_address.name }} | (+84) {{ removeZeroLeading( order_delivery_address.phone ) }}</p>
+               <p class='tt03' v-if='order_delivery_address != null'>{{ order_delivery_address.address }}</p>
+               <p class='tt02' v-if='order_delivery_address != null'>{{ order_delivery_address.name }} | (+84) {{ removeZeroLeading( order_delivery_address.phone ) }}</p>
             </div>
          </div>
       </div>
@@ -79,7 +79,7 @@
                order.order_delivery_type == "once_date_time" ||
                order.order_delivery_type == "weekly" ||
                order.order_delivery_type == "monthly"
-               '
+            '
             v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
             class='display_delivery_time'
             :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
@@ -112,7 +112,7 @@
       <div class='order-bottomsheet'>
          
          <div v-if='order_status == "complete" && can_review == true' class='btn_cancel_order_wrapper'>
-            <button @click='gotoReview("review-store", order.store_id )'
+            <button @click='gotoAddReview(order.store_id, order.order_id )'
                class='btn btn-outline btn-review-order'>Review Store</button>
          </div>
          
@@ -168,6 +168,13 @@
          <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
       </div>
    </div>
+
+   <div v-show='popup_banner_already_review == true' class='modal-popup open'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='buttonCloseModal_already_review' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'>You already review this order !</p>
+      </div>
+   </div>
    
 
    <div v-show='banner_open == true' class='banner' :class='banner_open == true ? "z-index-5": ""'>
@@ -197,6 +204,8 @@ createApp({
          popup_out_of_stock: false,
          order_is_out_of_stock: false,
 
+         popup_banner_already_review: false,
+
          can_review: false,
 
          popup_confirm_cancel: false,
@@ -221,6 +230,7 @@ createApp({
 
    methods: {
 
+
       common_price_after_quantity_from_group_order(p){ return common_price_after_quantity_from_group_order(p) },
       common_price_after_discount_and_quantity_from_group_order(p){ return common_price_after_discount_and_quantity_from_group_order(p) },
 
@@ -228,6 +238,7 @@ createApp({
 
 
       buttonCloseModal_store_out_of_stock(){ this.popup_out_of_stock = false; },
+      buttonCloseModal_already_review(){ this.popup_banner_already_review = false; },
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       get_total_price( price, quantity, discount){ return window.get_total_price( price, quantity, discount); },
@@ -263,12 +274,7 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'cancel_done' ) {
-
                   this.goBack();
-                  if( window.appBridge != undefined ){
-                     window.appBridge.refresh();
-                  }
-
                }
             }
             this.loading = false;
@@ -322,15 +328,17 @@ createApp({
 
       },
 
-      goBack(){ window.goBack();},
-      goBackReOrder(){
-         window.goBack();
-         if( window.appBridge != undefined ){
-            window.appBridge.refresh();
+      goBack(){ window.goBack(true);},
+      goBackReOrder(){window.goBack(true);},
+      gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
+      async gotoAddReview(store_id, order_id){ 
+         await this.is_can_review(order_id);
+         if( this.can_review == true ){
+            window.gotoAddReview(store_id, order_id);
+         }else{
+            this.popup_banner_already_review = true;
          }
       },
-      gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
-      gotoReview(review_page, related_id ){ window.gotoReview(review_page, related_id); },
 
       get_status_activity( status ){
          switch( status ){
@@ -355,15 +363,17 @@ createApp({
          }
       },
 
-      async is_can_review( store_id ){
+      async is_can_review( order_id ){
          var form = new FormData();
          form.append('action', 'atlantis_is_user_has_review_store');
-         form.append('store_id', store_id);
+         form.append('order_id', order_id);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'review_not_found' ){
                this.can_review = true;
+            }else{
+               this.can_review = false;
             }
          }
       }
@@ -432,9 +442,9 @@ createApp({
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
       await this.get_time_shipping_order(order_id);
-      await this.is_can_review(this.order.store_id);
+      await this.is_can_review(order_id);
 
-      console.log(this.order)
+      // console.log(this.order)
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
       

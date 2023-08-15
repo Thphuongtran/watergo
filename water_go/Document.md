@@ -61,6 +61,7 @@ Store Profile [http://watergo.net/store/?store_page=store-profile]
 Authentication Login Store          [http://watergo.net/authentication?auth_page=auth-store-login]
 Authentication Register Store       [http://watergo.net/authentication?auth_page=auth-store-register]
 Authentication Forget Password      [http://watergo.net/authentication?auth_page=auth-store-forget-password]
+
 Authentication Reset Password       [http://watergo.net/authentication?auth_page=auth-store-reset-password] => old version
 
 # Account Store

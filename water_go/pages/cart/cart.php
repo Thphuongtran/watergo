@@ -370,7 +370,7 @@ createApp({
          _cartItems.forEach( store => {
             store.products.forEach(product => {
                if( product.product_select == true ){
-                  if( product.has_discount != 0 ){
+                  if( this.has_discount(product) == true ){
                      gr_price.price_discount += ( product.price - ( product.price * ( product.discount_percent / 100)) ) * product.product_quantity_count;
                   }else{
                      gr_price.price_discount += product.price * product.product_quantity_count;

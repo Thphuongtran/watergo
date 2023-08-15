@@ -1,3 +1,8 @@
+<?php
+
+   pv_update_user_token();
+
+?>
 <div id='app'>
 
    <div v-if='loading == false'>
@@ -217,6 +222,7 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_notification_count');
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'notification_found' ){
@@ -259,16 +265,19 @@ createApp({
          form.append('action', 'atlantis_load_product_recommend_discount');
          form.append('perPage', limit);
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
+
                if( res.data.length < 10 ){
                   var _rest_of = 10 - res.data.length;
                   await this.get_product_random(_rest_of);
                }else{
                   this.productRecommend.push(...res.data );
                }
+
+            }else{
+               this.get_product_random(10);
             }
          }
       },
@@ -282,6 +291,7 @@ createApp({
          form.append('action', 'atlantis_load_product_recommend_random');
          form.append('perPage', limit);
          var r = await window.request(form);
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -310,11 +320,12 @@ createApp({
       this.get_current_location();
       await this.get_messages_count();
       await this.get_store_nearby();
+      await this.get_notification_count();
 
       var form = new FormData();
       form.append('action', 'atlantis_load_product_recommend');
-      form.append('lat',this.latitude);
-      form.append('lng',this.longitude);
+      form.append('lat', this.latitude);
+      form.append('lng', this.longitude);
       form.append('paged', 0);
       var r = await window.request(form);
 
@@ -326,8 +337,6 @@ createApp({
             await this.get_product_discount(10);
          }
       }
-
-      this.loading = false;
 
       (function($){
          $(document).ready(function(){
@@ -343,6 +352,10 @@ createApp({
       })(jQuery);
 
       window.appbar_fixed();
+
+      setTimeout( () => {}, 200);
+      this.loading = false;
+
 
       // function callbackResume(data){        
       // if ( data != "undefined" && data != "" ) {

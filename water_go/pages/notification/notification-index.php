@@ -1,5 +1,5 @@
 <div id='app'>
-   <div v-if='loading == false' class='page-notification'>
+   <div v-show='loading == false' class='page-notification'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -15,33 +15,19 @@
          </div>
       </div>
 
-      <div class='list-notification'>
+      <div v-if='notifications.length > 0 ' class='list-notification'>
 
-         <div class='notification-item is_not_read'>
+         <div class='notification-item '
+            v-for='(item, keyItem) in notifications' :key='keyItem'
+            :class='item.is_read == 0 ? "is_not_read" : "" '
+            @click='gotoOrderDetail(item)'
+         >
             <div class='leading'>
-               <img src='<?php echo THEME_URI; ?>/assets/images/demo-notification-01.png'>
+               <img :src='item.attachment_url'>
             </div>
             <div class='contents'>
-               <div class='tt01'>Your order <span class='t-primary'>#1234</span> is confirmed</div>
-               <div class='tt02'>18/08/2022  9:45 am</div>
-            </div>
-         </div>
-         <div class='notification-item is_not_read'>
-            <div class='leading'>
-               <img src='<?php echo THEME_URI; ?>/assets/images/demo-notification-01.png'>
-            </div>
-            <div class='contents'>
-               <div class='tt01'>Your order <span class='t-primary'>#1234</span> is confirmed</div>
-               <div class='tt02'>18/08/2022  9:45 am</div>
-            </div>
-         </div>
-         <div class='notification-item is_not_read'>
-            <div class='leading'>
-               <img src='<?php echo THEME_URI; ?>/assets/images/demo-notification-01.png'>
-            </div>
-            <div class='contents'>
-               <div class='tt01'>Your order <span class='t-primary'>#1234</span> is confirmed</div>
-               <div class='tt02'>18/08/2022  9:45 am</div>
+               <div class='tt01' v-html=' title_compact(item )'></div>
+               <div class='tt02'>{{ formatDate(item.time_created) }}</div>
             </div>
          </div>
 
@@ -49,7 +35,7 @@
 
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -66,46 +52,121 @@ createApp({
       return {
          loading: false,
          notifications: [],
-         
+         paged: 0,
       }
    },
 
-
+   mounted() { window.addEventListener('scroll', this.handleScroll); },
+   beforeDestroy() { window.removeEventListener('scroll', this.handleScroll); },
+   
    methods: {
-      request(formdata){
-         try{
-            return axios({ method: 'post', url: get_ajaxadmin, data: formdata
-            }).then(function (res) { 
-               return res.status == 200 ? res.data.data : null;
-            });
-         }catch(e){
-            console.log(e);
-            return null;
+
+      async gotoOrderDetail( item ){ 
+         await this.mark_user_read_notification(item.id);
+         window.location.href = item.link;
+      },
+
+      async mark_user_read_notification(id_notification){
+         var form = new FormData();
+         form.append('action', 'atlantis_notification_mark_read_notification');
+         form.append('id_notification', id_notification);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'notification_mark_read' ){
+               console.log('notification_mark_read ok');
+            }
          }
       },
 
-      goBack(){ window.goBack()},
-      
-      async initNotification(){
+      formatDate(inputDate) {
+         if (inputDate != undefined && inputDate != null) {
+            const dateObj = new Date(inputDate);
+            const day = dateObj.getDate().toString().padStart(2, '0');
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const year = dateObj.getFullYear().toString();
+            const hours = dateObj.getHours();
+            const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+
+            // Convert hours to 12-hour format and determine AM/PM
+            const amPm = hours >= 12 ? 'pm' : 'am';
+            const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+
+            const formattedDate = `${day}/${month}/${year} ${formattedHours}:${minutes} ${amPm}`;
+            return formattedDate;
+         }
+         return false;
+      },
+
+      formatNumberWithLeadingZeros(number) {
+         if (number < 1000) {
+            return ('000' + number).slice(-4);
+         } else {
+            return number.toString();
+         }
+      },
+
+      title_compact( item ){
+         if( item.order_status == 'ordered' && item.send_to == 'store' ){
+            return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
+         }
+         if( item.order_status == 'cancel' && item.send_to == 'store' ){
+            return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
+         }
+
+         if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+            return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is confirmed`;
+         }
+
+         if( item.order_status == 'cancel' && item.send_to == 'user' ){
+            return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
+         }
+
+      },
+
+      goBack(){ window.goBack(true)},
+
+      async load_all_notification( paged ){
          var form = new FormData();
-         form.append('action', 'atlantis_notification');
-         var r = await this.request(form);
+         form.append('action', 'atlantis_notification_load_all');
+         form.append('paged', paged);
+         var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'notification_found' ){
-               this.notifications.push(...res.data);
+               res.data.forEach(item => {
+                  if (!this.notifications.some(existingItem => existingItem.id === item.id)) {
+                     this.notifications.push(item);
+                  }
+               });
             }
+
          }
-         console.log(r);
+      },
+
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            await this.load_all_notification( this.paged++);
+         }
       }
+      
+      
 
    },
 
    async created(){
-      this.loading = false;
-      await this.initNotification();
-
       this.loading = true;
+      await this.load_all_notification(0);
+
+      this.loading = false;
 
       window.appbar_fixed();
       

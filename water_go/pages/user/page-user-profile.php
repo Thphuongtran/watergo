@@ -1,3 +1,7 @@
+<?php
+   pv_update_user_token();
+
+?>
 <div id='app'>
 
    <div v-show='loading == false && user != null' class='page-user-profile'>
@@ -35,7 +39,7 @@
 
       <div class='inner'>
          <div class='profile-user'>
-            <img class='avatar-circle' width='80' height='80' :src="user.user_avatar.url">
+            <img class='avatar-circle' width='80' height='80' :src="get_avatar(user)">
 
             <div class='user-prefs'>
                <div class='username'>{{ name }}</div>
@@ -96,7 +100,7 @@
                      </div>
                      <div class='tile-detail'>
                         <span class='title'>{{ review.store_name }}</span>
-                        <span class='subtitle'>{{ timestamp_to_date(review.time_created )}}</span>
+                        <span class='subtitle'>{{ formatDateToDDMMYY(review) }}</span>
                      </div>
                   </div>
                </div>
@@ -177,10 +181,24 @@ createApp({
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
       count_product_in_cart(){return window.count_product_in_cart(); },
-      timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
+
+      get_avatar( u ){
+         if( u != undefined && u != null ) return u.user_avatar.url;
+      },
+
+      formatDateToDDMMYY(t){ 
+         if(t != undefined && t != null){
+            if( t.date_modified != null ){
+               return window.formatDateToDDMMYY(t.date_modified);
+            }else{
+               return window.formatDateToDDMMYY(t.date_created);
+            }
+         }
+      },
+
       btn_review_edit(review_id){ 
          this.reviews.forEach( item => item.popup_active = false);
-         window.gotoPageUserReviewEdit(review_id);},
+         window.gotoEditReview(review_id);},
 
       async get_messages_count(){
          var form_message_count = new FormData();
@@ -205,7 +223,6 @@ createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-
             await this.initReview( this.paged++ );
          }
       },
@@ -261,6 +278,7 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'user_found'){
                this.user = res.data;
+
             }
          }
       },
@@ -269,13 +287,11 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_get_user_review');
          form.append('paged', paged );
-
          var r = await window.request(form);
-         // console.log(r)
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'review_found'){
-               
                res.data.forEach(item => {
                   item.popup_active = false
                   if (!this.reviews.some(existingItem => existingItem.id === item.id)) {

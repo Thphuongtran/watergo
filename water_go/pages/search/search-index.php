@@ -38,23 +38,47 @@
          </div>
       </div>
 
-      <div class='search-data'>
+      <div v-if='get_search_data.length > 0' class='search-data'>
          <div class='inner'>
 
             <div class='grid-masonry'>
-               <div @click='gotoProductDetail(product.id)' 
+               <div 
+                  @click='findPlace(searchItem)' 
                class='product-design' 
-               v-for='(product, index) in searchs' :key='index'>
-                  <div class='img'>
-                     <img :src='product.product_image.url'>
+               v-for='(searchItem, index) in get_search_data' :key='index'>
+                  
+                  <!-- PRODUCT -->
+                  <div v-if='searchItem.search_type == "product"' class='img'>
+                     <img :src='searchItem.product_image.url'>
+                     <span v-if='has_discount(searchItem) == true' class='badge-discount'>-{{ searchItem.discount_percent }}%</span>
                   </div>
-                  <div class='box-wrapper'>
-                     <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ product.name_second }}</p>
-                     <div class='gr-price'>
-                        <span class='price'> {{ common_get_product_price(product.price) }} </span>
+                  <div v-if='searchItem.search_type == "product"'  class='box-wrapper'>
+                     <p class='tt01'>{{ searchItem.name }} </p>
+                     <p class='tt02'>{{ searchItem.name_second }}</p>
+                     <div class='gr-price' :class="has_discount(searchItem) == true ? 'has_discount' : '' ">
+                        <span class='price'>
+                           {{ common_price_after_discount(searchItem ) }}
+                        </span>
+                        <span v-if='has_discount(searchItem) == true' class='price-sub'>
+                           {{ common_price_show_currency(searchItem.price) }}
+                        </span>
                      </div>
                   </div>
+
+                  <!-- STORE -->
+                  <div v-if='searchItem.search_type == "store"' class='img'>
+                     <img :src='searchItem.store_image.url'>
+                  </div>
+                  <div v-if='searchItem.search_type == "store"'  class='box-wrapper'>
+                     <p class='tt01'>{{ searchItem.name }} </p>
+                     <p class='product-meta'>
+                        <span class='store-distance'>{{ mathCeilDistance(searchItem.distance) }} km</span>
+                        <svg v-if='searchItem.avg_rating > 0' width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.32901 11.7286L3.77618 13.8689C3.61922 13.9688 3.45514 14.0116 3.28391 13.9973C3.11269 13.9831 2.96287 13.926 2.83446 13.8261C2.70604 13.7262 2.60616 13.6012 2.53482 13.4511C2.46348 13.301 2.44921 13.1335 2.49202 12.9486L3.43373 8.9035L0.287545 6.18536C0.144861 6.05695 0.0558259 5.91055 0.0204402 5.74618C-0.0149455 5.58181 -0.00438691 5.42143 0.0521161 5.26505C0.10919 5.1081 0.1948 4.97968 0.308948 4.8798C0.423095 4.77992 0.580048 4.71571 0.779806 4.68718L4.93192 4.32333L6.53712 0.513664C6.60846 0.342443 6.71918 0.214026 6.86928 0.128416C7.01939 0.0428054 7.17263 0 7.32901 0C7.48597 0 7.63921 0.0428054 7.78874 0.128416C7.93827 0.214026 8.049 0.342443 8.12091 0.513664L9.72611 4.32333L13.8782 4.68718C14.078 4.71571 14.2349 4.77992 14.3491 4.8798C14.4632 4.97968 14.5488 5.1081 14.6059 5.26505C14.663 5.422 14.6738 5.58266 14.6384 5.74704C14.6031 5.91141 14.5137 6.05752 14.3705 6.18536L11.2243 8.9035L12.166 12.9486C12.2088 13.1341 12.1945 13.3019 12.1232 13.452C12.0519 13.6021 11.952 13.7268 11.8236 13.8261C11.6952 13.926 11.5453 13.9831 11.3741 13.9973C11.2029 14.0116 11.0388 13.9688 10.8819 13.8689L7.32901 11.7286Z" fill="#FFC83A"/></svg>
+                        <span v-if='searchItem.avg_rating > 0' class='store-rating'>{{ratingNumber(searchItem.avg_rating)}}</span>
+                     </p>
+                  </div>
+
+
                </div>
             </div>
             
@@ -78,23 +102,115 @@ createApp({
          inputSearch: '',
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
+
+         paged: 0,
+      }
+   },
+
+   watch: {
+      inputSearch: async function ( val ){
+         this.paged = 0;
+         this.searchs = [];
+         if (this.timeoutId) { clearTimeout(this.timeoutId); }
+         this.timeoutId = setTimeout( await this.futuredDelayed, 600);
       }
    },
 
    computed: {
-      
-      
-   },
-
-   watch: {
-      inputSearch: async function (){
-         await this.filteredData()
+      get_search_data(){
+         var data = this.searchs;
+         data.sort( (a, b) => a.distance - b.distance );
+         return data;
       }
    },
 
    methods: {
+      
       gotoProductDetail(id){ window.gotoProductDetail(id)},
-      common_get_product_price(p, p2){ return window.common_get_product_price(p, p2)},
+      gotoStoreDetail(store_id){ window.gotoStoreDetail( store_id ) },
+      findPlace( searchItem ){
+         if( searchItem.search_type == 'store' ){
+            this.gotoStoreDetail(searchItem.store_id);
+         }
+         if( searchItem.search_type == 'product' ){
+            this.gotoProductDetail(searchItem.product_id);
+         }
+      },
+      ratingNumber(rating){ return parseFloat(rating).toFixed(1); },
+      mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },
+
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
+
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            await this.futuredDelayed( this.paged++);
+         }
+      },
+
+      async futuredDelayed( paged = 0 ){
+
+         if( this.inputSearch != undefined && this.inputSearch != '' && this.inputSearch != ' '){
+            
+            var latin = window.convertVietnameseToLatin(this.inputSearch);
+            var form = new FormData();
+            form.append('action', 'atlantis_search_product');
+            form.append('search', this.inputSearch );
+            form.append('lat', this.latitude);
+            form.append('lng', this.longitude);
+            form.append('paged', paged);
+
+            var r = await window.request(form);
+            console.log(r)
+            if( r != undefined){
+               var res = JSON.parse( JSON.stringify( r));
+               if(res.message == 'search_found'){
+                  res.data.forEach(item => {
+                     if (!this.searchs.some(existingItem => existingItem.product_id === item.product_id)) {
+                        item.search_type = 'product';
+                        this.searchs.push(item);
+                     }
+                  });
+               }
+            }
+
+
+            var formStore = new FormData();
+            formStore.append('action', 'atlantis_search_store');
+            formStore.append('search', this.inputSearch );
+            formStore.append('lat', this.latitude);
+            formStore.append('lng', this.longitude);
+            formStore.append('paged', paged);
+            var rStore = await window.request(formStore);
+            console.log(rStore)
+            if( rStore != undefined){
+               var resStore = JSON.parse( JSON.stringify( rStore));
+               if(resStore.message == 'search_found'){
+                  resStore.data.forEach(item => {
+                     if (!this.searchs.some(existingItem => existingItem.store_id === item.store_id)) {
+                        item.search_type = 'store';
+                        this.searchs.push(item);
+                     }
+                  });
+               }
+            }
+
+
+         }
+
+      },
+
+      has_discount(p){ return window.has_discount(p); },
+      
+      common_price_after_discount(p){ return window.common_price_after_discount(p)},
+      common_price_show_currency(p){ return window.common_price_show_currency(p)},
+      
       goBack(){window.goBack()},
       removeText(){ this.inputSearch = ''; },
 
@@ -109,46 +225,30 @@ createApp({
                   let lng = data.lng;
                   this.latitude = data.lat;
                   this.longitude = data.lng;
+
                }
             }).catch((e) => { })
          }
       },
 
-      async filteredData() {
-         
-         console.log(this.search)
-         if( this.search != '' ){
-            var form = new FormData();
-            form.append('action', 'atlantis_search_data');
-            form.append('lat', this.latitude);
-            form.append('lng', this.longitude);
-            form.append('search', this.inputSearch);
-
-            var r = await window.request(form);
-            console.log(r);
-
-            if( r != undefined){
-               var res = JSON.parse( JSON.stringify( r));
-               if(res.message == 'search_found'){
-                  this.searchs = res.data;
-               }
-               if( res.message == 'search_not_found'){
-                  this.searchs = [];
-               }
-            }else{
-               this.searchs = [];
-            }
-
-         }
-      }
-
    },
+
+   mounted() {window.addEventListener('scroll', this.handleScroll);},
+   beforeDestroy() {window.removeEventListener('scroll', this.handleScroll);},
+
 
    update(){
-      console.log('update life cycle');
+      (function($){
+         $(document).ready(function(){
+            var _appbar = $('.page-appbar-support');
+            _appbar.addClass('fixed');
+            $('#app').css('padding-top', _appbar.height());
+         });
+      })(jQuery);
    },
 
-   created(){
+
+   async created(){
       this.get_current_location();
 
       (function($){

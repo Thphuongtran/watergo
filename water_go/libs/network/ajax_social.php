@@ -14,7 +14,7 @@ function app_social_process_user_login($email, $name){
          'user_login'         =>  $email,
          'user_pass'          =>  md5($email),
          'user_email'         =>  $email,
-         'display_name'       =>  strip_tags($name),
+         'first_name'         =>  strip_tags($name),
          'role'               => 'subscriber'
       );
       $id_new_user = wp_insert_user( $args );

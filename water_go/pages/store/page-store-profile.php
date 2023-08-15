@@ -1,3 +1,6 @@
+<?php 
+   pv_update_user_token();
+?>
 <div id='app'>
 
    <div v-show='loading == false ' class='page-store-profile'>
@@ -39,7 +42,7 @@
 
             <div class='user-prefs'>
                <div class='username'>{{ store.name }}</div>
-               <button @click='gotoPageStoreEdit' class='btn-text arrow-right'>View Store
+               <button @click='gotoStoreDetail(store.id)' class='btn-text arrow-right'>View Store
                   <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1 11L6 6L1 1" stroke="#2790F9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -131,6 +134,8 @@ createApp({
    methods: {
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoPageStoreEdit(){ window.gotoPageStoreEdit()},
+      gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
+      
       gotoPageStoreSettings(){ window.gotoPageStoreSettings()},
       gotoSupport(){ window.gotoSupport()},
       gotoCart(){ window.gotoCart()},
@@ -216,7 +221,8 @@ createApp({
       this.loading = true;
       await this.get_store();
       await this.check_user_notification();
-      await this.get_messages_count();
+      // await this.get_messages_count();
+      await this.get_notification_count();
       this.loading = false;
       window.appbar_fixed();
 

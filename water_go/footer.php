@@ -10,6 +10,16 @@
    //       }
    //    }
    // }
+
+   function callbackResume(data){        
+      if ( data != "undefined" && data != "" ) {
+         if (data == 'refresh') {
+            if( window.appBridge != undefined ){
+               window.appBridge.refresh();
+            }
+         }
+      }
+   }
    
 
 
@@ -279,7 +289,6 @@
       .ui-date-picker-wrapper.schedule-datepicker .ui-state-highlight {
          color: #454545 !important;
       }
-
       .ui-date-picker-wrapper.schedule-datepicker .ui-state-active{
          color: white !important;
       }
@@ -297,6 +306,46 @@
       }
       .ui-date-picker-wrapper.schedule-datepicker .ui-state-highlight:after {
          display: none;
+      }
+
+
+      .ui-date-picker-wrapper.order-product .ui-state-highlight {
+         color: #454545 !important;
+      }
+      .ui-date-picker-wrapper.order-product .ui-state-active{
+         color: white !important;
+      }
+      .ui-date-picker-wrapper.order-product .ui-state-active:before {
+         content: '';
+         position: absolute;
+         z-index: -1;
+         width: 26px;
+         height: 26px;
+         background: #2790F9;
+         left: 50%;
+         top: -2px;
+         transform: translateX(-50%);
+         border-radius: 25px;
+      }
+      .ui-date-picker-wrapper.order-product .ui-state-highlight:after {
+         display: none;
+      }
+
+      .ui-date-picker-wrapper.order-product .ui-state-hover{
+         position: relative !important;
+         color: white !important;
+      }
+      .ui-date-picker-wrapper.order-product .ui-state-hover:before{
+         content: '';
+         position: absolute;
+         z-index: -1;
+         width: 26px;
+         height: 26px;
+         background: #2790F9;
+         left: 50%;
+         top: -2px;
+         transform: translateX(-50%);
+         border-radius: 25px;
       }
 
 

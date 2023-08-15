@@ -71,13 +71,39 @@
          <div class='inner'>
             <div class='heading-01 t-center mt100'>Reset your password</div>
             <p class='t-center'>We have sent a code to your email</p>
-
+            
+            <!-- 
             <div class='box-code-verify'>
                <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
                <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
                <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
                <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
             </div>
+            -->
+            <div class="box-code-verify">
+               <!-- <input @input="moveFocus($event, 'code01')" @keydown.delete="moveFocus($event, 'code01')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @keydown.delete="moveFocus($event, 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
+
+               <!-- <input @input="moveFocus($event, 'code02', 'code01')" @keydown.delete="moveFocus($event, 'code01', 'code01')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input="moveFocus($event, 'code03', 'code02')" @keydown.delete="moveFocus($event, 'code02', 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input="moveFocus($event, 'code04', 'code03')" @keydown.delete="moveFocus($event, 'code03', 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @keydown.delete="moveFocus($event, 'code04', 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
+
+               <input @input="moveFocus($event, 'code02', 'code01')" @keydown.delete="moveFocus($event, 'code02', 'code02')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input="moveFocus($event, 'code03', 'code02')" @keydown.delete="moveFocus($event, 'code03', 'code03')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input="moveFocus($event, 'code04', 'code03')" @keydown.delete="moveFocus($event, 'code04', 'code04')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @keydown.delete="moveFocus($event, 'code04', 'code04')" @click="moveFocus('code04')" ref="code04" v-model='code04' id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
+
+               <!-- <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code01' data-id='1' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code02' data-id='2' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code03' data-id='3' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code04' data-id='4' ref="code04" v-model="code04" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off"> -->
+
+
+            </div>
+
             <p class='t-center'>
                <button @click='btn_resend' class='btn-text'>Resend</button>
             </p>
@@ -137,9 +163,8 @@ createApp({
 
          // 0 => forget-password
          // 1 => reset-password
-         step_page: 0,
+         step_page: 1,
 
-         
          res_text_sendcode: '',
          inputEmail: '',
 
@@ -152,9 +177,17 @@ createApp({
          code02: '',
          code03: '',
          code04: '',
+
       }
    },
+
+   watch: {
+
+   },
+
+
    methods: {
+
       goBack(){ window.goBack()},
 
       goBackStep(){
@@ -265,18 +298,50 @@ createApp({
          }
       },
 
-      moveFocus(event, nextInput){
-         var input = event.target;
-         var id = event.target.id;
-         if (event.key === "Backspace" && !input.value && input.previousElementSibling) {
+      moveFocus(event, nextField, prevField) {
+
+         this.placeCaretToEnd(prevField);
+         const input = event.target;
+         const value = input.value;
+         if ( event.key === 'Backspace' && !value && input.previousElementSibling) {
             input.previousElementSibling.focus();
-         } else if (input.value && input.nextElementSibling) {
-            input.nextElementSibling.focus();
+         } else if (value && nextField) {
+            if ( value.length === 1) {
+               this.focusNextField(nextField);
+            } else {
+               input.value = value.slice(0, 1);
+            }
          }
       },
 
+      moveFocusBack(event, prevField) {
+         if (event.target.value.length === 0 && prevField) {
+            this.focusNextField(prevField);
+            this.placeCaretToEnd(prevField);
+         }
+      },
 
-   }
+      focusNextField(fieldId) {
+         var nextInput = document.getElementById(fieldId);
+         console.log(fieldId);
+         if (nextInput) {
+            nextInput.focus();
+            nextInput.select();
+         }
+      },
+
+      placeCaretToEnd(fieldId) {
+         console.log(' placeCaretToEnd ' + fieldId);
+         var inputElement = $('#' + fieldId);
+         if ( inputElement != undefined && inputElement.val().length > 0 ) {
+            inputElement[0].selectionStart = inputElement.val().length;
+            inputElement[0].selectionEnd     = inputElement.val().length;
+         }
+      },
+      
+
+   },
+
 }).mount('#authentication');
 
 </script>

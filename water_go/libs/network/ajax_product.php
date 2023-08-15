@@ -93,7 +93,7 @@ function atlantis_load_products(){
          ON wp_watergo_store.id = wp_watergo_products.store_id
 
          LEFT JOIN wp_watergo_reviews
-         ON wp_watergo_reviews.related_id = wp_watergo_store.id 
+         ON wp_watergo_reviews.store_id = wp_watergo_store.id 
 
          LEFT JOIN wp_watergo_product_category as category
          ON category.id = wp_watergo_products.category
@@ -194,10 +194,10 @@ function atlantis_load_product_recommend(){
             LEFT JOIN wp_watergo_store ON wp_watergo_store.id = wp_watergo_order.order_store_id
 
             LEFT JOIN (
-               SELECT related_id, AVG(rating) AS avg_rating
+               SELECT store_id, AVG(rating) AS avg_rating
                FROM wp_watergo_reviews
-               GROUP BY related_id
-            ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
+               GROUP BY store_id
+            ) AS reviews_avg ON reviews_avg.store_id = wp_watergo_products.store_id
 
             WHERE wp_watergo_order.order_by = $user_id 
             AND order_status = 'complete'
@@ -231,6 +231,9 @@ function atlantis_load_product_recommend(){
                $res[$k]->name = $category['name'];
                $res[$k]->name_second = $category['name_second'];
             }
+         }else{
+            wp_send_json_error(['message' => 'product_not_found']);
+            wp_die();
          }
 
          wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
@@ -277,10 +280,10 @@ function atlantis_load_product_recommend_discount(){
          ON wp_watergo_store.id = wp_watergo_products.store_id
 
          LEFT JOIN (
-            SELECT related_id, AVG(rating) AS avg_rating
+            SELECT store_id, AVG(rating) AS avg_rating
             FROM wp_watergo_reviews
-            GROUP BY related_id
-         ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
+            GROUP BY store_id
+         ) AS reviews_avg ON reviews_avg.store_id = wp_watergo_products.store_id
 
          WHERE DATE_FORMAT(discount_to, '%Y-%m-%d') >= '$current_time'
          AND has_discount = 1
@@ -351,10 +354,10 @@ function atlantis_load_product_recommend_random(){
          ON wp_watergo_store.id = wp_watergo_products.store_id
 
          LEFT JOIN (
-            SELECT related_id, AVG(rating) AS avg_rating
+            SELECT store_id, AVG(rating) AS avg_rating
             FROM wp_watergo_reviews
-            GROUP BY related_id
-         ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
+            GROUP BY store_id
+         ) AS reviews_avg ON reviews_avg.store_id = wp_watergo_products.store_id
          
          ORDER BY RAND() DESC
          LIMIT $paged, 10
@@ -531,10 +534,10 @@ function atlantis_get_product_sort(){
       if( $filter == 'top_rated' ){
          $sql .= " 
             LEFT JOIN (
-               SELECT related_id, AVG(rating) AS avg_rating
+               SELECT store_id, AVG(rating) AS avg_rating
                FROM wp_watergo_reviews
-               GROUP BY related_id
-            ) AS reviews_avg ON reviews_avg.related_id = wp_watergo_products.store_id
+               GROUP BY store_id
+            ) AS reviews_avg ON reviews_avg.store_id = wp_watergo_products.store_id
 
             WHERE wp_watergo_products.product_type = '$product_type'
             ORDER BY avg_rating DESC ";

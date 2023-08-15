@@ -26,7 +26,8 @@
                   <path d="M16.1176 14.6055C16.577 15.3164 17.1289 15.9629 17.7587 16.5281V17.2473H0.826953V16.5278C1.44914 15.9599 1.99356 15.3122 2.44603 14.6015L2.46376 14.5737L2.47879 14.5443C2.99231 13.5401 3.30009 12.4435 3.38408 11.3188L3.38602 11.2928V11.2667L3.38602 8.22777L3.38602 8.22636C3.38312 6.7874 3.9018 5.39615 4.84599 4.31028C5.79017 3.22441 7.09589 2.51751 8.5213 2.32051L9.12547 2.23701V1.6271V0.821239C9.12547 0.789084 9.13824 0.758246 9.16098 0.735511C9.18371 0.712773 9.21455 0.7 9.24671 0.7C9.27886 0.7 9.3097 0.712773 9.33243 0.735509C9.35517 0.758248 9.36795 0.789086 9.36795 0.821239V1.6148V2.23105L9.97923 2.30915C11.4175 2.49291 12.7392 3.19556 13.696 4.28509C14.6527 5.37462 15.1787 6.77603 15.1751 8.22601V8.22777V11.2667V11.2928L15.177 11.3188C15.261 12.4435 15.5688 13.5401 16.0823 14.5443L16.0984 14.5758L16.1176 14.6055Z" stroke="#2790F9" stroke-width="1.4"/>
                   <path d="M7.67493 18.5933C7.72887 18.9832 7.92209 19.3404 8.21891 19.599C8.51572 19.8576 8.89607 20 9.28972 20C9.68337 20 10.0637 19.8576 10.3605 19.599C10.6574 19.3404 10.8506 18.9832 10.9045 18.5933H7.67493Z" fill="#2790F9"/>
                   </svg>
-                  <span v-if='notification_count > 0' class='badge'>{{notification_count}}</span>
+                  <span v-if='notification_count > 0' class='badge' :class='notification_count > 0 ? "enable" : "" '>{{notification_count}}</span>
+                  
                </div>
 
             </div>
@@ -298,7 +299,7 @@ createApp({
          form.append('status', order_status);
          form.append('timestamp', timestamp);
          var r = await window.request(form);
-         // console.log(r)
+         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -448,10 +449,11 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_notification_count');
          var r = await window.request(form);
+         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'notification_found' ){
-               this.notification_count = res.data;
+               this.notification_count = parseInt(res.data);
             }
          }
       },
@@ -570,8 +572,7 @@ createApp({
 
       await this.get_count_total_order();
       await this.get_order_store( this.order_status_current, 0 );
-
-      console.log(this.orders);
+      await this.get_notification_count();
       
       this.loading = false;
 

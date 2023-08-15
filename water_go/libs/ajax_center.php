@@ -7,6 +7,20 @@ add_action( 'wp_ajax_nopriv_atlantis_get_images', 'atlantis_get_images' );
 add_action( 'wp_ajax_atlantis_get_images', 'atlantis_get_images' );
 
 /**
+ * @access caculator avg rating review
+ */
+function func_atlantis_get_avg_rating( $store_id ){
+   global $wpdb;
+   $sql = "SELECT AVG(rating) as avg_rating FROM wp_watergo_reviews WHERE store_id = $store_id ";
+   $res = $wpdb->get_results($sql);
+   if( $res[0]->avg_rating == null ){
+      return 0;
+   }
+   return $res[0]->avg_rating;
+}
+
+
+/**
  * @access GET ORDER BY user_id | store_id | filter by order_status
  */
 function func_atlantis_get_order_fullpack( $args ){
@@ -89,13 +103,14 @@ function func_atlantis_get_order_fullpack( $args ){
                   FROM wp_watergo_store WHERE id = $store_id LIMIT 1";
 
             $res_store   = $wpdb->get_results( $find_store);
+            
             if( !empty($res_store)){
                foreach($res_store as $kStore => $store ){
-                  $orders[$kOrder]->store_name     = $store->store_name;
-                  $orders[$kOrder]->store_id       = $store->store_id;
-                  $orders[$kOrder]->store_latitude       = $store->store_latitude;
-                  $orders[$kOrder]->store_longitude      = $store->store_longitude;
-                  $orders[$kOrder]->store_type     = $store->store_type;
+                  $orders[$kOrder]->store_name        = $store->store_name;
+                  $orders[$kOrder]->store_id          = $store->store_id;
+                  $orders[$kOrder]->store_latitude    = $store->store_latitude;
+                  $orders[$kOrder]->store_longitude   = $store->store_longitude;
+                  $orders[$kOrder]->store_type        = $store->store_type;
                }
             }
 
@@ -638,6 +653,11 @@ function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
       
 
+      $user = get_user_by('id', 1);
+      $first_name = get_user_meta( $user->data->ID, 'first_name', true );
+      
+      wp_send_json_success(['message' => 'bug', 'user_id' => $user->ID , 'user' => $user, 'data' => $first_name]);
+      wp_die();
 
    }
 }

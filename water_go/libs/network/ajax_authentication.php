@@ -61,6 +61,10 @@ function atlantis_logout(){
          wp_send_json_error(['message' => 'no_login_invalid' ]);
          wp_die();
       }
+      global $wpdb;
+      $table = $wpdb->prefix."bj_user_push_token";  
+      $wpdb->update($table , ["token" => "","status" => ""], ["user_id" => $user_id],["%s","%s"],["%d"]);
+      
       wp_logout();
       wp_send_json_success(['message' => 'logout_success']);
       wp_die();
@@ -102,16 +106,21 @@ function atlantis_register_user(){
 
       // pass all
       delete_transient( 'verification_code_' . $email );
-      wp_insert_user( [
+      $user_id = wp_insert_user( [
          'user_login' => $username,
          'user_pass'  => $password,
          'user_email' => $email,
          'first_name' => $username,
       ]);
 
-      wp_send_json_success([ 'message' => 'register_ok' ]);
+      if ( ! is_wp_error( $user_id ) ) {
+         wp_clear_auth_cookie();
+         $user = wp_set_current_user($user_id);
+         wp_set_auth_cookie($user_id,true,is_ssl());
+         do_action('wp_login', $user->user_login, $user);               
+         wp_send_json_success([ 'message' => 'register_ok','id' => $user_id ]);           
+      }     
       wp_die();
-
    }
 }
 

@@ -39,8 +39,13 @@
          </label>
       </div>
 
+      <div class='inner'>
+         <p class='t-red'>{{ res_text }}</p>
+      </div>
+
       <div class='btn-fixed bottom'>
-         <button @click='submit' class='btn btn-primary'>Add</button>
+         <button v-if='event == "add"' @click='submit' class='btn btn-primary'>Add</button>
+         <button v-if='event == "edit"' @click='update' class='btn btn-primary'>Save</button>
       </div>
 
    </div>
@@ -92,28 +97,51 @@ var { createApp } = Vue;
 createApp({
    data (){
       return {
-         loading: false,
+         loading:     false,
          banner_open: false,
 
+         order_id:    0,
+         store_id:    0,
+         review_id:   0,
+
+         // add - edit
+         event: '', 
          rating_select: 0,
          review_text: '',
-         related_id: 0,
-         review_page: ''
+         res_text: '',
+
       }
    },
    methods: {
 
       select_rating_star( rating ){ this.rating_select = rating;},
 
+      async get_review(review_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_review');
+         form.append('review_id', this.review_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'review_found'){
+               this.review_text     = res.data.contents;
+               this.rating_select   = res.data.rating;
+            }
+         }
+      },
+
       async submit(){
+
          this.loading = true;
-         if( this.related_id != 0 && this.review_text != '' && this.review_page != '' && this.rating_select > 0){
+         if( this.order_id != 0 && this.store_id != 0 && this.review_text != '' && this.rating_select > 0){
             var form = new FormData();
-            form.append('action', 'atlantis_add_review');
+            form.append('action', 'atlantis_event_review');
             form.append('contents', this.review_text);
-            form.append('related_id', this.related_id);
-            form.append('review_page', this.review_page);
+            form.append('store_id', this.store_id);
+            form.append('order_id', this.order_id);
             form.append('rating', this.rating_select);
+            form.append('event', 'add');
+
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r));
@@ -121,22 +149,62 @@ createApp({
                   this.banner_open = true;
                }
             }
+         }else{
+            this.res_text = 'All field must be not empty';
          }
          this.loading = false;
-         
 
+      },
+
+      async update(){
+         this.loading = true;
+         if( this.review_id != 0 && this.review_text != '' && this.rating_select > 0){
+            var form = new FormData();
+            form.append('action', 'atlantis_event_review');
+            form.append('contents', this.review_text);
+            form.append('rating', this.rating_select);
+            form.append('review_id', this.review_id);
+            form.append('event', 'edit');
+
+            var r = await window.request(form);
+
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r));
+               if( res.message == 'review_update_ok'){
+                  this.goBack();
+               }
+            }
+         }else{
+            this.res_text = 'All field must be not empty';
+            this.loading = false;
+         }
+         
       },
 
       goBack(){ window.goBack(true)}
 
    },
-   created(){
-      const urlParams = new URLSearchParams(window.location.search);
-      const related_id = urlParams.get('related_id');
-      const review_page = urlParams.get('review_page');
+
+
+   async created(){
+      var urlParams = new URLSearchParams(window.location.search);
+      var order_id = urlParams.get('order_id');
+      var store_id = urlParams.get('store_id');
+      var review_id = urlParams.get('review_id');
+      var event    = urlParams.get('event');  // add - edit
+
       this.loading = true;
-      this.review_page = review_page;
-      this.related_id = related_id;
+
+      this.order_id = order_id;
+      this.store_id = store_id;
+      if( event != undefined ){
+         this.event    = event;
+      }
+      if( event == 'edit' && review_id != undefined ){
+         this.review_id = review_id;
+         await this.get_review(review_id);
+      }
+
       this.loading = false;
 
       window.appbar_fixed();

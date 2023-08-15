@@ -28,8 +28,10 @@
                   <img :src="review.user_avatar.url">
                </div>
                <div class='content'>
-                  <div class='tt01'>{{ review.user_username }}</div>
-                  <div class='tt02'>{{ timestamp_to_date(review.time_created)}}</div>
+                  <div class='tt01'>
+                     <div class='username'>{{ get_username(review) }}</div>
+                  </div>
+                  <div class='tt02'>{{ formatDateToDDMMYY(review)}}</div>
                </div>
                <div class='action'>
                   <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,6 +45,7 @@
       </ul>
 
    </div>
+
    <div v-if="loading == true">
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
@@ -60,7 +63,8 @@ createApp({
       return {
          loading: false,
          reviews: [],
-         store_id: null,
+
+         store_id: 0,
          paged: 0,
          total_reviews: 0,
          averageRating: 0,
@@ -72,18 +76,41 @@ createApp({
 
       goBack(){ window.goBack(); },
 
-      timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp)},
+      get_username( review ){
+         if( review.first_name == undefined || review.first_name == ''){
+            return review.nickname;
+         }else{
+            console.log('first name not empty')
+            return review.first_name;
+         }
+      },
 
-      async findReview( store_id, paged ){
+      formatDateToDDMMYY(t){ 
+         if(t != undefined && t != null){
+            if( t.date_modified != null ){
+               return window.formatDateToDDMMYY(t.date_modified);
+            }else{
+               return window.formatDateToDDMMYY(t.date_created);
+            }
+         }
+      },
+
+      async findReview( paged ){
          var form = new FormData();
-         form.append('action', 'atlantis_reviews');
-         form.append('store_id', store_id);
+         form.append('action', 'atlantis_get_review_store');
+         form.append('store_id', this.store_id);
          form.append('paged', paged);
+         
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'review_found' ){
-               this.reviews.push( ...res.data );
+               res.data.forEach(item => {
+                  if (!this.reviews.some(existingItem => existingItem.id === item.id)) {
+                     this.reviews.push(item);
+                  }
+               });
+               
             }
          }
       },
@@ -118,18 +145,15 @@ createApp({
       ratingNumber(rating){ return parseInt(rating).toFixed(1); },
 
       async handleScroll() {
-         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const windowTop          = window.pageYOffset || document.documentElement.scrollTop;
          const scrollEndThreshold = 50; // Adjust this value as needed
          const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-         const windowHeight = window.innerHeight;
+         const windowHeight   = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
-
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
-
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            
-            await this.findReview(  this.store_id, this.paged++);
+            await this.findReview( this.paged++);
          }
       }
 
@@ -149,10 +173,10 @@ createApp({
    async created(){
       this.loading = true;
       const urlParams = new URLSearchParams(window.location.search);
-      const store_id = urlParams.get('store_id'); 
-      this.store_id = store_id;
+      const store_id  = urlParams.get('store_id'); 
+      this.store_id   = store_id;
 
-      await this.findReview(store_id, 0);
+      await this.findReview( 0);
       await this.get_total_review(store_id);
       await this.get_review_rating_average(store_id);
 

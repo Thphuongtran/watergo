@@ -119,9 +119,11 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'logout_success' ){
+               localStorage.setItem('watergo_carts', '[]');
                // location to login
                window.appBridge.logout();
 		         window.appBridge.close();
+               
                // window.gotoLogin();
             }else{
                this.loading = false;
