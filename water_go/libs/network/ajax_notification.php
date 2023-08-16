@@ -98,9 +98,11 @@ function func_atlantis_order_status_notification( $order_id, $send_to, $status )
    $order_number     = $get_noti[0]->order_number;
    $order_id         = $get_noti[0]->order_id;
    $hash_id          = $get_noti[0]->hash_id;
+   $user_id          = $get_noti[0]->user_id;
+   $store_id         = $get_noti[0]->store_id;
 
    $id_notification  = $get_noti[0]->id;
-
+   
    $link             = get_bloginfo('home') . "/order/?order_page=order-detail&order_id=$order_id&hash_id=". $hash_id ."&appt=N";
 
    $time_created     = atlantis_current_datetime();
@@ -141,7 +143,9 @@ function func_atlantis_order_status_notification( $order_id, $send_to, $status )
       'link_app'        => $link,
       'attachment_url'  => $attachment_url,
       'order_id'        => $order_id,
-      'order_number'    => $order_number
+      'order_number'    => $order_number,
+      'user_id'         => $user_id,
+      'store_id'        => $store_id
    ];
 }
 

@@ -1,4 +1,5 @@
 <div id='app'>
+
    <div v-show='loading == false' class='page-notification'>
 
       <div class='appbar'>
@@ -16,7 +17,6 @@
       </div>
 
       <div v-if='notifications.length > 0 ' class='list-notification'>
-
          <div class='notification-item '
             v-for='(item, keyItem) in notifications' :key='keyItem'
             :class='item.is_read == 0 ? "is_not_read" : "" '
@@ -30,7 +30,6 @@
                <div class='tt02'>{{ formatDate(item.time_created) }}</div>
             </div>
          </div>
-
       </div>
 
    </div>
@@ -63,6 +62,7 @@ createApp({
 
       async gotoOrderDetail( item ){ 
          await this.mark_user_read_notification(item.id);
+         item.is_read = 1;
          window.location.href = item.link;
       },
 
@@ -71,12 +71,6 @@ createApp({
          form.append('action', 'atlantis_notification_mark_read_notification');
          form.append('id_notification', id_notification);
          var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'notification_mark_read' ){
-               console.log('notification_mark_read ok');
-            }
-         }
       },
 
       formatDate(inputDate) {
@@ -124,7 +118,9 @@ createApp({
 
       },
 
-      goBack(){ window.goBack(true)},
+      goBack(){ 
+         window.location.href = '?appt=X&data=notification_count';
+      },
 
       async load_all_notification( paged ){
          var form = new FormData();

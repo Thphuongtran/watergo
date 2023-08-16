@@ -71,9 +71,7 @@
 </div>
 <script type='module'>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data(){
       return{
          loading: false,
@@ -120,7 +118,9 @@ createApp({
 
    methods: {
 
-      goBack(){ window.goBack(true) },
+      goBack(){ 
+         window.location.href = '?appt=X&data=delivery_update';
+      },
       gotoDeliveryAddressAdd(){ window.gotoDeliveryAddressAdd()},
       gotoDeliveryAddressEdit(delivery_id){ window.gotoDeliveryAddressEdit(delivery_id)},
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
@@ -138,7 +138,7 @@ createApp({
             if( _delivery){
                _order_delivery_address[0] = _delivery;
                localStorage.setItem('watergo_order_delivery_address', JSON.stringify(_order_delivery_address));
-               window.goBack(true);
+               this.goBack();
             }
 
          }
@@ -154,7 +154,12 @@ createApp({
             if( res.message == 'get_delivery_address_ok' ){
                if( res.data != undefined ){
                   res.data.forEach( item => item.is_order_select = false );
-                  this.delivery_address.push( ...res.data);
+                  res.data.forEach( item => { 
+                     var _exists = this.delivery_address.some( exi => exi.id == item.id );
+                     if( !_exists){
+                        this.delivery_address.push(item);
+                     }
+                  });
                }
             }
          }
@@ -195,6 +200,8 @@ createApp({
 
    
 }).mount('#app');
+
+window.app = app;
 
 
 </script>

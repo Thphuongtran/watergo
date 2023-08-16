@@ -11,16 +11,98 @@
    //    }
    // }
 
-   function callbackResume(data){        
-      if ( data != "undefined" && data != "" ) {
-         if (data == 'refresh') {
-            if( window.appBridge != undefined ){
-               window.appBridge.refresh();
+   /**
+    * @access EXTENSION JS 
+    */
+
+   async function get_notification_count(){
+      var form = new FormData();
+      form.append('action', 'atlantis_notification_count');
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r));
+         if(res.message == 'notification_found' ){
+            return res.data;
+         }
+      }
+   }
+
+   async function get_delivery_address(){
+      var form = new FormData();
+      form.append('action', 'atlantis_user_delivery_address');
+      form.append('event', 'get');
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify( r ));
+         if( res.message == 'get_delivery_address_ok' ){
+            if( res.data != undefined ){
+               return res.data;
             }
          }
       }
    }
-   
+
+
+
+   /**
+    * @access END EXTENSION JS 
+    */
+
+   async function callbackResume(data){
+      if ( data != "undefined" && data != "" ) {
+
+         var partial = data.split('|');
+
+         if ( partial[0] == 'refresh') {
+            if( window.appBridge != undefined ){
+               window.appBridge.refresh();
+            }
+         }
+
+         if ( partial[0] == 'notification_count') {
+            await get_notification_count().then( (data) => window.app.notification_count = data );
+         }
+         // if( dara == 'notification_update_data' ){}
+
+         if( partial[0] == 'cart_count'){
+            window.app.cart_count = window.count_product_in_cart();
+         }
+
+         if( partial[0] == 'delivery_update'){
+            var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
+            if( _order_delivery_address != undefined && _order_delivery_address.length > 0 ){
+               window.app.delivery_address_primary = {
+                  id:         _order_delivery_address[0].id,
+                  name:       _order_delivery_address[0].name,
+                  phone:      _order_delivery_address[0].phone,
+                  address:    _order_delivery_address[0].address,
+                  user_id:    _order_delivery_address[0].user_id,
+                  latitude:   _order_delivery_address[0].latitude,
+                  longitude:  _order_delivery_address[0].longitude
+               };
+            }
+         }
+
+         if( partial[0] == 'delivery_just_add' ){
+            window.app.delivery_address = [];
+            await get_delivery_address().then( (data) => 
+               window.app.delivery_address.push( ...data )
+            );
+         }
+
+         // SECOND ROUTE
+         if( partial[1] != undefined ){
+            for( var i = 1; i < partial.length; i++ ){
+               var multi_part = partial[i].split('=');
+
+               if( multi_part[0] == 'notification_callback' && multi_part[1] == 'notification_count' ){
+                  await get_notification_count().then( (data) => window.app.notification_count = data );  
+               }
+            }
+         }
+
+      }
+   }
 
 
    async function native_share_link( link ){

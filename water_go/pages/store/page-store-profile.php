@@ -1,6 +1,3 @@
-<?php 
-   pv_update_user_token();
-?>
 <div id='app'>
 
    <div v-show='loading == false ' class='page-store-profile'>
@@ -110,7 +107,7 @@
 </div>
 
 <script type='module'>
-
+var is_busy = false;
 var { createApp } = Vue;
 
 createApp({
@@ -144,6 +141,8 @@ createApp({
 
       // UPDATE USER NOTIFICATION
       async updateUserNotification(){
+         if(is_busy == true) return; is_busy = true;
+         this.loading = true;
          this.user_notification = !this.user_notification;
          var _notification = this.user_notification == true ? 1 : 0;
          var form = new FormData(); 
@@ -160,6 +159,8 @@ createApp({
                }
             }
          }
+         this.loading = false;
+         is_busy = false;
       },
 
       async get_messages_count(){
@@ -189,10 +190,14 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_get_user_notification');
          var r = await window.request(form);
-         console.log(r);
+         
          if(r != undefined){
             if( r.message == 'get_notification_ok' ){
-               this.user_notification = r.data;
+               if( r.data == 0 ){
+                  this.user_notification = false;
+               }else{
+                  this.user_notification = true;
+               }
             }
          }
          
@@ -222,7 +227,7 @@ createApp({
       await this.get_store();
       await this.check_user_notification();
       // await this.get_messages_count();
-      await this.get_notification_count();
+      this.get_notification_count();
       this.loading = false;
       window.appbar_fixed();
 

@@ -158,8 +158,8 @@
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script>
 <script>
 var address = lat = lng = "";
-var { createApp } = Vue;
-createApp({
+
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
@@ -450,6 +450,7 @@ createApp({
 
 }).mount('#authentication');
 
+window.app = app;
 
 function initialize() {
    const input = document.getElementById('search-address');
@@ -474,6 +475,6 @@ function initialize() {
    });
 }
 
-   google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>

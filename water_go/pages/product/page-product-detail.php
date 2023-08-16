@@ -411,7 +411,12 @@ createApp({
       gotoProductTop( category_id){ window.gotoProductTop(category_id) },
       gotoStoreDetail(store_id){window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){window.gotoOrderProduct()},
-      goBack(){window.goBack()},
+
+
+      goBack(){
+         window.location.href = '?appt=X&data=cart_count|notification_callback=notification_count';
+      },
+
 
       async get_current_user_id(){
          var form = new FormData();

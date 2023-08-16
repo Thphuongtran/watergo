@@ -127,6 +127,9 @@ createApp({
          store_type: [],
 
          user_current_is_store: false,
+
+         callback_cart_count: 0,
+         callback_notification_count: 0,
       }
    },
 
@@ -277,12 +280,6 @@ createApp({
          form.append('action', 'atlantis_notification_mark_read_notification_hash_id');
          form.append('hash_id', hash_id);
          var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'notification_mark_read' ){
-               console.log('notification_mark_read ok');
-            }
-         }
       },
 
       gotoProductDetail(product_id){
@@ -290,10 +287,13 @@ createApp({
             window.gotoProductDetail(product_id);   
          }
       },
-      goBack(){ window.goBack() },
+
       gotoReviewIndex( store_id){ window.gotoReviewIndex(store_id);},
       gotoPageStoreEdit(){ window.gotoPageStoreEdit()},
 
+      goBack(){ 
+         window.location.href = '?appt=X&data=cart_count|notification_callback=notification_count';
+      },
 
    },
 
@@ -325,7 +325,7 @@ createApp({
             }else if(_findType.value == 'ice'){
                return product.product_type == 'ice';
             }else{
-               return product
+               return product;
             }
          });
       },
@@ -335,10 +335,9 @@ createApp({
 
    async created(){
       this.loading = true;
-      const urlParams = new URLSearchParams(window.location.search);
-      this.store_id = urlParams.get('store_id');
-      const hash_id = urlParams.get('hash_id');
-
+      const urlParams            = new URLSearchParams(window.location.search);
+      this.store_id              = urlParams.get('store_id');
+      const hash_id              = urlParams.get('hash_id');
 
       if( hash_id != undefined ){
          await this.mark_user_read_notification(hash_id);

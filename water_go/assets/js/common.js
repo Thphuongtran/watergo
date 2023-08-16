@@ -76,7 +76,6 @@ function get_start_and_end_of_year(year) {
    return monthsData;
 }
 
-
 function get_start_and_end_of_month(monthNumber) {
 
    function formatDate(date) {
@@ -138,7 +137,6 @@ function get_start_and_end_of_month_current() {
    };
 }
  
-
 function removeZeroLeading(number) {
   let numberStr = number.toString();
   if (numberStr.charAt(0) === '0') {
@@ -254,6 +252,7 @@ function reset_cart_to_select_false(){
 function check_cart_is_exists(){
    var _cartItems                = JSON.parse(localStorage.getItem('watergo_carts'));
    var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
+   var _watergo_delivery_address_update   = JSON.parse(localStorage.getItem('watergo_delivery_address_update'));
 
    localStorage.setItem('watergo_order_delivery_address', '[]');
 
@@ -920,7 +919,7 @@ function gotoProductTop( category_id ){
 }
 
 function gotoStoreDetail(store_id){
-   window.location.href = window.watergo_domain + 'store/?store_page=store-detail&store_id='+ store_id + '&appt=N';
+   window.location.href = window.watergo_domain + 'store/?store_page=store-detail&store_id='+ store_id +'&appt=N';
 }
 function gotoCart(){
    window.location.href = window.watergo_domain + 'cart/?appt=N';
@@ -1130,6 +1129,7 @@ async function is_conversation_created_or_create( user_id, store_id){
    form.append('action', 'atlantis_is_conversation_created_or_create');
    form.append('user_id', user_id);
    form.append('store_id', store_id);
+   
    var _r = await window.request(form);
 
    if( _r != undefined ){

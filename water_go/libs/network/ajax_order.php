@@ -169,7 +169,7 @@ function atlantis_is_product_out_of_stock_from_order(){
          ON wp_watergo_products.id = wp_watergo_order_group.order_group_product_id
          WHERE
             wp_watergo_order.order_id = $order_id
-         ";
+      ";
       
       $res = $wpdb->get_results($sql_check_stock_already_to_reorder);
 
@@ -237,9 +237,26 @@ function func_atlantis_get_order_time_shipping_single_record( $order_time_shippi
 function atlantis_get_all_time_shipping_from_order(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_all_time_shipping_from_order' ){
       $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
-      $sql = "SELECT * FROM wp_watergo_order_time_shipping WHERE order_time_shipping_order_id = $order_id";
+
+      if( $order_id == 0 ){
+         wp_send_json_error(['message' => 'time_shipping_not_found' ]);
+         wp_die();
+      }
+
       global $wpdb;
+
+      // CHECK IF HAS PARENT ID
+
+      $sql_check_has_parent_id = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id ";
+      $res_check_has_parent_id = $wpdb->get_results($sql_check_has_parent_id);
+
+      if( $res_check_has_parent_id[0]->order_repeat_order_id_parent != $res_check_has_parent_id[0]->order_repeat_order_id ){
+         $order_id = $res_check_has_parent_id[0]->order_repeat_order_id;
+      }
+
+      $sql = "SELECT * FROM wp_watergo_order_time_shipping WHERE order_time_shipping_order_id = $order_id";
       $res = $wpdb->get_results($sql);
+
 
       if( empty($res)){
          wp_send_json_error(['message' => 'time_shipping_not_found' ]);
@@ -358,7 +375,7 @@ function atlantis_add_order(){
                   bj_push_notification( 
                      (int) $get_user_id_from_store_id,
                      'Watergo',
-                     'You have new order #' . str_pad( $_order_number , 4, "0", STR_PAD_LEFT),
+                     'You have new order #' . str_pad( $order_number , 4, "0", STR_PAD_LEFT),
                      $link_app 
                   );
                   func_atlantis_add_notification(
@@ -374,12 +391,8 @@ function atlantis_add_order(){
                   );
                }
 
-
                // wp_send_json_error(['message' => 'bug', 'res' => $ce, 'user_id' => $user_id  ]);
                // wp_die();
-
-
-               
 
                /**
                 * @access FIND ORDER EXISTS IN REPEAT OR NOT?
@@ -503,6 +516,12 @@ function atlantis_add_order(){
                   $product_quantity_count    = (int) $product->product_quantity_count;
                   $product_price             = (int) $product->price;
                   $product_discount_percent  = (int) $product->discount_percent;
+                  $product_has_discount      = (int) $product->has_discount;
+
+                  // ALREADY CHECK DISCOUNT FROM FRONT END
+                  if( $product_has_discount == 0 ){
+                     $product_discount_percent = 0;
+                  }
 
                   $product_metadata          = $product->product_metadata;
 
@@ -955,9 +974,11 @@ function atlantis_cancel_order(){
 
       $_order_number    = $push_res['order_number'];
       $_link_app        = $push_res['link'];
+      $_user_id         = $push_res['user_id'];
+      $_store_id        = $push_res['store_id'];
 
       bj_push_notification( 
-         (int) $order_id,
+         $_store_id,
          'Watergo',
          'Your order #' .  str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is canceled',
          $_link_app
@@ -1169,6 +1190,7 @@ function atlantis_order_status(){
                $push_res         = func_atlantis_order_status_notification( $_order_id, 'user', 'confirmed');
                $_order_number    = $push_res['order_number'];
                $_link_app        = $push_res['link'];
+               $_user_id         = $push_res['user_id'];
 
                // wp_send_json_error(['message' => 'bug', 'res' => $push_res ]);
                // wp_die();
@@ -1177,7 +1199,7 @@ function atlantis_order_status(){
                $order_by      = $order_by_sql[0]->order_by;
                
                bj_push_notification( 
-                  $_store_id,
+                  $_user_id,
                   'Watergo',
                   'Your order #' . str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is confirmed',
                   $_link_app
@@ -1294,9 +1316,10 @@ function atlantis_order_status(){
                $push_res         = func_atlantis_order_status_notification( $wheres[$i], 'user', 'cancel');
                $_order_number    = $push_res['order_number'];
                $_link_app        = $push_res['link'];
+               $_user_id         = $push_res['user_id'];
 
                bj_push_notification( 
-                  $wheres[$i],
+                  $_user_id,
                   'Watergo',
                   'Your order #' .  str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is canceled',
                   $_link_app

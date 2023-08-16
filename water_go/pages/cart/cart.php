@@ -147,9 +147,7 @@
 </div>
 <script type='module'>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
 
@@ -348,9 +346,9 @@ createApp({
       },
 
       goBack(){ 
-         window.goBack(true);
-         window.reset_cart_to_select_false();
+         window.location.href = '?appt=X&data=cart_count';
       },
+
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){ window.gotoOrderProduct()},
 
@@ -464,8 +462,8 @@ createApp({
 
    },
 
-   mounted(){
-      
-   }
 }).mount('#app');
+
+window.app = app;
+
 </script>

@@ -127,7 +127,7 @@
          >
             <p class='price-total' :class='order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
-               v-if='order_status == "complete" || order_status == "cancel"'
+               v-if='order_status == "complete"'
                @click='buttonReOrder' 
                class='btn-primary'>Re-Order</button>
          </div>
@@ -328,9 +328,16 @@ createApp({
 
       },
 
-      goBack(){ window.goBack(true);},
-      goBackReOrder(){window.goBack(true);},
-      gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
+      goBack(){ 
+         window.location.href = '?appt=X';
+      },
+
+      goBackReOrder(){window.goBack();},
+
+      gotoStoreDetail(store_id){ 
+         window.gotoStoreDetail(store_id); 
+      },
+
       async gotoAddReview(store_id, order_id){ 
          await this.is_can_review(order_id);
          if( this.can_review == true ){
@@ -384,13 +391,11 @@ createApp({
 
       get_layout_text_price(){
 
-         if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering"){
+         if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering" || this.order.order_status == "cancel"){
             return "t-right";
          }else{
             // IF CANCEL WITH repeat
-            if( this.order.order_status == "cancel"){
-               return "t-left";
-            }
+            return "t-left";
          }
 
       },
@@ -441,7 +446,9 @@ createApp({
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
       await this.findOrder(order_id);
+
       await this.get_time_shipping_order(order_id);
+
       await this.is_can_review(order_id);
 
       // console.log(this.order)

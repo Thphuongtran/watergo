@@ -239,7 +239,7 @@ createApp({
       get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
 
-      goBack(){ window.goBack(true) },
+      goBack(){ window.goBack() },
 
       async get_time_shipping_order(order_id){
          var form = new FormData();

@@ -204,9 +204,9 @@
 </div>
 <script type='module'>
 
-var { createApp } = Vue;
+// var { createApp } = Vue;
 
-createApp({
+var app = Vue.createApp({
    data (){
       return {
 
@@ -573,6 +573,8 @@ createApp({
       await this.get_count_total_order();
       await this.get_order_store( this.order_status_current, 0 );
       await this.get_notification_count();
+
+      // console.log(this.orders)
       
       this.loading = false;
 
@@ -580,4 +582,8 @@ createApp({
    },
    
 }).mount('#app');
+
+window.app = app;
+
+
 </script>

@@ -385,9 +385,9 @@ var app = Vue.createApp({
       buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false },
 
       goBack(){ 
-         window.reset_cart_to_select_false();
          localStorage.setItem( 'watergo_order_delivery_address', '[]' );
-         window.goBack(true);
+         window.reset_cart_to_select_false();
+         window.goBack();
       },
 
       goBackRefresh(){ 
@@ -896,8 +896,6 @@ var app = Vue.createApp({
             return store.products.find( product => product.product_select == true );
          });
 
-         console.log(this.delivery_data)
-
          if ( this.canPlaceOrder == true && this.delivery_address_primary != null ) {
             this.loading = true;
 
@@ -926,9 +924,6 @@ var app = Vue.createApp({
                delivery_data = this.delivery_data.monthly;
             }
 
-            // console.log( delivery_data);
-            
-
             var form = new FormData();
             form.append('action',            'atlantis_add_order');
             form.append('delivery_data',     JSON.stringify( delivery_data ) );
@@ -937,6 +932,8 @@ var app = Vue.createApp({
             form.append('productSelected',   JSON.stringify( _productSelected ) );
 
             var r = await window.request(form);
+            // console.log(r)
+            // var r = null;
 
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
@@ -966,6 +963,8 @@ var app = Vue.createApp({
          }else{
             this.canPlaceOrder = false;
          }
+
+         // console.log(_productSelected)         
 
       },
 
@@ -1038,7 +1037,9 @@ var app = Vue.createApp({
          var gr_price = { price: 0, price_discount: 0 };
 
          this.carts.forEach( store => {
+
             store.products.forEach(product => {
+
                var currentDate = new Date();
                var discount_from = new Date(product.discount_from);
                var discount_to   = new Date(product.discount_to);
@@ -1052,6 +1053,7 @@ var app = Vue.createApp({
                if( product.has_discount == 1 && ( currentDate >= discount_from && currentDate <= discount_to ) ){
                   gr_price.price_discount += ( product.price - ( product.price * ( product.discount_percent / 100)) ) * product.product_quantity_count;
                }else{
+                  product.has_discount = 0;
                   gr_price.price_discount += product.price * product.product_quantity_count;
                }
                gr_price.price += product.price * product.product_quantity_count;
@@ -1071,6 +1073,8 @@ var app = Vue.createApp({
          };
       },
 
+
+
       
    },
 
@@ -1088,7 +1092,6 @@ var app = Vue.createApp({
       const order_id = urlParams.get('re_order_id');
 
       var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
-
       if( _order_delivery_address != undefined && _order_delivery_address.length > 0 ){
 
          // alert(_order_delivery_address[0].id);
@@ -1251,5 +1254,6 @@ var app = Vue.createApp({
 
 }).mount('#app');
 
+window.app = app;
 </script>
 

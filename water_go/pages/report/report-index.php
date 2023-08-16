@@ -265,6 +265,8 @@ createApp({
    },
 
    methods: {
+      gotoNotificationIndex(){ window.gotoNotificationIndex()},
+      
       get_price_convert(price){
          if( price > 0){
             return price.toLocaleString('vi-VN') + ' đ';
