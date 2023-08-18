@@ -5,19 +5,18 @@ require_once __DIR__ . '/libs/config.php';
 function stylesheet(){
    wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
-   wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
-   // wp_script_add_data( 'common-js', 'defer', true );
 
-   // <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-   // Using unpkg CDN: <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+   wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
+   wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common-dist.js' );
+
 }
 
 add_action('wp_enqueue_scripts', 'stylesheet');
 // remove admin bar
 add_filter('show_admin_bar', '__return_false');
-
 
 function generate_verification_code() {
     return rand( 1000, 9999 );
@@ -105,14 +104,6 @@ function loadDirectory() { ?>
 </script> 
 <?php } 
 add_action('wp_head', 'loadDirectory');
-
-
-function common_js(){
-   wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' );
-}
-
-add_action('wp_enqueue_scripts', 'common_js');
 
 
 

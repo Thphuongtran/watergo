@@ -163,7 +163,7 @@ createApp({
 
          // 0 => forget-password
          // 1 => reset-password
-         step_page: 1,
+         step_page: 0,
 
          res_text_sendcode: '',
          inputEmail: '',

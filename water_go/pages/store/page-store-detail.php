@@ -7,21 +7,21 @@
             <div class='top'>
                <button @click='goBack' class='btn-action'>
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="14" cy="14" r="14" fill="black" fill-opacity="0.2"/>
+                  <circle cx="14" cy="14" r="14" fill="black" fill-opacity="0.6"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M4 14C4 13.4477 4.44772 13 5 13H22.5C23.0523 13 23.5 13.4477 23.5 14C23.5 14.5523 23.0523 15 22.5 15H5C4.44772 15 4 14.5523 4 14Z" fill="white"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M14.5309 6.37534C14.8759 6.8066 14.806 7.4359 14.3747 7.78091L6.60078 14L14.3747 20.2192C14.806 20.5642 14.8759 21.1935 14.5309 21.6247C14.1859 22.056 13.5566 22.1259 13.1253 21.7809L4.3753 14.7809C4.13809 14.5911 4 14.3038 4 14C4 13.6963 4.13809 13.4089 4.3753 13.2192L13.1253 6.21917C13.5566 5.87416 14.1859 5.94408 14.5309 6.37534Z" fill="white"/>
                   </svg>
                </button>
             </div>
 
-            <div class='main'> 
-               <img :src="store.store_image.url">
+            <div v-if='store != null' class='main' :class='is_store_avatar_dummy(store.store_image)'>
+               <img :src="store.store_image_full.url">
                <button v-if='user_current_is_store == true' @click='gotoPageStoreEdit' class='btn-edit-store-info'>Edit Info</button>
             </div>
          </div>
       </div>
 
-      <div class="inner">
+      <div v-if='store != null' class="inner">
          <div class='product-design product-detail'>
             <p class='tt01'>{{ store.name }}</p>
             <p class='tt02' v-if='user_current_is_store == false'>{{ get_distance_from_location }}</p>
@@ -134,6 +134,12 @@ createApp({
    },
 
    methods: {
+      
+      is_store_avatar_dummy( store_image ){
+         if( this.store != null && store_image != undefined && store_image.dummy != undefined ){
+            return 'dummy';
+         }
+      },
 
       get_current_location(){
 
@@ -159,9 +165,7 @@ createApp({
  
 
       async findStore( store_id ){
-         
          this.loading = true;
-         
          var form = new FormData();
          form.append('action', 'atlantis_find_store');
          form.append('store_id', store_id);
@@ -199,6 +203,7 @@ createApp({
          var form = new FormData();
          form.append('action', 'atlantis_get_review_store');
          form.append('store_id', this.store_id);
+         form.append('extension', 'small');
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));

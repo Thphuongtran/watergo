@@ -45,6 +45,10 @@
 		display: flex;
 		flex-flow: row wrap;
 		align-items: center;
+      svg{
+         position: relative;
+         top: -2px;
+      }
 	}
 	
 	.rating{
@@ -440,6 +444,12 @@
 			align-items: center;
          max-width: 165px;
          width: auto;
+
+         .logo-svg{
+            flex: 0 21px;
+            display: flex;
+            align-items: center;
+         }
 
          &.exapend-size{
             max-width: 100%;

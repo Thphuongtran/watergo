@@ -1,3 +1,8 @@
+<style type="text/css">
+   .pac-logo:after{display: none}
+   .form-group input{font-size: 16px;}
+   .form-group .btn{line-height: 38px;}
+</style>
 <div id='app'>
 
    <div v-show='loading == false' class='page-delivery-address'>
@@ -27,22 +32,8 @@
             </div>
             <div class='form-group style01'>
                <span>Address</span>
-               <input 
-                  v-model='delivery_address_location' type="text"
-                  @blur='select_address_focus_out'
-                  @focus='select_address_focus_in'
-               >
-
-               <ul v-show='box_search == true' class='box-search-reccommend'>
-                  <li
-                     v-if='searchRes.length > 0'
-                     v-for='(address, addressKey) in searchRes' :key='addressKey'
-                     @click='select_address(address)'
-                  >
-                     {{ address.title }}
-                  </li>
-               </ul>
-
+               
+               <input v-model='delivery_address_location' type="text" name="" id="search-address" placeholder="">
             </div>
 
             <div class='form-group switch'>
@@ -82,11 +73,14 @@
 
 </div>
 
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script>
 <script type='module'>
 
-var { createApp } = Vue;
+var address = "";
+var lat = "";
+var lng = "";
 
-createApp({
+var app = Vue.createApp({
    
    data(){
       return{
@@ -102,7 +96,6 @@ createApp({
          popup_confirm_delete: false,
 
          // SEARCH
-         box_search: false,
          searchRes: [],
          latitude: 0,
          longitude: 0,
@@ -110,53 +103,8 @@ createApp({
       }
    },
 
-   watch: {
-      delivery_address_location: async function(address){
-         if( address != undefined && address != '' ){
-            if (searchTimeout) { clearTimeout(searchTimeout); }
-            var searchTimeout = setTimeout(async () => {
-               await this.searchLocation(address);
-            }, 1000);
-
-         }else{
-            this.searchRes = [];
-         }
-      }
-   },
 
    methods: {
-
-      // SEARCH
-      select_address_focus_out(){ setTimeout( () => { this.box_search = false; }, 100); },
-      select_address_focus_in(){ this.box_search = true; },
-      select_address( address ){
-         this.delivery_address_location = address.title;
-         this.latitude     = address.position.lat;
-         this.longitude    = address.position.lng;
-         this.searchRes    = [];
-      },
-      
-      async searchLocation( searchQuery ) {
-         var apiKey  = window.get_key_map();
-         var url     = `https://geocode.search.hereapi.com/v1/geocode?q=${encodeURIComponent(searchQuery)}&apiKey=${apiKey}&in=countryCode:VNM&limit=3`;
-
-         fetch(url)
-            .then( response => response.json() )
-            .then( data => {
-               if ( data.items.length > 0 ) {
-                  this.searchRes = data.items;
-               } else {
-                  // console.log('Location not found');
-                  this.searchRes = [];
-               }
-            })
-            .catch(error => {
-               this.searchRes = [];
-               // console.error('Error:', error);
-               // console.log('An error occurred. Please try again.');
-            });
-      },
-
 
       popup_deleteDeliveryAddress(){this.popup_confirm_delete = true;},
       buttonModalCancel(){ this.popup_confirm_delete = false; },
@@ -181,7 +129,7 @@ createApp({
          if( this.delivery_address_name != '' &&
             this.delivery_address_phone != '' &&
 
-            this.delivery_address_location != ''){
+            address != ''){
                var _phoneNumberString = String( this.delivery_address_phone);
             if( this.validatePhoneNumber( _phoneNumberString) == false ){
                this.text_res = 'Phone numner is not invalid';
@@ -189,12 +137,12 @@ createApp({
 
             }else{
                this.text_res = '';
-               form.append('longitude', this.longitude);
-               form.append('latitude', this.latitude);
+               form.append('longitude', lng);
+               form.append('latitude', lat);
 
                form.append('name', this.delivery_address_name);
                form.append('phone', this.delivery_address_phone);
-               form.append('address', this.delivery_address_location);
+               form.append('address', address );
                form.append('primary', _primary);
                form.append('id_delivery', this.delivery_address_id);
 
@@ -207,7 +155,7 @@ createApp({
                if(r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'update_delivery_address_ok' ){
-                     this.goBack();
+                     this.goBackUpdate(this.delivery_address_id);
 
                   }
                }
@@ -228,7 +176,7 @@ createApp({
          if(r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'delete_delivery_address_ok' ){
-               this.goBack();
+               this.goBackDelete(this.delivery_address_id);
             }
          }
       },
@@ -247,13 +195,26 @@ createApp({
                this.delivery_address_primary    = res.data.primary == 1 ? true : false;
                this.latitude                    = res.data.latitude;
                this.longitude                   = res.data.longitude;
+               address                          = this.delivery_address_location;
+               lat                              = res.data.latitude;
+               lng                              = res.data.longitude;
 
             }
          }
       },
 
 
-      goBack(){ window.goBack(true)},
+      goBack(){
+         window.location.href = '?appt=X'; 
+      },
+      goBackUpdate(id_delivery){
+         window.location.href = `?appt=X&data=delivery_just_update|id_delivery=${id_delivery}`;
+      },
+      goBackDelete(id_delivery){
+         window.location.href = `?appt=X&data=delivery_just_delete|id_delivery=${id_delivery}`;
+      },
+
+
       validateEmail(email) {
          // Regular expression for email validation
          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -281,6 +242,33 @@ createApp({
    },
 
 }).mount('#app');
+
+window.app = app;
+
+function initialize() {
+   const input = document.getElementById('search-address');
+   const options = {
+      componentRestrictions: { country: "vn" },
+   };
+   const autocomplete = new google.maps.places.Autocomplete(input, options);
+
+// Lắng nghe sự kiện khi người dùng chọn một địa chỉ từ danh sách
+   google.maps.event.addListener(autocomplete, 'place_changed', function () {
+      const selectedPlace = autocomplete.getPlace();
+      if (selectedPlace && selectedPlace.geometry && selectedPlace.geometry.location) {
+         lat = selectedPlace.geometry.location.lat();
+         lng = selectedPlace.geometry.location.lng();
+         address = selectedPlace.formatted_address;
+
+      }
+   });
+
+   input.addEventListener('keydown', function (event) {
+      address = lat = lng = "";
+   });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
 
 
 </script>

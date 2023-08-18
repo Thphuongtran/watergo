@@ -42,7 +42,9 @@ function developerThemeConstruct() {
 	// Support Html5
 	// add_theme_support('html5');
 
+   add_image_size( 'extra-medium', 768, 768, true );
    add_image_size( 'medium', 200, 200, true );
+   
 
 	// Make theme available for translation
 	// Translations can be filed in the /languages/ directory
@@ -183,4 +185,5 @@ function disable_emojis_tinymce( $plugins ) {
 	}
 	return $plugins;
 }
+
 add_action('init', 'disable_emoji_feature');

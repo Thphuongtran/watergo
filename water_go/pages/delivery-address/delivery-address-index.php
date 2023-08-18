@@ -84,6 +84,12 @@ var app = Vue.createApp({
       }
    },
 
+   computed: {
+      delivery_address_filter(){
+         return this.delivery_address.sort( (a, b) => a.id - b.id );
+      }
+   },
+
    watch: {
 
       delivery_id_primary: async function( delivery_id ){
@@ -121,6 +127,7 @@ var app = Vue.createApp({
       goBack(){ 
          window.location.href = '?appt=X&data=delivery_update';
       },
+
       gotoDeliveryAddressAdd(){ window.gotoDeliveryAddressAdd()},
       gotoDeliveryAddressEdit(delivery_id){ window.gotoDeliveryAddressEdit(delivery_id)},
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
@@ -163,7 +170,8 @@ var app = Vue.createApp({
                }
             }
          }
-      }
+      },
+
    },
 
    async created(){

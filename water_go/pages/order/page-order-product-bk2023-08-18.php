@@ -116,8 +116,8 @@
                <label for='select_type02'>Delivery weekly</label>
             </div>
             <div v-show='delivery_type.weekly == true' class='deliverySelect_weekly'>
-               <div class='group-select-delivery-time'>
 
+               <div class='group-select-delivery-time'>
                   <div class='btn-wrapper-order'>
                      <select data-id='0' class='btn_select_weekly_day btn_select_weekly_day_0 btn-dropdown'>
                         <option value='' selected disabled>Select day</option>
@@ -149,8 +149,9 @@
                         <option value='20:00-21:00'>20:00  -  21:00</option>
                      </select>
                   </div>
+
                </div>
-               <components_weekly_select ref='components_weekly_select'></components_weekly_select>
+
             </div>
 
             <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'>Add Day</button>
@@ -238,19 +239,16 @@
 
 <link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-<script src="<?php echo THEME_URI . '/pages/module/module_weekly_select.js'; ?>"></script>
 
 <script>
+
 var app = Vue.createApp({
 
    data(){
-
       return {
 
          loading:       true,
          banner_open:   false,
-
-         dom_weekly_select: '',
 
          delivery_type: {
             once:             false,
@@ -376,11 +374,10 @@ var app = Vue.createApp({
 
       },
 
+
    },
 
    methods: { 
-
-      // AUTOMATIC
 
       automatic_count_date_week(){
          function formatDate(date) {
@@ -413,9 +410,6 @@ var app = Vue.createApp({
             today.setDate(today.getDate()); // Move to the next day
          }
       },
-
-
-      // END AUTOMATIC
 
       hasMoreThanTwoZeroes(number) {
          const numStr = number.toString();
@@ -682,7 +676,7 @@ var app = Vue.createApp({
       },
 
       btn_select_weekly(){
-         
+        
          $(document).on('click change', '.btn_select_weekly_day', function(e){
             // $('.btn_select_weekly_day').find('option').prop('disabled', false);
 
@@ -719,6 +713,7 @@ var app = Vue.createApp({
 
          });
 
+
       },
 
       btn_select_weekly_time(){
@@ -729,45 +724,95 @@ var app = Vue.createApp({
          });
       },
 
-      btn_add_dom_delivery_weekly(){this.$refs.components_weekly_select.createWeekly();},
+      btn_add_dom_delivery_weekly(){
+         if(this.dom_weekly < 7 ){
+            this.dom_weekly = this.dom_weekly + 1;
+            var _dom = `
+               <div class='group-select-delivery-time group-select-delivery-time_parent'>
+                  <div class='btn-wrapper-order'>
+                     <select data-id='${this.dom_weekly}' class='btn_select_weekly_day btn_select_weekly_day_${this.dom_weekly} btn_select_weekly_day_parent btn-dropdown'>
+                        <option value='' selected disabled>Select day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                     </select>
+                  </div>
+                  <div class='btn-wrapper-order'>
+                     <select data-id='${this.dom_weekly}' class='btn_select_weekly_time btn-dropdown'>
+                        <option value='' selected disabled>Select time</option>
+                        <option value='7:00-8:00'>7:00  -  8:00</option>
+                        <option value='8:00-9:00'>8:00  -  9:00</option>
+                        <option value='9:00-10:00'>9:00 -   10:00</option>
+                        <option value='10:00-11:00'>10:00  -  11:00</option>
+                        <option value='11:00-12:00'>11:00  -  12:00</option>
+                        <option value='12:00-13:00'>12:00  -  13:00</option>
+                        <option value='13:00-14:00'>13:00  -  14:00</option>
+                        <option value='14:00-15:00'>14:00  -  15:00</option>
+                        <option value='15:00-16:00'>15:00  -  16:00</option>
+                        <option value='16:00-17:00'>16:00  -  17:00</option>
+                        <option value='17:00-18:00'>17:00  -  18:00</option>
+                        <option value='18:00-19:00'>18:00  -  19:00</option>
+                        <option value='19:00-20:00'>19:00  -  20:00</option>
+                        <option value='20:00-21:00'>20:00  -  21:00</option>
+                     </select>
+                  </div>
 
-      btn_add_dom_delivery_monthly(){this.$refs.components_monthly_select.createMonthly();
-         // if(this.dom_monthly <= 28 ){
-         //    this.dom_monthly = this.dom_monthly + 1;
-         //    var _dom = `
-         //       <div class='group-select-delivery-time group-select-delivery-time_parent'>
-         //          <div class='btn-wrapper-order'>
-         //             <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
-         //          </div>
-         //          <div class='btn-wrapper-order'>
-         //             <select data-id='${this.dom_monthly}' class='btn_select_monthly_time btn-dropdown'>
-         //                <option value='' selected disabled>Select time</option>
-         //                <option value='7:00-8:00'>7:00  -  8:00</option>
-         //                <option value='8:00-9:00'>8:00  -  9:00</option>
-         //                <option value='9:00-10:00'>9:00  -  10:00</option>
-         //                <option value='10:00-11:00'>10:00  -  11:00</option>
-         //                <option value='11:00-12:00'>11:00  -  12:00</option>
-         //                <option value='12:00-13:00'>12:00  -  13:00</option>
-         //                <option value='13:00-14:00'>13:00  -  14:00</option>
-         //                <option value='14:00-15:00'>14:00  -  15:00</option>
-         //                <option value='15:00-16:00'>15:00  -  16:00</option>
-         //                <option value='16:00-17:00'>16:00  -  17:00</option>
-         //                <option value='17:00-18:00'>17:00  -  18:00</option>
-         //                <option value='18:00-19:00'>18:00  -  19:00</option>
-         //                <option value='19:00-20:00'>19:00  -  20:00</option>
-         //                <option value='20:00-21:00'>20:00  -  21:00</option>
-         //             </select>
-         //          </div>
-         //       </div>
-         //    `;
-         //    (function($){
-         //       $(document).ready(function(){
-         //          if( $('.deliverySelect_monthly .group-select-delivery-time').length < 28 ){
-         //             $('.deliverySelect_monthly').append(_dom);
-         //          }
-         //       })
-         //    })(jQuery);
-         // }
+               </div>
+            `;
+            (function($){
+               $(document).ready(function(){
+                  if( $('.deliverySelect_weekly .group-select-delivery-time').length < 7 ){
+                     $('.deliverySelect_weekly').append(_dom);
+                  }
+
+               })
+            })(jQuery);
+         }
+
+
+      },
+
+      btn_add_dom_delivery_monthly(){
+         if(this.dom_monthly <= 28 ){
+            this.dom_monthly = this.dom_monthly + 1;
+            var _dom = `
+               <div class='group-select-delivery-time group-select-delivery-time_parent'>
+                  <div class='btn-wrapper-order'>
+                     <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
+                  </div>
+                  <div class='btn-wrapper-order'>
+                     <select data-id='${this.dom_monthly}' class='btn_select_monthly_time btn-dropdown'>
+                        <option value='' selected disabled>Select time</option>
+                        <option value='7:00-8:00'>7:00  -  8:00</option>
+                        <option value='8:00-9:00'>8:00  -  9:00</option>
+                        <option value='9:00-10:00'>9:00  -  10:00</option>
+                        <option value='10:00-11:00'>10:00  -  11:00</option>
+                        <option value='11:00-12:00'>11:00  -  12:00</option>
+                        <option value='12:00-13:00'>12:00  -  13:00</option>
+                        <option value='13:00-14:00'>13:00  -  14:00</option>
+                        <option value='14:00-15:00'>14:00  -  15:00</option>
+                        <option value='15:00-16:00'>15:00  -  16:00</option>
+                        <option value='16:00-17:00'>16:00  -  17:00</option>
+                        <option value='17:00-18:00'>17:00  -  18:00</option>
+                        <option value='18:00-19:00'>18:00  -  19:00</option>
+                        <option value='19:00-20:00'>19:00  -  20:00</option>
+                        <option value='20:00-21:00'>20:00  -  21:00</option>
+                     </select>
+                  </div>
+               </div>
+            `;
+            (function($){
+               $(document).ready(function(){
+                  if( $('.deliverySelect_monthly .group-select-delivery-time').length < 28 ){
+                     $('.deliverySelect_monthly').append(_dom);
+                  }
+               })
+            })(jQuery);
+         }
       },
 
       btn_select_type( type ){ 
@@ -1247,9 +1292,7 @@ var app = Vue.createApp({
    },
    
 
-})
-.component('components_weekly_select', components_weekly_select)
-.mount('#app');
+}).mount('#app');
 
 window.app = app;
 </script>

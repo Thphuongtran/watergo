@@ -2,6 +2,7 @@
    .pac-logo:after{display: none}
    .form-group input{font-size: 16px;}
    .form-group .btn{line-height: 38px;}
+   .form-group input:disabled{  opacity: 0.6;}
 </style>
 <div id='app'>
 
@@ -26,33 +27,36 @@
 
       <div class='inner form-store-style'>
          <div class='avatar-header style02'>
-            <label for='uploadAvatar' class='upload-avatar style02'  :class='previewAvatar != null ? "has-preview" : ""'>
+            <label style="position: relative;display: block;" for='uploadAvatar' class='upload-avatar style02'  :class='previewAvatar != null ? "has-preview" : ""'>
                
                <svg v-if='previewAvatar == null' width="388" height="181" viewBox="0 0 388 181" fill="none" xmlns="http://www.w3.org/2000/svg">
                <rect width="388" height="180" rx="8" fill="#F9F9F9"/>
                <circle cx="194" cy="90" r="35" fill="#ECECEC"/>
                <rect x="179.529" y="86.9199" width="28" height="18.0197" rx="1" fill="white" stroke="#C9C9C9" stroke-width="2"/>
                <path d="M210.356 83.0991L210.356 83.0988L206.451 76.4675L206.45 76.4659C206.271 76.1609 205.971 76 205.682 76H181.374C181.085 76 180.785 76.1609 180.607 76.4659L180.606 76.4675L176.701 83.0986C176.701 83.0987 176.701 83.0988 176.701 83.0988C175.187 85.6709 176.261 89.0345 178.539 90.0502C178.84 90.1848 179.167 90.2814 179.519 90.3323C179.741 90.3638 179.971 90.3797 180.201 90.3797C181.658 90.3797 182.964 89.7014 183.876 88.6171L184.641 87.7083L185.407 88.6171C186.319 89.7009 187.631 90.3797 189.082 90.3797C190.538 90.3797 191.844 89.7014 192.757 88.6171L193.522 87.7083L194.287 88.6171C195.2 89.7009 196.511 90.3797 197.963 90.3797C199.419 90.3797 200.725 89.7014 201.638 88.6171L202.401 87.7108L203.166 88.615C204.086 89.7021 205.394 90.3797 206.843 90.3797C207.08 90.3797 207.303 90.3638 207.527 90.3321L210.356 83.0991ZM210.356 83.0991C211.198 84.5276 211.251 86.2502 210.688 87.6735M210.356 83.0991L210.688 87.6735M210.688 87.6735C210.126 89.0913 208.996 90.1228 207.527 90.3321L210.688 87.6735Z" fill="white" stroke="#C9C9C9" stroke-width="2"/>
-               <g filter="url(#filter0_d_95_4)">
-               <circle cx="367" cy="159" r="16" fill="white"/>
-               </g>
-               <path d="M366.881 162.793C368.452 162.793 369.726 161.52 369.726 159.949C369.726 158.378 368.452 157.104 366.881 157.104C365.31 157.104 364.037 158.378 364.037 159.949C364.037 161.52 365.31 162.793 366.881 162.793Z" fill="#252831"/>
-               <path d="M374.467 152.363H371.461L370.285 151.083C370.109 150.889 369.893 150.734 369.653 150.628C369.413 150.522 369.154 150.467 368.892 150.467H364.871C364.34 150.467 363.828 150.694 363.468 151.083L362.302 152.363H359.296C358.253 152.363 357.4 153.216 357.4 154.259V165.637C357.4 166.68 358.253 167.533 359.296 167.533H374.467C375.51 167.533 376.363 166.68 376.363 165.637V154.259C376.363 153.216 375.51 152.363 374.467 152.363ZM366.881 164.689C364.265 164.689 362.141 162.565 362.141 159.948C362.141 157.331 364.265 155.208 366.881 155.208C369.498 155.208 371.622 157.331 371.622 159.948C371.622 162.565 369.498 164.689 366.881 164.689Z" fill="#252831"/>
-               <defs>
-               <filter id="filter0_d_95_4" x="347" y="141" width="40" height="40" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-               <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-               <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-               <feOffset dy="2"/>
-               <feGaussianBlur stdDeviation="2"/>
-               <feComposite in2="hardAlpha" operator="out"/>
-               <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
-               <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_95_4"/>
-               <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_95_4" result="shape"/>
-               </filter>
-               </defs>
                </svg>
 
-
+               <span class="camera-icon" style="position: absolute;bottom: 6px;right: 0px;margin-bottom: 0;display: inline-block;width: 38px;">
+                  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                  <g filter="url(#filter0_d_780_5054)">
+                  <circle cx="19" cy="17" r="15" fill="white"/>
+                  </g>
+                  <path d="M18.8888 20.556C20.3616 20.556 21.5555 19.3621 21.5555 17.8893C21.5555 16.4166 20.3616 15.2227 18.8888 15.2227C17.4161 15.2227 16.2222 16.4166 16.2222 17.8893C16.2222 19.3621 17.4161 20.556 18.8888 20.556Z" fill="#252831"/>
+                  <path d="M26 10.7778H23.1822L22.08 9.57778C21.9143 9.39591 21.7126 9.25058 21.4876 9.1511C21.2626 9.05161 21.0193 9.00015 20.7733 9H17.0044C16.5067 9 16.0267 9.21333 15.6889 9.57778L14.5956 10.7778H11.7778C10.8 10.7778 10 11.5778 10 12.5556V23.2222C10 24.2 10.8 25 11.7778 25H26C26.9778 25 27.7778 24.2 27.7778 23.2222V12.5556C27.7778 11.5778 26.9778 10.7778 26 10.7778ZM18.8889 22.3333C16.4356 22.3333 14.4444 20.3422 14.4444 17.8889C14.4444 15.4356 16.4356 13.4444 18.8889 13.4444C21.3422 13.4444 23.3333 15.4356 23.3333 17.8889C23.3333 20.3422 21.3422 22.3333 18.8889 22.3333Z" fill="#252831"/>
+                  <defs>
+                  <filter id="filter0_d_780_5054" x="0" y="0" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                  <feOffset dy="2"/>
+                  <feGaussianBlur stdDeviation="2"/>
+                  <feComposite in2="hardAlpha" operator="out"/>
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
+                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_780_5054"/>
+                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_780_5054" result="shape"/>
+                  </filter>
+                  </defs>
+                  </svg>
+               </span>
                <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
                <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar">
             </label>
@@ -85,7 +89,7 @@
 
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='email' type="email" placeholder='Enter your email'>
+            <input v-model='email' type="email" placeholder='Enter your email' disabled readonly>
          </div>
 
          <span class='d-block t-red mt20'>{{text_err}}</span>
@@ -167,27 +171,26 @@ createApp({
 
 
       async btn_update_store(){
-         this.loading = true;
+         
          this.text_err = '';
          
          // CHECK ALL IS EMPTY ??
          if( 
             this.owner != '' &&
             this.name != '' &&
-            this.address != '' &&
             this.phone != '' &&
             this.email != '' && address != "" && lat != "" && lng != ""
          ){
-            
+            this.loading = true;
             var form = new FormData();
             form.append('action', 'atlantis_store_profile_edit');
 
             form.append('id', this.store.id);
             form.append('owner', this.owner);
             form.append('name', this.name);
-            form.append('address', this.address);
+            form.append('address', address);
             form.append('phone', this.phone);
-            form.append('email', this.email);
+            //form.append('email', this.email);
             form.append('description', this.description);
             form.append('imageUpload[]', this.selectedImage);
             form.append('latitude', lat);
@@ -212,20 +215,20 @@ createApp({
                }
 
                if( res.message == 'store_profile_update_ok'){
-                  this.goBack();
-                  if( window.appBridge != undefined ){
-                     window.appBridge.refresh();
-                  }else{
-                     location.reload();
-                  }
+                  this.goBack(true);
+                  // if( window.appBridge != undefined ){
+                  //    window.appBridge.refresh();
+                  // }else{
+                  //    location.reload();
+                  // }
                }
             }
 
             this.loading = false;
          }else if( address == "" || lat == "" || lng == ""){
-            this.res_text_sendcode = 'Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất';
+            this.text_err = this.res_text_sendcode = 'Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất';
          } else{
-            this.res_text_sendcode = 'All field must be not empty.';
+            this.text_err = this.res_text_sendcode = 'All field must be not empty.';
          }
 
 
@@ -257,10 +260,13 @@ createApp({
 
                this.owner = res.data.owner;
                this.name = res.data.name;
-               this.description = res.data.description;
-               this.address = res.data.address;
+               this.description = res.data.description.replace(/\\/g, '');
+               this.address = address = res.data.address;
+               lat = res.data.latitude;
+               lng = res.data.longitude;
                this.phone = res.data.phone;
                this.email = res.data.email;
+               this.previewAvatar = this.store.store_image.url;
             }
          }
 

@@ -1,5 +1,11 @@
 <div id='app'>
 
+   <div v-show='loading == true'>
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
+   </div>
+   
    <div v-show='loading == false && order != null' class='page-order-detail'>
 
       <div class='appbar'>
@@ -28,14 +34,14 @@
             <div class='content'>
                <p class='tt01'>Delivery address</p>
                <p class='tt03' v-if='order_delivery_address != null'>{{ order_delivery_address.address }}</p>
-               <p class='tt02' v-if='order_delivery_address != null'>{{ order_delivery_address.name }} | (+84) {{ removeZeroLeading( order_delivery_address.phone ) }}</p>
+               <p class='tt02' v-if='order_delivery_address != null'>{{ order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order_delivery_address.phone ) : '' }}</p>
             </div>
          </div>
       </div>
 
       <div class='break-line'></div> 
 
-      <ul class='list-tile order'>
+      <ul v-if='order != null' class='list-tile order'>
 
          <li>
             <div @click='gotoStoreDetail(order.store_id)' class='shop-detail add-arrow'>
@@ -45,7 +51,7 @@
                      <path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/>
                   </svg>
                </div>
-               <span class='shop-name'>{{ order.store_name }}</span>
+               <span class='shop-name' v-if='order.store_name != null'>{{ order.store_name }}</span>
             </div>
 
             <div v-for='(product, product_key) in order.order_products' :key='product_key'
@@ -70,7 +76,7 @@
          </li>
       </ul>
 
-      <div class='box-delivery-time'>
+      <div v-if='order != null && order.order_delivery_type != null' class='box-delivery-time'>
          <p class='tt01'>Delivery time</p>
          <p class='tt02'>{{ get_delivery_time_activity }}</p>
          <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'>Immediately (within 1 hour) </p>
@@ -100,16 +106,16 @@
       </div>
 
       <div class='break-line'></div>
-      <div class='box-time-order'>
+      <div v-if='order != null' class='box-time-order'>
          <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
-         <p v-if='order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'>Confirmed Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
-         <p v-if='order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
-         <p v-if='order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+         <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'>Confirmed Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
+         <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
       </div>
 
 
-      <div class='order-bottomsheet'>
+      <div v-if='order_status != ""' class='order-bottomsheet'>
          
          <div v-if='order_status == "complete" && can_review == true' class='btn_cancel_order_wrapper'>
             <button @click='gotoAddReview(order.store_id, order.order_id )'
@@ -127,7 +133,7 @@
          >
             <p class='price-total' :class='order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
-               v-if='order_status == "complete"'
+               v-if='order_status == "complete" || order_status == "cancel" '
                @click='buttonReOrder' 
                class='btn-primary'>Re-Order</button>
          </div>
@@ -154,13 +160,6 @@
          </div>
       </div>
    </div>
-   
-   <div v-show='loading == true'>
-      <div class='progress-center'>
-         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div>
-   </div>
-
    
    <div v-show='popup_out_of_stock == true' class='modal-popup open'>
       <div class='modal-wrapper'>
@@ -230,6 +229,14 @@ createApp({
 
    methods: {
 
+      hasMoreThanTwoZeroes(number) {
+         const numStr = number.toString();
+         if( !/00{2,}/.test(numStr) ){
+            return true;
+         }else{
+            return false;
+         }
+      },
 
       common_price_after_quantity_from_group_order(p){ return common_price_after_quantity_from_group_order(p) },
       common_price_after_discount_and_quantity_from_group_order(p){ return common_price_after_discount_and_quantity_from_group_order(p) },
@@ -391,11 +398,13 @@ createApp({
 
       get_layout_text_price(){
 
-         if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering" || this.order.order_status == "cancel"){
+         if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering" ){
             return "t-right";
          }else{
             // IF CANCEL WITH repeat
-            return "t-left";
+            if( this.order.order_status == "cancel" ){
+               return "t-left";
+            }
          }
 
       },
@@ -428,7 +437,9 @@ createApp({
       },
 
       get_payment_method_activity(){
-         if( this.order.order_payment_method == 'cash' ){
+         if( this.order != null && this.order.order_payment_method == 'cash' ){
+            return 'By Cash';
+         }else{
             return 'By Cash';
          }
       },
@@ -471,8 +482,11 @@ createApp({
          }
       }
 
-      this.loading = false;
+
+      setTimeout(() => {}, 200);
+      
       window.appbar_fixed();
+      this.loading = false;
    },
 
 }).mount('#app');

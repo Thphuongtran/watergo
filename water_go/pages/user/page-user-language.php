@@ -17,8 +17,8 @@
 
       <div class='inner mt20'>
          <ul class='list-settings list-language style01'>
-            <li @click='updateUserLanguage(language)' class='no-arrow' v-for='(language , index) in settings_language' :key='index'>
-               <span class='title'><span class='radio-button small' :class='language == user_language ? "active" : ""'></span>{{ language }}</span>
+            <li @click='changeLanguage(language.id)' class='no-arrow' v-for='(language , index) in languages' :key='index'>
+               <span class='title'><span class='radio-button small' :class='language.id == user_language ? "active" : ""'></span>{{ language.name }}</span>
             </li>
          </ul>
       </div>
@@ -35,51 +35,73 @@
 
 <script type='module'>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
          user_language: '',
-         settings_language: [
-            'Vietnamese', // 0
-            'English', // 1
-            'Korean' // 2 
+
+         back_refresh: false,
+
+         languages: [
+           { id: 'en_US', name: 'English'},
+           { id: 'vi', name: 'Vietnamese'},
+           { id: 'ko_KR', name: 'Korean'},
          ],
          
       }
    },
 
    methods: {
-      async updateUserLanguage( language ){
-         this.user_language = language;
-         var form = new FormData(); 
-         form.append('action', 'atlantis_user_language');
-         form.append('event', 'update' );
-         form.append('language', language );
+
+      async atlantis_get_language(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_language');
          var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            this.user_language = res.data;
+         }
       },
 
-      goBack(){ window.goBack(true);}
+      async changeLanguage(language){
+         var form = new FormData();
+         form.append('action', 'app_change_language_callback');
+         form.append('language', language);
+         var r = await window.request(form);
+
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'change_language_successfully'){
+               this.user_language   = language;
+               this.back_refresh    = true;
+            }
+         }
+
+      },
+
+      goBack(){  
+         if( this.back_refresh == false ){
+            window.location.href = `?appt=X`;
+         }else{
+            window.location.href = `?appt=X&data=change_language_update`;
+         }
+      }
    },
 
    async created(){
+
       this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_user_language');
-      form.append('event', 'get');
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify(r));
-         if( res.message == 'get_user_language_ok'){
-            this.user_language = res.data;
-         }
-      }
+      await this.atlantis_get_language();
+      
       this.loading = false;
 
       window.appbar_fixed();
    }
 
 }).mount('#app');
+
+window.app = app;
+
+
 </script>

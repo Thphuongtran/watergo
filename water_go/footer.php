@@ -42,6 +42,37 @@
       }
    }
 
+   async function get_delivery_address_by_id( delivery_id ){
+      var form = new FormData();
+      form.append('action', 'atlantis_get_delivery_address_single');
+      form.append('delivery_id', delivery_id);
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r));
+         if( res.message == 'get_delivery_address_ok'){
+            return res.data;
+         }
+      }
+   }
+
+
+   async function atlantis_get_language(){
+      var form = new FormData();
+      form.append('action', 'atlantis_get_language');
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r ));
+
+         if( res.data == 'en_US' ){
+            return 'English';
+         } if( res.data == 'vi' ){
+            return 'Vietnamese';
+         } if( res.data == 'ko_KR' ){
+            return 'Korean';
+         }
+
+      }
+   }
 
 
    /**
@@ -84,17 +115,59 @@
          }
 
          if( partial[0] == 'delivery_just_add' ){
-            window.app.delivery_address = [];
-            await get_delivery_address().then( (data) => 
-               window.app.delivery_address.push( ...data )
-            );
+            // window.app.delivery_address = [];
+            await get_delivery_address().then( (data) => {
+               data.forEach( item => {
+                  var _exists = window.app.delivery_address.some( address => address.id == item.id );
+                  if( ! _exists ){
+                     if ( item.primary == 1 ){
+                        window.app.delivery_address.forEach( item => item.primary = 0);
+                        window.app.delivery_address.push(item);
+                     }else{
+                        window.app.delivery_address.push(item);
+                     }
+                  }
+               });
+            });
+         }
+
+         if( partial[0] == 'delivery_just_delete'){
+            var multi_part    = partial[1].split('=');
+            var id_delivery   = multi_part[1];
+            window.app.delivery_address.forEach( ( item, index ) => {
+               if( item.id == parseInt(id_delivery) ){
+                  window.app.delivery_address.splice(index, 1);
+               }
+            });
+         }
+
+         if( partial[0] == 'delivery_just_update'){
+            var multi_part    = partial[1].split('=');
+            var id_delivery   = multi_part[1];
+
+            await get_delivery_address_by_id( id_delivery).then( (data) => {
+
+               var _findIndex = window.app.delivery_address.findIndex( address => address.id == data.id);
+               if( _findIndex != -1 ){
+                  if( data.primary == 1 ){
+                     window.app.delivery_address.forEach( _ar => _ar.primary = 0);
+                     window.app.delivery_address[_findIndex] = data;
+                  }else{
+                     window.app.delivery_address[_findIndex] = data;
+                  }
+
+               }
+            });
+         }
+
+         if( partial[0] == 'change_language_update' ){
+            await atlantis_get_language().then( (data) => window.app.user_language = data );  
          }
 
          // SECOND ROUTE
          if( partial[1] != undefined ){
             for( var i = 1; i < partial.length; i++ ){
                var multi_part = partial[i].split('=');
-
                if( multi_part[0] == 'notification_callback' && multi_part[1] == 'notification_count' ){
                   await get_notification_count().then( (data) => window.app.notification_count = data );  
                }

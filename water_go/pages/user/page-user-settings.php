@@ -74,9 +74,7 @@
 </style>
 <script type='module'>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
@@ -123,7 +121,6 @@ createApp({
                // location to login
                window.appBridge.logout();
 		         window.appBridge.close();
-               
                // window.gotoLogin();
             }else{
                this.loading = false;
@@ -163,8 +160,25 @@ createApp({
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'user_found' ){
                this.user_notification = res.data.user_notification == 1 ? true : false;
-               this.user_language = res.data.user_language != '' ? res.data.user_language : 'English';
             }
+         }
+      },
+
+      async atlantis_get_language(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_language');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+
+            if( res.data == 'en_US' ){
+               this.user_language = 'English';
+            } if( res.data == 'vi' ){
+               this.user_language = 'Vietnamese';
+            } if( res.data == 'ko_KR' ){
+               this.user_language = 'Korean';
+            }
+
          }
       },
 
@@ -173,9 +187,13 @@ createApp({
       this.loading = true;
       await this.initUser();
       await this.check_user_login_social();
+      await this.atlantis_get_language();
       this.loading = false;
 
       window.appbar_fixed();
    }
 }).mount('#app');
+
+window.app = app;
+
 </script>

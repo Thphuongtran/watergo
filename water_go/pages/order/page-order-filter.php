@@ -1,12 +1,6 @@
 <div id='app'>
 
-   <div v-if="loading == true">
-      <div class='progress-center'>
-         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
-      </div> 
-   </div>
-
-   <div v-if="loading == false" class='page-order-filter'>
+   <div v-show="loading == false" class='page-order-filter'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -23,7 +17,7 @@
          </div>
       </div>
 
-      <div v-if="orders.length == 0" class='banner-order-no-found'>
+      <div v-if="loading == false && orders.length == 0" class='banner-order-no-found'>
          <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="65" cy="65" r="65" fill="#E9E9E9"/>
          <path d="M44 32H71.1716L91 51.8284V93C91 94.3261 90.4732 95.5979 89.5355 96.5355C88.5979 97.4732 87.3261 98 86 98H44C42.6739 98 41.4021 97.4732 40.4645 96.5355C39.5268 95.5979 39 94.3261 39 93V37C39 35.6739 39.5268 34.4021 40.4645 33.4645C41.4021 32.5268 42.6739 32 44 32Z" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -32,15 +26,17 @@
          <path d="M61.5 65H56.25H51" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
          </svg>
 
-         <p v-show='filter == "weekly"' class='t-thrid'>There is no weekly order</p>
-         <p v-show='filter == "monthly"'class='t-thrid'>There is no monthly order</p>
+         <p v-if='filter != "" && filter == "weekly"' class='t-thrid'>There is no weekly order</p>
+         <p v-if='filter != "" && filter == "monthly"'class='t-thrid'>There is no monthly order</p>
       </div>
 
-      <ul v-if="orders.length > 0" class='list-order'>
+      <ul v-if="loading == false && orders.length > 0" class='list-order'>
          <li v-for='(order, orderKey) in orders' :key='orderKey'>
 
-            <div class='order-head'>
-               <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/><path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/></svg>
+            <div class='order-head exapend-size'>
+               <div class='logo-svg'>
+                  <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/><path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/></svg>
+               </div>
                <div class='leading'><span>{{ order.store_name }}</span></div>
                <div @click='btn_delete_order(order.order_id)' class='status'> Delete </div>
             </div>
@@ -83,9 +79,13 @@
       </ul>
    </div>
 
-   
+   <div v-show="loading == true">
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div> 
+   </div>
 
-   <div v-show="popup_delete_all_item == true" class='modal-popup open'>
+   <div v-if="loading == false && popup_delete_all_item == true" class='modal-popup open'>
       <div class='modal-wrapper'>
          <p v-if='filter != "" && filter == "weekly"' class='heading'>Are you sure to delete this<br> weekly order?</p>
          <p v-if='filter != "" && filter == "monthly"' class='heading'>Are you sure to delete this<br> monthly order?</p>
@@ -98,16 +98,15 @@
 
 </div>
 
-<script type='module'>
+<script>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
-         popup_delete_all_item: false,
          loading: true,
-         filter: '',
+
+         popup_delete_all_item: false,
+         filter: 'weekly',
          orders: [],
          order_id_delete: null,
          paged: 0,
@@ -236,22 +235,38 @@ createApp({
       window.removeEventListener('scroll', this.handleScroll);
    },
 
+   update(){
+      window.appbar_fixed();
+   },
+
    async created(){
       this.loading = true;
 
       const urlParams = new URLSearchParams(window.location.search);
-      const filter = urlParams.get('filter');
+      this.filter = urlParams.get('filter');
 
-      this.filter = filter;
+      await this.get_order_filter(0);
 
-      setTimeout( async () => {
-         await this.get_order_filter(0);
-         this.loading = false;
-      }, 400);
+      
 
-      window.appbar_fixed();
+      if( this.orders.length == 0 ){
+         setTimeout(() => {
+            window.appbar_fixed();
+            this.loading = false;
+         }, 600);
+      }else{
+         setTimeout(() => {
+            window.appbar_fixed();
+            this.loading = false;
+         }, 300);
+      }
+
+      
 
       
    },
 }).mount('#app');
+
+window.app = app;
+
 </script>

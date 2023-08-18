@@ -190,10 +190,12 @@ function atlantis_get_review(){
       global $wpdb;
       $res = $wpdb->get_results($sql);
 
+
       if( empty($res ) ){
          wp_send_json_error([ 'message' => 'review_not_found' ]);
          wp_die();
       }
+
       wp_send_json_success([ 'message' => 'review_found', 'data' => $res[0] ]);
       wp_die();
 
@@ -334,6 +336,7 @@ function atlantis_get_review_store(){
       $limit      = 10;
       $paged      = isset($_POST['paged']) ? $_POST['paged'] : 0;
       $paged      = $paged * $limit;
+      $extension  = isset($_POST['extension']) ? $_POST['extension'] : 0;
 
       if( $store_id == 0 ){
          wp_send_json_error(['message' => 'review_not_found']);
@@ -353,10 +356,17 @@ function atlantis_get_review_store(){
          wp_die();
       }
 
+      // 75
       foreach( $res as $k => $vl ){
          $res[$k]->first_name    = get_user_meta( $vl->user_id, 'first_name', true );
          $res[$k]->nickname      = get_user_meta( $vl->user_id, 'nickname', true );
          $res[$k]->user_avatar = func_atlantis_get_images($vl->user_id, 'user_avatar', true);
+
+         if( $extension == 'small' ){
+            if( mb_strlen($vl->contents, 'UTF8-8') >= 72  ){
+               $res[$k]->contents = mb_substr($vl->contents, 0, 72, 'UTF-8') . '...';
+            }
+         }
       }
 
       wp_send_json_success(['message' => 'review_found', 'data' => $res ]);

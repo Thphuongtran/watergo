@@ -50,8 +50,8 @@ function atlantis_get_user_notification(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_user_notification' ){
 
       $user_id = get_current_user_id();
-      $value   = get_field('user_notification', 'user_' . $user_id );
-
+      $value   = get_user_meta($user_id,"user_notification",true);
+      if($value == "") $value = "1"; 
       wp_send_json_success([ 'message' => 'get_notification_ok', 'data' => $value ]);
       wp_die();
    }
@@ -221,7 +221,7 @@ function atlantis_user_delivery_address(){
       // GET EVENT
 
       if( $event == 'get' ){
-         $sql = "SELECT * FROM wp_delivery_address WHERE user_id= {$user_id}";
+         $sql = "SELECT * FROM wp_delivery_address WHERE user_id= {$user_id} ORDER BY id DESC";
          $res = $wpdb->get_results($sql);
          if( empty( $res )){
             wp_send_json_error([ 'message' => 'no_delivery_address_service_found' ]);
@@ -341,8 +341,8 @@ function atlantis_get_user_login_data(){
             : '';
 
          $delivery_address = $wpdb->get_results("SELECT * FROM wp_delivery_address WHERE user_id= $user_id");
-
-         $user_notification = get_field('user_notification', 'user_' . $user_id, true) == 1 ? 1 : 0;
+         $meta_user_notification = get_user_meta($user_id,'user_notification', true);
+         $user_notification = $meta_user_notification == "" ? "1" : $meta_user_notification;
 
          $user_language = get_field('user_language', 'user_' . $user_id, true) != '' ? get_field('user_language', 'user_' . $user_id, true) : '';
 
@@ -444,10 +444,19 @@ function atlantis_update_user(){
          if( $current_user->user_email != $email ){
             if( $email_exists == false ){
                wp_update_user($update_data);
+               if(!empty(get_user_meta($user_id,"user_login_social",true)) && empty(get_user_meta($user_id,"changed_email",true))){
+                  update_user_meta($user_id,"changed_email","1");
+               }
             }else{
                wp_send_json_success([ 'message' => 'email_already_exists' ]);
                wp_die();   
             }
+         }else{
+            unset($update_data["user_email"]);
+            if(!empty(get_user_meta($user_id,"user_login_social",true)) && empty(get_user_meta($user_id,"changed_email",true))){
+               update_user_meta($user_id,"changed_email","1");
+            }
+            wp_update_user($update_data);
          }
       }
       

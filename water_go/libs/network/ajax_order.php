@@ -188,9 +188,6 @@ function atlantis_is_product_out_of_stock_from_order(){
 
       wp_send_json_success(['message' => 'order_can_reorder' ]);
       wp_die();
-
-
-
    }
 
 }

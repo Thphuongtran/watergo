@@ -147,6 +147,8 @@ function atlantis_find_store(){
          $res[$k]->description = stripcslashes($res[$k]->description);
       }
 
+      $res[0]->store_image_full = func_atlantis_get_images($vl->id, 'store', true,"large");
+
       if( empty( $res ) ){
          wp_send_json_error([ 'message' => 'store_not_found' ]);
          wp_die();
@@ -200,7 +202,7 @@ function atlantis_get_store_profile(){
          wp_send_json_error(['message' => 'get_store_error', 'sql' => $sql]);
          wp_die();
       }
-      $res[0]->store_image = func_atlantis_get_images( $res[0]->id, 'store', true );
+      $res[0]->store_image = func_atlantis_get_images( $res[0]->id, 'store', true,"large" );
       // GET EMAIL FROM current user_id
       $user_data = get_userdata($user_id);
       $res[0]->email = $user_data->user_email;
@@ -225,7 +227,7 @@ function atlantis_store_profile_edit(){
       $description = isset($_POST['description']) ? $_POST['description'] : '';
       $address = isset($_POST['address']) ? $_POST['address'] : '';
       $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
-      $email = isset($_POST['email']) ? $_POST['email'] : '';
+      //$email = isset($_POST['email']) ? $_POST['email'] : '';
       
       $imageUpload = isset($_FILES['imageUpload']) ? $_FILES['imageUpload'] : null;
 
@@ -234,26 +236,27 @@ function atlantis_store_profile_edit(){
          wp_die();
       } 
 
-      // REMOVE ANY NON-DIGITAL NO UNNESESSORY
-      $phone = preg_replace('/\D/', '', $phone);
 
-      if ( preg_match('/^\d+$/', $phone) == false || (strlen($phone) >= 10 && strlen($phone) < 12) == false) {
+      $phone = str_replace(array('-', '.', ' '), '', $phone);
+      $is_phone =  preg_match( '/^(032|033|034|035|036|037|038|039|086|096|097|098|081|082|083|084|085|088|091|094|056|058|092|070|076|077|078|079|089|090|093|099|059)+([0-9]{7})$/', $phone);
+
+      if ( !$is_phone) {
          wp_send_json_error([ 'message' => 'phonenumber_is_not_correct_format']);
          wp_die();
       }
 
-      if( is_email($email) == false ){
-         wp_send_json_error([ 'message' => 'email_is_not_correct_format']);
-         wp_die();
-      }
+      // if( is_email($email) == false ){
+      //    wp_send_json_error([ 'message' => 'email_is_not_correct_format']);
+      //    wp_die();
+      // }
 
-      $latitude   = 0;
-      $longitude  = 0;
+      // $latitude   = 0;
+      // $longitude  = 0;
 
-      $res_location = func_atlantis_get_location( $address );
+      //$res_location = func_atlantis_get_location( $address );
 
-      $latitude   = $res_location['latitude'];
-      $longitude  = $res_location['longitude'];
+      $latitude   = $_POST['latitude'];
+      $longitude  = $_POST['longitude'];
 
       // wp_send_json_success(['message' => 'bug', 'res' => $res_location]);
       // wp_die();
@@ -269,20 +272,20 @@ function atlantis_store_profile_edit(){
       ], ['id' => $id ]);
 
       // UPDATE EMAIL USER
-      if( $email != '' || $email != null){
+      // if( $email != '' || $email != null){
          
-         $email_exists = get_user_by('email', $email);
-         $current_user = wp_get_current_user();
+      //    $email_exists = get_user_by('email', $email);
+      //    $current_user = wp_get_current_user();
 
-         if( $current_user->user_email != $email ){
-            if( $email_exists == false ){
-               wp_update_user($update_data);
-            }else{
-               wp_send_json_success([ 'message' => 'email_already_exists' ]);
-               wp_die();   
-            }
-         }
-      }
+      //    if( $current_user->user_email != $email ){
+      //       if( $email_exists == false ){
+      //          wp_update_user($update_data);
+      //       }else{
+      //          wp_send_json_success([ 'message' => 'email_already_exists' ]);
+      //          wp_die();   
+      //       }
+      //    }
+      // }
       
       // find store already have image?
       // override when upload image
