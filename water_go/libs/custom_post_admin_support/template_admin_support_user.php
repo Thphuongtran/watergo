@@ -34,6 +34,7 @@ function template_admin_support_user(){
             }
          ?>
       </h1>
+      <?php if($action == "") echo '<a href="?page=admin_support_users&action=add" class="page-title-action">Add New</a>' ?>
 
       <hr class="wp-header-end">
 
@@ -77,7 +78,23 @@ function template_admin_support_user(){
 
          </div>
 
-      <?php } ?>
+      <?php }else if($action == "add"){ ?>
+         <div id="poststaff">
+            <h2 class="wp-heading-inline">Question</h2>
+            <div class="postbox-container">
+               <textarea v-model='question' rows='5' required></textarea>
+            </div>
+
+            <h2 class="wp-heading-inline">Answer</h2>
+            <div class="postbox-container">
+               <textarea v-model='answer' rows='10' required></textarea>
+            </div>
+
+            <button @click='add' class="button button-primary button-large">Add</button>
+
+         </div>
+      <?php
+      } ?>
 
    </div>
    <script>
@@ -127,6 +144,25 @@ function template_admin_support_user(){
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'update_admin_supports_ok' ){
+                     window.location.href = '?page=admin_support_users';
+                  }
+               }
+
+
+            },
+
+            async add( ){
+               // ?page=admin_support_all  
+
+               var form = new FormData();
+               form.append('action', 'atlantis_add_admin_support');
+               form.append('question', this.question );
+               form.append('answer', this.answer );
+
+               var r = await this.request(form);
+               if( r != undefined ){
+                  var res = JSON.parse( JSON.stringify( r ));
+                  if( res.message == 'add_admin_supports_ok' ){
                      window.location.href = '?page=admin_support_users';
                   }
                }

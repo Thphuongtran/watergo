@@ -1,15 +1,6 @@
-   <?php wp_footer(); ?>
-   <script>
-      
-   // function callbackResume(data){        
-   //    if ( data != "undefined" && data != "" ) {
-   //       if (data == 'refresh') {
-   //          if( window.appBridge != undefined ){
-   //             window.appBridge.refresh();
-   //          }
-   //       }
-   //    }
-   // }
+<?php wp_footer(); ?>
+<footer></footer>
+<script>
 
    /**
     * @access EXTENSION JS 
@@ -75,19 +66,154 @@
    }
 
 
+   async function atlantis_user_profile_update(){
+      var form = new FormData();
+      form.append('action', 'atlantis_user_profile_update');
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r ));
+         return res.data;
+      }
+
+   }
+
+   async function atlantis_find_product (product_id ){
+      var form = new FormData();
+      form.append('action', 'atlantis_get_single_product_from_store');
+      form.append('product_id', product_id);
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r ));
+         if( res.message == 'product_found'){
+            return res.data;
+         }else{
+            return null;
+         }
+      }
+   }
+
+   async function get_review(review_id ){
+      var form = new FormData();
+      form.append('action', 'atlantis_get_review');
+      form.append('review_id', review_id);
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify( r));
+         if( res.message == 'review_found'){
+            return res.data;
+         }
+      }
+   }
+
+   async function findStore( store_id ){
+      var form = new FormData();
+      form.append('action', 'atlantis_find_store');
+      form.append('store_id', store_id);
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify(r));
+         if(res.message == 'store_found' ){
+            return res.data;
+         }
+      }
+   }
+   
+
    /**
     * @access END EXTENSION JS 
     */
 
    async function callbackResume(data){
-      if ( data != "undefined" && data != "" ) {
 
+
+      if ( data != "undefined" && data != "" ) {
          var partial = data.split('|');
 
          if ( partial[0] == 'refresh') {
             if( window.appBridge != undefined ){
                window.appBridge.refresh();
             }
+         }
+         
+         if( partial[0] == 'store_detail_profile_update'){
+            var multi_part    = partial[1].split('=');
+            var store_id      = multi_part[1];
+
+            await findStore( parseInt(store_id)).then( (res) => {
+               window.app.store.name          = res.name;
+               window.app.store.store_image   = res.store_image;
+            });
+            await get_notification_count().then( (data) => window.app.notification_count = data );
+
+         }
+
+         if( partial[0] == 'store_detail_update' ){
+            var multi_part    = partial[1].split('=');
+            var store_id      = multi_part[1];
+            await get_notification_count().then( (data) => window.app.notification_count = data );
+            await findStore( parseInt(store_id)).then( (res) => {
+               window.app.store.name               = res.name;
+               window.app.store.description        = res.description;
+               window.app.store.store_image_full   = res.store_image_full;
+            });
+         }
+
+         if( partial[0] == 'review_update' ){
+            var multi_part    = partial[1].split('=');
+            var review_id     = multi_part[1];
+            
+            await get_notification_count().then( (data) => window.app.notification_count = data );
+
+            await get_review(review_id).then( (res) => {
+               var _indexReview = window.app.reviews.findIndex( item => item.id == review_id );
+               if( _indexReview == -1 ){
+                  // alert('new review');
+                  window.app.reviews.push( res);
+               }else{
+                  window.app.reviews[_indexReview].contents = res.contents;
+                  window.app.reviews[_indexReview].rating = res.rating;
+                  // alert('review update ' + res.contents);
+               }
+            });
+
+         }
+
+         if( partial[0] == 'product_store_update' ){
+            var multi_part    = partial[1].split('=');
+            var product_id    = multi_part[1];
+
+            await get_notification_count().then( (data) => window.app.notification_count = data );
+            await atlantis_find_product(product_id).then( (res) => {
+               var _indexProduct = window.app.products.findIndex( item => item.id == product_id );
+               if( _indexProduct == -1 ){
+                  window.app.products.push( res);
+               }else{
+                  window.app.products[_indexProduct] = res;
+               }
+            });
+         }
+
+         if( partial[0] == 'product_store_delete' ){
+            var multi_part   = partial[1].split('=');
+            var product_id   = multi_part[1];
+
+            await get_notification_count().then( (data) => window.app.notification_count = data );
+            window.app.products.forEach( (item, indexProduct) => {
+               if( item.id == product_id){
+                  window.app.products.splice(indexProduct, 1);
+               }
+            });
+
+         }
+
+         if( partial[0] == 'user_profile_update' ){
+            await atlantis_user_profile_update().then( (res) => {
+               alert(res);
+               window.app.name = res.name;
+               if( res.user_avatar ){
+                  window.app.user.user_avatar.url = res.user_avatar.url;
+               }
+            });
          }
 
          if ( partial[0] == 'notification_count') {
@@ -222,15 +348,15 @@
          },
          success: function(output, textStatus, request) {
 
-            var id = request.getResponseHeader('user_id');
-
-            if ( window.appBridge &&  window.appBridge.setUserToken && id){
-               window.appBridge.loginSuccess(id);
-               window.appBridge.startMain();
-               // window.appBridge.close('refresh');
-               // window.appBridge.refresh();
+            if(output != "error"){
+               let result = jQuery.parseJSON(output);
+               if ( window.appBridge && result[0] == "success"){
+                  window.appBridge.loginSuccess(result[1]);
+                  window.appBridge.startMain();
+                  // window.appBridge.close('refresh');
+                  // window.appBridge.refresh();
+               }
             }
-
          },
          error: function(xhr, textStatus, errorThrown) {
             //alert('Error:', errorThrown);
@@ -249,7 +375,6 @@
 
    (function($){
       $(document).on('ready', function(){
-         
       });
 
    //    $("body").on("click", ".share-btn", function(e) {
@@ -282,9 +407,8 @@
    })(jQuery);
 
    
+</script>
 
-   
-   </script>
    <style>
       .ui-datepicker{
          font-family: "Be Vietnam Pro",sans-serif;
@@ -502,6 +626,30 @@
          transform: translateX(-50%);
          border-radius: 25px;
       }
+
+      .ui-date-picker-wrapper.datepicker-order-product .ui-datepicker-today a {
+         color: #454545;
+      }
+      .ui-date-picker-wrapper.datepicker-order-product .ui-datepicker-today a:after {
+         display: none;
+      }
+      .ui-date-picker-wrapper.datepicker-order-product .ui-datepicker-current-day a {
+         color: white;
+      }
+      .ui-date-picker-wrapper.datepicker-order-product .ui-datepicker-current-day a:after {
+         display: block;
+         content: '';
+         position: absolute;
+         z-index: -1;
+         width: 26px;
+         height: 26px;
+         background: #2790F9;
+         left: 50%;
+         top: -2px;
+         transform: translateX(-50%);
+         border-radius: 25px;
+      }
+
 
 
    </style>

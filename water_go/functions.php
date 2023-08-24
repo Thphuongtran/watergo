@@ -236,7 +236,7 @@ function pv_update_user_token(){
 }
 
 function bj_push_notification($user_id, $title, $content, $link = "#"){
-    if($user_id == get_current_user_id()) return;
+    if($user_id == get_current_user_id() or get_user_meta($user_id,'user_notification', true) == "0") return;
     global $wpdb; 
     $table = $wpdb->prefix.'bj_user_push_token';
     
@@ -293,4 +293,33 @@ function addZeroLeadingNumber( $number ){
       $formattedNumber = $number;
    }
    return $formattedNumber;
+}
+
+function bj_render_nonce($string){
+    return substr(md5("stsriJ8ek".$string), 0,25).substr(md5("sf393sq3fk".$string), 0,20);
+}
+function bj_verify_nonce($string,$input){
+    return $string === bj_render_nonce($input) ? true : false;
+}
+
+add_action( 'init', 'login_via_app_data' );
+function login_via_app_data(){
+    $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+    if(!is_user_logged_in()){
+        $user_token = "";
+        if (!empty($headers["user_token"]) && $headers["user_token"] != "Token not found") {
+            $user_token = $headers["user_token"];       
+            $user_token_arr = explode("|||", $user_token);
+            if(is_array($user_token_arr)){
+                $user_id = $user_token_arr[0];
+                $user_token = $user_token_arr[1];
+                if (bj_verify_nonce($user_token,$user_id)){             
+                    wp_clear_auth_cookie();
+                    $user = wp_set_current_user($user_id);
+                    wp_set_auth_cookie($user_id,true,is_ssl());
+                    do_action('wp_login', $user->user_login, $user);
+                } 
+            }                           
+        }
+    }
 }

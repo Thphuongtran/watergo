@@ -39,11 +39,11 @@ function atlantis_get_store_id(){
 function atlantis_get_store_nearby(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_store_nearby' ){
 
-      $lat     = isset($_POST['lat'])     ? $_POST['lat'] : 10.780900239854994;
-      $lng     = isset($_POST['lng'])     ? $_POST['lng'] : 106.7226271387539;
-      $how_far = isset($_POST['how_far']) ? $_POST['how_far'] : 5; // 5km default
+      $lat     = isset($_POST['lat'])     ? $_POST['lat'] : 0;
+      $lng     = isset($_POST['lng'])     ? $_POST['lng'] : 0;
+      $how_far = isset($_POST['how_far']) ? $_POST['how_far'] : 10; // 5km default
 
-      if($lat == 0.0 && $lng == 0.0){
+      if($lat == 0 && $lng == 0){
          wp_send_json_error(['message' => 'store_location_not_found']);
          wp_die();
       }
@@ -221,20 +221,27 @@ function atlantis_store_profile_edit(){
       global $wpdb;
 
       // get location store when update location
-      $id = isset($_POST['id']) ? $_POST['id'] : 0;
-      $owner = isset($_POST['owner']) ? $_POST['owner'] : '';
-      $name = isset($_POST['name']) ? $_POST['name'] : '';
-      $description = isset($_POST['description']) ? $_POST['description'] : '';
-      $address = isset($_POST['address']) ? $_POST['address'] : '';
-      $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
-      //$email = isset($_POST['email']) ? $_POST['email'] : '';
+      $id            = isset($_POST['id']) ? $_POST['id'] : 0;
+      $owner         = isset($_POST['owner']) ? $_POST['owner'] : '';
+      $name          = isset($_POST['name']) ? $_POST['name'] : '';
+      $description   = isset($_POST['description']) ? $_POST['description'] : '';
+      $address       = isset($_POST['address']) ? $_POST['address'] : '';
+      $phone         = isset($_POST['phone']) ? $_POST['phone'] : '';
+
+      $password      = isset($_POST['password']) ? $_POST['password'] : '';
+      $storeType     = isset($_POST['storeType']) ? $_POST['storeType'] : '';
       
-      $imageUpload = isset($_FILES['imageUpload']) ? $_FILES['imageUpload'] : null;
+      $imageUpload   = isset($_FILES['imageUpload']) ? $_FILES['imageUpload'] : null;
 
       if( $id == 0 ){
          wp_send_json_error(['message' => 'store_edit_error' ]);
          wp_die();
-      } 
+      }
+
+      if( $storeType == '' ){
+         wp_send_json_error(['message' => 'store_edit_error' ]);
+         wp_die();
+      }
 
 
       $phone = str_replace(array('-', '.', ' '), '', $phone);
@@ -255,8 +262,8 @@ function atlantis_store_profile_edit(){
 
       //$res_location = func_atlantis_get_location( $address );
 
-      $latitude   = $_POST['latitude'];
-      $longitude  = $_POST['longitude'];
+      $latitude   = isset($_POST['latitude']) ? $_POST['latitude'] : 0;
+      $longitude  = isset($_POST['longitude']) ? $_POST['longitude'] : 0;
 
       // wp_send_json_success(['message' => 'bug', 'res' => $res_location]);
       // wp_die();
@@ -268,25 +275,10 @@ function atlantis_store_profile_edit(){
          'address'      => $address,
          'phone'        => $phone,
          'latitude'     => $latitude,
-         'longitude'    => $longitude
+         'longitude'    => $longitude,
+         'store_type'   => $storeType
       ], ['id' => $id ]);
 
-      // UPDATE EMAIL USER
-      // if( $email != '' || $email != null){
-         
-      //    $email_exists = get_user_by('email', $email);
-      //    $current_user = wp_get_current_user();
-
-      //    if( $current_user->user_email != $email ){
-      //       if( $email_exists == false ){
-      //          wp_update_user($update_data);
-      //       }else{
-      //          wp_send_json_success([ 'message' => 'email_already_exists' ]);
-      //          wp_die();   
-      //       }
-      //    }
-      // }
-      
       // find store already have image?
       // override when upload image
       if( $imageUpload != null ){
@@ -308,6 +300,20 @@ function atlantis_store_profile_edit(){
             ]);
          }
       }
+
+      // CHANGE PASSWORD
+      if( $password != '' ){
+         $user_id = get_current_user_id();
+         $user = get_user_by('id', $user_id);
+         wp_set_password($password, $user_id);
+         $credentials = array(
+            'user_login'    => $user->user_login,
+            'user_password' => $password,
+            'remember'      => true,
+         );
+         wp_signon($credentials);
+      }
+
       wp_send_json_success([ 'message' => 'store_profile_update_ok' ]);
       wp_die();   
    

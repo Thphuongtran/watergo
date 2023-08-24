@@ -1,63 +1,120 @@
 var components_weekly_select = {
    template: `
-      <div v-html='html'></div>
+      <div v-for="slot in slots" :key="slot.id">
+         <div class="group-select-delivery-time group-select-delivery-time_parent">
+            <div class="btn-wrapper-order">
+               <select @change='btn_select_day($event, slot.day)' v-model="slot.day" class="btn_select_weekly_day btn-dropdown">
+                  <option value='' selected disabled>Select day</option>
+                  <option :disabled="isDayDisabled(day_of_week, slot.id)" 
+                     v-for="(day_of_week, indexWeek) in dayOfWeeks" 
+                     :value="day_of_week" 
+                     :key="indexWeek">
+                     {{ day_of_week }}
+                  </option>
+               </select>
+            </div>
+            <div class="btn-wrapper-order">
+               <select v-model="slot.time" class="btn_select_weekly_time btn-dropdown">
+                  <option value='' selected disabled>Select time</option>
+                  <option 
+                     v-for="(hour, indexHour) in hourSelect" 
+                     :value="hour.value" 
+                     :key="indexHour">
+                     {{ hour.label }}
+                  </option>
+               </select>
+            </div>
+         </div>
+      </div>
    `,
    data(){
       return{
+         dayOfWeeks: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ],
+
+         hourSelect: [
+            {hour: 7,  value: '7:00-8:00',   label: '7:00  -  8:00' },
+            {hour: 8,  value: '8:00-9:00',   label: '8:00  -  9:00' },
+            {hour: 9,  value: '9:00-10:00',  label: '9:00 -   10:00'},
+            {hour: 10, value: '10:00-11:00', label: '10:00  -  11:00'},
+            {hour: 11, value: '11:00-12:00', label: '11:00  -  12:00'},
+            {hour: 12, value: '12:00-13:00', label: '12:00  -  13:00'},
+            {hour: 13, value: '13:00-14:00', label: '13:00  -  14:00'},
+            {hour: 14, value: '14:00-15:00', label: '14:00  -  15:00'},
+            {hour: 15, value: '15:00-16:00', label: '15:00  -  16:00'},
+            {hour: 16, value: '16:00-17:00', label: '16:00  -  17:00'},
+            {hour: 17, value: '17:00-18:00', label: '17:00  -  18:00'},
+            {hour: 18, value: '18:00-19:00', label: '18:00  -  19:00'},
+            {hour: 19, value: '19:00-20:00', label: '19:00  -  20:00'},
+            {hour: 20, value: '20:00-21:00', label: '20:00  -  21:00'},
+         ],
+
          dateWeekAuto: [],
          max_dom: 7,
-         autoincrement: 0,
-         html: ''
+         html: '',
+         
+         slots: [],
+      }
+   },
+
+   watch: {
+      slots: {
+         handler( slot ){
+            this.$root.delivery_data.weekly = slot;
+
+            
+         },
+         deep: true
       }
    },
 
    methods: {
 
-      createWeekly(){
-         this.autoincrement = this.autoincrement + 1;
-         if( this.autoincrement < this.max_dom ){
-            this.html += `
-            <div 
-               class='group-select-delivery-time group-select-delivery-time_parent'
-            >
-               <div class='btn-wrapper-order'>
-                  <select class='btn_select_weekly_day btn_select_weekly_day_parent btn-dropdown'>
-                     <option value='' selected disabled>Select day</option>
-                     <option value="Monday">Monday</option>
-                     <option value="Tuesday">Tuesday</option>
-                     <option value="Wednesday">Wednesday</option>
-                     <option value="Thursday">Thursday</option>
-                     <option value="Friday">Friday</option>
-                     <option value="Saturday">Saturday</option>
-                     <option value="Sunday">Sunday</option>
-                  </select>
-               </div>
-               <div class='btn-wrapper-order'>
-                  <select class='btn_select_weekly_time btn-dropdown'>
-                     <option value='' selected disabled>Select time</option>
-                     <option value='7:00-8:00'>7:00  -  8:00</option>
-                     <option value='8:00-9:00'>8:00  -  9:00</option>
-                     <option value='9:00-10:00'>9:00 -   10:00</option>
-                     <option value='10:00-11:00'>10:00  -  11:00</option>
-                     <option value='11:00-12:00'>11:00  -  12:00</option>
-                     <option value='12:00-13:00'>12:00  -  13:00</option>
-                     <option value='13:00-14:00'>13:00  -  14:00</option>
-                     <option value='14:00-15:00'>14:00  -  15:00</option>
-                     <option value='15:00-16:00'>15:00  -  16:00</option>
-                     <option value='16:00-17:00'>16:00  -  17:00</option>
-                     <option value='17:00-18:00'>17:00  -  18:00</option>
-                     <option value='18:00-19:00'>18:00  -  19:00</option>
-                     <option value='19:00-20:00'>19:00  -  20:00</option>
-                     <option value='20:00-21:00'>20:00  -  21:00</option>
-                  </select>
-               </div>
-            </div>`;
+      btn_select_day(e, day){
+         if( day != undefined ){
+            this.slots.forEach( ( item, indexSlot ) => {
+               if( item.day == day ) {
+                  item.datetime = this.get_datetime( day );
+               }
+            });
          }
       },
 
-      onSelect(e){
-         console.log(e);
-      }
+
+      get_datetime( day_of_week ){
+         var _find = this.dateWeekAuto.find( item => item.dayOfWeek == day_of_week );
+         if( _find ){
+            return _find.date;
+         }else{
+            return '';
+         }
+      },
+
+      createWeekly( reset = false ){
+         if( reset == false ){
+            if( this.slots.length < this.max_dom ){
+               const newSlot = {
+                  id: this.slots.length,
+                  day: this.get_datetime(this.slots.day),
+                  time: '',
+                  datetime: '',
+               };
+               this.slots.push(newSlot);
+            }
+         }else{
+            this.slots = [];
+            const newSlot = {
+               id: 0,
+               day: '',
+               time: '',
+               datetime: '',
+            };
+            this.slots.push(newSlot);
+         }
+      },
+
+      isDayDisabled(selectedDay, slotIndex) {
+         return this.slots.some((slot, index) => index !== slotIndex && slot.day === selectedDay);
+      },
 
    },
 
@@ -71,13 +128,7 @@ var components_weekly_select = {
 
    mounted(){
       this.dateWeekAuto = this.$root.dateWeekAuto;
-      
-      this.$el.addEventListener('change', (event) => {
-         if (event.target.classList.contains('btn_select_weekly_day_parent')) {
-            this.onSelect(event);
-         }
-      });
-
+      this.createWeekly(true);
    }
 
 };

@@ -46,6 +46,25 @@ add_action( 'wp_ajax_atlantis_get_current_user_id', 'atlantis_get_current_user_i
 add_action( 'wp_ajax_nopriv_atlantis_get_user_notification', 'atlantis_get_user_notification' );
 add_action( 'wp_ajax_atlantis_get_user_notification', 'atlantis_get_user_notification' );
 
+add_action( 'wp_ajax_nopriv_atlantis_user_profile_update', 'atlantis_user_profile_update' );
+add_action( 'wp_ajax_atlantis_user_profile_update', 'atlantis_user_profile_update' );
+
+function atlantis_user_profile_update(){
+   if( isset($_POST['action'] ) && $_POST['action'] == 'atlantis_user_profile_update' ){
+      $user_id       = get_current_user_id();
+      $user          = get_user_by('id', $user_id);
+      $user_avatar   = func_atlantis_get_images($user->data->ID, 'user_avatar', true);
+
+      $data          = [];
+
+      $data['user_avatar'] = $user_avatar;
+      $data['name']        = get_user_meta($user->data->ID, 'first_name', true);
+      
+      wp_send_json_success(['message' => 'get_user_profile_update', 'data' => $data ]);
+      wp_die();
+   }
+}
+
 function atlantis_get_user_notification(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_user_notification' ){
 

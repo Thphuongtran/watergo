@@ -20,7 +20,7 @@
       </div>
 
       <div class='support-bottomsheet no-shadow'>
-         <button @click='supportAdd' class='btn btn-primary'>Send Message</button>
+         <button @click='supportAdd' class='btn btn-primary' style="max-width: inherit;">Send Message</button>
       </div>
    </div>
    <div v-if='loading == true'>

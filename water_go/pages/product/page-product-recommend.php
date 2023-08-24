@@ -68,11 +68,8 @@
       </div>
    </div>
 </div>
-<script type='module'>
-
-var { createApp } = Vue;
-
-createApp({
+<script>
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
@@ -124,7 +121,10 @@ createApp({
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id);},
-      goBack(){ window.goBack(); },
+
+      goBack(){
+         window.location.href = '?appt=X&data=cart_count|notification_callback=notification_count';
+      },
 
       get_text_filter(  ){
          switch( this.sortFeatureCurrentValue ){
@@ -164,22 +164,32 @@ createApp({
             form.append('action', 'atlantis_load_product_recommend');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', paged );
-            
+            form.append('paged', paged );            
             var r = await window.request(form);
-            console.log(this.which_query);
-            console.log(r);
-
             if( r != undefined ){
-
                var res = JSON.parse( JSON.stringify( r));
                if( res.message == 'product_found' ){
-                  // this.products.push(...res.data );
+
                   res.data.forEach(item => {
                      if (! this.products.some(existingItem => existingItem.id === item.id)) {
                         this.products.push(item);
                      }
                   });
+
+                  if( this.products.length < 4 && this.products.length < 6 ){
+                     this.which_query = 'discount';
+                     var _rest_of = 10 - this.products.length;
+                     if( _rest_of <= 6 ){ rest_of = 4; }
+                     if( _rest_of <= 4 ){ _rest_of = 6; }
+                     await this.get_product_discount(0, _rest_of);
+
+                     if( this.products.length < 10 ){
+                        this.which_query = 'random';
+                        _rest_of = 10 - this.products.length;
+                        await this.get_product_random(0, 6);
+                     }
+                  }
+
                }else{
                   this.which_query = 'discount';
                }
@@ -192,13 +202,15 @@ createApp({
       /**
        * @access PRODUCT DISCOUNT
        */
-      async get_product_discount( paged ){
+      async get_product_discount( paged, perPage = null ){
+         if( perPage == null ) perPage = 10;
          if( this.which_query == 'discount' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend_discount');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
             form.append('paged', paged );
+            form.append('perPage', perPage );
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -208,6 +220,11 @@ createApp({
                         this.products.push(item);
                      }
                   });
+                  if( this.products.length < 10 ){
+                     var res_of = 10 - this.products.length;
+                     this.which_query = 'random';   
+                     this.get_product_random(0, res_of);
+                  }
                }else{
                   this.paged = 0;
                   this.which_query = 'random';
@@ -222,15 +239,17 @@ createApp({
        * @access PRODUCT RANDOM
        */
 
-      async get_product_random( paged ){
+      async get_product_random( paged, perPage = null ){
+         if( perPage == null ) perPage = 10;
+
          if( this.which_query == 'random' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend_random');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
             form.append('paged', paged );
+            form.append('perPage', perPage );
             var r = await window.request(form);
-            console.log(r)
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'product_found' ){
@@ -331,4 +350,6 @@ createApp({
    },
 
 }).mount('#app');
+
+window.app = app;
 </script>

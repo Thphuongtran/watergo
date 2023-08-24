@@ -15,12 +15,12 @@
       </div>
 
       <div class='entry-content-support'>
-         <div class='time'> {{ timestamp_to_date(support.time_answer) }} </div>
+         <div class='time'> {{ timestamp_to_date(support.time_created) }} </div>
          <div class='question'>
-            {{ support.question }}
+            {{ support.question.replace(/\\/g, '') }}
          </div>
          <div class='answer'>
-            {{ support.answer }}
+            {{ support.answer.replace(/\\/g, '') }}
          </div>
       </div>
    </div>

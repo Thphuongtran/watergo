@@ -61,11 +61,6 @@ function atlantis_logout(){
          wp_send_json_error(['message' => 'no_login_invalid' ]);
          wp_die();
       }
-
-      global $wpdb;
-      $table = $wpdb->prefix."bj_user_push_token";  
-      $wpdb->update($table , ["token" => "","status" => ""], ["user_id" => $user_id],["%s","%s"],["%d"]);
-
       wp_logout();
       wp_send_json_success(['message' => 'logout_success']);
       wp_die();

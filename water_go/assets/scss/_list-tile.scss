@@ -45,10 +45,6 @@
 		display: flex;
 		flex-flow: row wrap;
 		align-items: center;
-      svg{
-         position: relative;
-         top: -2px;
-      }
 	}
 	
 	.rating{
@@ -445,12 +441,6 @@
          max-width: 165px;
          width: auto;
 
-         .logo-svg{
-            flex: 0 21px;
-            display: flex;
-            align-items: center;
-         }
-
          &.exapend-size{
             max-width: 100%;
             width: 100%;
@@ -822,7 +812,7 @@
       }
       
       .product-bagde{
-         width: 68px;
+         width: 75px;
          height: 20px;
          font-weight: 400;
          font-size: 10px;
@@ -834,6 +824,7 @@
          }
 
          .out-of-stock{
+            white-space: nowrap;
             color: #7B7D83;
             border: 1px solid #7B7D83;
          }

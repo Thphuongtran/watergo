@@ -136,12 +136,13 @@ function atlantis_add_admin_support(){
       $answer     = isset($_POST['answer'])     ? $_POST['answer'] : '';
 
       global $wpdb;
-      $wpdb->insert('wp_watergo_admin_supports', [
+      $wpdb->insert('wp_watergo_supports', [
          'question' => $question, 
          'answer' => $answer, 
          'time_created' => time(),
-         'time_modified' => time(),
-         'admin_id' => $user_id
+         'user_id' => $user_id,
+         'admin_id' => $user_id,
+         'is_read' => 1
       ]);
 
       wp_send_json_success(['message' => 'add_admin_supports_ok']);
@@ -221,10 +222,11 @@ function atlantis_update_user_admin_support(){
       $wpdb->update('wp_watergo_supports',[
          'answer' => $answer,
          'time_answer' => time(),
-         'admin_id' => $user_id,
+         'is_read' => "0",
       ], ['id' => $id ]);
 
       wp_send_json_success(['message' => 'update_admin_supports_ok']);
       wp_die();
    }
 }
+

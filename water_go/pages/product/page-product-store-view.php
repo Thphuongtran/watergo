@@ -42,7 +42,6 @@
                   <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                </span>
-
             </div>
 
             <div v-show='product_type == "water"' class='form-title'>Brand</div>
@@ -62,7 +61,7 @@
 
             <div class='form-control'>
                <div class='form-title'>Price</div>
-               <input v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ'>
+               <input inputmode='numeric' v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ'>
             </div>
                <!-- <div class='form-control'>
                   <div class='form-title'>Stock</div>
@@ -78,17 +77,20 @@
 
             <div v-show='product.has_discount == 1' class='form-title'>Percentage Discount</div>
             <div v-show='product.has_discount == 1' class='form-control'>
-               <input v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='Enter Percentage'>
+               <input 
+                  inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='Enter Percentage'>
             </div>
 
             <div v-show='product.has_discount == 1' class='group-form-control'>
                <div class='form-control'>
                   <div class='form-title'>From</div>
-                  <input id='discount_from' ref='discount_from' type="text" readonly placeholder='dd-mm-yyyy'>
+                  <input 
+                     id='discount_from' ref='discount_from' type="text" readonly placeholder='dd-mm-yyyy'>
                </div>
                <div class='form-control'>
                   <div class='form-title'>To</div>
-                  <input id='discount_to' ref='discount_to' type="text" readonly placeholder='dd-mm-yyyy'>
+                  <input 
+                     id='discount_to' ref='discount_to' type="text" readonly placeholder='dd-mm-yyyy'>
                </div>
             </div>
 
@@ -113,12 +115,11 @@
 
             <div v-show='product_type == "ice"' class='form-title'>Length * Width</div>
             <div v-show='product_type == "ice"' class='form-control'>
-               <!-- <input v-model='product.length_width' type="text" placeholder='_____ * _____ mm'> -->
                <div class='form-type-length-width'>
                   <div class='form-type-length-width-wrapper'>
-                  <input v-model='size_length' class='type-length' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
+                  <input inputmode='numeric' v-model='size_length' class='type-length' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
                   <span class='placeholder'>*</span>
-                  <input v-model='size_width' class='type-width' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
+                  <input inputmode='numeric' v-model='size_width' class='type-width' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
                   <span class='placeholder'> mm</span>
                   </div>
                </div>
@@ -160,7 +161,7 @@
 
             <div class='form-title'>Product Description</div>
             <div class='form-control form-select'>
-               <textarea v-model='product.description' placeholder='Enter Product Description'></textarea>
+               <textarea @input='autoResize' ref='textarea' v-model='product.description' placeholder='Enter Product Description'></textarea>
             </div>
 
             <div class='form-title'>Photo</div>
@@ -211,9 +212,6 @@
                <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'>Save</button>
                <button @click='btn_modal_open' v-if='action == "edit"' class='btn btn-outline'>Delete</button>
             </div>
-
-            
-
          </div>
       </div>
 
@@ -236,10 +234,9 @@
    </div>
 
 </div>
-<script type='module'>
+<script>
 
-var { createApp } = Vue;
-createApp({
+var app = Vue.createApp({
    data (){
 
       return {
@@ -300,6 +297,10 @@ createApp({
             //
             has_discount:     false,
 
+            discount_percent: false,
+            discount_from:    false,
+            discount_to:      false,
+
             // image upload
             uploadImages:     false,
             productImages:    false,
@@ -308,6 +309,7 @@ createApp({
    },
 
    watch: {
+      
 
       'product.category': function( val ){
          if( val.value != 0){ this.check_error.select_category = true; }
@@ -381,11 +383,34 @@ createApp({
          if( val >= 100 ){
             this.product.discount_percent = 100;
          }
+         if( val == null ){
+            this.product.discount_percent = null;
+         }
+         if( val != undefined && val != ''){
+            this.check_error.discount_percent = true;
+         }else{
+            this.check_error.discount_percent = false;
+         }
+      },
+      
+      'product.discount_from': function(val){
+         if( val != undefined && val != '' && val != 0){
+            this.check_error.discount_from = true;
+         }else{
+            this.check_error.discount_from = false;
+         }
+      },
+      'product.discount_to': function(val){
+         if( val != undefined && val != '' && val != 0){
+            this.check_error.discount_to = true;
+         }else{
+            this.check_error.discount_to = false;
+         }
       },
 
       uploadImages: {
          handler( image ){
-            if( image.length > 0 ){
+            if( this.uploadImages.length > 0 ){
                this.check_error.uploadImages = true;
             }else{
                this.check_error.uploadImages = false;
@@ -396,7 +421,7 @@ createApp({
 
       productImages: {
          handler( image ){
-            if( image.length > 0 ){
+            if( this.productImages.length > 0 ){
                this.check_error.productImages = true;
             }else{
                this.check_error.productImages = false;
@@ -412,12 +437,26 @@ createApp({
                   val.select_category == true &&
                   val.price == true &&
                   val.description == true &&
-                  ( val.uploadImages == true || val.productImages == true) &&
                   val.ice_weight == true &&
                   val.size_length == true &&
                   val.size_width == true
                ){
                   this.is_can_action = true;
+                  // OPTION DISCOUNT
+                  if( val.has_discount == true ){
+                     if( val.discount_percent == true && val.discount_from == true && val.discount_to == true ){
+                        this.is_can_action = true;
+                     }else{
+                        this.is_can_action = false;
+                     }
+                  }
+
+                  if( val.uploadImages == false && val.productImages == false && this.action == 'edit'){
+                     this.is_can_action = false;
+                  } else if(val.uploadImages == false && this.action == 'add'){
+                     this.is_can_action = false;
+                  }
+
                }else{
                   this.is_can_action = false;
                }
@@ -434,6 +473,21 @@ createApp({
                   val.water_volume == true
                ){
                   this.is_can_action = true;
+                  // OPTION DISCOUNT
+                  if( val.has_discount == true ){
+                     if( val.discount_percent == true && val.discount_from == true && val.discount_to == true ){
+                        this.is_can_action = true;
+                     }else{
+                        this.is_can_action = false;
+                     }
+                  }
+
+                  if( val.uploadImages == false && val.productImages == false && this.action == 'edit'){
+                     this.is_can_action = false;
+                  } else if(val.uploadImages == false && this.action == 'add'){
+                     this.is_can_action = false;
+                  }
+
                }else{
                   this.is_can_action = false;
                }
@@ -488,8 +542,18 @@ createApp({
    },
 
    methods: {
+      autoResize() {
+         const scrollHeight = this.$refs.textarea.scrollHeight;
+         const maxHeight = 125;
+         if (scrollHeight > maxHeight) {
+            this.$refs.textarea.style.height = 'auto';
+            this.$refs.textarea.style.height = this.$refs.textarea.scrollHeight + 'px';
+         }
+      },
+
       btn_modal_open(){this.popup_delete_product = true;},
       btn_modal_cancel(){this.popup_delete_product = false;},
+
       async btn_modal_confirm(){
          this.popup_delete_product = false;
          this.loading = true;
@@ -509,7 +573,8 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'action_product_ok' ){
-               this.goBack();
+               var _product_id = res.data;
+               this.goBackDelete(_product_id);
             }
          }
 
@@ -591,7 +656,8 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'action_product_ok'){
-                  this.goBack();
+                  var _product_id = res.data;
+                  this.goBackUpdate(_product_id);
                }else{
                   this.loading = false;
                }
@@ -614,12 +680,12 @@ createApp({
             form.append('product_description',  this.product.description);
 
             var r = await window.request(form);
-            // console.log(r)
 
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'action_product_ok'){
-                  this.goBack();
+                  var _product_id = res.data;
+                  this.goBackUpdate(_product_id);
                }else{
                   this.loading = false;
                }
@@ -671,6 +737,10 @@ createApp({
                this.water_volume.value       = this.product.volume;
                this.ice_weight.value         = this.product.weight;
 
+               if( this.product.discount_percent == 0 ){
+                  this.product.discount_percent = null;
+               }
+               
                // FILL DISCOUNT
                if(this.product.has_discount == 1){
                   if( this.product.discount_from != null && this.product.discount_from != 0 ) {
@@ -695,6 +765,7 @@ createApp({
 
             }
          }
+         console.log();
 
       },
 
@@ -739,7 +810,17 @@ createApp({
          if( product_type == 'ice'){ this.leading_title = 'Add Ice Product'; }
       },
 
-      goBack(){ window.goBack(true)},
+      goBack(){ 
+         window.location.href = '?appt=X&data=notification_count'; 
+      },
+
+      goBackUpdate(product_id){ 
+         window.location.href = `?appt=X&data=product_store_update|product_id=${product_id}`;
+      },
+      goBackDelete(product_id){ 
+         window.location.href = `?appt=X&data=product_store_delete|product_id=${product_id}`;
+      },
+      
 
    },
 
@@ -761,6 +842,7 @@ createApp({
       }
 
       if( action == 'edit' ){
+
          await this.get_product(product_id);
          this.leading_title = this.product.name;
          if( this.product.mark_out_of_stock == null ){
@@ -797,6 +879,9 @@ createApp({
                onSelect: function(dateText, inst){
                   if(dateText != undefined || dateText != '' || dateText != null){
                      $('#discount_from').attr('value', dateText); 
+
+                     window.app.product.discount_from = dateText;
+
                      var discount_from = $('#discount_from').datepicker('getDate');
                      // Calculate the next day
                      var nextDay = new Date(discount_from);
@@ -822,6 +907,7 @@ createApp({
                onSelect: function(dateText, inst){
                   if(dateText != undefined || dateText != '' || dateText != null){
                      $('#discount_to').attr('value', dateText); 
+                     window.app.product.discount_to = dateText;
                   }
                },
                onClose: function(dateText, inst){
@@ -834,9 +920,12 @@ createApp({
             }
          });
       })(jQuery);
+      setTimeout( () => {this.autoResize();}, 0);
       this.loading = false;
    },
 
 }).mount('#app');
+
+window.app = app;
 
 </script>

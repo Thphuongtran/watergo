@@ -25,7 +25,7 @@ function app_social_process_user_login($email, $name){
    $sql_user_login_social = "";
 
    if ( is_wp_error($id_new_user) ){
-        echo $id_new_user->get_error_message();
+        echo 'error';
     }else{
          wp_clear_auth_cookie();
          $user = wp_set_current_user($id_new_user);
@@ -39,7 +39,7 @@ function app_social_process_user_login($email, $name){
          setcookie("USER_ID", $id_new_user,time() + 1209600, "/","", 0); 
          setcookie("IS_LOGIN_BY_SN", "true",time()+1209600, "/","", 0);
          setcookie("APP_LOGIN", "true",time()+1209600, "/","", 0);
-         if(is_user_logged_in()) echo 'success'; 
+         if(is_user_logged_in()) echo json_encode(["success",$id_new_user."|||".bj_render_nonce($id_new_user)]) ;
          die();
     }
 }
@@ -56,7 +56,7 @@ function atlantis_social_login(){
          if ($response_access !== false) {
              $data = json_decode($response_access, true);
              if (isset($data['error'])) {
-                 echo 'Lỗi: ' . $data['error'];
+                 echo 'error';
              } else {
                  $email =  isset($data["email"]) ? $data["email"] : "";
                  $name =  isset($data["name"]) ? $data["name"] : "";
@@ -64,13 +64,11 @@ function atlantis_social_login(){
                  app_social_process_user_login($email, $name );
              }
          } else {
-             echo 'Có lỗi xảy ra khi gửi yêu cầu.';
+             echo 'error';
          }
          
          if( $email == "" or $name == "" ){
-            // Can't login because of missing parameters
-            wp_send_json_error(['message' => 'login_social_not_found' ]);
-            wp_die();
+            echo 'error';
          }
       }
 
@@ -82,9 +80,7 @@ function atlantis_social_login(){
             $name    = explode("@",$email)[0];
             app_social_process_user_login($email, $name);
          }else{
-            // _e('Email is required',"umm");
-            wp_send_json_error(['message' => 'login_social_not_found' ]);
-            wp_die();
+            echo 'error';
          }
       }
 
@@ -98,9 +94,7 @@ function atlantis_social_login(){
                $email = $profile['id'].'-zalo@'.$_SERVER['HTTP_HOST'];
                app_social_process_user_login($email, $profile['name']);
             }else{
-               // die("error");
-               wp_send_json_error(['message' => 'login_social_not_found' ]);
-               wp_die();
+               echo 'error';
             }
          }
       }

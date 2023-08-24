@@ -44,7 +44,8 @@ function atlantis_login(){
          wp_die();
       } else {
          // authentication succeeded, redirect to home page
-         wp_send_json_success([ 'message' => 'login_ok' ]);
+         $user_id = $user_login->ID;
+         wp_send_json_success([ 'message' => 'login_ok','token' => $user_id."|||".bj_render_nonce($user_id) ] );
          wp_die();
       }
 
@@ -118,7 +119,7 @@ function atlantis_register_user(){
          $user = wp_set_current_user($user_id);
          wp_set_auth_cookie($user_id,true,is_ssl());
          do_action('wp_login', $user->user_login, $user);               
-         wp_send_json_success([ 'message' => 'register_ok','id' => $user_id ]);           
+         wp_send_json_success([ 'message' => 'register_ok','token' => $user_id."|||".bj_render_nonce($user_id) ]);           
       }     
       wp_die();
    }
@@ -233,7 +234,7 @@ function atlantis_store_login(){
                wp_die();
             } else {
                // authentication succeeded, redirect to home page
-               wp_send_json_success([ 'message' => 'login_ok' ]);
+               wp_send_json_success([ 'message' => 'login_ok','token' => $user_id."|||".bj_render_nonce($user_id) ]);
                wp_die();
             }
 
@@ -330,7 +331,6 @@ function atlantis_store_register(){
       // INSERT TO STORE DB
       global $wpdb;
       $store_id = $wpdb->insert('wp_watergo_store', [
-         'id'           => $user_id,
          'store_type'   => $storeType,
          'owner'        => $owner,
          'name'         => $storeName,
@@ -346,7 +346,12 @@ function atlantis_store_register(){
          wp_die();
       }
 
-      wp_send_json_success([ 'message' => 'register_ok' ]);
+      wp_clear_auth_cookie();
+      $user = wp_set_current_user($user_id);
+      wp_set_auth_cookie($user_id,true,is_ssl());
+      do_action('wp_login', $user->user_login, $user);
+
+      wp_send_json_success([ 'message' => 'register_ok','token' => $user_id."|||".bj_render_nonce($user_id) ]);
       wp_die();
 
 

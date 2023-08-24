@@ -147,7 +147,7 @@
 
 </div>
 
-<script type='module'>
+<script>
 
 var app = Vue.createApp({
    data (){

@@ -34,6 +34,47 @@ function atlantis_get_store_type_product(){
 }
 
 
+add_action( 'wp_ajax_nopriv_atlantis_get_single_product_from_store', 'atlantis_get_single_product_from_store' );
+add_action( 'wp_ajax_atlantis_get_single_product_from_store', 'atlantis_get_single_product_from_store' );
+
+function atlantis_get_single_product_from_store(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_single_product_from_store'){
+      
+      $store_id      = func_get_store_id_from_current_user();
+      // $type_product  = isset($_POST['type_product']) ? $_POST['type_product'] : null;
+      $product_id    = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+
+      if( $product_id == null || null){
+         wp_send_json_error(['message' => 'product_not_found']);
+         wp_die();
+      }
+
+      $products = func_atlantis_get_product_by([
+         'id'                    => $product_id,
+         'get_by'                => 'product_id',
+      ]);
+      
+      if( empty($products )){
+         wp_send_json_error(['message' => 'product_not_found']);
+         wp_die();
+      }
+
+      // GET SOLD PRODUCT + IMAGE PRODUCT
+      foreach( $products as $k => $p ){
+         // SOLD PRODUCT
+         $sold = func_count_sold_product($p->id, $store_id);
+         if( $sold == null ){
+            $products[$k]->sold = 0;
+         }else{
+            $products[$k]->sold = $sold;
+         }
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $products[0] ]);
+      wp_die();
+   }
+}
+
 function atlantis_get_product_from_store(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_product_from_store'){
       
@@ -69,9 +110,6 @@ function atlantis_get_product_from_store(){
 
       wp_send_json_success(['message' => 'product_found', 'data' => $products ]);
       wp_die();
-
-
-
    }
 }
 
@@ -225,7 +263,7 @@ function atlantis_action_product_store(){
                   ]);
                }
             }
-            wp_send_json_success(['message' => 'action_product_ok' ]);
+            wp_send_json_success(['message' => 'action_product_ok', 'data' => $_product_id_insert ]);
             wp_die();
          }
          
@@ -288,9 +326,9 @@ function atlantis_action_product_store(){
             }
 
             // UPDATE FIELD 
-            $updated = $wpdb->update('wp_watergo_products', $args, ['id' => $product_id] );
+            $updated = $wpdb->update('wp_watergo_products', $args, ['id' => $product_id ] );
 
-            wp_send_json_success([ 'message' => 'action_product_ok']);
+            wp_send_json_success([ 'message' => 'action_product_ok', 'data' => $product_id]);
             wp_die();
          }
       }
@@ -312,8 +350,9 @@ function atlantis_action_product_store(){
             $wpdb->delete('wp_watergo_attachment',[ 'related_id' => $product_id ], [ '%d' ]);
          }
          $deleted = $wpdb->delete('wp_watergo_products',[ 'id' => $product_id ], [ '%d' ]);
+
          if( $deleted ){
-            wp_send_json_success([ 'message' => 'action_product_ok']);
+            wp_send_json_success([ 'message' => 'action_product_ok', 'data' => $product_id]);
             wp_die();
          }
          wp_send_json_error([ 'message' => 'action_product_error']);

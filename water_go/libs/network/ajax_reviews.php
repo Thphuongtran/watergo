@@ -295,7 +295,7 @@ function atlantis_event_review(){
          $inserted = $wpdb->insert('wp_watergo_reviews', $args );
 
          if($inserted ){
-            wp_send_json_success(['message' => 'review_insert_ok']);
+            wp_send_json_success(['message' => 'review_insert_ok', 'data' => $wpdb->insert_id ]);
             wp_die();
          }else{
             wp_send_json_error(['message' => 'review_not_found']);
@@ -311,7 +311,7 @@ function atlantis_event_review(){
             'id'        => $review_id
          ]);
          if( $updated ){
-            wp_send_json_success(['message' => 'review_update_ok']);
+            wp_send_json_success(['message' => 'review_update_ok', 'data' => $review_id]);
             wp_die();
          }else{
             wp_send_json_error(['message' => 'review_not_found 2']);
@@ -360,7 +360,7 @@ function atlantis_get_review_store(){
       foreach( $res as $k => $vl ){
          $res[$k]->first_name    = get_user_meta( $vl->user_id, 'first_name', true );
          $res[$k]->nickname      = get_user_meta( $vl->user_id, 'nickname', true );
-         $res[$k]->user_avatar = func_atlantis_get_images($vl->user_id, 'user_avatar', true);
+         $res[$k]->user_avatar   = func_atlantis_get_images($vl->user_id, 'user_avatar', true);
 
          if( $extension == 'small' ){
             if( mb_strlen($vl->contents, 'UTF8-8') >= 72  ){

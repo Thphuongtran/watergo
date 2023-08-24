@@ -149,7 +149,7 @@
             v-if='order != null '
             class='price-total' :class='order.order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <div v-show='order.order_status != "complete" || order.order_status != "cancel"' class='btn-gr'>
-               <button @click='btn_order_status("cancel")' v-if='order.order_status == "ordered"' class='btn btn-outline'>Cancel</button>
+               <!-- <button @click='btn_cancel_order' v-if='order.order_status == "ordered"' class='btn btn-outline'>Cancel</button> -->
                <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn btn-primary'>Confirm</button>
                <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn btn-primary'>Delivering</button>
                <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn btn-primary'>Complete</button>
@@ -161,6 +161,25 @@
 
    </div>
 
+   <div v-show='popup_confirm_cancel == true' class='modal-popup style01 open'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
+         <p class='tt01'>Select Cancellation Reason</p>
+         <ul class='list-Reason'>
+            <li @click='btn_select_reason(reason.label)'
+               v-for='(reason, index) in reason_cancel' :key='index'>
+               <span
+                  :class='reason.active == true ? "active" : ""' 
+                  class='radio-button'></span>
+               <span class='value'>{{ reason.label }}</span>
+            </li>
+         </ul>
+         <div class='actions'>
+            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>Submit</button>
+         </div>
+      </div>
+   </div>
+
 
 </div>
 
@@ -170,6 +189,8 @@ var app = Vue.createApp({
    data (){
       return {
          loading: true,
+
+         popup_confirm_cancel: false,
 
          address_kilometer: 0.0,
          time_shipping: [],
@@ -188,6 +209,40 @@ var app = Vue.createApp({
 
    methods: {
 
+      // PERFORM CANCEL ORDER
+      btn_cancel_order(){this.popup_confirm_cancel = true;},
+      btn_select_reason( key ){
+         this.reason_cancel.some( item => { 
+            if( item.label == key ){ item.active = true;
+            }else{ item.active = false; }
+         });
+      },
+
+      buttonModalCancel(){ 
+         this.popup_confirm_cancel = false; 
+         this.reason_cancel.some(item => item.active = false ); 
+      },
+
+      async buttonModalSubmit_cancel_order(){
+         
+         var isCancel = this.reason_cancel.some(item => item.active == true ); 
+         if( isCancel == true ){
+            this.loading = true;
+            var form = new FormData();
+            form.append('action', 'atlantis_cancel_order');
+            form.append('order_id', this.order.order_id);
+            form.append('order_type', this.order.order_delivery_type);
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'cancel_done' ) {
+                  this.goBack(true);
+               }
+            }
+            this.loading = false;
+         }
+      },
+      
 
       hasMoreThanTwoZeroes(number) {
          const numStr = number.toString();
@@ -231,7 +286,9 @@ var app = Vue.createApp({
       get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
       get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
 
-      goBack(){ window.goBack() },
+      goBack( refresh = false ){ 
+         window.goBack( refresh); 
+      },
 
       async get_time_shipping_order(order_id){
          var form = new FormData();
@@ -311,6 +368,10 @@ var app = Vue.createApp({
 
    },
 
+   update(){
+      window.appbar_fixed();
+   },
+
    async mounted(){
 
       this.loading = true;
@@ -379,9 +440,9 @@ var app = Vue.createApp({
 
       }      
 
-      window.appbar_fixed();
 
       setTimeout(() => {
+         window.appbar_fixed();
          this.loading = false;
       },200);
    },

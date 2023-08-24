@@ -349,10 +349,9 @@ createApp({
                   if(r != undefined ){
                      var res = JSON.parse( JSON.stringify(r));
                      if( res.message == 'register_ok'){
-                        id = res.id;
-                        id = id.toString();
-                        window.appBridge.loginSuccess();                 
-                        window.appBridge.setUserToken(id); 
+
+                        window.appBridge.loginSuccess(res.token);                 
+                        window.appBridge.setUserToken(res.token); 
                         window.appBridge.navigateTo("Home");
                         //this.banner_open = true;
                         // this.gotoNotification('register-success');

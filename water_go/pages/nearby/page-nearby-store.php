@@ -46,11 +46,10 @@
    </div>
 </div>
 
-<script type='module'>
+<script src='<?php echo THEME_URI . '/assets/js/matchHeight.js'; ?>'></script>
+<script>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
@@ -64,10 +63,10 @@ createApp({
    methods: {
       ratingNumber(rating){ return parseFloat(rating).toFixed(1); },
       mathCeilDistance( distance ){ return parseFloat(distance).toFixed(1); },
-      get_current_location(){
+      async get_current_location(){
 
          if( window.appBridge != undefined ){
-            window.appBridge.getLocation().then( (data) => {
+            await window.appBridge.getLocation().then( (data) => {
                if (Object.keys(data).length === 0) {
                   // alert("Error-1 :Không thể truy cập vị trí");
                }else{
@@ -83,10 +82,9 @@ createApp({
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
       goBack(){ window.goBack(); },
    },
-   computed: {
-   },
+   
    async created() {
-      this.get_current_location();
+      await this.get_current_location();
       this.loading = true;
       var form = new FormData();
       form.append('action', 'atlantis_get_store_nearby');
@@ -101,8 +99,16 @@ createApp({
       }
       this.loading = false;
 
+      $(function() {
+         // $('.img').matchHeight();
+         $('.box-wrapper .tt01').matchHeight();
+      });
+
+
       window.appbar_fixed();
    },
 
 }).mount('#app');
+
+window.app = app;
 </script>

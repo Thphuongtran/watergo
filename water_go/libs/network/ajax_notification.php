@@ -105,6 +105,12 @@ function func_atlantis_order_status_notification( $order_id, $send_to, $status )
    
    $link             = get_bloginfo('home') . "/order/?order_page=order-detail&order_id=$order_id&hash_id=". $hash_id ."&appt=N";
 
+   // LINK CANCEL
+   if( $send_to == 'store' && $status == 'cancel'){
+      $link      = get_bloginfo('home') . '/order/?order_page=order-store-detail&order_id='. $order_id .'&hash_id='. $hash_id .'&appt=N';
+   }
+
+
    $time_created     = atlantis_current_datetime();
 
    $sql_clone = "INSERT INTO wp_watergo_notification(

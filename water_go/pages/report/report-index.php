@@ -9,25 +9,20 @@
                   Report
 
                   <div class='datetime-wrapper'>
-                     <span @click='btn_open_datetime' class='datetime-display'>{{display_datetime}}</span>
-                     <!-- <input @click='timePicker' id='timePicker' class='datetime-display'> -->
-
-                     <ul v-show='open_datetime' class='dropdown-datetime'>
-                        <li
-                           @click='select_date(date)'
-                           v-for='( date, keyDate) in getPastDaysInMonth ' :key='keyDate'
-                        >
-                           {{ date }}   
-                        </li>
-                     </ul>
-
+                     <!-- <span id='datepicker' class='datetime-display'>{{display_datetime}}</span> -->
+                     <button @click='datepicker' v-show='filter_datetime[0].active' class='datetime-display datetime-report '>
+                        <input id='datepicker' readonly>
+                        <span>{{ display_datetime }}</span>
+                     </button>
+                     <span v-show='filter_datetime[1].active' class='datetime-display'>{{display_datemonth}}</span>
+                     <span v-show='filter_datetime[2].active' class='datetime-display'>{{display_dateyear}}</span>
 
                      <ul v-show='open_datemonth ' class='dropdown-datetime'>
                         <li
                            @click='select_date(date)'
                            v-for='( date, keyMonth) in getPastMonthsInCurrentYears ' :key='keyMonth'
                         >
-                           {{ date }}   
+                           {{ addZeroLeading(date) }}/{{currentYear}}
                         </li>
                      </ul>
 
@@ -65,7 +60,7 @@
                   <path d="M16.1176 14.6055C16.577 15.3164 17.1289 15.9629 17.7587 16.5281V17.2473H0.826953V16.5278C1.44914 15.9599 1.99356 15.3122 2.44603 14.6015L2.46376 14.5737L2.47879 14.5443C2.99231 13.5401 3.30009 12.4435 3.38408 11.3188L3.38602 11.2928V11.2667L3.38602 8.22777L3.38602 8.22636C3.38312 6.7874 3.9018 5.39615 4.84599 4.31028C5.79017 3.22441 7.09589 2.51751 8.5213 2.32051L9.12547 2.23701V1.6271V0.821239C9.12547 0.789084 9.13824 0.758246 9.16098 0.735511C9.18371 0.712773 9.21455 0.7 9.24671 0.7C9.27886 0.7 9.3097 0.712773 9.33243 0.735509C9.35517 0.758248 9.36795 0.789086 9.36795 0.821239V1.6148V2.23105L9.97923 2.30915C11.4175 2.49291 12.7392 3.19556 13.696 4.28509C14.6527 5.37462 15.1787 6.77603 15.1751 8.22601V8.22777V11.2667V11.2928L15.177 11.3188C15.261 12.4435 15.5688 13.5401 16.0823 14.5443L16.0984 14.5758L16.1176 14.6055Z" stroke="#2790F9" stroke-width="1.4"/>
                   <path d="M7.67493 18.5933C7.72887 18.9832 7.92209 19.3404 8.21891 19.599C8.51572 19.8576 8.89607 20 9.28972 20C9.68337 20 10.0637 19.8576 10.3605 19.599C10.6574 19.3404 10.8506 18.9832 10.9045 18.5933H7.67493Z" fill="#2790F9"/>
                   </svg>
-                  <span class='badge' :class="notification_count > 0 ? 'enable' : '' ">{{notification_count}}</span>
+                  <span class='badge badge-notification' :class="notification_count > 0 ? 'enable' : '' ">{{notification_count}}</span>
                </div>
 
             </div>
@@ -129,24 +124,31 @@
    </div>
 
 </div>
-<script type='module'>
 
-var { createApp } = Vue;
 
-createApp({
+<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+<script>
+
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
          message_count: 0,
          notification_count: 0,
          currentDate: new Date(),
+         currentYear: 0,
          
          display_datetime: '',
+         display_datemonth: '',
+         display_dateyear: '',
+
          filter_datetime: [
             {label: 'Day', value: 'd', active: true},
             {label: 'Month', value: 'm', active: false},
             {label: 'Year', value: 'y', active: false}
          ],
+
          stream_datetime_value: '',
 
          datetime_day: {value: 0},
@@ -180,7 +182,49 @@ createApp({
       }
    },
 
+
    watch: {
+
+      display_datetime: async function( val ){
+         this.display_datetime = val;
+         if( val != undefined && val != "" && val != null ){
+            // this.loading = true;
+
+            this.report_rank.rank = 'day';
+            var currentDate = new Date();
+            var year = currentDate.getFullYear();
+            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            var day = String(currentDate.getDate()).padStart(2, '0');
+
+            var date_from  = `${year}-${month}-${day}`;
+            var date_to    = window.reverse_date_to_system_datetime(val);
+            console.log(date_from);
+            console.log(date_to);
+            
+            await this.get_order_range_day_report(date_from, date_to);
+            // this.loading = false;
+         }
+
+      },
+
+      filter_datetime: {
+         async handler( filter ){
+            var _find = filter.find( item => item.active == true );
+            if( _find.value == "d" ){
+
+               // this.report_rank.rank = 'day';
+               // var currentDate = new Date();
+               // var currentYear = currentDate.getFullYear();
+               // var currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+               // var day = String(this.display_datetime).padStart(2, '0'); // Pad with leading zeros if needed
+               // var fullday = `${currentYear}-${currentMonth}-${day}`;
+               
+               // await this.get_order_range_day_report(fullday, fullday);
+               
+            }
+         },
+         deep: true
+      },
 
       stream_datetime_value: function ( val ){
          var dateObj = new Date();
@@ -265,6 +309,53 @@ createApp({
    },
 
    methods: {
+
+      datePicker(){
+         (function($){
+            $(document).ready(function(){
+               // add wrapper for picker
+               
+               function select(){
+                  $('.ui-date-picker-wrapper').addClass('active');
+                  $('.ui-date-picker-wrapper').addClass('schedule-datepicker');
+
+                  $('#datepicker').datepicker({
+                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                     dateFormat: "dd/mm/yy",
+                     firstDay: 1,
+                     maxDate: 0,
+                     onSelect: function(dateText, inst){
+                        if(dateText != undefined || dateText != '' || dateText != null){
+                           $('#datepicker').attr('value', dateText); 
+                           window.app.display_datetime = dateText;
+                        }
+                     },
+                     onClose: function(dateText, inst){
+                        $('.ui-date-picker-wrapper').removeClass('active');
+                        $('.ui-date-picker-wrapper').removeClass('schedule-datepicker');
+                     }
+
+                  });
+
+                  if( $('#datepicker').val().length == 0 ){
+                     $('#datepicker').datepicker('setDate', new Date() );
+                  }
+
+                  if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+                     $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+                  }
+               }
+               select();
+               $('#datepicker').on('click', function(){
+                  select();
+               });
+
+            });
+
+         })(jQuery);
+      },
+
+      addZeroLeading(n){ return window.addZeroLeading(n)},
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       
       get_price_convert(price){
@@ -302,40 +393,40 @@ createApp({
       },
 
       async select_date( date ){
-         // var _datetype = '';
+
          if( this.stream_datetime_value == 'd' ){
-            this.open_datetime      = false;
-            this.display_datetime   = this.get_full_current_datetime({ day: date });
-            this.report_rank.rank = 'day';
-            var currentDate = new Date();
-            var currentYear = currentDate.getFullYear();
-            var currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
-            var day = String(date).padStart(2, '0'); // Pad with leading zeros if needed
-            var fullday = `${currentYear}-${currentMonth}-${day}`;
-            await this.get_order_range_day_report(fullday, fullday);
+            // this.open_datetime      = false;
+            // this.display_datetime   = this.get_full_current_datetime({ day: date });
+            // this.report_rank.rank = 'day';
+            // var currentDate = new Date();
+            // var currentYear = currentDate.getFullYear();
+            // var currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+            // var day = String(date).padStart(2, '0'); // Pad with leading zeros if needed
+            // var fullday = `${currentYear}-${currentMonth}-${day}`;
+            // await this.get_order_range_day_report(fullday, fullday);
          }
 
-         if( this.stream_datetime_value == 'm' ){
-            this.report_rank.rank = 'month';
-            this.open_datemonth     = false;
-            this.display_datetime   = this.get_full_current_datetime({ month: date });
-            var _start_and_end_of_month = window.get_start_and_end_of_month(date);
-            var _start_and_end_of_month_current = window.get_start_and_end_of_month_current();
-            await this.get_order_range_month_report(_start_and_end_of_month, _start_and_end_of_month_current);
-         }
+         // if( this.stream_datetime_value == 'm' ){
+         //    this.report_rank.rank = 'month';
+         //    this.open_datemonth     = false;
+         //    this.display_datetime   = this.get_full_current_datetime({ month: date });
+         //    var _start_and_end_of_month = window.get_start_and_end_of_month(date);
+         //    var _start_and_end_of_month_current = window.get_start_and_end_of_month_current();
+         //    await this.get_order_range_month_report(_start_and_end_of_month, _start_and_end_of_month_current);
+         // }
 
-         if( this.stream_datetime_value == 'y' ){
-            this.report_rank.rank = 'month';
-            this.open_dateyear      = false;
-            this.display_datetime   = this.get_full_current_datetime({ year: date });
+         // if( this.stream_datetime_value == 'y' ){
+         //    this.report_rank.rank = 'month';
+         //    this.open_dateyear      = false;
+         //    this.display_datetime   = this.get_full_current_datetime({ year: date });
 
-            var start_day     = date + '-01-01';
-            var start_end     = date + '-12-31';
+         //    var start_day     = date + '-01-01';
+         //    var start_end     = date + '-12-31';
 
-            await this.get_order_range_year_report(start_day, start_end);
+         //    await this.get_order_range_year_report(start_day, start_end);
 
             // console.log( window.get_start_and_end_of_year( date ) );
-         }
+         // }
 
       },
 
@@ -418,7 +509,6 @@ createApp({
          form.append('date_from', date_from);
          form.append('date_to', date_to);
          var r = await window.request(form);
-         window.appbar_fixed();
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_order_ok' ){
@@ -426,6 +516,7 @@ createApp({
                this.report_today = res.data.report_today;
             }
          }
+         window.appbar_fixed();
       },
 
       // RANGE MONTH
@@ -482,8 +573,6 @@ createApp({
          this.loading = false;
       },
 
-
-
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
       goBack(){window.goBack(); }
@@ -492,6 +581,7 @@ createApp({
    async created(){
 
       this.loading = true;
+      this.currentYear = this.currentDate.getFullYear();
       // await this.get_messages_count();
 
       var _findFilter = this.filter_datetime.find(item => item.active == true);
@@ -503,8 +593,10 @@ createApp({
 
       // var _time_reverse = this.reverse_date_to_system_datetime(this.final_datetime);
 
-      await this.get_totay_order_report();
+      // await this.get_totay_order_report();
       await this.get_notification_count();
+
+      this.datePicker();
 
       window.appbar_fixed();
       this.loading = false;
@@ -512,4 +604,6 @@ createApp({
    }
    
 }).mount('#app');
+window.app = app;
+
 </script>

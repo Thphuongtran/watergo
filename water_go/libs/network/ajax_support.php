@@ -30,7 +30,7 @@ function atlantis_support(){
 
       global $wpdb;
 
-      $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = {$user_id} ";
+      $sql = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL";
       $res = $wpdb->get_results($sql);
       if( empty( $res )){
          wp_send_json_error([ 'message' => 'no_support_service_found' ]);
@@ -65,6 +65,7 @@ function atlantis_add_support(){
       $wpdb->insert('wp_watergo_supports', [
          'question' => $question,
          'time_created' => time(),
+         'is_read' => "1",
          'user_id' => $user_id
       ]);
 
@@ -93,7 +94,7 @@ function atlantis_get_support(){
 
       global $wpdb;
 
-      $sql = "SELECT * FROM wp_watergo_supports WHERE id = $support_id AND user_id = $user_id";
+      $sql = "SELECT * FROM wp_watergo_supports WHERE id = $support_id ";
       $res = $wpdb->get_results($sql);
       if( empty( $res )){
          wp_send_json_error([ 'message' => 'support_not_found' ]);
@@ -152,7 +153,7 @@ function atlantis_get_support_question_user(){
          wp_die();
       }
 
-      $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = $user_id ";
+      $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = ".$user_id;
       global $wpdb;
       $res = $wpdb->get_results($sql);
 

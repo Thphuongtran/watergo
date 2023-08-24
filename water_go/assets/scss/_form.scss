@@ -47,6 +47,13 @@
 		
 	}
 
+   &.style-store-edit{
+      margin-top: 0;
+      .text{
+         margin-bottom: 0;
+      }
+   }
+
    &.disable{
       button{
          opacity: 0.5;
@@ -281,10 +288,11 @@
    
    textarea{
       padding: 10px;
-      height: 110px;
+      height: 125px;
       resize: none;
       font-size: 16px;
       font-weight: 400;
+      overflow-y: hidden;
    }
    
    input[type='checkbox']{
@@ -508,6 +516,7 @@
    background: #F5F5F5;
    outline: none;
    border-radius: 8px;
+   overflow: hidden;
    position: relative;
    z-index: 1;
    display: flex;

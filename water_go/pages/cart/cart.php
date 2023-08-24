@@ -162,7 +162,8 @@ var app = Vue.createApp({
    methods: {
 
       goBackHome(){ 
-         window.appBridge.navigateTo("Home");
+         window.appBridge.navigateTo('Home', 'data=cart_count');
+
       },
 
       has_discount( product ){ return window.has_discount( product ); },      

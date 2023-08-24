@@ -76,6 +76,7 @@ function get_start_and_end_of_year(year) {
    return monthsData;
 }
 
+
 function get_start_and_end_of_month(monthNumber) {
 
    function formatDate(date) {
@@ -137,12 +138,28 @@ function get_start_and_end_of_month_current() {
    };
 }
  
+
 function removeZeroLeading(number) {
   let numberStr = number.toString();
   if (numberStr.charAt(0) === '0') {
     return parseInt(numberStr.slice(1), 10);
   }
   return number;
+}
+
+function addLeadingZeros(number) {
+   if( number != undefined ){
+      if (number <= 1000) return number.toString().padStart(4, '0');
+      return number.toString();
+   }
+}
+
+function addZeroLeading(number) {
+  if (number < 10) {
+    return '0' + number;
+  } else {
+    return '' + number;
+  }
 }
 
 // async function native_share_link( link ){
@@ -199,7 +216,7 @@ function get_key_map(){
    return 'n3jhBrFdYLS-WMR8vOmWjLTxW8rZ7QsjQ4TwxHQHvr8';
 }
 
-/**
+/*
  * @access REVERSE DATE (dd/mm/yyyy) to (yyyy-mm-dd)
  */
 function reverse_date_to_system_datetime( inputDate){
@@ -252,7 +269,6 @@ function reset_cart_to_select_false(){
 function check_cart_is_exists(){
    var _cartItems                = JSON.parse(localStorage.getItem('watergo_carts'));
    var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
-   var _watergo_delivery_address_update   = JSON.parse(localStorage.getItem('watergo_delivery_address_update'));
 
    localStorage.setItem('watergo_order_delivery_address', '[]');
 

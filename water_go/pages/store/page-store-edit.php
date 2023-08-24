@@ -74,7 +74,7 @@
          
          <div class='form-group form-description'>
             <span>Description</span>
-            <textarea v-model='description' placeholder='Describe your store'></textarea>
+            <textarea @input='autoResize' ref='textarea' v-model='description' placeholder='Describe your store'></textarea>
          </div>
 
          <div class='form-group'>
@@ -84,12 +84,33 @@
 
          <div class='form-group'>
             <span>Phone</span>
-            <input v-model='phone' type="text" pattern='[0-9]*' placeholder='Enter phone'>
+            <input v-model='phone' type="text" inputmode='numeric' pattern='[0-9]*' placeholder='Enter phone' input>
          </div>
 
          <div class='form-group'>
             <span>Email</span>
             <input v-model='email' type="email" placeholder='Enter your email' disabled readonly>
+         </div>
+
+         <div class='form-group'>
+            <span>Password</span>
+            <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+         </div>
+
+         <span class='mt20 d-block'>Select Product</span>
+         <div class='form-group style-checkbox-business style-store-edit'>
+            <label class='form-checkbox'>
+               <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
+               <span class='text'>Water</span>
+            </label>
+            <label class='form-checkbox'>
+               <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
+               <span class='text'>Ice</span>
+            </label>
+            <label class='form-checkbox'>
+               <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
+               <span class='text'>Both</span>
+            </label>
          </div>
 
          <span class='d-block t-red mt20'>{{text_err}}</span>
@@ -115,9 +136,7 @@
 
 var address = lat = lng = "";
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({ 
    
    data (){
       return {
@@ -130,17 +149,24 @@ createApp({
          address: '',
          phone: '',
          email: '',
+         inputPassword: '',
 
          text_err: '',
 
          previewAvatar: null,
          selectedImage: null,
 
-         // SEARCH
-         box_search: false,
          searchRes: [],
          latitude: 0,
          longitude: 0,
+
+         select_type_product: {
+            water: false,
+            ice: false,
+            both: false
+         },
+
+         select_type_product_text: '',
 
       }
    },
@@ -159,6 +185,38 @@ createApp({
    },
 
    methods: {
+
+      autoResize() {
+         const scrollHeight = this.$refs.textarea.scrollHeight;
+         const maxHeight = 125;
+         if (scrollHeight > maxHeight) {
+            this.$refs.textarea.style.height = 'auto';
+            this.$refs.textarea.style.height = this.$refs.textarea.scrollHeight + 'px';
+         }
+      },
+
+      btn_select_type_product( type ){
+         // force all
+         if(this.select_type_product_text != type ){
+            for (let prop in this.select_type_product) {
+               if (this.select_type_product.hasOwnProperty(prop)) {
+                  this.select_type_product[prop] = false;
+               }
+            }
+            switch(type){
+               case 'water': 
+                  this.select_type_product.water = true; 
+                  this.select_type_product_text = 'water';
+               break;
+               case 'ice': this.select_type_product.ice = true; 
+                  this.select_type_product_text = 'ice';
+               break;
+               case 'both': this.select_type_product.both = true; 
+                  this.select_type_product_text = 'both';
+               break;
+            }
+         }
+      },
 
       verify_email( email ){
          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -179,7 +237,8 @@ createApp({
             this.owner != '' &&
             this.name != '' &&
             this.phone != '' &&
-            this.email != '' && address != "" && lat != "" && lng != ""
+            this.email != '' && address != "" && lat != "" && lng != "" &&
+            this.select_type_product_text != ''
          ){
             this.loading = true;
             var form = new FormData();
@@ -195,6 +254,14 @@ createApp({
             form.append('imageUpload[]', this.selectedImage);
             form.append('latitude', lat);
             form.append('longitude', lng);
+            // new update
+            form.append('storeType', this.select_type_product_text);
+
+            if(this.inputPassword != '' && this.inputPassword.length > 0){
+               form.append('password', this.inputPassword);
+            }else{
+               form.append('password', '');
+            }
 
             var r = await window.request(form);
             
@@ -213,14 +280,8 @@ createApp({
                if( res.message == 'store_edit_error' ){
                   this.text_err = 'Store Edit Error.';
                }
-
                if( res.message == 'store_profile_update_ok'){
-                  this.goBack(true);
-                  // if( window.appBridge != undefined ){
-                  //    window.appBridge.refresh();
-                  // }else{
-                  //    location.reload();
-                  // }
+                  this.goBackUpdate(this.store.id);
                }
             }
 
@@ -267,25 +328,33 @@ createApp({
                this.phone = res.data.phone;
                this.email = res.data.email;
                this.previewAvatar = this.store.store_image.url;
+
+               this.btn_select_type_product(res.data.store_type);
             }
          }
 
       },
 
-      goBack(){ window.goBack(true); },
+      goBack(){ window.goBack(); },
+      goBackUpdate( store_id ){ 
+         window.location.href = `?appt=X&data=store_detail_update|store_id=${store_id}`;
+      },
+
    },
 
    async created(){
       this.loading = true;
 
       await this.get_store_profile();
-      this.loading = false;
-
       window.appbar_fixed();
+      setTimeout( () => {this.autoResize();}, 0);
+
+      this.loading = false;
    }
 
 }).mount('#app');
 
+window.app = app;
 
 function initialize() {
    var input = document.getElementById('search-address');

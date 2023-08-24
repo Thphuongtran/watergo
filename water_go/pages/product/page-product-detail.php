@@ -323,9 +323,9 @@ createApp({
                      this.canOrder = true;
                      this.product.mark_out_of_stock = 0;
                   }
+                  this.product_quantity_count = 1;
                   this.canOrder = true;
                }
-
             }
          }
       

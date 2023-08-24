@@ -5,7 +5,7 @@
       <div class='product-detail-wrapper'>
          <div class='product-header'>
             <div class='top'>
-               <button @click='goBack' class='btn-action'>
+               <button v-if='store_id > 0 ' @click='goBackUpdate(store_id)' class='btn-action'>
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="14" cy="14" r="14" fill="black" fill-opacity="0.6"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M4 14C4 13.4477 4.44772 13 5 13H22.5C23.0523 13 23.5 13.4477 23.5 14C23.5 14.5523 23.0523 15 22.5 15H5C4.44772 15 4 14.5523 4 14Z" fill="white"/>
@@ -24,7 +24,7 @@
       <div v-if='store != null' class="inner">
          <div class='product-design product-detail'>
             <p class='tt01'>{{ store.name }}</p>
-            <p class='tt02' v-if='user_current_is_store == false'>{{ get_distance_from_location }}</p>
+            <p class='tt02' v-if='user_current_is_store == false'>{{ store.distance }}</p>
             <p class='tt03'> {{ store.description }}</p>
          </div>
 
@@ -103,11 +103,8 @@
 
 </div>
 
-<script type='module'>
-
-var { createApp } = Vue;
-
-createApp({
+<script>
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
@@ -141,10 +138,10 @@ createApp({
          }
       },
 
-      get_current_location(){
+      async get_current_location(){
 
-         if( window.appBridge !== undefined ){
-            window.appBridge.getLocation().then( (data) => {
+         if( window.appBridge != undefined ){
+            await window.appBridge.getLocation().then( (data) => {
                if (Object.keys(data).length === 0) {
                   // alert("Error-1 :Không thể truy cập vị trí");
                }else{
@@ -153,16 +150,14 @@ createApp({
                   this.latitude = data.lat;
                   this.longitude = data.lng;
                }
-            }).catch((e) => { })
+            });
          }
       },
 
       has_discount( product ){return window.has_discount(product);},
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
-
       ratingNumber(rating){ return parseInt(rating).toFixed(1); },
- 
 
       async findStore( store_id ){
          this.loading = true;
@@ -173,6 +168,14 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
+               var _distance = window.calculateDistance(
+                  this.latitude,
+                  this.longitude,
+                  res.data.latitude,
+                  res.data.longitude
+               );
+
+               res.data.distance = parseFloat(_distance).toFixed(1) + ' km';
                this.store = res.data;
             }
          }
@@ -276,8 +279,6 @@ createApp({
                }
             }
          }
-
-         
       },
 
       async mark_user_read_notification(hash_id){
@@ -297,7 +298,10 @@ createApp({
       gotoPageStoreEdit(){ window.gotoPageStoreEdit()},
 
       goBack(){ 
-         window.location.href = '?appt=X&data=cart_count|notification_callback=notification_count';
+         window.location.href = '?appt=X&data=notification_count';
+      },
+      goBackUpdate( store_id ){ 
+         window.location.href = `?appt=X&data=store_detail_profile_update|store_id=${store_id}`;
       },
 
    },
@@ -305,20 +309,26 @@ createApp({
    
    computed: {
       get_distance_from_location(){
-
-         setTimeout( () => {
-
+         var _d = 0;
+         _d = setTimeout( () => {
             if( this.user_current_is_store == false ){
-               var _distance = calculateDistance(
+               var _distance = window.calculateDistance(
                   this.latitude,
                   this.longitude,
                   this.store.latitude,
                   this.store.longitude
                );
 
-               return parseFloat(_distance).toFixed(1) + ' km';
+               if( parseFloat(_distance).toFixed(1) > 0){
+                  return parseFloat(_distance).toFixed(1) + ' km';
+               }else{
+                  return 0;
+               }
             }
          }, 200);
+         if( _d !== 0){
+            return _d;
+         }
       },
 
       filter_product(){
@@ -344,6 +354,9 @@ createApp({
       this.store_id              = urlParams.get('store_id');
       const hash_id              = urlParams.get('hash_id');
 
+      await this.get_current_location();
+      await this.check_current_user_is_store();
+
       if( hash_id != undefined ){
          await this.mark_user_read_notification(hash_id);
       }
@@ -352,7 +365,6 @@ createApp({
       await this.get_all_product_by_store()
       await this.get_review_rating_average(this.store.id);
 
-      await this.check_current_user_is_store();
 
       window.appbar_fixed();
 
@@ -360,4 +372,6 @@ createApp({
    }
 
 }).mount('#app');
+window.app = app;
+
 </script>

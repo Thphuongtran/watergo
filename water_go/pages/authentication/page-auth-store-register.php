@@ -158,8 +158,8 @@
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script>
 <script>
 var address = lat = lng = "";
-
-var app = Vue.createApp({
+var { createApp } = Vue;
+createApp({
    data (){
       return {
          loading: false,
@@ -405,7 +405,9 @@ var app = Vue.createApp({
 
                   var r = await window.request(form);
                   if( r != undefined ){
+
                      var res = JSON.parse( JSON.stringify( r ));
+
                      // DISPLAY ERROR
                      if( res.message == 'email_already_exists' ){
                         this.res_text_sendcode = 'Email already exists.';
@@ -423,8 +425,12 @@ var app = Vue.createApp({
                         this.res_text_sendcode = 'All field must be not empty.';
                      }
                      if( res.message == 'register_ok' ){
-                        this.banner_open = true;
+                        window.appBridge.loginSuccess(res.token);
+                        window.appBridge.setUserToken(res.token);
+                        window.appBridge.startMain();
                      }
+
+
 
                   }
 
@@ -450,7 +456,6 @@ var app = Vue.createApp({
 
 }).mount('#authentication');
 
-window.app = app;
 
 function initialize() {
    const input = document.getElementById('search-address');
@@ -475,6 +480,6 @@ function initialize() {
    });
 }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+   google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>

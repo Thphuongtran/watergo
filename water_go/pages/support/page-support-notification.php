@@ -19,7 +19,7 @@
          <ul >
             <li v-for='(item, index) in supports' :key='index' :class='item.is_read == 0 ? "is_read" : ""' @click='gotoPageSupportNotificationDetail(item.id)'>
                <div class='time'>{{ timestamp_to_date( item.time_created ) }}</div>
-               <div class='question'>{{ item.question }} </div>
+               <div class='question'>Your Question: “ {{ item.question }} ” </div>
             </li>
          </ul>
       </div>

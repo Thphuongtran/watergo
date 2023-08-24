@@ -35,7 +35,7 @@
                <path d="M16.9231 16.3776H13.0769C10.8462 16.3776 9 18.2144 9 20.4337C9 20.9695 9.23077 21.4286 9.69231 21.6582C10.3846 22.0409 11.9231 22.5001 15 22.5001C18.0769 22.5001 19.6154 22.0409 20.3077 21.6582C20.6923 21.4286 21 20.9695 21 20.4337C21 18.1378 19.1538 16.3776 16.9231 16.3776Z" fill="white"/>
                </svg>
             </span>
-            <textarea v-model='review_text' placeholder='Write your review....'></textarea>
+            <textarea @change='autoResize' @input='autoResize' ref='textarea' v-model='review_text' placeholder='Write your review....'></textarea>
          </label>
       </div>
 
@@ -43,7 +43,7 @@
          <p class='t-red'>{{ res_text }}</p>
       </div>
 
-      <div class='btn-fixed bottom'>
+      <div class='btn-review' :class=' event == "edit" ? "btn-review-edit" : "" '>
          <button v-if='event == "add"' @click='submit' class='btn btn-primary'>Add</button>
          <button v-if='event == "edit"' @click='update' class='btn btn-primary'>Save</button>
       </div>
@@ -110,9 +110,21 @@ createApp({
          review_text: '',
          res_text: '',
 
+         isFixed: true
+
       }
    },
+
    methods: {
+
+      autoResize() {
+         const scrollHeight = this.$refs.textarea.scrollHeight;
+         const maxHeight = 175;
+         if (scrollHeight > maxHeight) {
+            this.$refs.textarea.style.height = 'auto';
+            this.$refs.textarea.style.height = this.$refs.textarea.scrollHeight + 'px';
+         }
+      },
 
       select_rating_star( rating ){ this.rating_select = rating;},
 
@@ -147,6 +159,7 @@ createApp({
                var res = JSON.parse( JSON.stringify( r));
                if( res.message == 'review_insert_ok'){
                   this.banner_open = true;
+                  this.goBackUpdate(res.data);
                }
             }
          }else{
@@ -171,7 +184,7 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r));
                if( res.message == 'review_update_ok'){
-                  this.goBack();
+                  this.goBackUpdate(res.data);
                }
             }
          }else{
@@ -181,22 +194,29 @@ createApp({
          
       },
 
-      goBack(){ window.goBack(true)}
+      goBack(){ 
+         window.location.href = '?appt=X&data=notification_count';
+      },
+      goBackUpdate(review_id){
+         window.location.href = `?appt=X&data=review_update|review_id=${review_id}`;
+      }
 
    },
 
 
    async created(){
-      var urlParams = new URLSearchParams(window.location.search);
-      var order_id = urlParams.get('order_id');
-      var store_id = urlParams.get('store_id');
-      var review_id = urlParams.get('review_id');
-      var event    = urlParams.get('event');  // add - edit
+      
+      var urlParams  = new URLSearchParams(window.location.search);
+      var order_id   = urlParams.get('order_id');
+      var store_id   = urlParams.get('store_id');
+      var review_id  = urlParams.get('review_id');
+      var event      = urlParams.get('event');  // add - edit
 
       this.loading = true;
 
       this.order_id = order_id;
       this.store_id = store_id;
+
       if( event != undefined ){
          this.event    = event;
       }
@@ -205,9 +225,9 @@ createApp({
          await this.get_review(review_id);
       }
 
-      this.loading = false;
-
       window.appbar_fixed();
+      setTimeout( () => {this.autoResize();}, 0);
+      this.loading = false;
 
    }
 }).mount('#app');

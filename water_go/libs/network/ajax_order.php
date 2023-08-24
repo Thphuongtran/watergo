@@ -188,6 +188,9 @@ function atlantis_is_product_out_of_stock_from_order(){
 
       wp_send_json_success(['message' => 'order_can_reorder' ]);
       wp_die();
+
+
+
    }
 
 }
@@ -556,7 +559,7 @@ function atlantis_add_order(){
 
          
 
-         wp_send_json_success(['message' => 'insert_order_ok'  ]);
+         wp_send_json_success(['message' => 'insert_order_ok', 'data' => $order_id  ]);
          wp_die();
       } else {
          wp_send_json_success(['message' => 'hash_exists' ]);
@@ -1459,6 +1462,37 @@ function atlantis_count_total_order_by_status(){
          wp_die();
       }
       wp_send_json_success(['message' => 'count_order_by_status', 'data' => $res ]);
+      wp_die();
+
+   }
+}
+
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_order_ordered', 'atlantis_get_order_ordered' );
+add_action( 'wp_ajax_atlantis_get_order_ordered', 'atlantis_get_order_ordered' );
+
+function atlantis_get_order_ordered(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_order_ordered' ){
+
+      $user_id       = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+      // for testing
+      $private_code  = isset($_POST['private_code']) ? $_POST['private_code'] : 0;
+
+      if( $user_id == 0 && $private_code != 'watergo.net' ){
+         $user_id = get_current_user_id();
+      }
+
+      $sql = "SELECT * FROM wp_watergo_order WHERE order_by = $user_id AND order_status = 'ordered' ORDER BY order_id DESC LIMIT 1";
+
+      global $wpdb;
+      $res = $wpdb->get_results( $sql);
+      if( empty( $res ) ){
+         wp_send_json_error([ 'message' => 'order_delivering_not_found']);
+         wp_die();
+      }
+
+      wp_send_json_success([ 'message' => 'order_delivering_found', 'data' => $res[0] ]);
       wp_die();
 
    }

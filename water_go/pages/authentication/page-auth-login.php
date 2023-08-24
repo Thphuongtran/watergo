@@ -84,11 +84,12 @@ $login_url_par = http_build_query($get);
          
          <p class='t-red mt10 mb10'>{{ res_text_sendcode }}</p>
 
-         <div class='form-check style01'>
+         <div class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'> I agree with <span class='t-primary'>Terms and Conditions</span></span>
+               <span class='text text-nowrap'> I agree with </span>
             </label>
+            <a href="/user-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;">Terms and Conditions</a>
          </div>
 
          <div class='form-group'>
@@ -228,10 +229,9 @@ createApp({
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
 
-                     var _cookie = 'email:' + this.inputEmail;
 
                      if( window.appBridge != undefined ){
-                        window.appBridge.loginSuccess(_cookie);
+                        window.appBridge.loginSuccess(res.token);
                         window.appBridge.refresh();
                      }
                      

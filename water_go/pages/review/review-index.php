@@ -80,7 +80,6 @@ createApp({
          if( review.first_name == undefined || review.first_name == ''){
             return review.nickname;
          }else{
-            console.log('first name not empty')
             return review.first_name;
          }
       },

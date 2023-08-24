@@ -185,5 +185,4 @@ function disable_emojis_tinymce( $plugins ) {
 	}
 	return $plugins;
 }
-
 add_action('init', 'disable_emoji_feature');

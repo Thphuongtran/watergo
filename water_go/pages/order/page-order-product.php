@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false && delivery_address_primary != null && carts.length > 0' class='page-product-order'>
+   <div v-if='loading == false && carts.length > 0' class='page-product-order'>
       
       <div class='appbar style01 fixed'>
          <div class='appbar-top'>
@@ -17,7 +17,7 @@
          <div class='break-line'></div>
       </div>
       
-      <div v-if='loading == false && carts.length > 0 && delivery_address_primary != null' class='inner'>
+      <div v-if='loading == false && carts.length > 0' class='inner'>
          <div id='delivery_address_primary' @click='gotoDeliveryAddress' class='list-tile delivery-address' :class='delivery_address_primary != null ? "has-primary" : ""' >
             <div class='content'>
                <p class='tt01'>Delivery address</p>
@@ -116,41 +116,9 @@
                <label for='select_type02'>Delivery weekly</label>
             </div>
             <div v-show='delivery_type.weekly == true' class='deliverySelect_weekly'>
-               <div class='group-select-delivery-time'>
 
-                  <div class='btn-wrapper-order'>
-                     <select data-id='0' class='btn_select_weekly_day btn_select_weekly_day_0 btn-dropdown'>
-                        <option value='' selected disabled>Select day</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                     </select>
-                  </div>
-                  <div class='btn-wrapper-order'>
-                     <select data-id='0' class='btn_select_weekly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
-                        <option value='7:00-8:00'>7:00  -  8:00</option>
-                        <option value='8:00-9:00'>8:00  -  9:00</option>
-                        <option value='9:00-10:00'>9:00  -   10:00</option>
-                        <option value='10:00-11:00'>10:00  -  11:00</option>
-                        <option value='11:00-12:00'>11:00  -  12:00</option>
-                        <option value='12:00-13:00'>12:00  -  13:00</option>
-                        <option value='13:00-14:00'>13:00  -  14:00</option>
-                        <option value='14:00-15:00'>14:00  -  15:00</option>
-                        <option value='15:00-16:00'>15:00  -  16:00</option>
-                        <option value='16:00-17:00'>16:00  -  17:00</option>
-                        <option value='17:00-18:00'>17:00  -  18:00</option>
-                        <option value='18:00-19:00'>18:00  -  19:00</option>
-                        <option value='19:00-20:00'>19:00  -  20:00</option>
-                        <option value='20:00-21:00'>20:00  -  21:00</option>
-                     </select>
-                  </div>
-               </div>
                <components_weekly_select ref='components_weekly_select'></components_weekly_select>
+
             </div>
 
             <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'>Add Day</button>
@@ -166,7 +134,7 @@
             <div v-show='delivery_type.monthly == true' class='deliverySelect_monthly'>
                <div class='group-select-delivery-time'>
                   <div class='btn-wrapper-order'>
-                     <input data-id='0' type='text' value='' class='btn_select_monthly btn-dropdown' placeholder='Select date' readonly>
+                     <input data-id='0' type='text' value='' class='btn_select_monthly_primary btn_select_monthly btn-dropdown' placeholder='Select date' readonly>
                   </div>
                   <div class='btn-wrapper-order'>
                      <select data-id='0' class='btn_select_monthly_time btn-dropdown'>
@@ -191,9 +159,7 @@
             </div>
 
             <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly'>Add Date</button>
-
-         </div> 
-
+         </div>
       </div>
 
       <div class='break-line'></div>
@@ -236,21 +202,19 @@
 </div>
 
 
+<script src="<?php echo THEME_URI . '/pages/module/module_weekly_select.js'; ?>"></script>
 <link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-<script src="<?php echo THEME_URI . '/pages/module/module_weekly_select.js'; ?>"></script>
 
-<script>
+<script setup>
+
 var app = Vue.createApp({
 
    data(){
-
       return {
 
          loading:       true,
          banner_open:   false,
-
-         dom_weekly_select: '',
 
          delivery_type: {
             once:             false,
@@ -267,7 +231,6 @@ var app = Vue.createApp({
          },
 
          dayOfWeeks: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ],
-         dayOfWeeks_ban: [],
 
          delivery_address_primary: null,
          carts: [],
@@ -279,7 +242,6 @@ var app = Vue.createApp({
          modal_store_out_of_stock: false,
 
          dom_monthly: 0,
-         dom_weekly: 0,
 
          canPlaceOrder: false,
 
@@ -291,32 +253,6 @@ var app = Vue.createApp({
    },
 
    watch: {
-
-      dayOfWeeks_ban: {
-         handler( val ){
-
-            // $(document).on('input change click', '.btn_select_weekly_day', function(){
-
-               // val.forEach( item => {
-                  
-                  // $('.btn_select_weekly_day option[value=""]').attr('disabled', true);
-                  // $('.btn_select_weekly_day option').attr('disable', false);
-
-                  // var _find = $('.btn_select_weekly_day option').val();
-
-                  // if( _find ){
-                  //    $('.btn_select_weekly_day option[value="'+ item.day +'"]').attr('disabled', true);
-                  // }
-                  // $(document).on('change ', '.btn_select_weekly_day' ,function(){
-
-                  // });  
-
-            //    });
-            // });
-         }, 
-         deep: true,
-      },
-
       delivery_data: {
          handler( val ){
 
@@ -355,7 +291,6 @@ var app = Vue.createApp({
                }
 
                if( this.delivery_type.monthly == true ){
-                     console.log(val.monthly)
                   for( var i = 0; i < val.monthly.length; i++ ){
                      if( 
                         ( val.monthly[i].day && val.monthly.day !== '' ) &&
@@ -375,12 +310,9 @@ var app = Vue.createApp({
          deep: true,
 
       },
-
    },
 
    methods: { 
-
-      // AUTOMATIC
 
       automatic_count_date_week(){
          function formatDate(date) {
@@ -414,9 +346,6 @@ var app = Vue.createApp({
          }
       },
 
-
-      // END AUTOMATIC
-
       hasMoreThanTwoZeroes(number) {
          const numStr = number.toString();
          if( !/00{2,}/.test(numStr) ){
@@ -438,7 +367,8 @@ var app = Vue.createApp({
          localStorage.setItem( 'watergo_order_delivery_address', '[]' );
          window.reset_cart_to_select_false();
          // window.goBack(true);
-         appBridge.navigateTo("Order");
+         // appBridge.navigateTo("Order");
+         appBridge.navigateTo("Home", "data");
       },
 
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
@@ -450,7 +380,6 @@ var app = Vue.createApp({
       common_price_after_discount_and_quantity(p){ return window.common_price_after_discount_and_quantity(p)},
       common_price_after_quantity(p){ return window.common_price_after_quantity(p)},
       
-
       /**
        * @access DATE ONE
        */
@@ -466,88 +395,93 @@ var app = Vue.createApp({
 
       btn_select_date_once(){
 
-         // (function($){
-            // $(document).ready(function(){
+         $(function(){
 
-               // if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
-               //    $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
-               // }
+            function date_once( targetElement ){
+               $('.ui-date-picker-wrapper').addClass('active');
+               $('.ui-date-picker-wrapper').addClass('datepicker-order-product');
 
-               $(document).on('click', '.btn_select_date_once', function(e){
-                  $('.ui-date-picker-wrapper').addClass('active');
-                  $('.ui-date-picker-wrapper').addClass('order-product');
+               var id   = targetElement.data('id');
 
-                  var targetElement = $(this);
-                  var id   = $(this).data('id');
+               targetElement.datepicker({
+                  dateFormat: "dd/mm/yy",
+                  minDate: 0,
+                  firstDay: 1,
+                  dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                  onSelect: function(dateText, inst){
+                     if(dateText != undefined || dateText != '' || dateText != null){
 
-                  targetElement.datepicker({
-                     dateFormat: "dd/mm/yy",
-                     minDate: 0,
-                     firstDay: 1,
-                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-                     onSelect: function(dateText, inst){
-                        if(dateText != undefined || dateText != '' || dateText != null){
+                        targetElement.attr('value', dateText);
 
-                           targetElement.attr('value', dateText);
+                        window.app.func_add_date_once_data(id, { id: id, day: dateText, datetime: dateText } );
 
-                           app.func_add_date_once_data(id, { id: id, day: dateText, datetime: dateText } );
+                        var [day, month, year] = dateText.split('/');
+                        var convertToDateEn = month + '/' + day + '/' + year;
 
-                           var [day, month, year] = dateText.split('/');
-                           var convertToDateEn = month + '/' + day + '/' + year;
+                        var _currentSelectDate = new Date( convertToDateEn );
+                        var _currentDay  = new Date();
 
-                           var _currentSelectDate = new Date( convertToDateEn );
-                           var _currentDay  = new Date();
+                        var getHourSelected = _currentDay.getHours().toString().padStart(2, '0');
+                        getHourSelected = parseInt( getHourSelected ) + 2;
 
-                           var getHourSelected = _currentDay.getHours().toString().padStart(2, '0');
-                           getHourSelected = parseInt( getHourSelected ) + 2;
+                        var _selectOption = [
+                           { label: '7:00  -  8:00',   value: '7:00-8:00',   time: 7 },
+                           { label: '8:00  -  9:00',   value: '8:00-9:00',   time: 8 },
+                           { label: '9:00  -  10:00',  value: '9:00-10:00',  time: 9 },
+                           { label: '10:00  -  11:00', value: '10:00-11:00', time: 10},
+                           { label: '11:00  -  12:00', value: '11:00-12:00', time: 11},
+                           { label: '12:00  -  13:00', value: '12:00-13:00', time: 12},
+                           { label: '13:00  -  14:00', value: '13:00-14:00', time: 13},
+                           { label: '14:00  -  15:00', value: '14:00-15:00', time: 14},
+                           { label: '15:00  -  16:00', value: '15:00-16:00', time: 15},
+                           { label: '16:00  -  17:00', value: '16:00-17:00', time: 16},
+                           { label: '17:00  -  18:00', value: '17:00-18:00', time: 17},
+                           { label: '18:00  -  19:00', value: '18:00-19:00', time: 18},
+                           { label: '19:00  -  20:00', value: '19:00-20:00', time: 19},
+                           { label: '20:00  -  21:00', value: '20:00-21:00', time: 20}
+                        ];
+                        var _selectDom = `<option value=''>Select time</option>`;
 
-                           var _selectOption = [
-                              { label: '7:00  -  8:00', value: '7:00-8:00', time: 7 },
-                              { label: '8:00  -  9:00', value: '8:00-9:00', time: 8 },
-                              { label: '9:00  -  10:00', value: '9:00-10:00', time: 9 },
-                              { label: '10:00  -  11:00', value: '10:00-11:00', time: 10},
-                              { label: '11:00  -  12:00', value: '11:00-12:00', time: 11},
-                              { label: '12:00  -  13:00', value: '12:00-13:00', time: 12},
-                              { label: '13:00  -  14:00', value: '13:00-14:00', time: 13},
-                              { label: '14:00  -  15:00', value: '14:00-15:00', time: 14},
-                              { label: '15:00  -  16:00', value: '15:00-16:00', time: 15},
-                              { label: '16:00  -  17:00', value: '16:00-17:00', time: 16},
-                              { label: '17:00  -  18:00', value: '17:00-18:00', time: 17},
-                              { label: '18:00  -  19:00', value: '18:00-19:00', time: 18},
-                              { label: '19:00  -  20:00', value: '19:00-20:00', time: 19},
-                              { label: '20:00  -  21:00', value: '20:00-21:00', time: 20}
-                           ];
-                           var _selectDom = `<option value=''>Select time</option>`;
+                        _currentSelectDate.setHours(0, 0, 0, 0);
+                        _currentDay.setHours(0, 0, 0, 0);
 
-                           _currentSelectDate.setHours(0, 0, 0, 0);
-                           _currentDay.setHours(0, 0, 0, 0);
+                        $('.btn_select_time_once').empty('option');
 
-                           $('.btn_select_time_once').empty('option');
-
-                           if(_currentSelectDate.getTime() === _currentDay.getTime() ){
-                              _selectOption = _selectOption.filter( item => item.time >= getHourSelected );
-                           }
-
-                           _selectOption.forEach( item => {
-                              _selectDom += `
-                                 <option value='${item.value}'>${item.label}</option>
-                              `;
-                           });
-
-                           $('.btn_select_time_once').append(_selectDom);
+                        if(_currentSelectDate.getTime() === _currentDay.getTime() ){
+                           _selectOption = _selectOption.filter( item => item.time >= getHourSelected );
                         }
-                     },
-                     onClose: function(dateText, inst){
-                        $('.ui-date-picker-wrapper').removeClass('active');
-                        $('.ui-date-picker-wrapper').removeClass('order-product');
-                     }
-                  });
 
-                  targetElement.datepicker('show');
+                        _selectOption.forEach( item => {
+                           _selectDom += `
+                              <option value='${item.value}'>${item.label}</option>
+                           `;
+                        });
+
+                        $('.btn_select_time_once').append(_selectDom);
+                     }
+                  },
+                  onClose: function(dateText, inst){
+                     $('.ui-date-picker-wrapper').removeClass('active');
+                     $('.ui-date-picker-wrapper').removeClass('datepicker-order-product');
+                  }
+
                });
-               
+
+               if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+                  $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+               }
+
+               targetElement.datepicker('show');
+            }
+
+            $('.btn_select_date_once').on('click', function(){
+               date_once( $(this));
+            });
+            // $(document).ready(function(){
+            //    date_once( $('.btn_select_date_once'));
             // });
-         // })(jQuery);
+            
+         });
 
       },
 
@@ -572,14 +506,12 @@ var app = Vue.createApp({
       },
 
       btn_select_monthly(){
-      
-         function month( el ){
 
+         function month( el ){
             $('.ui-datepicker .ui-datepicker-title').empty();
-            $('.ui-widget-header a').remove();
-            $('.ui-datepicker-calendar thead').remove();
             $('.ui-date-picker-wrapper').addClass('active');
             $('.ui-date-picker-wrapper').addClass('datepicker-monthly');
+            $('.ui-datepicker .ui-datepicker-title').html('Everymonth');
 
             var id     = el.data('id');
             var date   = el.val();
@@ -613,6 +545,7 @@ var app = Vue.createApp({
                },
 
                onSelect: function(dateText, inst){
+
                   if(dateText != undefined || dateText != '' || dateText != null){
                      el.attr('value', dateText);
 
@@ -638,25 +571,36 @@ var app = Vue.createApp({
                   $('.ui-date-picker-wrapper').removeClass('datepicker-monthly');
                }
             });
+
             
             if( el.hasClass('btn_select_monthly_parent') ){
                el.datepicker('show');
             }
+
             $('.ui-datepicker .ui-datepicker-title').html('Everymonth');
+            $('.ui-datepicker-calendar thead').remove();
+            $('.ui-widget-header a').remove();
+
+            if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+               $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+            }
          }
 
-         (function($){
-            $(document).ready(function(){
-               month( $('.btn_select_monthly') );
-               $(document).on('input change click', '.btn_select_monthly', function(){
-                  $('.ui-datepicker .ui-datepicker-title').empty();
-                  $('.ui-widget-header a').remove();
-                  $('.ui-datepicker-calendar thead').remove();
-                  month($(this));
-               });
+         $(function(){
 
+            $(document).on('input change click', '.btn_select_monthly, .btn_select_monthly_parent', function(){
+               $('.ui-datepicker .ui-datepicker-title').empty();
+               $('.ui-widget-header a').remove();
+               $('.ui-datepicker-calendar thead').remove();
+               month($(this));
             });
-         })(jQuery);
+            month( $('.btn_select_monthly') );
+
+
+            
+         });
+
+            
       },
 
       btn_select_monthly_time(){
@@ -669,106 +613,46 @@ var app = Vue.createApp({
 
       },
 
-      /**
-       * @access WEEKLY
-       */
-      func_add_weekly_data( id, data ){
-         var _find = app.$data.delivery_data.weekly.find( item => item.id == id );
-         if( _find ){
-            Object.assign( _find, data);
-         }else{
-            app.$data.delivery_data.weekly.push( data );
+      btn_add_dom_delivery_weekly(){this.$refs.components_weekly_select.createWeekly();},
+      btn_add_dom_delivery_monthly(){
+         if(this.dom_monthly <= 28 ){
+            this.dom_monthly = this.dom_monthly + 1;
+            var _dom = `
+               <div class='group-select-delivery-time group-select-delivery-time_parent'>
+                  <div class='btn-wrapper-order'>
+                     <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
+                  </div>
+                  <div class='btn-wrapper-order'>
+                     <select data-id='${this.dom_monthly}' class='btn_select_monthly_time btn-dropdown'>
+                        <option value='' selected disabled>Select time</option>
+                        <option value='7:00-8:00'>7:00  -  8:00</option>
+                        <option value='8:00-9:00'>8:00  -  9:00</option>
+                        <option value='9:00-10:00'>9:00  -  10:00</option>
+                        <option value='10:00-11:00'>10:00  -  11:00</option>
+                        <option value='11:00-12:00'>11:00  -  12:00</option>
+                        <option value='12:00-13:00'>12:00  -  13:00</option>
+                        <option value='13:00-14:00'>13:00  -  14:00</option>
+                        <option value='14:00-15:00'>14:00  -  15:00</option>
+                        <option value='15:00-16:00'>15:00  -  16:00</option>
+                        <option value='16:00-17:00'>16:00  -  17:00</option>
+                        <option value='17:00-18:00'>17:00  -  18:00</option>
+                        <option value='18:00-19:00'>18:00  -  19:00</option>
+                        <option value='19:00-20:00'>19:00  -  20:00</option>
+                        <option value='20:00-21:00'>20:00  -  21:00</option>
+                     </select>
+                  </div>
+               </div>
+            `;
+            (function($){
+               $(document).ready(function(){
+                  if( $('.deliverySelect_monthly .group-select-delivery-time').length < 28 ){
+                     $('.deliverySelect_monthly').append(_dom);
+                  }
+               })
+            })(jQuery);
          }
       },
 
-      btn_select_weekly(){
-         
-         $(document).on('click change', '.btn_select_weekly_day', function(e){
-            // $('.btn_select_weekly_day').find('option').prop('disabled', false);
-
-            var id  = $(this).data('id');
-            var day = $(this).find('option:selected').val();
-            app.func_add_weekly_data(id, { id: id, day: day, datetime: window.get_fullday_form_dayOfWeek(day) } );
-
-            $(this).find('option').each( ( index, item ) => {
-
-               var optionValue = $(item).val();
-                // Get the selected option
-               var selectedOption = $(this).find('option:selected').val();
-
-               // Get the value and id of the selected option
-               var id      = $(this).data('id');
-
-               if( optionValue != '' ){
-                  var _find = app.dayOfWeeks_ban.find( i => i.day == optionValue );
-                  if( _find != undefined && _find ){
-                     $(item).prop('disabled', true);
-                  }else{
-                     $(item).prop('disabled', false);
-                  }
-               }
-
-               var exists = app.dayOfWeeks_ban.some( item => item.id == id );
-               if( exists ) {
-                  app.dayOfWeeks_ban[id].day = selectedOption;
-               } else {
-                  app.dayOfWeeks_ban.push({ day: selectedOption, id: id });
-               }
-
-            });
-
-         });
-
-      },
-
-      btn_select_weekly_time(){
-         $(document).on('change', '.btn_select_weekly_time', function(e){
-            var id   = $(this).data('id');
-            var time = $(this).find('option:selected').val();
-            app.func_add_weekly_data(id, { id: id, time: time } );
-         });
-      },
-
-      btn_add_dom_delivery_weekly(){this.$refs.components_weekly_select.createWeekly();},
-
-      btn_add_dom_delivery_monthly(){this.$refs.components_monthly_select.createMonthly();
-         // if(this.dom_monthly <= 28 ){
-         //    this.dom_monthly = this.dom_monthly + 1;
-         //    var _dom = `
-         //       <div class='group-select-delivery-time group-select-delivery-time_parent'>
-         //          <div class='btn-wrapper-order'>
-         //             <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
-         //          </div>
-         //          <div class='btn-wrapper-order'>
-         //             <select data-id='${this.dom_monthly}' class='btn_select_monthly_time btn-dropdown'>
-         //                <option value='' selected disabled>Select time</option>
-         //                <option value='7:00-8:00'>7:00  -  8:00</option>
-         //                <option value='8:00-9:00'>8:00  -  9:00</option>
-         //                <option value='9:00-10:00'>9:00  -  10:00</option>
-         //                <option value='10:00-11:00'>10:00  -  11:00</option>
-         //                <option value='11:00-12:00'>11:00  -  12:00</option>
-         //                <option value='12:00-13:00'>12:00  -  13:00</option>
-         //                <option value='13:00-14:00'>13:00  -  14:00</option>
-         //                <option value='14:00-15:00'>14:00  -  15:00</option>
-         //                <option value='15:00-16:00'>15:00  -  16:00</option>
-         //                <option value='16:00-17:00'>16:00  -  17:00</option>
-         //                <option value='17:00-18:00'>17:00  -  18:00</option>
-         //                <option value='18:00-19:00'>18:00  -  19:00</option>
-         //                <option value='19:00-20:00'>19:00  -  20:00</option>
-         //                <option value='20:00-21:00'>20:00  -  21:00</option>
-         //             </select>
-         //          </div>
-         //       </div>
-         //    `;
-         //    (function($){
-         //       $(document).ready(function(){
-         //          if( $('.deliverySelect_monthly .group-select-delivery-time').length < 28 ){
-         //             $('.deliverySelect_monthly').append(_dom);
-         //          }
-         //       })
-         //    })(jQuery);
-         // }
-      },
 
       btn_select_type( type ){ 
 
@@ -778,52 +662,30 @@ var app = Vue.createApp({
                this.delivery_type[prop] = false;
             }
          }
-
-         // this.delivery_data.once_date  = []; 
-         // this.delivery_data.weekly     = [];
-         // this.delivery_data.monthly    = [];
-         // $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
-         // $('.deliverySelect_weekly .group-select-delivery-time_parent').remove();
-
-         // $('.btn_select_date_once').val('');
-         // if ($('.btn_select_time_once option[value="--"]').length === 0) {
-         //    $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
-         // }
-
-         // $('.btn_select_monthly').val('');
-         // $('.btn_select_monthly_time').val('');
-         // $('.btn_select_weekly').val('');
-         // $('.btn_select_weekly_time').val('');
          
          switch( type ){
             case 'once': 
                this.delivery_type.once = true;
+               this.$refs.components_weekly_select.createWeekly(true);
 
-               this.dayOfWeeks_ban           = [];
-
-               this.delivery_data.weekly     = [];
                this.delivery_data.monthly    = [];
                $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
-               $('.deliverySelect_weekly .group-select-delivery-time_parent').remove();
 
                $('.btn_select_monthly').val('');
                $('.btn_select_monthly_time').val('');
-               $('.btn_select_weekly_day').val('');
-               $('.btn_select_weekly_time').val('');
 
             break;
             case 'once_date_time': 
                this.delivery_type.once             = true;
-               // this.delivery_type.once_immediately = false;
                this.delivery_type.once_date_time   = true;
+
                
             break;
             case 'once_immediately': 
                this.delivery_type.once             = true;
-               // this.delivery_type.once_date        = false;
                this.delivery_type.once_immediately = true;
-
                this.delivery_data.once_date  = [];
+
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
                   $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
@@ -831,15 +693,12 @@ var app = Vue.createApp({
 
             break;
             case 'weekly': 
-               // this.delivery_type.once    = false;
-               // this.delivery_type.once_immediately = false;
-               // this.delivery_type.once_date        = false;
 
                this.delivery_type.weekly  = true;
-               $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
-               this.delivery_data.monthly    = [];
-               this.delivery_data.once_date  = [];
 
+               this.delivery_data.once_date  = [];
+               this.delivery_data.monthly    = [];
+               $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
@@ -851,24 +710,16 @@ var app = Vue.createApp({
 
             break;
             case 'monthly': 
-               // this.delivery_type.once    = false;
-               // this.delivery_type.once_immediately = false;
-               // this.delivery_type.once_date        = false;
 
-               this.dayOfWeeks_ban           = [];
                this.delivery_type.monthly    = true;
-               this.delivery_data.weekly     = [];
                this.delivery_data.once_date  = [];
 
-               $('.deliverySelect_weekly .group-select-delivery-time_parent').remove();
+               this.$refs.components_weekly_select.createWeekly(true);
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
                   $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
                }
-               
-               $('.btn_select_weekly_day').val('');
-               $('.btn_select_weekly_time').val('');
 
             break;
             default: 
@@ -911,11 +762,63 @@ var app = Vue.createApp({
             // GET DATA
             if( this.delivery_type.weekly == true ){
                delivery_type = 'weekly';
-               delivery_data = this.delivery_data.weekly;
+               delivery_data = this.$refs.components_weekly_select.slots;
+
+               var currentDate = new Date();
+               var currentHour = currentDate.getHours();
+               var currentHourFixed = currentDate.getHours();
+               var currentMinute = currentDate.getMinutes();
+               var currentDay = currentDate.toLocaleString('en-us', { weekday: 'long' });
+
+               for (let i = 0; i < delivery_data.length; i++) {
+                  var delivery = delivery_data[i];
+
+                  if (delivery.day === currentDay) {
+
+                     var startHour        = parseInt(delivery.time.split(':')[0]) * 60;
+                     var startHourFixed   = parseInt(delivery.time.split(':')[0]);
+                     var startMinute      = parseInt(delivery.time.split(':')[1]);
+                     currentHour          = currentHour * 60 + currentMinute;
+
+                     var hour_min = startHour - 60;
+
+                     if(startHourFixed - 1 != currentHourFixed || ( startHourFixed == currentHourFixed && currentMinute == 0 )){
+                        delivery.datetime = this.addWeekForDatetime(delivery.datetime);
+                     }
+
+                  }
+               }
+               // console.log(delivery_data);
             }
+
             if( this.delivery_type.monthly == true ){
                delivery_type = 'monthly';
                delivery_data = this.delivery_data.monthly;
+
+               var currentDate = new Date();
+               var currentHour = currentDate.getHours();
+               var currentHourFixed = currentDate.getHours();
+               var currentMinute = currentDate.getMinutes();
+               var currentDay = currentDate.toLocaleString('en-us', { weekday: 'long' });
+               
+               for (let i = 0; i < delivery_data.length; i++) {
+                  var delivery = delivery_data[i];
+
+                  if (delivery.day === currentDay) {
+
+                     var startHour        = parseInt(delivery.time.split(':')[0]) * 60;
+                     var startHourFixed   = parseInt(delivery.time.split(':')[0]);
+                     var startMinute      = parseInt(delivery.time.split(':')[1]);
+                     currentHour          = currentHour * 60 + currentMinute;
+
+                     var hour_min = startHour - 60;
+
+                     if(startHourFixed - 1 != currentHourFixed || ( startHourFixed == currentHourFixed && currentMinute == 0 )){
+                        delivery.datetime = this.addWeekForDatetime(delivery.datetime);
+                     }
+
+                  }
+               }
             }
 
             var form = new FormData();
@@ -1023,10 +926,33 @@ var app = Vue.createApp({
          }
       },
 
+      dateFormatToDDMMYY(date){
+         var day = date.getDate().toString().padStart(2, '0');
+         var month = (date.getMonth() + 1).toString().padStart(2, '0');
+         var year = date.getFullYear().toString();
+         return day + '/' + month + '/' + year;
+      },
+
+      addWeekForDatetime(inputDateStr) {
+         // Parse the input date
+         var parts = inputDateStr.split('/');
+         var day = parseInt(parts[0], 10);
+         var month = parseInt(parts[1], 10) - 1; // Note: Months are 0-based
+         var year = parseInt(parts[2], 10);
+
+         // Create a Date object from the parsed values
+         var inputDate = new Date(year, month, day);
+
+         // Add 7 days to the date
+         inputDate.setDate(inputDate.getDate() + 7);
+
+         // Format the new date as "dd/mm/yyyy"
+         return `${inputDate.getDate().toString().padStart(2, '0')}/${(inputDate.getMonth() + 1).toString().padStart(2, '0')}/${inputDate.getFullYear()}`;
+      }
+
    },
    
    computed: {
-
       count_product_total_price(){
          var gr_price = { price: 0, price_discount: 0 };
 
@@ -1066,22 +992,20 @@ var app = Vue.createApp({
             price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
          };
       },
-
-
-
-      
    },
 
    update(){
       window.appbar_fixed();
-      // console.log('update')
+      if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+         $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+      }
    },
 
    async created(){
 
       this.loading = true;
       this.automatic_count_date_week();
-      console.log(this.dateWeekAuto);
+      // console.log(this.dateWeekAuto);
 
       // IF PASS ORDER_ID => this is re-order product
       const urlParams = new URLSearchParams(window.location.search);
@@ -1227,23 +1151,22 @@ var app = Vue.createApp({
 
       }
 
-      this.btn_select_date_once();
-      this.btn_select_time_once();
-      this.btn_select_monthly();
-      this.btn_select_monthly_time();
-      this.btn_select_weekly();
-      this.btn_select_weekly_time();
 
 
       setTimeout( () => {
-         window.appbar_fixed();
+         this.btn_select_date_once();
+         this.btn_select_time_once();
+
+         this.btn_select_monthly();
+         this.btn_select_monthly_time();
+      }, 300);
+      $(function(){
          if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
             $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
          }
-         this.loading = false;
-      }, 300);
-
-      
+      });
+      window.appbar_fixed();
+      this.loading = false;
    },
    
 
