@@ -313,6 +313,27 @@ var app = Vue.createApp({
    },
 
    methods: { 
+      
+
+      isTimeRange(startTime, endTime) {
+         // startTime 00:00 endTime 00:00
+         var currentDate = new Date();
+         var currentHours = currentDate.getHours();
+         // var currentMinutes = currentDate.getMinutes();
+         var currentMinutes = 1;
+
+         var [startHours, startMinutes] = startTime.split(':').map(Number);
+         var [endHours, endMinutes] = endTime.split(':').map(Number);
+
+         if (
+            (currentHours > startHours || (currentHours === startHours && currentMinutes >= startMinutes)) &&
+            (currentHours < endHours || (currentHours === endHours && currentMinutes <= endMinutes))
+         ) {
+            return true;
+         } else {
+            return false;
+         }
+      },
 
       automatic_count_date_week(){
          function formatDate(date) {
@@ -764,59 +785,66 @@ var app = Vue.createApp({
                delivery_type = 'weekly';
                delivery_data = this.$refs.components_weekly_select.slots;
 
-               var currentDate = new Date();
-               var currentHour = currentDate.getHours();
+               var currentDate      = new Date();
+               var currentHour      = currentDate.getHours();
                var currentHourFixed = currentDate.getHours();
-               var currentMinute = currentDate.getMinutes();
-               var currentDay = currentDate.toLocaleString('en-us', { weekday: 'long' });
+               var currentMinute    = currentDate.getMinutes();
+               var currentDay       = currentDate.toLocaleString('en-us', { weekday: 'long' });
 
                for (let i = 0; i < delivery_data.length; i++) {
                   var delivery = delivery_data[i];
-
                   if (delivery.day === currentDay) {
-
-                     var startHour        = parseInt(delivery.time.split(':')[0]) * 60;
-                     var startHourFixed   = parseInt(delivery.time.split(':')[0]);
-                     var startMinute      = parseInt(delivery.time.split(':')[1]);
-                     currentHour          = currentHour * 60 + currentMinute;
-
-                     var hour_min = startHour - 60;
-
-                     if(startHourFixed - 1 != currentHourFixed || ( startHourFixed == currentHourFixed && currentMinute == 0 )){
+                     var [hStart, hEnd]   = delivery.time.split('-');
+                     var [h1, h2]   = hStart.split(':').map(Number);
+                     var [e1, e2]   = hEnd.split(':').map(Number);
+                     h1 = h1 - 1;
+                     e1 = e1 - 1;
+                     var new_range_min = h1 + ':00';
+                     var new_range_max = e1 + ':00';
+                     if( this.isTimeRange(new_range_min, new_range_max) == false ){
                         delivery.datetime = this.addWeekForDatetime(delivery.datetime);
                      }
-
+                     
                   }
+
+                  // console.log(isTimeRange("9:00", "10:00"));  // false
+                  // console.log(isTimeRange("10:00", "11:00")); // true
+                  // console.log(isTimeRange("11:00", "12:00")); // false
                }
-               // console.log(delivery_data);
             }
 
             if( this.delivery_type.monthly == true ){
                delivery_type = 'monthly';
                delivery_data = this.delivery_data.monthly;
 
-               var currentDate = new Date();
-               var currentHour = currentDate.getHours();
+               var currentDate      = new Date();
+               var currentHour      = currentDate.getHours();
                var currentHourFixed = currentDate.getHours();
-               var currentMinute = currentDate.getMinutes();
-               var currentDay = currentDate.toLocaleString('en-us', { weekday: 'long' });
+               var currentMinute    = currentDate.getMinutes();
+               var currentDay       = currentDate.getDate().toString().padStart(2, '0');
+
+               // let currentDate = new Date();
+               // let year = currentDate.getFullYear();
+               // let month = String(currentDate.getMonth() + 1).padStart(2, '0');
+               // let day = String(dateText).padStart(2, '0');
+               // let fulldate = `${day}/${month}/${year}`;
                
                for (let i = 0; i < delivery_data.length; i++) {
                   var delivery = delivery_data[i];
 
                   if (delivery.day === currentDay) {
-
-                     var startHour        = parseInt(delivery.time.split(':')[0]) * 60;
-                     var startHourFixed   = parseInt(delivery.time.split(':')[0]);
-                     var startMinute      = parseInt(delivery.time.split(':')[1]);
-                     currentHour          = currentHour * 60 + currentMinute;
-
-                     var hour_min = startHour - 60;
-
-                     if(startHourFixed - 1 != currentHourFixed || ( startHourFixed == currentHourFixed && currentMinute == 0 )){
+                     var [hStart, hEnd]   = delivery.time.split('-');
+                     var [h1, h2]   = hStart.split(':').map(Number);
+                     var [e1, e2]   = hEnd.split(':').map(Number);
+                     h1 = h1 - 1;
+                     e1 = e1 - 1;
+                     var new_range_min = h1 + ':00';
+                     var new_range_max = e1 + ':00';
+                     if( this.isTimeRange(new_range_min, new_range_max) == false ){
                         delivery.datetime = this.addWeekForDatetime(delivery.datetime);
+                        var [d, m, y] = delivery.datetime.split('/');
+                        delivery.day = d;
                      }
-
                   }
                }
             }

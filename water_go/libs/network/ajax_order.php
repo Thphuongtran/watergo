@@ -57,6 +57,27 @@ add_action( 'wp_ajax_nopriv_atlantis_get_all_time_shipping_from_order', 'atlanti
 add_action( 'wp_ajax_atlantis_get_all_time_shipping_from_order', 'atlantis_get_all_time_shipping_from_order' );
 
 
+function getNextDay($arr) {
+   // Get the current date
+   $currentDate = new DateTime();
+   // Initialize variables to store the minimum difference and the next day
+   $minDiff = PHP_INT_MAX;
+   $nextDay = null;
+   // Loop through the array and calculate the difference with the current date
+   foreach ($arr as $item) {
+      $date = DateTime::createFromFormat('d/m/Y', $item['datetime']);
+      $diff = $date->diff($currentDate)->days;
+
+      // If the difference is less than the minimum difference, update the next day
+      if ($diff < $minDiff) {
+         $minDiff = $diff;
+         $nextDay = $item;
+      }
+   }
+   return $nextDay;
+}
+
+
 function func_atlantis_get_user_id_from_store_id( $store_id ){
    global $wpdb;
    $sql_get_user_id_from_store_id = "SELECT wp_users.ID as user_id
@@ -413,26 +434,36 @@ function atlantis_add_order(){
                         'order_time_shipping_type'       => $delivery_type,
                         'order_time_shipping_order_id'   => $order_id,
                      ]);
-                     $date_array[$k]['day'] = $day;
+                     $date_array[$k]['day']       = $vl->day;
+                     $date_array[$k]['time']      = $vl->time;
+                     $date_array[$k]['datetime']  = $vl->datetime;
                      $date_array[$k]['insert_id'] = $wpdb->insert_id;
                   }
                   
                   // MONTHLY
                   if( $delivery_type == 'monthly' ){
-                     $currentDay = intval(date('j')); // Get the current day (1-31)
-                     // Sort the $date_array based on the "day" value in ascending order
-                     usort($date_array, function ($a, $b) { return $a['day'] - $b['day']; });
-                     // Find the index of the current day in the sorted $date_array
-                     $currentDayIndex = null;
-                     foreach ($date_array as $index => $entry) {
-                        if ($entry['day'] >= $currentDay) {
-                           $currentDayIndex = $index;
-                           break;
-                        }
+                     // $currentDay = intval(date('j')); // Get the current day (1-31)
+                     // // Sort the $date_array based on the "day" value in ascending order
+                     // usort($date_array, function ($a, $b) { return $a['day'] - $b['day']; });
+                     // // Find the index of the current day in the sorted $date_array
+                     // $currentDayIndex = null;
+                     // foreach ($date_array as $index => $entry) {
+                     //    if ($entry['day'] >= $currentDay) {
+                     //       $currentDayIndex = $index;
+                     //       break;
+                     //    }
+                     // }
+                     // // Get the next day, considering the wrap-around from the last item to the first item
+                     // $nextDayIndex = $currentDayIndex !== null ? $currentDayIndex % count($date_array) : 0;
+                     // $nextDay = $date_array[$nextDayIndex];
+
+                     $nextDay = getNextDay( $date_array );
+
+                     if( $nextDay != null ){
+                        $update_time_shipping = $wpdb->update('wp_watergo_order', [
+                           'order_time_shipping_id' => $nextDay['insert_id']
+                        ], [ 'order_id' => $order_id ]);
                      }
-                     // Get the next day, considering the wrap-around from the last item to the first item
-                     $nextDayIndex = $currentDayIndex !== null ? $currentDayIndex % count($date_array) : 0;
-                     $nextDay = $date_array[$nextDayIndex];
 
                      $update_time_shipping = $wpdb->update('wp_watergo_order', [
                         'order_time_shipping_id' => $nextDay['insert_id']
@@ -443,23 +474,9 @@ function atlantis_add_order(){
                   // WEEKLY
                   if( $delivery_type == 'weekly' ){
 
-                     $nextDay = null;
-                     // Get current day by week
-                     $currentDay = date('l');
+                     $nextDay = getNextDay( $date_array );
 
-                     // Sort the date_array based on the order of days in dayOfWeek
-                     usort($date_array, function ($a, $b) use ($dayOfWeek) {
-                        return array_search($a['day'], $dayOfWeek) - array_search($b['day'], $dayOfWeek);
-                     });
-
-                     // Find the index of the current day in the sorted date_array
-                     $currentDayIndex = array_search($currentDay, array_column($date_array, 'day'));
-
-                     // Get the next day element from the date_array
-                     $nextDayIndex = ($currentDayIndex + 1) % count($date_array);
-                     $nextDay = $date_array[$nextDayIndex];
-
-                     if( $nextDay ){
+                     if( $nextDay != null ){
                         $update_time_shipping = $wpdb->update('wp_watergo_order', [
                            'order_time_shipping_id' => $nextDay['insert_id']
                         ], [ 'order_id' => $order_id ]);
@@ -1497,3 +1514,4 @@ function atlantis_get_order_ordered(){
 
    }
 }
+
