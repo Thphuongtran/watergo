@@ -70,10 +70,10 @@
             <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
          </div> -->
          <div v-if="isCodeSend" class="box-code-verify">
-            <input @input="moveFocus($event, 'code01')" @keydown.delete="moveFocus($event, 'code01')" @keydown.backspace="moveFocusBack($event, 'code01')" ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-            <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-            <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-            <input @keydown.delete="moveFocus($event, 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
+            <input ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+            <input ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+            <input ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+            <input ref="code04" v-model="code04" type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
          </div>
 
          <div class='form-group mt10'>
@@ -393,4 +393,13 @@ createApp({
 
 }).mount('#authentication');
 
+</script>
+<script type="text/javascript">
+   jQuery(document).ready(function($){
+      $(document).on("keyup",".box-code-verify input",function (e) {         
+         if(e.keyCode != 46 && e.keyCode != 32 && e.keyCode != 8) {
+         $(this).next("input").focus();  
+         }   
+      });
+   })
 </script>

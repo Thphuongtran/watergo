@@ -175,6 +175,7 @@
                   // alert('review update ' + res.contents);
                }
             });
+
          }
 
          if( partial[0] == 'product_store_update' ){

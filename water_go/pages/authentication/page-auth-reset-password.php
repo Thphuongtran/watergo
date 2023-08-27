@@ -21,10 +21,10 @@
          <p class='t-center'>We have sent a code to your email</p>
 
          <div class='box-code-verify'>
-            <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
-            <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
-            <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
-            <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
+            <input id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+            <input id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+            <input id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+            <input id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
          </div>
          <p class='t-center'>
             <button @click='btn_resend' class='btn-text'>Resend</button>
@@ -179,4 +179,12 @@ createApp({
 }).mount('#app');
 
 </script>
+<script type="text/javascript">
+   jQuery(document).ready(function($){
+      $(document).on("keyup",".box-code-verify input",function (e) {         
+         if(e.keyCode != 46 && e.keyCode != 32 && e.keyCode != 8) {
+         $(this).next("input").focus();  
+         }   
+      });
+   })
 </script>

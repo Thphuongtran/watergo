@@ -91,10 +91,10 @@
                <input @input="moveFocus($event, 'code04', 'code03')" @keydown.delete="moveFocus($event, 'code03', 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
                <input @keydown.delete="moveFocus($event, 'code04', 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
 
-               <input @input="moveFocus($event, 'code02', 'code01')" @keydown.delete="moveFocus($event, 'code02', 'code02')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input="moveFocus($event, 'code03', 'code02')" @keydown.delete="moveFocus($event, 'code03', 'code03')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input="moveFocus($event, 'code04', 'code03')" @keydown.delete="moveFocus($event, 'code04', 'code04')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @keydown.delete="moveFocus($event, 'code04', 'code04')" @click="moveFocus('code04')" ref="code04" v-model='code04' id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
+               <input id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+               <input ref="code04" v-model='code04' id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
 
                <!-- <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code01' data-id='1' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
                <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code02' data-id='2' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
@@ -345,4 +345,12 @@ createApp({
 }).mount('#authentication');
 
 </script>
+<script type="text/javascript">
+   jQuery(document).ready(function($){
+      $(document).on("keyup",".box-code-verify input",function (e) {         
+         if(e.keyCode != 46 && e.keyCode != 32 && e.keyCode != 8) {
+         $(this).next("input").focus();  
+         }   
+      });
+   })
 </script>

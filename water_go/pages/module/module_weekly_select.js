@@ -60,8 +60,6 @@ var components_weekly_select = {
       slots: {
          handler( slot ){
             this.$root.delivery_data.weekly = slot;
-
-            
          },
          deep: true
       }

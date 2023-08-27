@@ -16,7 +16,6 @@
    .gmnoprint,[rel="noopener"]{display: none !important;}
    .dot-icon{border: 2px solid #FFFFFF;width: 18px;height: 18px;border-radius: 100%;background-color: #2790F9;display: inline-block;box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);}
 </style>
-
 <div id='app'>
 
    <div class="progress-wp">
@@ -90,22 +89,21 @@
 
 
    </div>
-
-
+   
 </div>
 <div class='modal-popup open access-location-modal d-none'>
-<div class='modal-wrapper'>
-   <div class='modal-close'><div class='close-button'><span></span><span></span></div></div>
-   <p class='heading pt20'>Location information is not available</p>
-   <p>Please share your location for a better experience on Watergo</p>
-   <button onclick="window.appBridge.openAppSetting()" class='btn btn-primary mt20'>Allow Access</button>
-</div>
-</div>
+         <div class='modal-wrapper'>
+            <div class='modal-close'><div class='close-button'><span></span><span></span></div></div>
+            <p class='heading pt20'>Location information is not available</p>
+            <p>Please share your location for a better experience on Watergo</p>
+            <button onclick="window.appBridge.openAppSetting()" class='btn btn-primary mt20'>Allow Access</button>
+         </div>
+      </div>
 <script src="<?php echo THEME_URI."/assets/js/owl.carousel.min.js?" ?>"></script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=marker&v=beta"  async defer ></script> -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&callback=initMap&libraries=marker&v=beta"  async defer ></script>
-<script>
+<script type="text/javascript">
    // Nhập key to continue
    var icon = `<svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M6.28201 10.0531L3.23672 11.8876C3.10219 11.9732 2.96154 12.0099 2.81478 11.9977C2.66802 11.9855 2.53961 11.9366 2.42954 11.8509C2.31947 11.7653 2.23386 11.6582 2.1727 11.5295C2.11155 11.4009 2.09932 11.2573 2.13601 11.0988L2.9432 7.63157L0.246467 5.30174C0.124166 5.19167 0.0478508 5.06619 0.0175202 4.9253C-0.0128104 4.78441 -0.00376021 4.64694 0.0446709 4.5129C0.0935912 4.37837 0.166972 4.2683 0.264812 4.18269C0.362653 4.09708 0.497184 4.04204 0.668405 4.01758L4.22736 3.70571L5.60324 0.440283C5.66439 0.293522 5.7593 0.183451 5.88796 0.110071C6.01662 0.0366903 6.14797 0 6.28201 0C6.41654 0 6.54789 0.0366903 6.67606 0.110071C6.80424 0.183451 6.89914 0.293522 6.96078 0.440283L8.33667 3.70571L11.8956 4.01758C12.0668 4.04204 12.2014 4.09708 12.2992 4.18269C12.3971 4.2683 12.4704 4.37837 12.5194 4.5129C12.5683 4.64743 12.5776 4.78514 12.5472 4.92603C12.5169 5.06692 12.4403 5.19216 12.3176 5.30174L9.62082 7.63157L10.428 11.0988C10.4647 11.2578 10.4525 11.4016 10.3913 11.5303C10.3302 11.6589 10.2446 11.7658 10.1345 11.8509C10.0244 11.9366 9.896 11.9855 9.74924 11.9977C9.60248 12.0099 9.46183 11.9732 9.3273 11.8876L6.28201 10.0531Z" fill="#FFC83A"/>
@@ -119,7 +117,27 @@
     };
    var data_json, data_water,data_ice;
    var type = "water";
-
+   // function initMap_() {           
+   //    map = new google.maps.Map(document.getElementById("mapContainer"), {
+   //        zoom: 17,
+   //        center,
+   //        mapId: "4504f8b37365c3d0",
+   //        mapTypeControl: false,
+   //        fullscreenControl: false,
+   //        streetViewControl: false,
+   //        zoomControl: false
+   //    });
+       
+   //     var my_local_icon = new google.maps.marker.AdvancedMarkerView({
+   //             map,
+   //             content: build_icon(),
+   //             position: {
+   //                lat: lat,
+   //                lng: lng,
+   //            }
+   //         });
+ 
+   // }// end initMap
 
    async function initMap() {
      const { Map } = await google.maps.importLibrary("maps");
@@ -134,16 +152,17 @@
           zoomControl: false
       });
        
-      var my_local_icon = new google.maps.marker.AdvancedMarkerView({
-         map,
-         content: build_icon(),
-         position: {
-            lat: lat,
-            lng: lng,
-         }
-      });
+       var my_local_icon = new google.maps.marker.AdvancedMarkerView({
+               map,
+               content: build_icon(),
+               position: {
+                  lat: lat,
+                  lng: lng,
+              }
+           });
    }
 
+   //initMap();
    if( window.appBridge !== undefined ){
       window.appBridge.getLocation().then( (data) => {
          if (Object.keys(data).length === 0) {
@@ -215,7 +234,6 @@
          }
       );
    }
-
    function add_item(input){
        //let bounds = new google.maps.LatLngBounds();
        for (const property of input) {
@@ -263,6 +281,7 @@
       content.innerHTML = `<span class="dot-icon"></span>`;
      return content;
    }
+   
 
    function load_store_to_map(latLng) {
      return new Promise((resolve, reject) => {
@@ -406,6 +425,7 @@
       return data;
    }
 
+
    function calculateDistance(lat1, lng1, lat2, lng2) {
       var earthRadius = 6371; 
       var dLat = degToRad(lat2 - lat1);
@@ -419,6 +439,7 @@
       return distance;
    }
 
+   
    function degToRad(deg) {
       return deg * (Math.PI / 180);
    }

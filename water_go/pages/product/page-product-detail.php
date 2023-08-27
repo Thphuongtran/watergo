@@ -326,6 +326,7 @@ createApp({
                   this.product_quantity_count = 1;
                   this.canOrder = true;
                }
+
             }
          }
       

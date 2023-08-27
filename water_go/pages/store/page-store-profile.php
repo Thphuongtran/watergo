@@ -117,6 +117,7 @@ var app = Vue.createApp({
          user_notification: false,
          message_count: 0,
          notification_count: 0,
+
       }
    },
 
