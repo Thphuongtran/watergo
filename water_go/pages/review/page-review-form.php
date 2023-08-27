@@ -43,6 +43,8 @@
          <p class='t-red'>{{ res_text }}</p>
       </div>
 
+      <div class='review-form-spaces'></div>
+
       <div class='btn-review' :class=' event == "edit" ? "btn-review-edit" : "" '>
          <button v-if='event == "add"' @click='submit' class='btn btn-primary'>Add</button>
          <button v-if='event == "edit"' @click='update' class='btn btn-primary'>Save</button>
@@ -115,6 +117,12 @@ createApp({
       }
    },
 
+   watch: {
+      review_text: function( text ){
+         
+      }
+   },
+
    methods: {
 
       autoResize() {
@@ -123,6 +131,9 @@ createApp({
          if (scrollHeight > maxHeight) {
             this.$refs.textarea.style.height = 'auto';
             this.$refs.textarea.style.height = this.$refs.textarea.scrollHeight + 'px';
+            $('html, body').animate({
+               scrollTop: 1000
+            }, 0); // 
          }
       },
 
@@ -192,6 +203,10 @@ createApp({
             this.loading = false;
          }
          
+      },
+
+      textarea_focus(){
+         console.log('textarea focus');
       },
 
       goBack(){ 

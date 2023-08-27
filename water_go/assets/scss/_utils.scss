@@ -1713,6 +1713,9 @@ p{
 		color: #252831;
       display: flex;
       align-items: center;
+      &.small-size{
+         padding: 8px 10px;
+      }
 	}
 
    &.highlight{
@@ -1783,11 +1786,17 @@ p{
 	}
 }
 
+.review-form-spaces{
+   display: block;
+   height: 130px;
+   width: 100%;
+}
+
 .input-review{
 	position: relative;
 	width: 100%;
 	display: block;
-   margin-bottom: 130px;
+   // padding-bottom: 130px;
 	
 	textarea{
 		width: 100%;
@@ -3207,4 +3216,25 @@ p{
 .banner-order-delivering-space{
    height: 40px;
    width: 100%;
+}
+
+@media screen and (max-width: 375px){
+	.display_delivery_time .date_time_item.small-size{
+		font-size: 3.8vw;
+	}
+}
+
+.datetime-report{
+	background: none;
+	position: relative;
+	
+	input{
+		width: 100%;
+		background: none;
+		color: transparent;
+		outline: none;
+		border: none;
+		position: absolute;
+		
+	}
 }

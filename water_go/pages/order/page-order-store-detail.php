@@ -83,9 +83,9 @@
             >
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item small-size'>{{ get_shortname_day_of_week(time_shipping.order_time_shipping_day) }} - {{ time_shipping.order_time_shipping_datetime }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>Date {{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item small-size'>Date {{ time_shipping.order_time_shipping_day }} - {{ time_shipping.order_time_shipping_datetime }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
          </div>
       </div>

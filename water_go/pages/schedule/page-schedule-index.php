@@ -1,8 +1,8 @@
 <?php 
    pv_update_user_token();
 ?>
-<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
-<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+<link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 
 <div id='app'>
 
@@ -51,7 +51,7 @@
                
                <div class='order-store-header style01 border-bottom-large ' stlye=''>
                   <div class='datepicker-wrapper'>
-                     <input @click='datePicker(true)' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' readonly>
+                     <input @click='datePicker' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' readonly>
                      <span class='icon-dropdown'></span>
                   </div>
                   <div class='count-order'>Total order: <span>{{ get_total_orders_count }}</span></div>
@@ -254,21 +254,27 @@ var app = Vue.createApp({
       },
 
       datePicker(isPicker){
-         (function($){
+         $(function(){
 
             $(document).ready(function(){
 
                $('.ui-date-picker-wrapper').addClass('active');
                $('.ui-date-picker-wrapper').addClass('schedule-datepicker');
-
-               
                
                $('#datepicker').datepicker({
+                  minDate: 0,
+                  dateFormat: "dd/mm/yy",
+                  firstDay: 1,
                   dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-                  onSelect: function(dateText, inst){
+                  onSelect: async function(dateText, inst){
                      if(dateText != undefined || dateText != '' || dateText != null){
+                        window.app.loading = true;
+                        window.app.orders = [];
                         $('#datepicker').attr('value', dateText); 
-                        app.datePickerValue = dateText;
+                        window.app.datePickerValue = dateText;
+                        await window.app.schedule_load_product( window.app.schedule_status_value, dateText, [0] );
+                        window.app.loading = false;
+
                      }
                   },
                   onClose: function(dateText, inst){
@@ -287,32 +293,32 @@ var app = Vue.createApp({
                }
             });
 
-         })(jQuery);
+         });
 
-         this.save_datetime_from_datepicker();
+         // this.save_datetime_from_datepicker();
 
-         if( isPicker == true ){
-            var query = document.querySelectorAll('#ui-datepicker-div a.ui-state-default');
+         // if( isPicker == true ){
+         //    var query = document.querySelectorAll('#ui-datepicker-div a.ui-state-default');
 
-            for (let i = 0; i < query.length; i++) {
-               query[i].addEventListener("mousedown", () => {
-                  var _getDatePicker = $('#datepicker').val();
-                  setTimeout(() => {
-                     var _getDatePicker = $('#datepicker').val();
-                     this.orders = [];
-                     this.loading = true;
-                     this.schedule_load_product(this.schedule_status_value, _getDatePicker, [0])
-                        .then(() => {
-                           this.loading = false;
-                        })
-                        .catch((error) => {
-                           console.error(error);
-                           this.loading = false;
-                        });
-                  }, 0);
-               });
-            }
-         }
+         //    for (let i = 0; i < query.length; i++) {
+         //       query[i].addEventListener("mousedown", () => {
+         //          var _getDatePicker = $('#datepicker').val();
+         //          setTimeout(() => {
+         //             var _getDatePicker = $('#datepicker').val();
+         //             this.orders = [];
+         //             this.loading = true;
+         //             this.schedule_load_product(this.schedule_status_value, _getDatePicker, [0])
+         //                .then(() => {
+         //                   this.loading = false;
+         //                })
+         //                .catch((error) => {
+         //                   console.error(error);
+         //                   this.loading = false;
+         //                });
+         //          }, 0);
+         //       });
+         //    }
+         // }
 
          
 
@@ -381,11 +387,11 @@ var app = Vue.createApp({
       var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
       await this.schedule_load_product('all', _currentDate, 0);
 
-      $.datepicker.setDefaults({
-         minDate: 0,
-         dateFormat: "dd/mm/yy",
-         firstDay: 1,
-      });
+      // $.datepicker.setDefaults({
+      //    minDate: 0,
+      //    dateFormat: "dd/mm/yy",
+      //    firstDay: 1,
+      // });
 
       await this.datePicker();
       window.appbar_fixed();
@@ -408,6 +414,8 @@ var app = Vue.createApp({
 
 })
 .mount('#app');
+
+window.app = app;
 </script>
 
 

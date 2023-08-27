@@ -203,8 +203,8 @@
 
 
 <script src="<?php echo THEME_URI . '/pages/module/module_weekly_select.js'; ?>"></script>
-<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
-<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+<link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 
 <script setup>
 
@@ -794,22 +794,26 @@ var app = Vue.createApp({
                for (let i = 0; i < delivery_data.length; i++) {
                   var delivery = delivery_data[i];
                   if (delivery.day === currentDay) {
-                     var [hStart, hEnd]   = delivery.time.split('-');
+                     var [hStart, hEnd] = delivery.time.split('-');
                      var [h1, h2]   = hStart.split(':').map(Number);
                      var [e1, e2]   = hEnd.split(':').map(Number);
-                     h1 = h1 - 1;
-                     e1 = e1 - 1;
-                     var new_range_min = h1 + ':00';
-                     var new_range_max = e1 + ':00';
-                     if( this.isTimeRange(new_range_min, new_range_max) == false ){
+
+                     var _nextDay = false;
+
+                     if( currentHour > h1 ){
+                        _nextDay = true;
+                     }
+                     if(currentHour == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+                     if(currentHour + 1 == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+
+                     if(_nextDay == true ){
                         delivery.datetime = this.addWeekForDatetime(delivery.datetime);
                      }
-                     
                   }
-
-                  // console.log(isTimeRange("9:00", "10:00"));  // false
-                  // console.log(isTimeRange("10:00", "11:00")); // true
-                  // console.log(isTimeRange("11:00", "12:00")); // false
                }
             }
 
@@ -822,12 +826,6 @@ var app = Vue.createApp({
                var currentHourFixed = currentDate.getHours();
                var currentMinute    = currentDate.getMinutes();
                var currentDay       = currentDate.getDate().toString().padStart(2, '0');
-
-               // let currentDate = new Date();
-               // let year = currentDate.getFullYear();
-               // let month = String(currentDate.getMonth() + 1).padStart(2, '0');
-               // let day = String(dateText).padStart(2, '0');
-               // let fulldate = `${day}/${month}/${year}`;
                
                for (let i = 0; i < delivery_data.length; i++) {
                   var delivery = delivery_data[i];
@@ -836,18 +834,28 @@ var app = Vue.createApp({
                      var [hStart, hEnd]   = delivery.time.split('-');
                      var [h1, h2]   = hStart.split(':').map(Number);
                      var [e1, e2]   = hEnd.split(':').map(Number);
-                     h1 = h1 - 1;
-                     e1 = e1 - 1;
-                     var new_range_min = h1 + ':00';
-                     var new_range_max = e1 + ':00';
-                     if( this.isTimeRange(new_range_min, new_range_max) == false ){
+                     var _nextDay = false;
+
+                     if( currentHour > h1 ){
+                        _nextDay = true;
+                     }
+                     if(currentHour == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+                     if(currentHour + 1 == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+
+                     if(_nextDay == true ){
                         delivery.datetime = this.addWeekForDatetime(delivery.datetime);
-                        var [d, m, y] = delivery.datetime.split('/');
-                        delivery.day = d;
+                        var [d,m,y]       = delivery.datetime.split('/');
+                        delivery.day      = d;
                      }
                   }
                }
             }
+
+            console.log(this.delivery_data.weekly);
 
             var form = new FormData();
             form.append('action',            'atlantis_add_order');

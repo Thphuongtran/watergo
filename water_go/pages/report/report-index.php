@@ -1,6 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false ' class='page-report'>
+   <div v-show='loading == false ' class='page-report'>
       <div class='appbar style01'>
          <div class='appbar-top'>
             <div class='leading'>
@@ -9,17 +9,17 @@
                   Report
 
                   <div class='datetime-wrapper'>
-                     <!-- <span id='datepicker' class='datetime-display'>{{display_datetime}}</span> -->
+                     
                      <button @click='datepicker' v-show='filter_datetime[0].active' class='datetime-display datetime-report '>
-                        <input id='datepicker' readonly>
-                        <span>{{ display_datetime }}</span>
+                        <input id='datepicker' readonly><span>{{ display_datetime }}</span>
                      </button>
-                     <span v-show='filter_datetime[1].active' class='datetime-display'>{{display_datemonth}}</span>
-                     <span v-show='filter_datetime[2].active' class='datetime-display'>{{display_dateyear}}</span>
+
+                     <span @click='btn_select_month' v-show='filter_datetime[1].active' class='datetime-display'>{{display_datemonth}}</span>
+                     <span @click='btn_select_year' v-show='filter_datetime[2].active' class='datetime-display'>{{display_dateyear}}</span>
 
                      <ul v-show='open_datemonth ' class='dropdown-datetime'>
                         <li
-                           @click='select_date(date)'
+                           @click='select_datemonth(date)'
                            v-for='( date, keyMonth) in getPastMonthsInCurrentYears ' :key='keyMonth'
                         >
                            {{ addZeroLeading(date) }}/{{currentYear}}
@@ -27,8 +27,8 @@
                      </ul>
 
                      <ul v-show='open_dateyear' class='dropdown-datetime'>
-                        <li @click='select_date(2022)'>2022</li>
-                        <li @click='select_date(2023)'>2023</li>
+                        <li @click='select_dateyear(2022)'>2022</li>
+                        <li @click='select_dateyear(2023)'>2023</li>
                      </ul>
 
                      <div class='icon'>
@@ -36,6 +36,7 @@
                         <path d="M1 1L5 5L9 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                      </div>
+
                   </div>
                </div>
 
@@ -117,7 +118,7 @@
       </div>
    </div>
 
-   <div v-if='loading == true'>
+   <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -126,8 +127,8 @@
 </div>
 
 
-<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
-<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
+<link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 <script>
 
 var app = Vue.createApp({
@@ -148,8 +149,6 @@ var app = Vue.createApp({
             {label: 'Month', value: 'm', active: false},
             {label: 'Year', value: 'y', active: false}
          ],
-
-         stream_datetime_value: '',
 
          datetime_day: {value: 0},
          datetime_month: {value: 0},
@@ -185,66 +184,40 @@ var app = Vue.createApp({
 
    watch: {
 
-      display_datetime: async function( val ){
-         this.display_datetime = val;
-         if( val != undefined && val != "" && val != null ){
-            // this.loading = true;
-
-            this.report_rank.rank = 'day';
-            var currentDate = new Date();
-            var year = currentDate.getFullYear();
-            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
-            var day = String(currentDate.getDate()).padStart(2, '0');
-
-            var date_from  = `${year}-${month}-${day}`;
-            var date_to    = window.reverse_date_to_system_datetime(val);
-            console.log(date_from);
-            console.log(date_to);
-            
-            await this.get_order_range_day_report(date_from, date_to);
-            // this.loading = false;
-         }
-
-      },
 
       filter_datetime: {
          async handler( filter ){
             var _find = filter.find( item => item.active == true );
-            if( _find.value == "d" ){
 
-               // this.report_rank.rank = 'day';
-               // var currentDate = new Date();
-               // var currentYear = currentDate.getFullYear();
-               // var currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
-               // var day = String(this.display_datetime).padStart(2, '0'); // Pad with leading zeros if needed
-               // var fullday = `${currentYear}-${currentMonth}-${day}`;
-               
-               // await this.get_order_range_day_report(fullday, fullday);
-               
+            if( _find.value == 'd' ){
+               this.loading = true;
+               this.report_rank.rank = 'day';
+               var year        = this.currentDate.getFullYear();
+               var month       = String(this.currentDate.getMonth() + 1).padStart(2, '0');
+               var day         = String(this.currentDate.getDate()).padStart(2, '0');
+               var date_from   = `${year}-${month}-${day}`;
+               var date_to     = `${year}-${month}-${day}`;
+               var current     = `${day}/${month}/${year}`;
+               this.display_datetime = current;
+               await window.app.get_order_range_day_report(date_from, date_to);
+               this.loading = false;
             }
+
+            if( _find.value == 'm' ){
+               this.loading = true;
+               await this.select_datemonth( this.currentDate.getMonth() + 1);
+               this.loading = false;
+            }
+
+            if( _find.value == 'y' ){
+               this.loading = true;
+               await this.select_dateyear(this.currentDate.getFullYear());
+               this.loading = false;
+            }
+
          },
          deep: true
       },
-
-      stream_datetime_value: function ( val ){
-         var dateObj = new Date();
-         var day     = dateObj.getDate().toString().padStart(2, '0');
-         var month   = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-         var year    = dateObj.getFullYear().toString();
-
-         if( val == 'd' ){
-            this.display_datetime   = this.get_full_current_datetime({ day: day });
-            this.final_datetime     = this.get_full_current_datetime({ day: day });
-         }
-         if( val == 'm' ){
-            this.display_datetime   = this.get_full_current_datetime({ month: month });
-            this.final_datetime     = '01/' + this.get_full_current_datetime({ month: month });
-         }
-         if( val == 'y' ){
-            this.display_datetime   = this.get_full_current_datetime({ year: year });
-            this.final_datetime     = '01/01/' + this.get_full_current_datetime({ year: year });
-         }
-      }
 
    },
 
@@ -324,10 +297,22 @@ var app = Vue.createApp({
                      dateFormat: "dd/mm/yy",
                      firstDay: 1,
                      maxDate: 0,
-                     onSelect: function(dateText, inst){
+                     onSelect: async function(dateText, inst){
                         if(dateText != undefined || dateText != '' || dateText != null){
                            $('#datepicker').attr('value', dateText); 
+                           
+                           window.app.loading = true;
                            window.app.display_datetime = dateText;
+                           window.app.report_rank.rank = 'day';
+                           var currentDate = new Date();
+                           var year        = currentDate.getFullYear();
+                           var month       = String(currentDate.getMonth() + 1).padStart(2, '0');
+                           var day         = String(currentDate.getDate()).padStart(2, '0');
+                           var date_from   = `${year}-${month}-${day}`;
+                           var date_to     = window.reverse_date_to_system_datetime(dateText);
+                           await window.app.get_order_range_day_report(date_from, date_to);
+                           window.app.loading = false;
+
                         }
                      },
                      onClose: function(dateText, inst){
@@ -346,6 +331,7 @@ var app = Vue.createApp({
                   }
                }
                select();
+
                $('#datepicker').on('click', function(){
                   select();
                });
@@ -357,6 +343,8 @@ var app = Vue.createApp({
 
       addZeroLeading(n){ return window.addZeroLeading(n)},
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
+      get_start_and_end_of_month_current(){ window.get_start_and_end_of_month_current()},
+      get_start_and_end_of_month(n){ window.get_start_and_end_of_month(n)},
       
       get_price_convert(price){
          if( price > 0){
@@ -366,19 +354,6 @@ var app = Vue.createApp({
       },
 
       reverse_date_to_system_datetime(datetime){ return window.reverse_date_to_system_datetime(datetime) },
-
-      btn_open_datetime(){
-
-         if( this.stream_datetime_value == 'd' ){
-            this.open_datetime = !this.open_datetime;
-         }
-         if( this.stream_datetime_value == 'm' ){
-            this.open_datemonth = !this.open_datemonth;
-         }
-         if( this.stream_datetime_value == 'y' ){
-            this.open_dateyear = !this.open_dateyear;
-         }
-      },
 
       async get_notification_count(){
          var form = new FormData();
@@ -392,52 +367,39 @@ var app = Vue.createApp({
          }
       },
 
-      async select_date( date ){
+      btn_select_month(){
+         this.open_datemonth  = true;
+         this.open_dateyear   = false;
+      },
+      btn_select_year(){
+         this.open_dateyear   = true;
+         this.open_datemonth  = false;
+      },
 
-         if( this.stream_datetime_value == 'd' ){
-            // this.open_datetime      = false;
-            // this.display_datetime   = this.get_full_current_datetime({ day: date });
-            // this.report_rank.rank = 'day';
-            // var currentDate = new Date();
-            // var currentYear = currentDate.getFullYear();
-            // var currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
-            // var day = String(date).padStart(2, '0'); // Pad with leading zeros if needed
-            // var fullday = `${currentYear}-${currentMonth}-${day}`;
-            // await this.get_order_range_day_report(fullday, fullday);
-         }
+      async select_datemonth(val){
+         this.open_datemonth  = false;
+         this.open_dateyear   = false;
+         this.display_datemonth = String(val).padStart(2, '0') + '/' + this.currentYear;
+         this.report_rank.rank = 'month';
+         var _start_and_end_of_month = window.get_start_and_end_of_month(val);
+         var _start_and_end_of_month_current = window.get_start_and_end_of_month_current();
+         await this.get_order_range_month_report(_start_and_end_of_month, _start_and_end_of_month_current);
+      },
 
-         // if( this.stream_datetime_value == 'm' ){
-         //    this.report_rank.rank = 'month';
-         //    this.open_datemonth     = false;
-         //    this.display_datetime   = this.get_full_current_datetime({ month: date });
-         //    var _start_and_end_of_month = window.get_start_and_end_of_month(date);
-         //    var _start_and_end_of_month_current = window.get_start_and_end_of_month_current();
-         //    await this.get_order_range_month_report(_start_and_end_of_month, _start_and_end_of_month_current);
-         // }
-
-         // if( this.stream_datetime_value == 'y' ){
-         //    this.report_rank.rank = 'month';
-         //    this.open_dateyear      = false;
-         //    this.display_datetime   = this.get_full_current_datetime({ year: date });
-
-         //    var start_day     = date + '-01-01';
-         //    var start_end     = date + '-12-31';
-
-         //    await this.get_order_range_year_report(start_day, start_end);
-
-            // console.log( window.get_start_and_end_of_year( date ) );
-         // }
-
+      async select_dateyear(val){
+         this.open_datemonth  = false;
+         this.open_dateyear   = false;
+         this.display_dateyear = val;
+         this.report_rank.rank = 'month';
+         var start_day     = val + '-01-01';
+         var start_end     = val + '-12-31';
+         await this.get_order_range_year_report(start_day, start_end);
       },
 
       select_filter_datetime(value){
-         this.stream_datetime_value = value;
-         this.open_datetime = false;
          this.open_datemonth = false;
          this.open_dateyear = false;
-         this.filter_datetime.forEach(item => {
-            item.active = item.value === value;
-         });
+         this.filter_datetime.forEach(item => {item.active = item.value === value;});
       },
 
       async get_messages_count(){
@@ -486,11 +448,12 @@ var app = Vue.createApp({
 
       // 
       async get_totay_order_report(){
-         this.loading = true;
+
          var form = new FormData();
          form.append('action', 'atlantis_get_today_order_report');
          var r = await window.request(form);
          window.appbar_fixed();
+         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_order_ok' ){
@@ -499,7 +462,7 @@ var app = Vue.createApp({
                this.report_today.profit   = res.data.profit;
             }
          }
-         this.loading = false;
+
       },
 
       // RANGE DAY
@@ -573,6 +536,7 @@ var app = Vue.createApp({
          this.loading = false;
       },
 
+
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
       goBack(){window.goBack(); }
@@ -583,23 +547,22 @@ var app = Vue.createApp({
       this.loading = true;
       this.currentYear = this.currentDate.getFullYear();
       // await this.get_messages_count();
+      var year = this.currentDate.getFullYear();
+      var month = String(this.currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so we add 1 and pad with leading zeros if needed
+      var day = String(this.currentDate.getDate()).padStart(2, '0'); // Pad with leading zeros if needed
 
-      var _findFilter = this.filter_datetime.find(item => item.active == true);
+      this.display_datetime      = `${day}/${month}/${year}`;
+      this.display_datemonth     = `${month}/${year}`;
+      this.display_dateyear      = `${year}`;
 
-      if( _findFilter.value == 'd' ){
-         this.display_datetime      = this.get_full_current_datetime();
-         this.stream_datetime_value = _findFilter.value;
-      }
-
-      // var _time_reverse = this.reverse_date_to_system_datetime(this.final_datetime);
-
-      // await this.get_totay_order_report();
+      await this.get_totay_order_report();
       await this.get_notification_count();
 
       this.datePicker();
 
-      window.appbar_fixed();
-      this.loading = false;
+      setTimeout( () => { 
+         window.appbar_fixed();
+         this.loading = false; }, 300);
 
    }
    

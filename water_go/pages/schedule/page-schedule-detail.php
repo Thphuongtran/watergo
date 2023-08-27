@@ -146,11 +146,10 @@
 
 </div>
 
-<script type='module'>
+<script>
 
-var { createApp } = Vue;
 
-createApp({
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
@@ -280,5 +279,5 @@ createApp({
    },
 
 }).mount('#app');
-
+window.app = app;
 </script>

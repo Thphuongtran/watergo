@@ -10,7 +10,7 @@
          <div class='appbar'>
             <div class='appbar-top'>
                <div class='leading'>
-                  <span class='leading-title'>Home</span>
+                  <span class='leading-title'><?php echo __('Home', 'watergo'); ?></span>
                </div>
                <div class='action'>
                   <div @click='gotoCart' class='btn-badge'>
@@ -73,16 +73,16 @@
 
          <div class='inner'>
             <div class='gr-btn'>
-               <button @click='gotoProductWater' class='btn-outline'>Water</button>
-               <button @click='gotoProductIce' class='btn-outline'>Ice</button>
+               <button @click='gotoProductWater' class='btn-outline'><?php echo __("Water", 'watergo'); ?></button>
+               <button @click='gotoProductIce' class='btn-outline'><?php echo __('Ice', 'watergo'); ?></button>
             </div>
 
             <div class='home-contents mt40'>
 
                <div v-if='productRecommend.length > 0' class='list-product-recommend'>
                   <div class='gr-heading'>
-                     <p class='heading'>Recommend</p>
-                     <span @click='gotoProductRecommend' class='link'>See All</span>
+                     <p class='heading'><?php echo __('Recommend', 'watergo'); ?></p>
+                     <span @click='gotoProductRecommend' class='link'><?php echo __('See All', 'watergo'); ?></span>
                   </div>
 
                   <div class='list-horizontal'>
@@ -113,8 +113,8 @@
 
                <div v-if='storeNearby.length > 0' class='list-product-recommend more-space'>
                   <div class='gr-heading mt40'>
-                     <p class='heading'>Nearby</p>
-                     <span @click='gotoNearbyStore' class='link'>See All</span>
+                     <p class='heading'><?php echo __('Nearby', 'watergo'); ?></p>
+                     <span @click='gotoNearbyStore' class='link'><?php echo __('See All', 'watergo'); ?></span>
                   </div>
 
                   <div class='list-horizontal'>

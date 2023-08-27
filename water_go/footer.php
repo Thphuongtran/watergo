@@ -175,7 +175,6 @@
                   // alert('review update ' + res.contents);
                }
             });
-
          }
 
          if( partial[0] == 'product_store_update' ){
@@ -208,7 +207,7 @@
 
          if( partial[0] == 'user_profile_update' ){
             await atlantis_user_profile_update().then( (res) => {
-               alert(res);
+               // alert(res);
                window.app.name = res.name;
                if( res.user_avatar ){
                   window.app.user.user_avatar.url = res.user_avatar.url;
