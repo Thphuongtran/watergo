@@ -66,12 +66,12 @@
                      <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.50197e-05 1.08889V0.252778V1.08889ZM1.50197e-05 1.08889C-0.000569119 1.17459 0.0158907 1.25955 0.0484373 1.33883M1.50197e-05 1.08889L0.0484373 1.33883M0.0484373 1.33883C0.0809839 1.41811 0.128968 1.49013 0.189598 1.55069M0.0484373 1.33883L0.189598 1.55069M0.189598 1.55069L6.02293 7.38403L0.189598 1.55069ZM6.55326 6.8537L0.750015 1.05045V0.75H14.8056V1.05531L9.01691 6.84398L8.79724 7.06365V7.37431V12.7887L6.77293 11.7808V7.38403V7.07337L6.55326 6.8537ZM0.719656 1.02009C0.719747 1.02018 0.719838 1.02027 0.719929 1.02036L0.719656 1.02009Z" fill="#2790F9" stroke="#2790F9" stroke-width="1.5"></path></svg>
                   </div>
                   <select v-model='product_tab_filter_select'>
-                     <option :value="{ value: ''}" disabled>Filter</option>
-                     <option :value="{ value: 'out_of_stock' }">Out of Stock</option>
-                     <option :value="{ value: 'availble' }">Availble</option>
+                     <option :value="{ value: ''}" disabled><?php echo __('Filter', 'watergo'); ?></option>
+                     <option :value="{ value: 'out_of_stock' }"><?php echo __('Out of Stock', 'watergo'); ?></option>
+                     <option :value="{ value: 'availble' }"><?php echo __('Availble', 'watergo'); ?></option>
                   </select>
                </div>
-               <button @click='gotoProductStoreAdd(store_id, get_product_tab_value)' class='btn btn-outline'>Add New</button>
+               <button @click='gotoProductStoreAdd(store_id, get_product_tab_value)' class='btn btn-outline'><?php echo __('Add New', 'watergo'); ?></button>
             </div>
 
          </div>
@@ -107,12 +107,12 @@
                </div>
                <div class='tt4'>
                   <div class='product-analytics'>
-                     <div class='product-sold'>Sold: <span class='t-primary'>{{ product.sold }}</span></div>
+                     <div class='product-sold'><?php echo __('Sold', 'watergo'); ?>: <span class='t-primary'>{{ product.sold }}</span></div>
                      <!-- <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div> -->
                   </div>
                   <div class='product-bagde'>
-                     <div v-if='product_is_availble(product) == "availble" ' class='availble'>Availble</div>
-                     <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'>Out of Stock</div>
+                     <div v-if='product_is_availble(product) == "availble" ' class='availble'><?php echo __('Availble', 'watergo'); ?></div>
+                     <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'><?php echo __('Out of Stock', 'watergo'); ?></div>
                   </div>
                </div>
             </div>

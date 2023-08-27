@@ -6,7 +6,7 @@
             <div class='leading'>
 
                <div class='leading-title'>
-                  Report
+                  <?php echo __('Report', 'watergo'); ?>
 
                   <div class='datetime-wrapper'>
                      
@@ -68,10 +68,9 @@
          </div>
          <div class='appbar-bottom'>
             <ul class='navbar style-expaned'>
-               <li
-                  @click='select_filter_datetime(date.value)'
-                  v-for=' ( date, keyDate ) in filter_datetime' :key='keyDate'
-                  :class='date.active == true ? "active" : ""'>{{ date.label }}</li>
+               <li @click='select_filter_datetime("d")' :class='filter_datetime[0].active == true ? "active" : ""'><?php echo __('Day', 'watergo'); ?></li>
+               <li @click='select_filter_datetime("m")' :class='filter_datetime[1].active == true ? "active" : ""'><?php echo __('Month', 'watergo'); ?></li>
+               <li @click='select_filter_datetime("y")' :class='filter_datetime[2].active == true ? "active" : ""'><?php echo __('Year', 'watergo'); ?></li>
             </ul>
 
          </div>
@@ -80,7 +79,7 @@
       <div class='inner mt30'>
          
          <div class='box-profit'>
-            <div class='order-count'>SOLD: <span class='highlight'>{{ get_data_report.sold }}</span> Orders</div>
+            <div class='order-count'><?php echo __('SOLD', 'watergo')?>: <span class='highlight'>{{ get_data_report.sold }}</span> <?php echo __('Orders', 'watergo'); ?></div>
             <div v-if='report_rank.rank != "today"' class='rank rank_sold' :class='get_data_report.rank_sold'>
 
                <svg v-if='get_data_report.rank_sold == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +95,7 @@
          </div>
 
          <div class='box-profit'>
-            <div class='order-count'>CANCELED: <span class='highlight'>{{ get_data_report.cancel }}</span> Orders</div>
+            <div class='order-count'><?php echo __('CANCELED', 'watergo'); ?>: <span class='highlight'>{{ get_data_report.cancel }}</span> <?php echo __('Orders', 'watergo'); ?></div>
             <div v-if='report_rank.rank != "today"' class='rank rank_cancel' :class='get_data_report.rank_cancel'>
 
                <svg v-if='get_data_report.rank_cancel == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -112,7 +111,7 @@
          </div>
 
          <div class='box-profit'>
-            <div class='order-count'>TOTAL PROFIT: <span class='highlight'>{{ get_price_convert(get_data_report.profit) }}</span></div>
+            <div class='order-count'><?php echo __('TOTAL PROFIT', 'watergo'); ?>: <span class='highlight'>{{ get_price_convert(get_data_report.profit) }}</span></div>
          </div>
 
       </div>

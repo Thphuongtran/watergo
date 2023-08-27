@@ -11,7 +11,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>Order</p>
+               <p class='leading-title'><?php echo __('Order', 'watergo'); ?></p>
             </div>
          </div>
          <div class='break-line'></div>
@@ -20,8 +20,8 @@
       <div v-if='loading == false && carts.length > 0' class='inner'>
          <div id='delivery_address_primary' @click='gotoDeliveryAddress' class='list-tile delivery-address' :class='delivery_address_primary != null ? "has-primary" : ""' >
             <div class='content'>
-               <p class='tt01'>Delivery address</p>
-               <p v-if='delivery_address_primary == null' class='tt02'>There is no address</p>
+               <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
+               <p v-if='delivery_address_primary == null' class='tt02'><?php echo __('There is no address', 'watergo'); ?></p>
                <p class='tt03' v-if='delivery_address_primary != null'>{{ delivery_address_primary.address }}</p>
                <p class='tt02' v-if='delivery_address_primary != null'>{{ delivery_address_primary.name }} {{ hasMoreThanTwoZeroes(delivery_address_primary.phone) == true ? ' | (+84) ' + removeZeroLeading( delivery_address_primary.phone ) : "" }}</p>
             </div>
@@ -75,34 +75,34 @@
       </ul>
       
       <div class='select_delivery_time' ref='select_delivery_time'>
-         <p class='heading-02'>Select delivery time</p>
+         <p class='heading-02'><?php echo __('Select delivery time', 'watergo'); ?></p>
 
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("once")' :checked='delivery_type.once' id='select_type01' type="radio" class='form-input'>
-               <label for='select_type01' >Delivery once</label>
+               <label for='select_type01' ><?php echo __('Delivery once', 'watergo'); ?></label>
             </div>
 
             <div v-show='delivery_type.once' class='group-time-delivery-once'>
                <div class='form-group-select'>
                   <div class='form-check'>
                      <input id='select_delivery_time_Immediately' type='checkbox' @click='btn_select_type("once_immediately")' :checked='delivery_type.once_immediately' :disabled='delivery_type.once_immediately'>
-                     <label for='select_delivery_time_Immediately'>Immediately (within 1 hour)</label>
+                     <label for='select_delivery_time_Immediately'><?php echo __('Immediately (within 1 hour)', 'watergo'); ?></label>
                   </div>
                   <div class='form-check'>
                      <input id='select_delivery_time_Date-Time' type='checkbox' @click='btn_select_type("once_date_time")' :checked='delivery_type.once_date_time' :disabled='delivery_type.once_date_time'>
-                     <label for='select_delivery_time_Date-Time' class='custom-checkbox'>Select Date & Time</label>
+                     <label for='select_delivery_time_Date-Time' class='custom-checkbox'><?php echo __('Select Date & Time', 'watergo'); ?></label>
                   </div>
                </div>
             </div>
 
             <div v-show='delivery_type.once_date_time == true' class='group-select-delivery-time'>
                <div class='btn-wrapper-order'>
-                  <input data-id='0' type='text' value='' class='btn_select_date_once btn-dropdown' placeholder='Select date' readonly>
+                  <input data-id='0' type='text' value='' class='btn_select_date_once btn-dropdown' placeholder='<?php echo __('Select date', 'watergo'); ?>' readonly>
                </div>
                <div class='btn-wrapper-order'>
                   <select data-id='0' class='btn_select_time_once btn-dropdown'>
-                     <option value="--">Select time</option>
+                     <option value="--"><?php echo __('Select time', 'watergo'); ?></option>
                   </select>
                </div>
             </div>
@@ -113,7 +113,7 @@
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("weekly")' :checked='delivery_type.weekly' id='select_type02' type="radio" class='form-input'>
-               <label for='select_type02'>Delivery weekly</label>
+               <label for='select_type02'><?php echo __('Delivery weekly', 'watergo'); ?></label>
             </div>
             <div v-show='delivery_type.weekly == true' class='deliverySelect_weekly'>
 
@@ -121,24 +121,24 @@
 
             </div>
 
-            <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'>Add Day</button>
+            <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'><?php echo __('Add Day', 'watergo'); ?></button>
          </div>
 
          <!-- monthly -->
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("monthly")' :checked='delivery_type.monthly' id='select_type03' type="radio" class='form-input'>
-               <label for='select_type03'>Delivery mothly</label>
+               <label for='select_type03'><?php echo __('Delivery mothly', 'watergo'); ?></label>
             </div>
 
             <div v-show='delivery_type.monthly == true' class='deliverySelect_monthly'>
                <div class='group-select-delivery-time'>
                   <div class='btn-wrapper-order'>
-                     <input data-id='0' type='text' value='' class='btn_select_monthly_primary btn_select_monthly btn-dropdown' placeholder='Select date' readonly>
+                     <input data-id='0' type='text' value='' class='btn_select_monthly_primary btn_select_monthly btn-dropdown' placeholder='<?php echo __('Select date', 'watergo'); ?>' readonly>
                   </div>
                   <div class='btn-wrapper-order'>
                      <select data-id='0' class='btn_select_monthly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
+                        <option value='' selected disabled><?php echo __('Select time', 'watergo') ?></option>
                         <option value='7:00-8:00'>7:00  -  8:00</option>
                         <option value='8:00-9:00'>8:00  -  9:00</option>
                         <option value='9:00-10:00'>9:00  -  10:00</option>
@@ -158,16 +158,16 @@
                </div>
             </div>
 
-            <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly'>Add Date</button>
+            <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly'><?php echo __('Add Date', 'watergo'); ?></button>
          </div>
       </div>
 
       <div class='break-line'></div>
-      <div class='inner'><p class='heading-02'>Payment method </p><p>By Cash</p></div>
+      <div class='inner'><p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p><p>By Cash</p></div>
 
       <div class='product-detail-bottomsheet cell-placeorder'>
-         <p class='price-total'>Total: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></p>
-         <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary' :class='canPlaceOrder == false ? "disable" : "" '>Place Order</button>
+         <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></p>
+         <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary' :class='canPlaceOrder == false ? "disable" : "" '><?php echo __('Place Order', 'watergo'); ?></button>
       </div>
 
    </div>
@@ -175,7 +175,7 @@
    <div v-if='modal_store_out_of_stock == true && canPlaceOrder == false' class='modal-popup' :class='modal_store_out_of_stock == true && canPlaceOrder == false ? "open" : ""'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
+         <p class='heading'><?php echo __("This Product is <span class='t-primary'>Out of Stock</span", 'watergo'); ?>></p>
       </div>
    </div>
 
@@ -191,10 +191,10 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3>Order Successfully</h3>
+         <h3><?php echo __('Order Successfully', 'watergo'); ?></h3>
       </div>
       <div class='banner-footer'>
-         <button @click='goBackRefresh' class='btn btn-outline'>Exit</button>
+         <button @click='goBackRefresh' class='btn btn-outline'><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 

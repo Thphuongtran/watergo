@@ -28,7 +28,7 @@
 
       <div class='appbar'>
          <div class='appbar-top'>
-            <span class='leading-title'>Map</span>
+            <span class='leading-title'><?php echo __('Map', 'watergo'); ?></span>
             <div class='action'>
                <a href="/cart/?appt=N" class='btn-badge'>
                   <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,8 +42,8 @@
          </div>
          <div class='appbar-bottom pb15'>
             <div class="gr-btn style01">
-               <button class="active filter-button" data-type='water'>Water</button>
-               <button class="filter-button" data-type="ice">Ice</button>
+               <button class="active filter-button" data-type='water'><?php echo __('Water', 'watergo'); ?></button>
+               <button class="filter-button" data-type="ice"><?php echo __('Ice', 'watergo'); ?></button>
             </div>
          </div>
       </div>
@@ -94,9 +94,9 @@
 <div class='modal-popup open access-location-modal d-none'>
          <div class='modal-wrapper'>
             <div class='modal-close'><div class='close-button'><span></span><span></span></div></div>
-            <p class='heading pt20'>Location information is not available</p>
-            <p>Please share your location for a better experience on Watergo</p>
-            <button onclick="window.appBridge.openAppSetting()" class='btn btn-primary mt20'>Allow Access</button>
+            <p class='heading pt20'><?php echo __('Location information is not available', 'watergo'); ?></p>
+            <p><?php echo __('Please share your location for a better experience on Watergo', 'watergo'); ?></p>
+            <button onclick="window.appBridge.openAppSetting()" class='btn btn-primary mt20'><?php echo __('Allow Access', 'watergo'); ?></button>
          </div>
       </div>
 <script src="<?php echo THEME_URI."/assets/js/owl.carousel.min.js?" ?>"></script>

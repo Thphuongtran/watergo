@@ -11,8 +11,8 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p v-if='filter != "" && filter == "weekly"' class='leading-title'>Weekly order list</p>
-               <p v-if='filter != "" && filter == "monthly"' class='leading-title'>Monthly order list</p>
+               <p v-if='filter != "" && filter == "weekly"' class='leading-title'><?php echo __('Weekly order list', 'watergo'); ?></p>
+               <p v-if='filter != "" && filter == "monthly"' class='leading-title'><?php echo __('Monthly order list', 'watergo'); ?></p>
             </div>
          </div>
       </div>
@@ -26,8 +26,8 @@
          <path d="M61.5 65H56.25H51" stroke="#2790F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
          </svg>
 
-         <p v-if='filter != "" && filter == "weekly"' class='t-thrid'>There is no weekly order</p>
-         <p v-if='filter != "" && filter == "monthly"'class='t-thrid'>There is no monthly order</p>
+         <p v-if='filter != "" && filter == "weekly"' class='t-thrid'><?php echo __('There is no weekly order', 'watergo'); ?></p>
+         <p v-if='filter != "" && filter == "monthly"'class='t-thrid'><?php echo __('There is no monthly order', 'watergo'); ?></p>
       </div>
 
       <ul v-if="loading == false && orders.length > 0" class='list-order'>
@@ -38,7 +38,7 @@
                   <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/><path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/></svg>
                </div>
                <div class='leading'><span>{{ order.store_name }}</span></div>
-               <div @click='btn_delete_order(order.order_id)' class='status'> Delete </div>
+               <div @click='btn_delete_order(order.order_id)' class='status'><?php echo __('Delete', 'watergo'); ?> </div>
             </div>
 
             <div 
@@ -62,13 +62,13 @@
 
             <div class='order-bottom'>
                <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} product</span>
-               <span class='total-price'>Total: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
+               <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
             </div>
 
             <div class='order-delivery-time'>
                <table>
                   <tr v-for='( shipping, shippingKey ) in order.order_time_shipping' :key='shippingKey'>
-                     <td v-if='shipping.order_time_shipping_type == "monthly" '>Date {{shipping.order_time_shipping_day}}</td>
+                     <td v-if='shipping.order_time_shipping_type == "monthly" '><?php echo __('Date', 'watergo'); ?> {{shipping.order_time_shipping_day}}</td>
                      <td v-if='shipping.order_time_shipping_type == "weekly" '>{{shipping.order_time_shipping_day}}</td>
                      <td class='td-left'> | {{shipping.order_time_shipping_time}}</td>
                   </tr>
@@ -87,11 +87,11 @@
 
    <div v-if="loading == false && popup_delete_all_item == true" class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p v-if='filter != "" && filter == "weekly"' class='heading'>Are you sure to delete this<br> weekly order?</p>
-         <p v-if='filter != "" && filter == "monthly"' class='heading'>Are you sure to delete this<br> monthly order?</p>
+         <p v-if='filter != "" && filter == "weekly"' class='heading'><?php echo __('Are you sure to delete this<br> weekly order?', 'watergo'); ?></p>
+         <p v-if='filter != "" && filter == "monthly"' class='heading'><?php echo __('Are you sure to delete this<br> monthly order?', 'watergo'); ?></p>
          <div class='actions'>
-            <button @click='buttonCloseModal_delete_all_item' class='btn btn-outline'>Cancel</button>
-            <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'>Delete</button>
+            <button @click='buttonCloseModal_delete_all_item' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+            <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'><?php echo __('Delete', 'watergo'); ?></button>
          </div>
       </div>
    </div>

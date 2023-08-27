@@ -29,10 +29,10 @@
       <div class='inner'>
          <div class='product-store-view-form'>
 
-            <div class='form-title'>Category</div>
+            <div class='form-title'><?php echo __('Category', 'watergo'); ?></div>
             <div class='form-control form-select'>
                <select v-model='select_category'>
-                  <option :value="{ value: 0 }" disabled>Select Category</option>
+                  <option :value="{ value: 0 }" disabled><?php echo __('Select Category', 'watergo'); ?></option>
                   <option 
                      v-for='(cat, catIndex) in get_category' :key='catIndex'
                      :value="{ value: cat.id }">{{ cat.name }}</option>
@@ -44,10 +44,10 @@
                </span>
             </div>
 
-            <div v-show='product_type == "water"' class='form-title'>Brand</div>
+            <div v-show='product_type == "water"' class='form-title'><?php echo __('Brand', 'watergo'); ?></div>
             <div v-show='product_type == "water"' class='form-control form-select'>
                <select v-model='water_brand'>
-                  <option :value="{ value: 0 }" disabled>Select Brand</option>
+                  <option :value="{ value: 0 }" disabled><?php echo __('Select Brand', 'watergo'); ?></option>
                   <option 
                      v-for='(brand, brandIndex) in get_brand' :key='brandIndex'
                      :value="{ value: brand.id }">{{ brand.name }}</option>
@@ -60,7 +60,7 @@
             </div>
 
             <div class='form-control'>
-               <div class='form-title'>Price</div>
+               <div class='form-title'><?php echo __('Price', 'watergo'); ?></div>
                <input inputmode='numeric' v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ'>
             </div>
                <!-- <div class='form-control'>
@@ -71,37 +71,37 @@
             <div class='form-checkbox form-check check-discount'>
                <label>
                   <input @click='discount_toggle' :checked='product.has_discount == 1 ? true : false' type='checkbox'>
-                  <span class='text'>Discount</span>
+                  <span class='text'><?php echo __('Discount', 'watergo'); ?></span>
                </label>
             </div>
 
-            <div v-show='product.has_discount == 1' class='form-title'>Percentage Discount</div>
+            <div v-show='product.has_discount == 1' class='form-title'><?php echo __('Percentage Discount', 'watergo'); ?></div>
             <div v-show='product.has_discount == 1' class='form-control'>
                <input 
-                  inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='Enter Percentage'>
+                  inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='<?php echo __('Enter Percentage', 'watergo'); ?>'>
             </div>
 
             <div v-show='product.has_discount == 1' class='group-form-control'>
                <div class='form-control'>
-                  <div class='form-title'>From</div>
+                  <div class='form-title'><?php echo __('From', 'watergo'); ?></div>
                   <input 
                      id='discount_from' ref='discount_from' type="text" readonly placeholder='dd-mm-yyyy'>
                </div>
                <div class='form-control'>
-                  <div class='form-title'>To</div>
+                  <div class='form-title'><?php echo __('To', 'watergo'); ?></div>
                   <input 
                      id='discount_to' ref='discount_to' type="text" readonly placeholder='dd-mm-yyyy'>
                </div>
             </div>
 
 
-            <div class='form-title'>Size Description</div>
+            <div class='form-title'><?php echo __('Size Description', 'watergo'); ?></div>
 
             <!-- SIZE ICE -->
-            <div v-show='product_type == "ice"' class='form-title small-size'>Weight</div>
+            <div v-show='product_type == "ice"' class='form-title small-size'><?php echo __('Weight', 'watergo'); ?></div>
             <div v-show='product_type == "ice"' class='form-control form-select'>
                <select v-model='ice_weight'>
-                  <option :value="{ value: 0 }" disabled>Select Weight</option>
+                  <option :value="{ value: 0 }" disabled><?php echo __('Select Weight', 'watergo') ?></option>
                   <option 
                      v-for='( ice_weight_item, ice_weightIndex) in get_ice_weight' :key='ice_weightIndex'
                      :value="{ value: ice_weight_item.id }">{{  ice_weight_item.name }}</option>
@@ -113,7 +113,7 @@
                </span>
             </div>
 
-            <div v-show='product_type == "ice"' class='form-title'>Length * Width</div>
+            <div v-show='product_type == "ice"' class='form-title'><?php echo __('Length * Width', 'watergo'); ?></div>
             <div v-show='product_type == "ice"' class='form-control'>
                <div class='form-type-length-width'>
                   <div class='form-type-length-width-wrapper'>
@@ -127,10 +127,10 @@
             <!-- END SIZE ICE -->
 
             <!-- SIZE WATER -->
-            <div v-show='product_type == "water"' class='form-title small-size'>Quantity</div>
+            <div v-show='product_type == "water"' class='form-title small-size'><?php echo __('Quantity', 'watergo'); ?></div>
             <div v-show='product_type == "water"' class='form-control form-select'>
                <select v-model='water_quantity'>
-                  <option :value="{ value: 0 }" disabled>Select Quantity</option>
+                  <option :value="{ value: 0 }" disabled><?php echo __('Select Quantity', 'watergo'); ?></option>
                   <option 
                      v-for='(water_quantity, water_quantityIndex) in get_water_quantity' :key='water_quantityIndex'
                      :value="{ value: water_quantity.id }">{{ water_quantity.name }}</option>
@@ -142,10 +142,10 @@
                </span>
             </div>
 
-            <div v-show='product_type == "water"' class='form-title small-size'>Water Volume</div>
+            <div v-show='product_type == "water"' class='form-title small-size'><?php echo __('Water Volume', 'watergo'); ?></div>
             <div v-show='product_type == "water"' class='form-control form-select'>
                <select v-model='water_volume'>
-                  <option :value="{ value: 0 }" disabled>Select Volume</option>
+                  <option :value="{ value: 0 }" disabled><?php echo __('Select Volume', 'watergo'); ?></option>
                   <option 
                      v-for='(water_volume, water_volumeIndex) in get_water_volume' :key='water_volumeIndex'
                      :value="{ value: water_volume.id }">{{ water_volume.name }}</option>
@@ -159,12 +159,12 @@
 
             <!-- END SIZE WATER -->
 
-            <div class='form-title'>Product Description</div>
+            <div class='form-title'><?php echo __('Product Description', 'watergo'); ?></div>
             <div class='form-control form-select'>
-               <textarea @input='autoResize' ref='textarea' v-model='product.description' placeholder='Enter Product Description'></textarea>
+               <textarea @input='autoResize' ref='textarea' v-model='product.description' placeholder='<?php echo __('Enter Product Description', 'watergo'); ?>'></textarea>
             </div>
 
-            <div class='form-title'>Photo</div>
+            <div class='form-title'><?php echo __('Photo', 'watergo'); ?></div>
 
             <ul class='form-photo'>
                <li class='upload'>
@@ -201,16 +201,16 @@
             <div v-if='action == "edit"' class='form-checkbox form-check check-out-of-stock'>
                <label>
                   <input @click='mark_out_of_stock' :checked='product.mark_out_of_stock == 1 ? true : false' type='checkbox'>
-                  <span class='text'>Mark as out of stock</span>
+                  <span class='text'><?php echo __('Mark as out of stock', 'watergo'); ?></span>
                </label>
             </div>
 
             <div class='t-red'>{{ text_error }}</div>
 
             <div class='form-button'>
-               <button @click='btn_action_product("add")' v-if='action == "add"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'>Add</button>
-               <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'>Save</button>
-               <button @click='btn_modal_open' v-if='action == "edit"' class='btn btn-outline'>Delete</button>
+               <button @click='btn_action_product("add")' v-if='action == "add"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'><?php echo __('Add', 'watergo'); ?></button>
+               <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'><?php echo __('Save', 'watergo'); ?></button>
+               <button @click='btn_modal_open' v-if='action == "edit"' class='btn btn-outline'><?php echo __('Delete', 'watergo'); ?></button>
             </div>
          </div>
       </div>
@@ -219,10 +219,10 @@
 
    <div v-show='popup_delete_product == true' class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p class='heading'>Do you want to delete this product?</p>
+         <p class='heading'><?php echo __('Do you want to delete this product', 'watergo'); ?>?</p>
          <div class='actions'>
-            <button @click='btn_modal_cancel' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_modal_confirm' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_modal_cancel' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+            <button @click='btn_modal_confirm' class='btn btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
          </div>
       </div>
    </div>

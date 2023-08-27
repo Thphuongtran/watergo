@@ -10,13 +10,13 @@
                      <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>Write Review</p>
+               <p class='leading-title'><?php echo __('Write Review', 'watergo'); ?></p>
             </div>
          </div>
       </div>
 
       <div class='inner'>
-         <p class='heading'>What's your rate?</p>
+         <p class='heading'><?php echo __("What's your rate", 'watergo'); ?>?</p>
          <div class='box-rating-star'>
             <span v-for='i in 5' @click='select_rating_star(i)'
                :class='rating_select >= i ? "active" :""'>
@@ -26,7 +26,7 @@
       </div>
 
       <div class='inner'>
-         <p class='heading'>Your Review</p>
+         <p class='heading'><?php echo __('Your Review', 'watergo'); ?></p>
          <label class='input-review'>
             <span class='icon'>
                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +35,7 @@
                <path d="M16.9231 16.3776H13.0769C10.8462 16.3776 9 18.2144 9 20.4337C9 20.9695 9.23077 21.4286 9.69231 21.6582C10.3846 22.0409 11.9231 22.5001 15 22.5001C18.0769 22.5001 19.6154 22.0409 20.3077 21.6582C20.6923 21.4286 21 20.9695 21 20.4337C21 18.1378 19.1538 16.3776 16.9231 16.3776Z" fill="white"/>
                </svg>
             </span>
-            <textarea @change='autoResize' @input='autoResize' ref='textarea' v-model='review_text' placeholder='Write your review....'></textarea>
+            <textarea @change='autoResize' @input='autoResize' ref='textarea' v-model='review_text' placeholder='<?php echo __('Write your review....', 'watergo'); ?>'></textarea>
          </label>
       </div>
 
@@ -46,8 +46,8 @@
       <div class='review-form-spaces'></div>
 
       <div class='btn-review' :class=' event == "edit" ? "btn-review-edit" : "" '>
-         <button v-if='event == "add"' @click='submit' class='btn btn-primary'>Add</button>
-         <button v-if='event == "edit"' @click='update' class='btn btn-primary'>Save</button>
+         <button v-if='event == "add"' @click='submit' class='btn btn-primary'><?php echo __('Add', 'watergo'); ?></button>
+         <button v-if='event == "edit"' @click='update' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
       </div>
 
    </div>
@@ -82,11 +82,11 @@
          </filter>
          </defs>
          </svg>
-         <h3>Review Successfully</h3>
+         <h3><?php echo __('Review Successfully', 'watergo'); ?></h3>
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'>Exit</button>
+         <button @click='goBack' class='btn btn-outline'><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 

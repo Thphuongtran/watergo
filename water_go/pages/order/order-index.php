@@ -11,9 +11,9 @@
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
-               <p class='leading-title'>Order</p>
+               <p class='leading-title'><?php echo __('Order', 'watergo'); ?></p>
                <div class='leading-filter'>
-                  <button @click='gotoOrderFilter("weekly")' class='btn-action pr10'>Week</button> | <button @click='gotoOrderFilter("monthly")' class='btn-action pl10'>Month</button>
+                  <button @click='gotoOrderFilter("weekly")' class='btn-action pr10'><?php echo __('Week', 'watergo'); ?></button> | <button @click='gotoOrderFilter("monthly")' class='btn-action pl10'><?php echo __('Month', 'watergo'); ?></button>
                </div>
             </div>
             <div class='action'>
@@ -80,7 +80,7 @@
 
             <div class='order-bottom'>
                <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} product</span>
-               <span class='total-price'>Total: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
+               <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
             </div>
 
          </li>

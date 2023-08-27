@@ -6,23 +6,23 @@
          <img width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo.png'; ?>" alt="Login Image">
       </div>
 
-      <div class='heading-01 t-center'>Sign Up</div>
+      <div class='heading-01 t-center'><?php echo __('Sign Up', 'watergo'); ?></div>
 
       <div class='form-group'>
-         <span>User name</span>
-         <input v-model='inputUsername' type="text" placeholder='Enter your username'>
+         <span><?php echo __('User name', 'watergo'); ?></span>
+         <input v-model='inputUsername' type="text" placeholder='<?php echo __('Enter your username', 'watergo'); ?>'>
       </div>
 
       <div class='form-group'>
          <span>Email</span>
-         <input v-model='inputEmail' type="email" placeholder='Enter your email'>
+         <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
       </div>
       
       <p>
-         <button @click='btn_verify_email_and_sendcode' class='btn-text' >Verify your email</button>
+         <button @click='btn_verify_email_and_sendcode' class='btn-text' ><?php echo __('Verify your email', 'watergo'); ?>'</button>
       </p>
       <p v-if='isCodeSend' class='t-second-12'>
-         We have sent a code to your email. <button @click='btn_verify_email_and_sendcode' class='btn-text'>Resend</button>
+         <?php echo __('We have sent a code to your email.', 'watetgo'); ?> <button @click='btn_verify_email_and_sendcode' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
       </p>
 
       <div v-if='isCodeSend' class='box-code-verify'>
@@ -33,8 +33,8 @@
       </div>
 
       <div class='form-group mt10'>
-         <span>Password</span>
-         <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+         <span><?php echo __('Password', 'watergo'); ?></span>
+         <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
       </div>
 
       <p class='t-red mt10'>
@@ -42,16 +42,16 @@
       </p>
 
       <div class='form-group'>
-         <button @click='btn_register' class='btn btn-primary'>Sign Up</button>
-         <button @click='gotoLogin' class='btn btn-second mt15'>Log In</button>
+         <button @click='btn_register' class='btn btn-primary'><?php echo __('Sign Up', 'watergo'); ?></button>
+         <button @click='gotoLogin' class='btn btn-second mt15'><?php echo __('Log In', 'watergo'); ?></button>
       </div>
 
-      <p class='t-second t-center mt25'>Or log in with</p>
+      <p class='t-second t-center mt25'><?php echo __('Or log in with', 'watergo'); ?></p>
 
       <div class='form-group mt20'>
-         <button class='btn-icon' ref='button-signup'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'>Log in with Apple</span></button>
-         <button class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'>Log in with Google</span></button>
-         <button class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'>Log in with Zalo</span></button>
+         <button class='btn-icon' ref='button-signup'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'><?php echo __('Log in with Apple', 'watergo'); ?></span></button>
+         <button class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'><?php echo __('Log in with Google', 'watergo'); ?></span></button>
+         <button class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'><?php echo __('Log in with Zalo', 'watergo'); ?></span></button>
       </div>
 
    </div>

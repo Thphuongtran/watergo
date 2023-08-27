@@ -42,20 +42,20 @@
             </div>
          </div>
 
-         <div class='heading-01 t-center'>Log In</div>
+         <div class='heading-01 t-center'><?php echo __('Log In', 'watergo'); ?></div>
            
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='inputEmail' type="email" placeholder='Enter your email'>
+            <input v-model='inputEmail' type="email" placeholder=<?php echo __('Enter your email', 'watergo' ); ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Password</span>
-            <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+            <span><?php echo __('Password', 'watergo'); ?> </span>
+            <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
          
          <p class='t-right'>
-            <button @click='gotoAuthForgetPassword' class='btn-text'>Forget Password</button>
+            <button @click='gotoAuthForgetPassword' class='btn-text'><?php echo __('Forget Password','watergo'); ?></button>
          </p>
          
          <p class='t-red mt10 mb10'>
@@ -65,14 +65,14 @@
          <div class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'> I agree with</span>
+               <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>
             </label>
-            <a href="/store-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;">Terms and Conditions</a>
+            <a href="/store-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;"><?php echo __('Terms and Conditions', 'watergo'); ?></a>
          </div>
 
          <div class='form-group'>
-            <button @click='btn_login' class='btn btn-primary' :class='term_conditions == false ? "disable" : "" '>Log In</button>
-            <button @click='gotoStoreRegister' class='btn btn-second mt15'>Sign Up</button>
+            <button @click='btn_login' class='btn btn-primary' :class='term_conditions == false ? "disable" : "" '><?php echo __('Log In', 'watergo'); ?></button>
+            <button @click='gotoStoreRegister' class='btn btn-second mt15'><?php echo __('Sign Up', 'watergo'); ?></button>
          </div>
 
       </div>

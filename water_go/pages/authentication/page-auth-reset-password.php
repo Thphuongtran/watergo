@@ -17,8 +17,8 @@
       </div>
 
       <div class='inner'>
-         <div class='heading-01 t-center mt100'>Reset your password</div>
-         <p class='t-center'>We have sent a code to your email</p>
+         <div class='heading-01 t-center mt100'><?php echo __('Reset your password', 'watergo'); ?></div>
+         <p class='t-center'><?php echo __('We have sent a code to your email', 'watergo'); ?></p>
 
          <div class='box-code-verify'>
             <input id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
@@ -27,17 +27,17 @@
             <input id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
          </div>
          <p class='t-center'>
-            <button @click='btn_resend' class='btn-text'>Resend</button>
+            <button @click='btn_resend' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
          </p>
 
          <div class='form-group'>
-            <span>New Password</span>
-            <input v-model='inputPassword' type="password" placeholder='Enter password'>
+            <span><?php echo __('New Password', 'watergo'); ?></span>
+            <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Confirm New Password</span>
-            <input v-model='inputRepassword' type="password" placeholder='Enter password'>
+            <span><?php echo __('Confirm New Password', 'watergo'); ?></span>
+            <input v-model='inputRepassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?> '>
          </div>
 
          <p class='t-red mt10'>
@@ -45,7 +45,7 @@
          </p>
 
          <div class='form-group'>
-            <button @click='btn_reset_password' class='btn btn-primary'>Submit</button>
+            <button @click='btn_reset_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
          </div>
 
 
@@ -64,12 +64,12 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3>Password Changed</h3>
-         <p>Your password has been changed successfully</p>
+         <h3><?php echo __('Password Changed', 'watergo'); ?></h3>
+         <p><?php echo __('Your password has been changed successfully', 'watetgo'); ?></p>
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'>Exit</button>
+         <button @click='goBack' class='btn btn-outline'><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
    

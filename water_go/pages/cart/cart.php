@@ -11,7 +11,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <span class='leading-title'>Cart</span>
+               <span class='leading-title'><?php echo __('Cart', 'watergo'); ?></span>
             </div>
          </div>
          <div v-if='carts.length > 0' class='appbar-bottom'>
@@ -20,7 +20,7 @@
 
                   <div @click='select_all_item' class='form-check'>
                      <input type='checkbox' :checked='select_all_value'>
-                     <label>All</label>
+                     <label><?php echo __('All', 'watergo'); ?></label>
                   </div>
 
                   <button class='btn-action mr0' @click="btn_delete_item">
@@ -47,8 +47,8 @@
             <circle cx="79.2608" cy="112.102" r="5.02924" transform="rotate(-0.830384 79.2608 112.102)" fill="#2790F9"/>
             <path d="M82.6032 112.053C82.6299 113.899 81.1553 115.417 79.3096 115.443C77.4639 115.47 75.946 113.996 75.9192 112.15C75.8925 110.304 77.367 108.786 79.2128 108.759C81.0585 108.733 82.5764 110.207 82.6032 112.053Z" fill="white" stroke="black" stroke-width="0.5"/>
             </svg>
-            <p class="t-thrid">There is no product in your cart</p>
-            <button @click='goBackHome' class='btn btn-outline mt30'>Go Shopping Now</button>
+            <p class="t-thrid"><?php echo __('There is no product in your cart', 'watergo'); ?></p>
+            <button @click='goBackHome' class='btn btn-outline mt30'><?php echo __('Go Shopping Now', 'watergo'); ?></button>
          </div>
       </div>
 
@@ -128,10 +128,10 @@
 
       <div class='modal-popup' :class='popup_delete_item == true ? "open" : ""'>
          <div class='modal-wrapper'>
-            <p class='heading'>Are you sure to remove this product from your cart?</p>
+            <p class='heading'><?php echo __('Are you sure to remove this product from your cart', 'watergo'); ?>?</p>
             <div class='actions'>
-               <button @click='buttonCloseModal_btn_delete_item' class='btn btn-outline'>Cancel</button>
-               <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'>Delete</button>
+               <button @click='buttonCloseModal_btn_delete_item' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+               <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'><?php echo __('Delete', 'watergo'); ?></button>
             </div>
          </div>
       </div>

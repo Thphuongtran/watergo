@@ -18,7 +18,7 @@
                      <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <span class='leading-title'>Edit Profile </span>
+               <span class='leading-title'><?php echo __('Edit Profile', 'watergo'); ?> </span>
             </div>
             
          </div>
@@ -63,60 +63,60 @@
          </div>
          
          <div class='form-group'>
-            <span>Owner</span>
-            <input v-model='owner' type="text" placeholder='Enter owner name'>
+            <span><?php echo __('Owner', 'watergo'); ?></span>
+            <input v-model='owner' type="text" placeholder='<?php echo __('Enter owner name', 'watergo'); ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Store Name</span>
-            <input v-model='name' type="text" placeholder='Enter store name'>
+            <span><?php echo __('Store Name', 'watergo'); ?></span>
+            <input v-model='name' type="text" placeholder='<?php echo __('Enter store name', 'watergo'); ?>'>
          </div>
          
          <div class='form-group form-description'>
-            <span>Description</span>
-            <textarea @input='autoResize' ref='textarea' v-model='description' placeholder='Describe your store'></textarea>
+            <span><?php echo __('Description', 'watergo'); ?></span>
+            <textarea @input='autoResize' ref='textarea' v-model='description' placeholder='<?php echo __('Describe your store', 'watergo'); ?>'></textarea>
          </div>
 
          <div class='form-group'>
-            <span>Address</span>
-            <input id='search-address' v-model='address' type="text" placeholder='Enter address'>
+            <span><?php echo __('Address', 'watergo'); ?></span>
+            <input id='search-address' v-model='address' type="text" placeholder='<?php echo __('Enter address', 'watergo') ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Phone</span>
-            <input v-model='phone' type="text" inputmode='numeric' pattern='[0-9]*' placeholder='Enter phone' input>
+            <span><?php echo __('Phone', 'watergo'); ?></span>
+            <input v-model='phone' type="text" inputmode='numeric' pattern='[0-9]*' placeholder='<?php echo __('Enter phone', 'watergo'); ?> '>
          </div>
 
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='email' type="email" placeholder='Enter your email' disabled readonly>
+            <input v-model='email' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>' disabled readonly>
          </div>
 
          <div class='form-group'>
-            <span>Password</span>
-            <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+            <span><?php echo __('Password', 'watergo') ;?></span>
+            <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
 
-         <span class='mt20 d-block'>Select Product</span>
+         <span class='mt20 d-block'><?php echo __('Select Product', 'watergo'); ?></span>
          <div class='form-group style-checkbox-business style-store-edit'>
             <label class='form-checkbox'>
                <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
-               <span class='text'>Water</span>
+               <span class='text'><?php echo __('Water', 'watergo'); ?></span>
             </label>
             <label class='form-checkbox'>
                <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
-               <span class='text'>Ice</span>
+               <span class='text'><?php echo __('Ice', 'watergo'); ?></span>
             </label>
             <label class='form-checkbox'>
                <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
-               <span class='text'>Both</span>
+               <span class='text'><?php echo __('Both', 'watergo'); ?></span>
             </label>
          </div>
 
          <span class='d-block t-red mt20'>{{text_err}}</span>
 
          <!-- <div class='btn-fixed bottom'> -->
-            <button @click='btn_update_store' class='btn btn-primary'>Save</button>
+            <button @click='btn_update_store' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
          <!-- </div> -->
 
       </div>

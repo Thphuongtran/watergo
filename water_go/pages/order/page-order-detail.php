@@ -32,7 +32,7 @@
       <div v-show='order_delivery_address != null' class='inner'>
          <div class='list-tile delivery-address style-order'>
             <div class='content'>
-               <p class='tt01'>Delivery address</p>
+               <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
                <p class='tt03' v-if='order_delivery_address != null'>{{ order_delivery_address.address }}</p>
                <p class='tt02' v-if='order_delivery_address != null'>{{ order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order_delivery_address.phone ) : '' }}</p>
             </div>
@@ -77,9 +77,9 @@
       </ul>
 
       <div v-if='order != null && order.order_delivery_type != null' class='box-delivery-time'>
-         <p class='tt01'>Delivery time</p>
+         <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02'>{{ get_delivery_time_activity }}</p>
-         <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'>Immediately (within 1 hour) </p>
+         <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 1 hour)', 'watergo'); ?> </p>
          <div 
             v-if='
                order.order_delivery_type == "once_date_time" ||
@@ -101,17 +101,17 @@
 
       <div class='break-line'></div>
       <div class='box-payment-method'>
-         <p class='heading-02'>Payment method </p>
+         <p class='heading-02'><?php echo __('Payment method'); ?> </p>
          <p class='heading-03'>{{ get_payment_method_activity }}</p>
       </div>
 
       <div class='break-line'></div>
       <div v-if='order != null' class='box-time-order'>
-         <p class='heading-03'>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
-         <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'>Confirmed Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
-         <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
-         <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+         <p class='heading-03'><?php echo __('Ordered Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
+         <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'><?php echo __('Confirmed Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
+         <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'><?php echo __('Delivery Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'><?php echo __('Complete Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'><?php echo __('Cancel Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
       </div>
 
 
@@ -119,23 +119,23 @@
          
          <div v-if='order_status == "complete" && can_review == true' class='btn_cancel_order_wrapper'>
             <button @click='gotoAddReview(order.store_id, order.order_id )'
-               class='btn btn-outline btn-review-order'>Review Store</button>
+               class='btn btn-outline btn-review-order'><?php echo __('Review Store', 'watergo'); ?></button>
          </div>
          
          <div v-if='order_status == "ordered" || order_status == "confirmed"' class='btn_cancel_order_wrapper'>
             <button @click='btn_cancel_order' 
                v-if='order_status == "ordered" || order_status == "confirmed"' 
-               class='btn btn-outline btn-cancel-order'>Cancel</button>
+               class='btn btn-outline btn-cancel-order'><?php echo __('Cancel', 'watergo'); ?></button>
          </div>
 
          <div class='product-detail-bottomsheet'
             :class='get_layout_text_price'
          >
-            <p class='price-total' :class='order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
+            <p class='price-total' :class='order_status != "complete" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
                v-if='order_status == "complete" || order_status == "cancel" '
                @click='buttonReOrder' 
-               class='btn-primary'>Re-Order</button>
+               class='btn-primary'><?php echo __('Re-Order', 'watergo'); ?></button>
          </div>
          
       </div>
@@ -145,7 +145,7 @@
    <div v-show='popup_confirm_cancel == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
-         <p class='tt01'>Select Cancellation Reason</p>
+         <p class='tt01'><?php echo __('Select Cancellation Reason', 'watergo'); ?></p>
          <ul class='list-Reason'>
             <li @click='btn_select_reason(reason.label)'
                v-for='(reason, index) in reason_cancel' :key='index'>
@@ -156,7 +156,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>Submit</button>
+            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
          </div>
       </div>
    </div>
@@ -164,14 +164,14 @@
    <div v-show='popup_out_of_stock == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
+         <p class='heading'><?php echo __("This Product is <span class='t-primary'>Out of Stock</span>", 'watergo'); ?></p>
       </div>
    </div>
 
    <div v-show='popup_banner_already_review == true' class='modal-popup open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonCloseModal_already_review' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'>You already review this order !</p>
+         <p class='heading'><?php echo __('You already review this order', 'watergo'); ?> !</p>
       </div>
    </div>
    
@@ -182,10 +182,10 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3>Order Successfully</h3>
+         <h3><?php echo __('Order Successfully', 'watergo'); ?></h3>
       </div>
       <div class='banner-footer'>
-         <button @click='goBackReOrder' >Exit</button>
+         <button @click='goBackReOrder' ><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 

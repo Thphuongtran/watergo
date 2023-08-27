@@ -4,7 +4,7 @@
       <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
-               <p class='leading-title'>Order</p>
+               <p class='leading-title'><?php echo __('Order', 'watergo'); ?></p>
             </div>
             <div class='action'>
                
@@ -43,8 +43,8 @@
             <div v-if='order_filter.length > 0' class='order-store-header'>
                <div class='select-wrapper'>
                   <select v-model='order_by_filter_select' class='order_filter_select'>
-                     <option :value="{ value: 'desc' } ">New first</option>
-                     <option :value="{ value: 'asc' }">Old first</option>
+                     <option :value="{ value: 'desc' } "><?php echo __('New first', 'watergo'); ?></option>
+                     <option :value="{ value: 'asc' }"><?php echo __('Old first', 'watergo'); ?></option>
                   </select>
                   <div class='icon'>
                      <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -53,20 +53,20 @@
                   </div>
                </div>
 
-               <div class='count-order'>Total order: <span >{{total_order}}</span> </div>
+               <div class='count-order'><?php echo __('Total order', 'watergo'); ?>: <span >{{total_order}}</span> </div>
             </div>
 
             <div v-show='order_filter.length > 0 && ( order_status_current != "complete" && order_status_current != "cancel") ' class='order-store-action'>
                <div class='form-check'>
                   <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
-                  <label @click='select_all_item'>Select All</label>
+                  <label @click='select_all_item'><?php echo __('Select All', 'watergo'); ?> </label>
                </div>
 
                <div class='action-all'>
-                  <button v-if='order_status_current == "ordered"' @click='btn_action_all("confirmed")' class='btn-action-confirm'>Confirm</button>
+                  <button v-if='order_status_current == "ordered"' @click='btn_action_all("confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
                   <!-- <button v-if='order_status_current == "ordered"' @click='btn_action_all("cancel")' class='btn-action-cancel'>Cancel</button> -->
-                  <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'>Delivery</button>
-                  <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'>Complete</button>
+                  <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
+                  <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
                </div>
             </div>
 
@@ -85,19 +85,19 @@
                <div class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</div>
             </div>
             <div class='order-time'>
-               <span class='tt01'>Ordered Time: </span>
+               <span class='tt01'><?php echo __('Ordered Time', 'watergo'); ?>: </span>
                <span class='tt02'>{{ order_formatDate(order.order_time_created) }}</span>
             </div>
             <div v-if='order.order_time_confirmed != null' class='order-time'>
-               <span class='tt01'>Confirm Time: </span>
+               <span class='tt01'><?php echo __('Confirm Time', 'watergo'); ?>: </span>
                <span class='tt02'>{{ order_formatDate(order.order_time_confirmed) }}</span>
             </div>
             <div v-if='order.order_time_delivery != null' class='order-time'>
-               <span class='tt01'>Delivery Time: </span>
+               <span class='tt01'><?php echo __('Delivery Time', 'watergo'); ?>: </span>
                <span class='tt02'>{{ order_formatDate(order.order_time_delivery) }}</span>
             </div>
             <div v-if='order.order_time_cancel != null' class='order-time'>
-               <span class='tt01'>Cancel Time: </span>
+               <span class='tt01'><?php echo __('Cancel Time', 'watergo'); ?>: </span>
                <span class='tt02'>{{ order_formatDate(order.order_time_cancel) }}</span>
             </div>
 
@@ -122,23 +122,23 @@
 
             <div class='order-bottom'>
                <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} product</span>
-               <span class='total-price'>Total: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
+               <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
             </div>
 
             <div class='order-func'>
-               <button @click='gotoOrderStoreDetail(order.order_id)' class='btn-action-view'>View</button>
+               <button @click='gotoOrderStoreDetail(order.order_id)' class='btn-action-view'><?php echo __('View', 'watergo'); ?></button>
                <button 
                   v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_single_record(order.order_id, "confirmed")' class='btn-action-confirm'>Confirm</button>
+                  @click='btn_action_order_single_record(order.order_id, "confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
                <!-- <button 
                   v-if='order.order_status == "ordered"'
                   @click='btn_action_order_single_record(order.order_id, "cancel")' class='btn-action-cancel'>Cancel</button> -->
                <button 
                   v-if='order.order_status == "confirmed"' 
-                  @click='btn_action_order_single_record(order.order_id, "delivering")' class='btn-action-cancel'>Delivery</button>
+                  @click='btn_action_order_single_record(order.order_id, "delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
                <button 
                   v-if='order.order_status == "delivering"' 
-                  @click='btn_action_order_single_record(order.order_id, "complete")' class='btn-action-cancel'>Complete</button>
+                  @click='btn_action_order_single_record(order.order_id, "complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
             </div>
 
          </li>
@@ -155,35 +155,35 @@
 
    <div v-show='popup_confirm_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p class='heading'>Do you want to confirm <span class='t-primary'>All Order</span>?</p>
+         <p class='heading'><?php echo __("Do you want to confirm <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
          <div class='actions'>
-            <button @click='btn_modal_cancel_all' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_do_all_action' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_modal_cancel_all' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+            <button @click='btn_do_all_action' class='btn btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
          </div>
       </div>
    </div>
    <div v-show='popup_delivering_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p class='heading'>Do you want to delivering <span class='t-primary'>All Order</span>?</p>
+         <p class='heading'><?php echo __("Do you want to delivering <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
          <div class='actions'>
-            <button @click='btn_modal_cancel_all' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_do_all_action' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_modal_cancel_all' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+            <button @click='btn_do_all_action' class='btn btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
          </div>
       </div>
    </div>
    <div v-show='popup_complete_all_item == true' class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p class='heading'>Do you want to complete <span class='t-primary'>All Order</span>?</p>
+         <p class='heading'><?php echo __("Do you want to complete <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
          <div class='actions'>
-            <button @click='btn_modal_cancel_all' class='btn btn-outline'>Cancel</button>
-            <button @click='btn_do_all_action' class='btn btn-primary'>Confirm</button>
+            <button @click='btn_modal_cancel_all' class='btn btn-outline'><?php echo __('Cancel', 'watergo') ?></button>
+            <button @click='btn_do_all_action' class='btn btn-primary'><?php echo __('Confirm', 'watergo') ?></button>
          </div>
       </div>
    </div>
    <div v-show='popup_cancel_all_item == true' class='modal-popup open style01'>
       <div class='modal-wrapper'>
          <div class='modal-close style-static'><div @click='btn_modal_cancel_all' class='close-button'><span></span><span></span></div></div>
-         <p class='tt01'>Why do you want to cancel <span class='t-primary'>All Order</span>?</p>
+         <p class='tt01'><?php echo __("Why do you want to cancel <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
          <ul class='list-Reason'>
             <li @click='btn_select_reason(reason.label)'
                v-for='(reason, index) in reason_cancel' :key='index'>
@@ -194,7 +194,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='btn_do_all_action' class='btn btn-primary'>Submit</button>
+            <button @click='btn_do_all_action' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
          </div>
       </div>
    </div>

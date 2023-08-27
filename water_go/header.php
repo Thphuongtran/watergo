@@ -1,11 +1,9 @@
 <?php 
-
    atlantis_setup_language();
-
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo get_locale(); ?>">
 <head>
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">

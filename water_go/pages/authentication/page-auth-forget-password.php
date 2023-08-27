@@ -28,12 +28,12 @@
          </div>
          
          <div class='inner'>
-            <div class='heading-01 t-center mt100'>Forgot Password?</div>
-            <p class='t-center'>Don’t worry when it happens <br> Reset your password</p>
+            <div class='heading-01 t-center mt100'><?php echo __('Forgot Password','watergo'); ?>?</div>
+            <p class='t-center'><?php echo __("Don’t worry when it happens <br> Reset your password", 'watergo'); ?></p>
 
             <div class='form-group'>
                <span>Email</span>
-               <input v-model='inputEmail' type="email" placeholder='Enter your email'>
+               <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
             </div>
 
             <p class='t-red mt10'>
@@ -41,7 +41,7 @@
             </p>
 
             <div class='form-group'>
-               <button @click='btn_forget_password' class='btn btn-primary'>Submit</button>
+               <button @click='btn_forget_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
             </div>
 
 
@@ -69,8 +69,8 @@
          </div>
 
          <div class='inner'>
-            <div class='heading-01 t-center mt100'>Reset your password</div>
-            <p class='t-center'>We have sent a code to your email</p>
+            <div class='heading-01 t-center mt100'><?php echo __('Reset your password', 'watergo'); ?></div>
+            <p class='t-center'><?php echo __('We have sent a code to your email', 'watergo'); ?></p>
             
             <!-- 
             <div class='box-code-verify'>
@@ -105,17 +105,17 @@
             </div>
 
             <p class='t-center'>
-               <button @click='btn_resend' class='btn-text'>Resend</button>
+               <button @click='btn_resend' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
             </p>
 
             <div class='form-group'>
-               <span>New Password</span>
-               <input v-model='inputPassword' type="password" placeholder='Enter password'>
+               <span><?php echo __('New Password', 'watergo'); ?></span>
+               <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?>'>
             </div>
 
             <div class='form-group'>
-               <span>Confirm New Password</span>
-               <input v-model='inputRepassword' type="password" placeholder='Enter password'>
+               <span><?php echo __('Confirm New Password', 'watergo'); ?></span>
+               <input v-model='inputRepassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?> '>
             </div>
 
             <p class='t-red mt10'>
@@ -123,7 +123,7 @@
             </p>
 
             <div class='form-group'>
-               <button @click='btn_reset_password' class='btn btn-primary'>Submit</button>
+               <button @click='btn_reset_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?> </button>
             </div>
 
 
@@ -139,12 +139,12 @@
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
 
-         <h3>Congratulations!</h3>
-         <p>Your password has been reset successfully<br>Now login with your new password</p>
+         <h3><?php echo __('Congratulations', 'watergo');?>!</h3>
+         <p><?php echo __('Your password has been reset successfully<br>Now login with your new password', 'watergo'); ?></p>
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-primary'>Log In</button>
+         <button @click='goBack' class='btn btn-primary'><?php echo __('Log In', 'watergo'); ?></button>
       </div>
    </div>
 

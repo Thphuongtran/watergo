@@ -323,3 +323,10 @@ function login_via_app_data(){
         }
     }
 }
+
+
+function load_language() {
+   load_theme_textdomain('watergo', get_template_directory() . '/languages');
+}
+
+add_action('after_setup_theme', 'load_language');

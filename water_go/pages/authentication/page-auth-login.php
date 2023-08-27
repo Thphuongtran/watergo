@@ -10,8 +10,8 @@ $login_url_par = http_build_query($get);
 
    <div class='banner page-welcome<?php echo isset($_GET["appt"]) ? " d-none" : ""; ?>'>
       <div class='banner-head'>
-         <div class='heading'>WELCOME !</div>
-         <p class='ttl'>Please login to explode more</p>
+         <div class='heading'><?php echo __('WELCOME', 'watergo'); ?> !</div>
+         <p class='ttl'><?php echo __('Please login to explode more', 'watergo'); ?></p>
          <div class='logo-brand'>
             <img src="<?php echo THEME_URI . '/assets/images/logo-vertical.png'; ?>">
          </div>
@@ -19,7 +19,7 @@ $login_url_par = http_build_query($get);
       </div>
 
       <div class='banner-footer'>
-         <a href="?<?php echo $login_url_par ?>" class='btn btn-primary'>Login</a>
+         <a href="?<?php echo $login_url_par ?>" class='btn btn-primary'><?php echo __('Login', 'watergo'); ?> </a>
       </div>
    </div>
 
@@ -66,20 +66,20 @@ $login_url_par = http_build_query($get);
             </div>
          </div>
 
-         <div class='heading-01 t-center'>Log In</div>
+         <div class='heading-01 t-center'><?php echo __('Log In', 'watergo'); ?></div>
            
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='inputEmail' type="email" placeholder='Enter your email'>
+            <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Password</span>
-            <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+            <span><?php echo __('Password', 'watergo'); ?></span>
+            <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
          
          <p class='t-right'>
-            <button @click='gotoAuthForgetPassword' class='btn-text'>Forget Password</button>
+            <button @click='gotoAuthForgetPassword' class='btn-text'><?php echo __('Forget Password', 'watergo'); ?></button>
          </p>
          
          <p class='t-red mt10 mb10'>{{ res_text_sendcode }}</p>
@@ -87,23 +87,23 @@ $login_url_par = http_build_query($get);
          <div class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'> I agree with </span>
+               <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?> </span>
             </label>
-            <a href="/user-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;">Terms and Conditions</a>
+            <a href="/user-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;"><?php echo __('Terms and Conditions', 'watergo'); ?></a>
          </div>
 
          <div class='form-group'>
-            <button @click='btn_login' class='btn btn-primary' :class='term_conditions == false ? "disable" : "" '>Log In</button>
-            <button @click='gotoAuthRegister' class='btn btn-second mt15'>Sign Up</button>
+            <button @click='btn_login' class='btn btn-primary' :class='term_conditions == false ? "disable" : "" '><?php echo __('Log In', 'watergo'); ?></button>
+            <button @click='gotoAuthRegister' class='btn btn-second mt15'><?php echo __('Sign Up', 'watergo'); ?></button>
          </div>
 
 
-         <p class='t-second t-center mt25'>Or log in with</p>
+         <p class='t-second t-center mt25'><?php echo __('Or log in with', 'watergo'); ?></p>
 
          <div class='form-group mt20'>
-            <button @click='login_social_apple' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'>Log in with Apple</span></button>
-            <button @click='login_social_google' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'>Log in with Google</span></button>
-            <button @click='login_social_zalo' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'>Log in with Zalo</span></button>
+            <button @click='login_social_apple' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'><?php echo __('Log in with Apple', 'watergo'); ?></span></button>
+            <button @click='login_social_google' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'><?php echo __('Log in with Google', 'watergo'); ?></span></button>
+            <button @click='login_social_zalo' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'><?php echo __('Log in with Zalo', 'watergo'); ?></span></button>
          </div>
 
       </div>

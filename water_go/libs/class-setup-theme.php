@@ -48,7 +48,6 @@ function developerThemeConstruct() {
 
 	// Make theme available for translation
 	// Translations can be filed in the /languages/ directory
-	load_theme_textdomain( TEXTDOMAIN, THEME_DIR . '/languages' );
 
 
 	// This theme uses wp_nav_menu() in one location.

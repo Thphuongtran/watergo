@@ -13,7 +13,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>Change Password</p>
+               <p class='leading-title'><?php echo __('Change Password', 'watergo'); ?></p>
             </div>
          </div>
       </div>
@@ -24,16 +24,16 @@
                
                <div class='form-wrapper' style="overflow-y: scroll;padding-bottom: 90px;">
                   <div class='form-group style01'>
-                     <span>Current Password</span>
-                     <input class='input-style02' v-model='current_password' type="password" placeholder='Enter current password'>
+                     <span><?php echo __('Current Password', 'watergo'); ?></span>
+                     <input class='input-style02' v-model='current_password' type="password" placeholder='<?php echo __('Enter current password', 'watergo'); ?>'>
                   </div>
                   <div class='form-group style01'>
-                     <span>New Password</span>
-                     <input v-model='new_password' type="password" placeholder='Enter new password'>
+                     <span><?php echo __('New Password', 'watergo'); ?></span>
+                     <input v-model='new_password' type="password" placeholder='<?php echo __('Enter new password', 'watergo'); ?>'>
                   </div>
                   <div class='form-group style01'>
-                     <span>Confirm New Password</span>
-                     <input v-model='confirm_password' type="password" placeholder='Enter new password'>
+                     <span><?php echo __('Confirm New Password', 'watergo'); ?></span>
+                     <input v-model='confirm_password' type="password" placeholder='<?php echo __('Enter new password', 'watergo'); ?>'>
                   </div>
                </div>
                <p class='t-red'>{{ t_res }}</p>
@@ -42,7 +42,7 @@
 
             </div>
             <div class='btn-fixed bottom' style="background-color:white;bottom: 0;padding-bottom: 30px;">
-                  <button @click='btn_change_password' class='btn btn-primary'>Save</button>
+                  <button @click='btn_change_password' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
                </div>
          </div>
       </div>
@@ -56,12 +56,12 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3>Password Changed</h3>
-         <p>Your password has been changed successfully</p>
+         <h3><?php echo __('Password Changed', 'watergo'); ?> </h3>
+         <p><?php echo __('Your password has been changed successfully', 'watergo'); ?></p>
       </div>
 
       <div class='banner-footer'>
-         <button onclick="close_and_refresh()" class='btn btn-outline' style="height: 40px;line-height: 38px">Exit</button>
+         <button onclick="close_and_refresh()" class='btn btn-outline' style="height: 40px;line-height: 38px"><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 

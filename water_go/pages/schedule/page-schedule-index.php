@@ -12,7 +12,7 @@
          <div class='appbar'>
             <div class='appbar-top'>
                <div class='leading'>
-                  <p class='leading-title'>Schedule</p>
+                  <p class='leading-title'><?php echo __('Schedule', 'watergo'); ?></p>
                </div>
                <div class='action'>
                   
@@ -43,10 +43,10 @@
 
                <ul id='schedule-bar' class='navbar style02 schedule-bar'>
 
-                  <li @click='select_schedule_status_filter("all")' :class='schedule_status_value == "all" ? "active" : "" '>All</li>
-                  <li @click='select_schedule_status_filter("once")' :class='schedule_status_value == "once" ? "active" : ""'>Delivery Once</li>
-                  <li @click='select_schedule_status_filter("weekly")' :class='schedule_status_value == "weekly" ? "active" : ""'>Delivery Weekly</li>
-                  <li @click='select_schedule_status_filter("monthly")' :class='schedule_status_value == "monthly" ? "active" : ""'>Delivery Monthly</li>
+                  <li @click='select_schedule_status_filter("all")' :class='schedule_status_value == "all" ? "active" : "" '><?php echo __('All', 'watergo'); ?></li>
+                  <li @click='select_schedule_status_filter("once")' :class='schedule_status_value == "once" ? "active" : ""'><?php echo __('Delivery Once', 'watergo'); ?></li>
+                  <li @click='select_schedule_status_filter("weekly")' :class='schedule_status_value == "weekly" ? "active" : ""'><?php echo __('Delivery Weekly', 'watergo'); ?></li>
+                  <li @click='select_schedule_status_filter("monthly")' :class='schedule_status_value == "monthly" ? "active" : ""'><?php echo __('Delivery Monthly', 'watergo'); ?></li>
                </ul>
                
                <div class='order-store-header style01 border-bottom-large ' stlye=''>
@@ -54,7 +54,7 @@
                      <input @click='datePicker' ref='datepicker' id='datepicker' class='btn-filter-date-picker btn-datepicker' readonly>
                      <span class='icon-dropdown'></span>
                   </div>
-                  <div class='count-order'>Total order: <span>{{ get_total_orders_count }}</span></div>
+                  <div class='count-order'><?php echo __('Total order', 'watergo'); ?>: <span>{{ get_total_orders_count }}</span></div>
                </div>
 
             </div>
@@ -69,7 +69,7 @@
 
             <div class='order-item-title-container'>
                <div class='order-item-title-container-tile01'>
-                  <h3 class='order-title'>Order #{{ order.order_number}}</h3>
+                  <h3 class='order-title'><?php echo __('Order', 'watergo'); ?> #{{ order.order_number}}</h3>
                   <h3 class='order-type text-order-type' 
                      :class="get_type_order(order.order_delivery_type)"
                   >{{print_type_order_text(order.order_delivery_type)}}</h3>
@@ -77,24 +77,24 @@
 
                <div class='order-item-title-container-tile02'>
                   <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>
-                     Delivery Immediately {{ order.order_time_shipping.order_time_shipping_time }}
+                     <?php echo __('Delivery Immediately', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_time }}
                   </p>
                   <p 
                      v-if="order.order_delivery_type == 'once_date_time'"
-                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'weekly'"
-                     class='text-xsm'>Delivery on {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'monthly'"
-                     class='text-xsm'>Delivery on {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                </div>
 
 
             </div>
             <div class='order-item-discount text-sm'>
-               <p>{{ total_product_in_order( order )}} products</p>
-               <p>Total: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
+               <p>{{ total_product_in_order( order )}} <?php echo __('products', 'watergo'); ?></p>
+               <p><?php echo __('Total', 'watergo'); ?>: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
                <!-- <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p> -->
             </div>
          </div>

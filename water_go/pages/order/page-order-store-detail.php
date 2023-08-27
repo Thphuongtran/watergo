@@ -28,7 +28,7 @@
       <div class='inner'>
          <div class='list-tile delivery-address style-order style01'>
             <div class='content'>
-               <p class='tt01'>Delivery address</p>
+               <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
                <p class='tt03' v-if='order != null && order.order_delivery_address != undefined'>{{ order.order_delivery_address.address }}</p>
                <p class='tt02' v-if='order != null && order.order_delivery_address != undefined'>{{ order.order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order.order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order.order_delivery_address.phone ) : '' }}</p>
                <!-- <span v-if='address_kilometer > 0' class='address-kilometer'>{{address_kilometer}}km</span> -->
@@ -41,7 +41,7 @@
       <ul class='list-tile order order-store-detail'>
 
          <li>
-            <div class='heading'>Order</div>
+            <div class='heading'><?php echo __('Order', 'watergo'); ?></div>
 
             <div 
                v-if='order != null && order.order_products != undefined'
@@ -68,9 +68,9 @@
       </ul>
 
       <div class='box-delivery-time'>
-         <p class='tt01'>Delivery time</p>
+         <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02' v-if='order != null && get_delivery_time_activity != null'>{{ get_delivery_time_activity }}</p>
-         <p class='tt03' v-if=' order != null && order.order_delivery_type == "once_immediately"'>Immediately (within 1 hour) </p>
+         <p class='tt03' v-if=' order != null && order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 1 hour)', 'watergo'); ?> </p>
          <div 
             v-if='
                (order != null && order.order_delivery_type == "once_date_time" ) ||
@@ -92,17 +92,17 @@
 
       <div class='break-line'></div>
       <div class='box-payment-method'>
-         <p class='heading-02'>Payment method </p>
+         <p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p>
          <p class='heading-03'>By Cash</p>
       </div>
 
       <div class='break-line'></div>
       <div class='box-time-order'>
-         <p class='heading-03' v-if='order != null && order.order_time_created != undefined '>Ordered Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
-         <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'>Confirmed Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
-         <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'>Delivery Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'>Complete Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
-         <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'>Cancel Time: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+         <p class='heading-03' v-if='order != null && order.order_time_created != undefined '><?php echo __('Ordered Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
+         <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'><?php echo __('Confirmed Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
+         <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'><?php echo __('Delivery Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+         <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'><?php echo __('Complete Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+         <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'><?php echo __('Cancel Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
       </div>
 
       <div class='break-line'></div>
@@ -132,7 +132,7 @@
                <path d="M2.46324 0.532123L3.84663 0.115438C4.47637 -0.0745494 5.15373 -0.028874 5.75226 0.243938C6.35079 0.51675 6.82958 0.998053 7.09927 1.598L7.96014 3.51308C8.1921 4.02899 8.25672 4.60458 8.14493 5.15908C8.03313 5.71358 7.75053 6.21916 7.33678 6.60488L5.83255 8.00743C5.81396 8.0248 5.79871 8.04541 5.78754 8.06827C5.63004 8.38995 5.86921 9.24915 6.61841 10.5475C7.46345 12.0109 8.11598 12.5893 8.41849 12.5001L10.3927 11.8959C10.9334 11.7308 11.5122 11.739 12.048 11.9194C12.5837 12.0998 13.0496 12.4433 13.3804 12.9018L14.6037 14.596C14.9878 15.128 15.1657 15.7813 15.1044 16.4346C15.0431 17.0878 14.7468 17.6966 14.2704 18.1479L13.2179 19.1437C12.8518 19.4904 12.4074 19.7434 11.9224 19.8811C11.4374 20.0189 10.9263 20.0372 10.4327 19.9346C7.50178 19.3246 4.87584 16.9645 2.53241 12.906C0.188144 8.84497 -0.54272 5.38649 0.398986 2.54221C0.556623 2.06602 0.826564 1.63478 1.186 1.28492C1.54544 0.935054 1.98298 0.67685 2.46324 0.532123ZM2.82492 1.72884C2.53675 1.81564 2.27371 1.97052 2.05801 2.18041C1.84232 2.3903 1.68032 2.64903 1.5857 2.93472C0.774002 5.38566 1.43153 8.49912 3.61495 12.2809C5.79671 16.0603 8.16181 18.1854 10.6869 18.7104C10.9832 18.772 11.29 18.761 11.5811 18.6782C11.8723 18.5955 12.139 18.4436 12.3587 18.2354L13.4104 17.2403C13.667 16.9974 13.8266 16.6696 13.8598 16.3179C13.8929 15.9661 13.7971 15.6143 13.5904 15.3277L12.367 13.6327C12.1889 13.3858 11.9381 13.2009 11.6497 13.1038C11.3613 13.0066 11.0497 13.0022 10.7586 13.091L8.77934 13.6968C7.68429 14.0227 6.65425 13.1101 5.53587 11.1717C4.58833 9.53166 4.25998 8.34662 4.665 7.51908C4.74333 7.35907 4.85 7.2149 4.98001 7.09323L6.48424 5.69067C6.70712 5.48298 6.85936 5.21071 6.91959 4.91208C6.97983 4.61345 6.94503 4.30345 6.82009 4.0256L5.95922 2.11136C5.81401 1.78822 5.55615 1.529 5.23379 1.38208C4.91143 1.23516 4.54662 1.2106 4.20748 1.31299L2.82409 1.72967L2.82492 1.72884Z" fill="#2790F9"/>
                </svg>
             </span>
-            <span class='text'>Call</span>
+            <span class='text'><?php echo __('Call', 'watergo')?></span>
          </a>
       </div>
 
@@ -147,12 +147,12 @@
          >
             <p 
             v-if='order != null '
-            class='price-total' :class='order.order_status != "complete" '>Total: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
+            class='price-total' :class='order.order_status != "complete" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <div v-show='order.order_status != "complete" || order.order_status != "cancel"' class='btn-gr'>
                <!-- <button @click='btn_cancel_order' v-if='order.order_status == "ordered"' class='btn btn-outline'>Cancel</button> -->
-               <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn btn-primary'>Confirm</button>
-               <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn btn-primary'>Delivering</button>
-               <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn btn-primary'>Complete</button>
+               <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
+               <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn btn-primary'><?php echo __('Delivering', 'watergo'); ?></button>
+               <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn btn-primary'><?php echo __('Complete', 'watergo'); ?></button>
             </div>
 
          </div>
@@ -164,7 +164,7 @@
    <div v-show='popup_confirm_cancel == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
-         <p class='tt01'>Select Cancellation Reason</p>
+         <p class='tt01'><?php echo __('Select Cancellation Reason', 'watergo'); ?></p>
          <ul class='list-Reason'>
             <li @click='btn_select_reason(reason.label)'
                v-for='(reason, index) in reason_cancel' :key='index'>
@@ -175,7 +175,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>Submit</button>
+            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
          </div>
       </div>
    </div>

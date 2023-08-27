@@ -9,18 +9,18 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>WaterGo Support</p>
+               <p class='leading-title'><?php echo __('WaterGo Support', 'watergo'); ?></p>
             </div>
          </div>
       </div>
 
       <div class='form-question'>
-         <p>Your Question</p>
-         <textarea v-model='question' placeholder='Enter your question'></textarea>
+         <p><?php echo __('Your Question', 'watergo') ?></p>
+         <textarea v-model='question' placeholder='<?php echo __('Enter your question', 'watergo'); ?>'></textarea>
       </div>
 
       <div class='support-bottomsheet no-shadow'>
-         <button @click='supportAdd' class='btn btn-primary' style="max-width: inherit;">Send Message</button>
+         <button @click='supportAdd' class='btn btn-primary' style="max-width: inherit;"><?php echo __('Send Message', 'watergo'); ?></button>
       </div>
    </div>
    <div v-if='loading == true'>

@@ -10,7 +10,7 @@
                      <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>Settings</p>
+               <p class='leading-title'><?php echo __('Settings', 'watergo'); ?></p>
             </div>
          </div>
       </div>
@@ -18,17 +18,17 @@
       <div class='inner mt20'>
          <ul class='list-settings'>
             <li @click='gotoPageUserLanguage'>
-               <span class='title'>Language</span>
+               <span class='title'><?php echo __('Language', 'watergo'); ?></span>
                <span class='subtitle'>{{ user_language }}</span>
             </li>
             <li v-if='is_user_login_social == false' @click='gotoPageUserPassword'>
-               <span class='title'>Password</span>
+               <span class='title'><?php echo __('Password', 'watergo'); ?></span>
             </li>
             <li @click='gotoPageUserDeleteAccount'>
-               <span class='title'>Delete Account</span>
+               <span class='title'><?php echo __('Delete Account', 'watergo'); ?></span>
             </li>
             <li @click='buttonOpenModalLogout'>
-               <span class='title'>Log Out</span>
+               <span class='title'><?php echo __('Log Out', 'watergo'); ?></span>
             </li>
          </ul>
       </div>
@@ -43,10 +43,10 @@
    <div v-show='modalOpenLogout' class='modal-popup open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalLogutCancel' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'>Logout?</p>
+         <p class='heading'><?php echo __('Logout', 'watergo'); ?>?</p>
          <div class='actions'>
-            <button @click='buttonModalLogutCancel' class='btn btn-outline'>Cancel</button>
-            <button @click='buttonModalLogutConfirm' class='btn btn-primary'>Okay</button>
+            <button @click='buttonModalLogutCancel' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+            <button @click='buttonModalLogutConfirm' class='btn btn-primary'><?php echo __('Okay', 'watergo'); ?></button>
          </div>
       </div>
    </div>

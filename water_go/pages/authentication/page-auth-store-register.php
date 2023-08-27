@@ -45,35 +45,35 @@
             </div>
          </div>
 
-         <div class='heading-01 t-center'>Sign Up</div>
+         <div class='heading-01 t-center'><?php echo __('Sign Up', 'watergo'); ?></div>
 
          <div class='form-group style-checkbox-business'>
             <label class='form-checkbox'>
                <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
-               <span class='text'>Water</span>
+               <span class='text'><?php echo __('Water', 'watergo'); ?></span>
             </label>
             <label class='form-checkbox'>
                <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
-               <span class='text'>Ice</span>
+               <span class='text'><?php echo __('Ice', 'watergo'); ?></span>
             </label>
             <label class='form-checkbox'>
                <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
-               <span class='text'>Both</span>
+               <span class='text'><?php echo __('Both', 'watergo'); ?></span>
             </label>
          </div>
 
          <div class='form-group'>
-            <span>Owner</span>
-            <input v-model='inputOwner' type="text" placeholder='Enter owner name'>
+            <span><?php echo __('Owner', 'watergo'); ?></span>
+            <input v-model='inputOwner' type="text" placeholder='<?php echo __('Enter owner name', 'watergo'); ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Store Name</span>
-            <input v-model='inputStoreName' type="text" placeholder='Enter store name'>
+            <span><?php echo __('Store Name', 'watergo'); ?></span>
+            <input v-model='inputStoreName' type="text" placeholder='<?php echo __('Enter store name','watergo'); ?>'>
          </div>
 
          <div class='form-group'>
-            <span>Address</span>
+            <span><?php echo __('Address','watergo');?> </span>
            <!--  <input v-model='inputAddress' type="text" placeholder='Enter address' 
                @blur='select_address_focus_out'
                @focus='select_address_focus_in'
@@ -84,20 +84,20 @@
 
 
          <div class='form-group'>
-            <span>Phone</span>
-            <input v-model='inputPhone' type="text" pattern='[0-9]*' placeholder='Enter phone'>
+            <span><?php echo __('Phone', 'watergo'); ?></span>
+            <input v-model='inputPhone' type="text" pattern='[0-9]*' placeholder='<?php echo __('Enter phone', 'watergo'); ?>'>
          </div>
 
          <div class='form-group'>
             <span>Email</span>
             <div class='form-group-email mb10'>
-               <input v-model='inputEmail' type="email" placeholder='Enter you email'>
-               <button class='btn-email-verify' @click='btn_verify_email_and_sendcode' class='btn-text' :class='isCodeSend == true ? "is-send": ""' >Verify</button>
+               <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter you email', 'watergo'); ?>'>
+               <button class='btn-email-verify' @click='btn_verify_email_and_sendcode' class='btn-text' :class='isCodeSend == true ? "is-send": ""' ><?php echo __('Verify', 'watergo'); ?></button>
             </div>
          </div>
          
          <p v-show='isCodeSend' class='t-second-12 text-code-resend'>
-            We have sent a code to your email. <button @click='btn_verify_email_and_sendcode' class='btn-text'>Resend</button>
+            <?php echo __('We have sent a code to your email.', 'watergo'); ?> <button @click='btn_verify_email_and_sendcode' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
          </p>
 
          <div v-if='isCodeSend' class='box-code-verify'>
@@ -108,14 +108,14 @@
          </div>
 
          <div class='form-group mt10'>
-            <span>Password</span>
-            <input v-model='inputPassword' type="password" placeholder='Enter your password'>
+            <span><?php echo __('Password', 'watergo'); ?></span>
+            <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
 
          <div class='form-check style01 mt15'>
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'> I agree with <span class='t-primary'>Terms and Conditions</span></span>
+               <span class='text text-nowrap'> <?php echo __("I agree with <span class='t-primary'>Terms and Conditions</span>", 'watergo');?></span>
             </label>
          </div>
 
@@ -124,8 +124,8 @@
          </p>
 
          <div class='form-group mb50'>
-            <button @click='btn_register' class='btn btn-primary' :class='term_conditions == false ? "disable" : ""'>Sign Up</button>
-            <button @click='goBack' class='btn btn-second mt15'>Log In</button>
+            <button @click='btn_register' class='btn btn-primary' :class='term_conditions == false ? "disable" : ""'><?php echo __('Sign Up', 'watergo'); ?></button>
+            <button @click='goBack' class='btn btn-second mt15'><?php echo __('Log In', 'watergo'); ?></button>
          </div>
 
       </div>
@@ -144,12 +144,12 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3>Congratulations!</h3>
-         <p>Your registration has been successful</p>
+         <h3><?php echo __('Congratulations', 'watergo'); ?>!</h3>
+         <p><?php echo __('Your registration has been successful', 'watergo'); ?></p>
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBackForce' class='btn btn-primary'>Log In</button>
+         <button @click='goBackForce' class='btn btn-primary'><?php echo __('Log In', 'watergo'); ?></button>
       </div>
    </div>
 
