@@ -26,7 +26,7 @@
             <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo_business.svg'; ?>">
          </div>
 
-         <div class='box-language t-center'>
+         <!-- <div class='box-language t-center'>
             <div class="dropdown dropdown-language">
                <div class="dropdown-toggle" @click="toggleDropdown">
                <div class="selected-option">
@@ -43,7 +43,7 @@
                </ul>
                </div>
             </div>
-         </div>
+         </div> -->
 
          <div class='heading-01 t-center'><?php echo __('Sign Up', 'watergo'); ?></div>
 
@@ -78,7 +78,7 @@
                @blur='select_address_focus_out'
                @focus='select_address_focus_in'
             > -->
-            <input type="text" name="" id="search-address">
+            <input type="text" name="" id="search-address" placeholder='<?php echo __("Enter a location", 'watergo'); ?>'>
 
          </div>
 
@@ -193,7 +193,7 @@ createApp({
          languages: [
            { id: 'en_US', name: 'English'},
            { id: 'vi', name: 'Vietnamese'},
-           { id: 'ko_KR', name: 'Korean'},
+         //   { id: 'ko_KR', name: 'Korean'},
          ],
 
          selectedLanguage: {},
@@ -352,10 +352,10 @@ createApp({
                      this.loading = false;
 
                   if( res.message == 'email_is_not_correct_format' ){
-                     this.res_text_sendcode = 'Email is not correct format.';
+                     this.res_text_sendcode = '<?php echo __("Email is not correct format.", 'watergo'); ?>';
                   }
                   if( res.message == 'email_already_exists' ){
-                     this.res_text_sendcode = 'Email already register.';
+                     this.res_text_sendcode = '<?php echo __("Email already register.", 'watergo'); ?>';
                   }
                   if( res.message == 'sendcode_success' ){
                      this.res_text_sendcode = '';
@@ -363,10 +363,10 @@ createApp({
                   }
 
                }else{
-                  this.res_text_sendcode = 'Get Code Verify Error.';
+                  this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
                }
             }else{
-               this.res_text_sendcode = 'Email is not correct format.';
+               this.res_text_sendcode = '<?php echo __("Email is not correct format.", 'watergo'); ?>';
             }
          }
          this.loading = false;
@@ -408,19 +408,19 @@ createApp({
                      var res = JSON.parse( JSON.stringify( r ));
                      // DISPLAY ERROR
                      if( res.message == 'email_already_exists' ){
-                        this.res_text_sendcode = 'Email already exists.';
+                        this.res_text_sendcode = '<?php echo __("Email already exists.", 'watergo'); ?>';
                      }
                      
                      if( res.message == 'code_is_not_match' ){
-                        this.res_text_sendcode = 'Code is not match.';
+                        this.res_text_sendcode = '<?php echo __("Code is not match.", 'watergo'); ?>';
                      }
 
                      if( res.message == 'phonenumber_is_not_correct_format' ){
-                        this.res_text_sendcode = 'Phone number is not correct format.';
+                        this.res_text_sendcode = '<?php echo __("Phone number is not correct format.", 'watergo'); ?>';
                      }
 
                      if( res.message == 'all_field_empty' ){
-                        this.res_text_sendcode = 'All field must be not empty.';
+                        this.res_text_sendcode = '<?php echo __("All field must be not empty.", 'watergo'); ?>';
                      }
                      if( res.message == 'register_ok' ){
                         window.appBridge.loginSuccess(res.token);
@@ -431,12 +431,12 @@ createApp({
                   }
 
                }else{
-                  this.res_text_sendcode = 'Email is not verify.';
+                  this.res_text_sendcode = '<?php echo __("Email is not verify.", 'watergo'); ?>';
                }
             }else if( address == "" || lat == "" || lng == ""){
-               this.res_text_sendcode = 'Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất';
+               this.res_text_sendcode = '<?php echo __("Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất", 'watergo'); ?>';
             } else{
-               this.res_text_sendcode = 'All field must be not empty.';
+               this.res_text_sendcode = '<?php echo __("All field must be not empty.", 'watergo'); ?>';
             }
             this.loading = false;
          }

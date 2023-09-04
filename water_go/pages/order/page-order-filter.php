@@ -61,7 +61,7 @@
             </div>
 
             <div class='order-bottom'>
-               <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} product</span>
+               <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} <?php echo __('product', 'watergo'); ?></span>
                <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
             </div>
 
@@ -69,7 +69,7 @@
                <table>
                   <tr v-for='( shipping, shippingKey ) in order.order_time_shipping' :key='shippingKey'>
                      <td v-if='shipping.order_time_shipping_type == "monthly" '><?php echo __('Date', 'watergo'); ?> {{shipping.order_time_shipping_day}}</td>
-                     <td v-if='shipping.order_time_shipping_type == "weekly" '>{{shipping.order_time_shipping_day}}</td>
+                     <td v-if='shipping.order_time_shipping_type == "weekly" '>{{ get_title_weekly_compact(shipping.order_time_shipping_day) }}</td>
                      <td class='td-left'> | {{shipping.order_time_shipping_time}}</td>
                   </tr>
                </table>
@@ -87,8 +87,8 @@
 
    <div v-if="loading == false && popup_delete_all_item == true" class='modal-popup open'>
       <div class='modal-wrapper'>
-         <p v-if='filter != "" && filter == "weekly"' class='heading'><?php echo __('Are you sure to delete this<br> weekly order?', 'watergo'); ?></p>
-         <p v-if='filter != "" && filter == "monthly"' class='heading'><?php echo __('Are you sure to delete this<br> monthly order?', 'watergo'); ?></p>
+         <p v-if='filter != "" && filter == "weekly"' class='heading'><?php echo __('Are you sure to delete this<br> weekly order', 'watergo'); ?>?</p>
+         <p v-if='filter != "" && filter == "monthly"' class='heading'><?php echo __('Are you sure to delete this<br> monthly order', 'watergo'); ?>?</p>
          <div class='actions'>
             <button @click='buttonCloseModal_delete_all_item' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
             <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'><?php echo __('Delete', 'watergo'); ?></button>
@@ -110,10 +110,28 @@ var app = Vue.createApp({
          orders: [],
          order_id_delete: null,
          paged: 0,
+
+         get_locale: '<?php echo get_locale(); ?>',
       }
    },
 
    methods: {
+
+      get_title_weekly_compact( title ){
+         if( this.get_locale == 'vi' ){
+            if( title == 'Monday' ) return 'Thứ Hai';
+            if( title == 'Tuesday' ) return 'Thứ Ba';
+            if( title == 'Wednesday' ) return 'Thứ Tư';
+            if( title == 'Thursday' ) return 'Thứ Năm';
+            if( title == 'Friday' ) return 'Thứ Sáu';
+            if( title == 'Saturday' ) return 'Thứ Bảy';
+            if( title == 'Sunday' ) return 'Chủ Nhật';
+
+         }else{
+            return title;
+         }
+      },
+
       common_price_show_currency(p){return common_price_show_currency(p)},
 
       get_price_after_discount( p ){

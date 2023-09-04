@@ -358,3 +358,125 @@ function atlantis_store_register(){
    }
 
 }
+
+/**
+ * @access REGISTER STORE WITH NO CODE VERIFY
+ */
+add_action( 'wp_ajax_nopriv_atlantis_store_register_from_admin', 'atlantis_store_register_from_admin' );
+add_action( 'wp_ajax_atlantis_store_register_from_admin', 'atlantis_store_register_from_admin' );
+
+function atlantis_store_register_from_admin(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_store_register_from_admin' ){
+
+      $owner      = isset($_POST['owner']) ? $_POST['owner'] : '';
+      $storeType  = isset($_POST['storeType']) ? $_POST['storeType'] : '';
+      $storeName  = isset($_POST['storeName']) ? $_POST['storeName'] : '';
+      $address    = isset($_POST['address']) ? $_POST['address'] : '';
+      $phone      = isset($_POST['phone']) ? $_POST['phone'] : '';
+      $email      = isset($_POST['email']) ? $_POST['email'] : '';
+      $password   = isset($_POST['password']) ? $_POST['password'] : '';
+      $description  = isset($_POST['description']) ? $_POST['description'] : '';
+      
+      $latitude   = isset($_POST['latitude']) ? $_POST['latitude']   : 10.780900239854994;
+      $longitude  = isset($_POST['longitude']) ? $_POST['longitude'] : 106.7226271387539;
+
+      $imageUpload   = isset($_FILES['imageUpload']) ? $_FILES['imageUpload'] : null;
+
+
+      if( $description == '' && $owner == '' && $storeName == '' && $address == '' && $phone == '' && $email == '' && $password == '' && $storeType == ''){
+         wp_json_send_error([ 'message' => 'all_field_empty' ]);
+         wp_die();
+      }
+
+      // REMOVE ANY NON-DIGITAL NO UNNESESSORY
+      // $phone = preg_replace('/\D/', '', $phone);
+
+      $phone = str_replace(array('-', '.', ' '), '', $phone);
+      $is_phone =  preg_match( '/^(032|033|034|035|036|037|038|039|086|096|097|098|081|082|083|084|085|088|091|094|056|058|092|070|076|077|078|079|089|090|093|099|059)+([0-9]{7})$/', $phone);
+
+      if ( !$is_phone) {
+         wp_send_json_error([ 'message' => 'phonenumber_is_not_correct_format']);
+         wp_die();
+      }
+
+      if ( preg_match('/^\d+$/', $phone) == false || (strlen($phone) >= 10 && strlen($phone) < 12) == false) {
+         wp_send_json_error([ 'message' => 'phonenumber_is_not_correct_format']);
+         wp_die();
+      }
+
+      if( is_email($email) == false ){
+         wp_send_json_error([ 'message' => 'email_is_not_correct_format' ]);
+         wp_die();
+      }
+
+      // CHECK IS EXISTS IN DATABASE OR NOT?
+      if( email_exists( $email)  ){
+         wp_send_json_error([ 'message' => 'email_already_exists']);
+         wp_die();
+      }
+
+      // INSERT USER
+      $user_id = wp_insert_user([
+         'user_login' => $email,
+         'user_email' => $email,
+         'user_pass'  => $password,
+         'first_name' => $email
+      ]);
+
+      if( ! $user_id ){
+         wp_send_json_error([ 'message' => 'register_error_1']);
+         wp_die();
+      }
+
+      // MAKE THIS USER TO STORE USER
+      update_user_meta($user_id, 'user_store', true);
+
+      // INSERT TO STORE DB
+      global $wpdb;
+      $store_register = $wpdb->insert('wp_watergo_store', [
+         'store_type'   => $storeType,
+         'owner'        => $owner,
+         'name'         => $storeName,
+         'description'  => $description,
+         'address'      => $address,
+         'phone'        => $phone,
+         'user_id'      => $user_id, // same with id
+         'latitude'     => $latitude,
+         'longitude'    => $longitude
+      ]);
+
+      $store_id = $wpdb->insert_id;
+
+      // wp_send_json_success(['message' => 'bug', 'test' => $store_id]);
+      // wp_die();
+
+      if( $imageUpload != null ){
+         // FIND IMAGE AND REPLACE
+         $sql_find_attachment = "SELECT * FROM wp_watergo_attachment WHERE related_id = $store_id AND attachment_type = 'store' ";
+         $attachment_exists = $wpdb->get_results( $sql_find_attachment );
+
+         if( !empty($attachment_exists) ){
+            wp_delete_attachment($attachment_exists[0]->attachment_id, true);
+            $wpdb->delete('wp_watergo_attachment',[ 'attachment_id' => $attachment_exists[0]->attachment_id ], [ '%d' ]);
+         }
+
+         $attachment_id = func_atlantis_upload_no_ajax('store', $imageUpload);
+         if($attachment_id != null || !empty( $attachment_id ) ){
+            $wpdb->insert('wp_watergo_attachment', [
+               'attachment_id'   => $attachment_id[0],
+               'related_id'      => $store_id,
+               'attachment_type' => 'store'
+            ]);
+         }
+      }
+
+      if( ! $store_register ){
+         wp_send_json_error([ 'message' => 'register_error_2']);
+         wp_die();
+      }
+
+      wp_send_json_success([ 'message' => 'register_ok']);
+      wp_die();
+
+   }
+}

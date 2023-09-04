@@ -22,6 +22,7 @@ add_action( 'wp_ajax_nopriv_atlantis_get_store_id', 'atlantis_get_store_id' );
 add_action( 'wp_ajax_atlantis_get_store_id', 'atlantis_get_store_id' );
 
 
+
 function atlantis_get_store_id(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_store_id' ){
       $store_id = func_get_store_id_from_current_user();
@@ -109,14 +110,18 @@ function atlantis_get_total_purchase_store(){
 
 function atlantis_load_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_store' ){
+
+      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
+      $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
+      $paged = $paged * $limit;
+
       global $wpdb;
       $sql = "SELECT 
          wp_watergo_store.*
-
-         FROM wp_watergo_store 
-
+         FROM wp_watergo_store
+         WHERE store_hidden = 0
          ORDER BY id DESC 
-         LIMIT 0,10";
+         LIMIT $paged, $limit";
       $get_results = $wpdb->get_results($sql);
       if( empty( $get_results ) ){
          wp_send_json_error([ 'message' => 'store_not_found' ]);
@@ -193,8 +198,14 @@ add_action( 'wp_ajax_atlantis_get_store_profile', 'atlantis_get_store_profile' )
 
 function atlantis_get_store_profile(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_store_profile' ){
-      $user_id = get_current_user_id();
-      $store_id = func_get_store_id_from_current_user();
+
+      $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+
+      // no id get current store
+      if( $store_id == 0 ){
+         $store_id = func_get_store_id_from_current_user();
+      }
+
       $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id LIMIT 1";
       global $wpdb;
       $res = $wpdb->get_results($sql);
@@ -202,12 +213,13 @@ function atlantis_get_store_profile(){
          wp_send_json_error(['message' => 'get_store_error', 'sql' => $sql]);
          wp_die();
       }
-      $res[0]->store_image = func_atlantis_get_images( $res[0]->id, 'store', true,"large" );
+      $res[0]->store_image = func_atlantis_get_images( $res[0]->id, 'store', true, "large" );
+
       // GET EMAIL FROM current user_id
-      $user_data = get_userdata($user_id);
+      $user_data = get_userdata( $res[0]->user_id );
       $res[0]->email = $user_data->user_email;
 
-      wp_send_json_success(['message' => 'get_store_ok', 'data' => $res[0]]);
+      wp_send_json_success(['message' => 'get_store_ok', 'data' => $res[0] ]);
       wp_die();
 
    }
@@ -340,6 +352,92 @@ function atlantis_get_current_store_profile(){
          wp_die();
       }
       wp_send_json_success([ 'message' => 'get_store_profile_ok', 'data' => $store[0] ]);
+      wp_die();
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_store_email', 'atlantis_get_store_email' );
+add_action( 'wp_ajax_atlantis_get_store_email', 'atlantis_get_store_email' );
+
+function atlantis_get_store_email(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_store_email' ){
+      
+      $user_id   = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+
+      if($user_id == 0 ){
+         wp_send_json_error([ 'message' => 'get_store_email_error' ]);
+         wp_die();
+      }
+      // $user       = get_user_by('id', $user_id);
+
+      global $wpdb;
+      $sql = "SELECT user_email FROM wp_users WHERE ID = $user_id ";
+      $res = $wpdb->get_results($sql);
+      if(!empty($res)){
+         wp_send_json_success([ 'message' => 'get_store_email_ok', 'data' => $res[0] ]);
+         wp_die();
+      }
+
+      wp_send_json_error([ 'message' => 'get_store_email_error' ]);
+      wp_die();
+
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_store_hidden', 'atlantis_store_hidden' );
+add_action( 'wp_ajax_atlantis_store_hidden', 'atlantis_store_hidden' );
+
+function atlantis_store_hidden(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_store_hidden' ){
+      $store_mulitple   = isset($_POST['store_mulitple']) ? $_POST['store_mulitple'] : '';
+
+      if( $store_mulitple == ''){
+         wp_send_json_error([ 'message' => 'get_store_error' ]);
+         wp_die();
+      }
+
+      if( $store_mulitple != '' ){
+         $store_decode  = json_decode( stripslashes( $store_mulitple ), true );
+         $placeholders  = 0;
+         $wheres = [];
+         foreach( $store_decode as $ids ){
+            $wheres[] = $ids;
+         }
+
+         $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+
+         global $wpdb;
+         $sql = "UPDATE wp_watergo_store SET store_hidden = 1 WHERE id IN( $placeholders ) ";
+         $prepare = $wpdb->prepare($sql, $wheres);
+         $wpdb->get_results($prepare);
+         
+         wp_send_json_success([ 'message' => 'store_hidden_ok' ]);
+         wp_die();
+      }
+
+      wp_send_json_error([ 'message' => 'get_store_error' ]);
+      wp_die();
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_count_store_pagination', 'atlantis_count_store_pagination' );
+add_action( 'wp_ajax_atlantis_count_store_pagination', 'atlantis_count_store_pagination' );
+function atlantis_count_store_pagination(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_store_pagination'){
+      $limit = isset($_POST['limit']) ? $_POST['limit'] : 0;
+      global $wpdb;
+      $sql = "SELECT COUNT(*) AS total FROM wp_watergo_store WHERE store_hidden = 0";
+      $res = $wpdb->get_results($sql);
+      $total_pages = 0;
+      if( $res[0]->total != null && $res[0]->total > 0 ){
+         $total_pages = ceil($res[0]->total / $limit);
+      }
+      wp_send_json_success([ 'message' => 'store_pagination', 
+         'data'         => $total_pages,
+         'total_items'  => $res[0]->total
+      ]);
       wp_die();
    }
 }

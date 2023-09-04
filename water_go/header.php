@@ -1,9 +1,37 @@
 <?php 
    atlantis_setup_language();
+
+   // 
+   $get_locale = get_locale();
+
+   // SET AUTO LANGUAGE VI FOR APP STORE
+   if( is_user_logged_in() ){
+      $user_id = get_current_user_id();
+      $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
+         ? (int) get_user_meta($user_id , 'user_store', true) 
+         : null;
+
+      if( $is_user_store == 1 || $is_user_store == true  ){
+         $get_locale = 'vi';
+         if( isset($_COOKIE['site_lang']) && $_COOKIE['site_lang'] != 'vi'){
+            func_quick_app_change_language_callback('vi');
+         }
+      }
+   }
+
+   $auth_page = isset($_GET['auth_page']) ? $_GET['auth_page'] : '';
+
+   if( in_array($auth_page, ['auth-store-login', 'auth-store-register', 'auth-store-forget-password', 'auth-store-reset-password']) ){
+      $get_locale = 'vi';
+      if( isset($_COOKIE['site_lang']) && $_COOKIE['site_lang'] != 'vi'){
+         func_quick_app_change_language_callback( 'vi');
+      }
+   }
+
 ?>
 
 <!DOCTYPE html>
-<html lang="<?php echo get_locale(); ?>">
+<html lang="<?php echo $get_locale; ?>">
 <head>
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">

@@ -170,7 +170,9 @@
                <li class='upload'>
                   <label>
                      <input id='UploadPhoto' type="file" multiple @change="handleFileUpload" />
-                     <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo.png' ?>">
+                     <!-- <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo.png' ?>"> -->
+                     <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo-trans.jpeg'; ?>">
+                     <span class='text-add-photo'><?php echo __('Add Photo', 'watergo'); ?></span>
                   </label>
                </li>
                <!-- IMAGE FROM PRODUCT WHEN EDIT -->
@@ -305,6 +307,7 @@ var app = Vue.createApp({
             uploadImages:     false,
             productImages:    false,
          }
+         
       }
    },
 
@@ -806,8 +809,8 @@ var app = Vue.createApp({
 
       },
       get_leading_title( product_type ){
-         if( product_type == 'water'){ this.leading_title = 'Add Water Product'; }
-         if( product_type == 'ice'){ this.leading_title = 'Add Ice Product'; }
+         if( product_type == 'water'){ this.leading_title = '<?php echo __("Add Water Product", 'watergo'); ?>'; }
+         if( product_type == 'ice'){ this.leading_title = '<?php echo __("Add Ice Product", 'watergo'); ?>'; }
       },
 
       goBack(){ 
@@ -864,6 +867,31 @@ var app = Vue.createApp({
       (function($){
          $(document).ready(function(){
 
+            // Define an object that holds the month and day names for different locales
+            var localeData = {
+               'en_US': {
+                  monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                  monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                  dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                  dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                  dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+               },
+               'vi': {
+                  monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                  monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+                  dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+                  dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                  dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+               }
+            };
+
+            // Get the locale-specific month and day names based on this.locale
+            var locale = 'en_US'; // Default to English
+            var get_locale = '<?php echo get_locale(); ?>';
+            if ( get_locale != undefined && localeData[get_locale] != undefined) {
+               locale = get_locale;
+            }
+
             $('#discount_from').click(function(){
                $('.ui-date-picker-wrapper').addClass('active');
             });
@@ -872,10 +900,17 @@ var app = Vue.createApp({
             });
 
             $('#discount_from').datepicker({
-               dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+               // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
                minDate: 0,
                dateFormat: "dd/mm/yy",
                firstDay: 1,
+
+               monthNames:       localeData[locale].monthNames,
+               monthNamesShort:  localeData[locale].monthNamesShort,
+               dayNames:         localeData[locale].dayNames,
+               dayNamesShort:    localeData[locale].dayNamesShort,
+               dayNamesMin:      localeData[locale].dayNamesMin,
+               
                onSelect: function(dateText, inst){
                   if(dateText != undefined || dateText != '' || dateText != null){
                      $('#discount_from').attr('value', dateText); 
@@ -900,10 +935,17 @@ var app = Vue.createApp({
                }
             });
             $('#discount_to').datepicker({
-               dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+               // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
                minDate: 0,
                dateFormat: "dd/mm/yy",
                firstDay: 1,
+
+               monthNames:       localeData[locale].monthNames,
+               monthNamesShort:  localeData[locale].monthNamesShort,
+               dayNames:         localeData[locale].dayNames,
+               dayNamesShort:    localeData[locale].dayNamesShort,
+               dayNamesMin:      localeData[locale].dayNamesMin,
+
                onSelect: function(dateText, inst){
                   if(dateText != undefined || dateText != '' || dateText != null){
                      $('#discount_to').attr('value', dateText); 

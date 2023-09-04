@@ -122,7 +122,7 @@ var app = Vue.createApp({
             address != ''){
                var _phoneNumberString = this.delivery_address_phone;
             if( this.validatePhoneNumber( _phoneNumberString) == false ){
-               this.text_res = 'Phone numner is not invalid';
+               this.text_res = '<?php echo __("Phone number is invalid", 'watergo'); ?>';
                this.loading = false;
             }else{
                this.text_res = '';
@@ -149,7 +149,7 @@ var app = Vue.createApp({
                }
             }
          }else{
-            this.text_res = 'All field is empty.';
+            this.text_res = '<?php echo __("Field must be not empty", 'watergo'); ?>';
             this.loading = false;
          }
 

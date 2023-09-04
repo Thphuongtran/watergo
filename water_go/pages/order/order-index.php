@@ -42,9 +42,16 @@
             </div>
          </div>
          <div class='appbar-bottom'>
-            <ul class='navbar style02'>
+            <ul class='navbar style02 navbar-icon navbar-order'>
                <li @click='select_filter(filter.value)' v-for='(filter, index) in order_status_filter' :key='index' 
-                  :class='filter.active == true ? "active" : ""'>{{ filter.label }}</li>
+                  :class='filter.active == true ? "active" : ""'>
+                  <span class='icon mb10'>
+                     
+                     <span v-html='filter.icon'></span>
+                     <span v-show='filter.count > 0' class='count-order-badge'>{{ filter.count }}</span>
+                  </span>
+                  <span class='text text-small'>{{ filter.label }}</span>
+               </li>
             </ul>
          </div>
       </div>
@@ -79,7 +86,7 @@
             </div>
 
             <div class='order-bottom'>
-               <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} product</span>
+               <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} <?php echo __('product', 'watergo'); ?></span>
                <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
             </div>
 
@@ -104,13 +111,112 @@ var app = Vue.createApp({
          orders: [],
          orders_count: 0,
          cart_count: 0,
+         get_locale: '<?php echo get_locale(); ?>',
          
          order_status_filter: [ 
-            { label: 'Ordered', value: 'ordered', active: true },
-            { label: 'Prepare', value: 'confirmed', active: false },
-            { label: 'Delivering', value: 'delivering', active: false },
-            { label: 'Complete', value: 'complete', active: false },
-            { label: 'Cancel', value: 'cancel', active: false }
+            { 
+               label: `
+                  <?php 
+                     if( get_locale() == 'vi' ){
+                        echo 'Đã Đặt';
+                     }else{
+                        echo 'Ordered';
+                     }
+                  ?>
+               `, value: 'ordered', active: true,
+               icon: `
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="18" cy="18" r="17.75" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
+                  <mask id="path-2-inside-1_2649_263" fill="white">
+                  <path d="M24.7868 13.5737L15.8606 22.5L11.8032 18.4426"/>
+                  </mask>
+                  <path d="M26.201 14.9879C26.9821 14.2069 26.9821 12.9406 26.201 12.1595C25.42 11.3785 24.1537 11.3785 23.3726 12.1595L26.201 14.9879ZM15.8606 22.5L14.4464 23.9142C14.8215 24.2892 15.3302 24.5 15.8606 24.5C16.391 24.5 16.8997 24.2892 17.2748 23.9142L15.8606 22.5ZM13.2174 17.0284C12.4364 16.2473 11.1701 16.2473 10.389 17.0284C9.60796 17.8094 9.60796 19.0757 10.389 19.8568L13.2174 17.0284ZM23.3726 12.1595L14.4464 21.0857L17.2748 23.9142L26.201 14.9879L23.3726 12.1595ZM17.2748 21.0857L13.2174 17.0284L10.389 19.8568L14.4464 23.9142L17.2748 21.0857Z" fill="#7B7D83" mask="url(#path-2-inside-1_2649_263)"/>
+                  </svg>
+               `,
+               count: 0
+            },
+            { 
+               label: `
+                  <?php 
+                     // echo __("Prepare", 'watergo');
+                     if( get_locale() == 'vi' ){
+                        echo 'Chờ Giao';
+                     }else{
+                        echo 'Prepare';
+                     }
+                  ?>
+               `, value: 'confirmed', active: false,
+               icon: `
+                  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="18.7234" cy="19.2766" r="18.4734" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
+                  <mask id="path-2-inside-1_2649_264" fill="white">
+                  <path d="M24.5554 17.1279V25.1084H13.5055V17.1279"/>
+                  </mask>
+                  <path d="M26.0554 17.1279C26.0554 16.2995 25.3838 15.6279 24.5554 15.6279C23.7269 15.6279 23.0554 16.2995 23.0554 17.1279H26.0554ZM24.5554 25.1084V26.6084C25.3838 26.6084 26.0554 25.9368 26.0554 25.1084H24.5554ZM13.5055 25.1084H12.0055C12.0055 25.9368 12.6771 26.6084 13.5055 26.6084V25.1084ZM15.0055 17.1279C15.0055 16.2995 14.3339 15.6279 13.5055 15.6279C12.6771 15.6279 12.0055 16.2995 12.0055 17.1279H15.0055ZM23.0554 17.1279V25.1084H26.0554V17.1279H23.0554ZM24.5554 23.6084H13.5055V26.6084H24.5554V23.6084ZM15.0055 25.1084V17.1279H12.0055V25.1084H15.0055Z" fill="#7B7D83" mask="url(#path-2-inside-1_2649_264)"/>
+                  <path d="M13.0277 16.378V14.8086H25.0331V16.378H13.0277Z" stroke="#7B7D83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M17.8026 19.5835H20.2581" stroke="#7B7D83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               `,
+               count: 0
+            },
+            { 
+               label: `
+                  <?php 
+                     // echo __("Delivering", 'watergo'); 
+                     if( get_locale() == 'vi' ){
+                        echo 'Đang Giao';
+                     }else{
+                        echo 'Delivering';
+                     }
+                  
+                  ?>
+               `, value: 'delivering', active: false,
+               icon: `
+                  <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="18.2553" cy="18.7446" r="18.0053" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
+                  <path d="M12.7207 20.6882V14.4072H20.1987V20.6882H12.7207Z" stroke="#7B7D83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21.6987 17.3999H23.0322L24.3885 18.7562V20.6882H21.6987V17.3999Z" stroke="#7B7D83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M15.4105 22.9343C15.4105 23.3465 15.0764 23.6807 14.6642 23.6807C14.252 23.6807 13.9178 23.3465 13.9178 22.9343C13.9178 22.5221 14.252 22.188 14.6642 22.188C15.0764 22.188 15.4105 22.5221 15.4105 22.9343Z" stroke="#7B7D83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M23.1914 22.9343C23.1914 23.3465 22.8573 23.6807 22.4451 23.6807C22.0329 23.6807 21.6987 23.3465 21.6987 22.9343C21.6987 22.5221 22.0329 22.188 22.4451 22.188C22.8573 22.188 23.1914 22.5221 23.1914 22.9343Z" stroke="#7B7D83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               `,
+               count: 0
+            },
+            { 
+               label: `
+                  <?php 
+                     if( get_locale() == 'vi' ){
+                        echo 'Đã Nhận';
+                     }else{
+                        echo 'Complete';
+                     }
+                   ?>
+               `, value: 'complete', active: false,
+               icon: `
+                  <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="18.5" cy="18.5" r="18.25" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
+                  <path d="M18.2623 11.6505C18.3371 11.4202 18.6629 11.4202 18.7378 11.6505L19.8092 14.948C20.0435 15.669 20.7154 16.1572 21.4735 16.1572H24.9407C25.1829 16.1572 25.2836 16.4671 25.0876 16.6094L22.2827 18.6474C21.6693 19.093 21.4127 19.8829 21.6469 20.6039L22.7183 23.9014C22.7932 24.1317 22.5296 24.3233 22.3336 24.1809L19.5286 22.143C18.9153 21.6973 18.0847 21.6973 17.4714 22.143L14.6664 24.1809L15.1072 24.7877L14.6664 24.1809C14.4705 24.3233 14.2069 24.1317 14.2817 23.9014L15.3531 20.604C15.5874 19.8829 15.3307 19.093 14.7174 18.6474L11.9124 16.6094C11.7165 16.4671 11.8172 16.1572 12.0593 16.1572H15.5265C16.2846 16.1572 16.9566 15.669 17.1908 14.948L18.2623 11.6505Z" fill="white" stroke="#7B7D83" stroke-width="1.5"/>
+                  </svg>
+               `,
+               count: 0
+            },
+            { 
+               label: `<?php 
+                  if( get_locale() == 'vi'){
+                     echo 'Đã Huỷ';
+                  }else{
+                     echo 'Cancel';
+                  }
+               ?>`, value: 'cancel', active: false,
+               icon: `
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="18" cy="18" r="17.75" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
+                  <path d="M23.6065 12.3936L12.3934 23.6067" stroke="#7B7D83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12.3934 12.3936L23.6065 23.6067" stroke="#7B7D83" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               `,
+               count: 0
+            }
          ],
 
       }
@@ -183,11 +289,33 @@ var app = Vue.createApp({
       },
 
       change_name_status( status ){
-         if( status == 'confirmed' ){
-            return 'Prepare';
-         }else{
-            return status;
+         var _status = status;
+
+         if( _status == 'confirmed' ){
+            _status = 'Prepare';
          }
+
+         if(this.get_locale == 'vi' ){
+            if( _status == 'Prepare'){
+               _status = 'Chờ Giao';
+            }
+            if( _status == 'ordered'){
+               _status = 'Đã Đặt';
+            }
+            if( _status == 'delivering'){
+               _status = 'Đang Giao';
+            }
+            if( _status == 'complete'){
+               _status = 'Hoàn Thành';
+            }
+            if( _status == 'cancel'){
+               _status = 'Đã Huỷ';
+            }
+
+         }
+
+
+         return _status;
       },
 
       gotoCart(){ window.gotoCart(); },
@@ -227,6 +355,23 @@ var app = Vue.createApp({
 
       },
 
+      async get_count_total_order(){
+         this.order_status_filter.some(item => item.count = 0);
+         var form = new FormData();
+         form.append('action', 'atlantis_count_total_order_by_user');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'count_order_by_status' ){
+               res.data.forEach( item => {
+                  var _total_count = item.total_count;
+                  var _order_status = this.order_status_filter.find( order_status => order_status.value == item.order_status );
+                  _order_status.count = _total_count;
+               });
+            }
+         }
+      },
+
       count_product_in_cart(){ this.cart_count = window.count_product_in_cart(); },
 
    }, 
@@ -236,6 +381,7 @@ var app = Vue.createApp({
          this.loading = true;
          this.orders = [];
          this.paged  = 0;
+         await this.get_count_total_order();
          await this.get_order(status, this.paged);
          this.loading = false;
          window.appbar_fixed();
@@ -244,6 +390,7 @@ var app = Vue.createApp({
 
    async created(){
       this.loading = true;
+      await this.get_count_total_order();
       this.count_product_in_cart();
       setTimeout( async () => {
          await this.get_order( this.order_status, 0);

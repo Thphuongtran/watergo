@@ -633,3 +633,28 @@ function atlantis_check_product_discount(){
    }
 
 }
+
+add_action( 'wp_ajax_nopriv_atlantis_product_hidden', 'atlantis_product_hidden' );
+add_action( 'wp_ajax_atlantis_product_hidden', 'atlantis_product_hidden' );
+
+function atlantis_product_hidden(){
+
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_product_hidden' ){
+      $product_id = isset( $_POST['product_id']) ? $_POST['product_id'] : 0;
+
+      if($product_id == 0 ){
+         wp_send_json_error(['message' => 'product_not_found']);
+         wp_die();
+      }
+
+      global $wpdb;
+      $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 1], [ 'id' => $product_id ]);
+      if($updated ){
+         wp_send_json_success(['message' => 'product_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'product_not_found']);
+      wp_die();
+   }
+}

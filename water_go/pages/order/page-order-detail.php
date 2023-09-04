@@ -92,16 +92,16 @@
             >
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ get_title_weekly_compact(time_shipping.order_time_shipping_day) }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>Date {{ time_shipping.order_time_shipping_day }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ time_shipping.order_time_shipping_day }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
          </div>
       </div>
 
       <div class='break-line'></div>
       <div class='box-payment-method'>
-         <p class='heading-02'><?php echo __('Payment method'); ?> </p>
+         <p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p>
          <p class='heading-03'>{{ get_payment_method_activity }}</p>
       </div>
 
@@ -129,7 +129,10 @@
          </div>
 
          <div class='product-detail-bottomsheet'
-            :class='get_layout_text_price'
+            :class='[
+               get_layout_text_price,
+               order_status == "complete" ? "cell-re-order" : ""
+            ]'
          >
             <p class='price-total' :class='order_status != "complete" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
@@ -213,6 +216,8 @@ createApp({
          order_status: '',
          order_delivery_address: null,
 
+         get_locale: '<?php echo get_locale(); ?>',
+
          time_shipping: [],
 
          reason_cancel: [
@@ -220,7 +225,7 @@ createApp({
             {label: 'Reason 2', active: false},
             {label: 'Reason 3', active: false},
             {label: 'Reason 4', active: false},
-            {label: 'Others', active: false}
+            {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 
          order: null
@@ -228,6 +233,21 @@ createApp({
    },
 
    methods: {
+
+      get_title_weekly_compact( title ){
+         if( this.get_locale == 'vi' ){
+            if( title == 'Monday' ) return 'Thứ Hai';
+            if( title == 'Tuesday' ) return 'Thứ Ba';
+            if( title == 'Wednesday' ) return 'Thứ Tư';
+            if( title == 'Thursday' ) return 'Thứ Năm';
+            if( title == 'Friday' ) return 'Thứ Sáu';
+            if( title == 'Saturday' ) return 'Thứ Bảy';
+            if( title == 'Sunday' ) return 'Chủ Nhật';
+
+         }else{
+            return title;
+         }
+      },
 
       hasMoreThanTwoZeroes(number) {
          const numStr = number.toString();
@@ -355,13 +375,21 @@ createApp({
       },
 
       get_status_activity( status ){
-         switch( status ){
-            case 'ordered' : return 'Pending'; break;
-            case 'confirmed' : return 'Prepare'; break;
-            case 'delivering' : return 'Delivering'; break;
-            case 'complete' : return 'Complete'; break;
-            case 'cancel' : return 'Cancel'; break;
+         
+         if( this.get_locale == 'vi'){
+            if( status == 'ordered') return 'Chờ xác nhận';
+            if( status == 'confirmed') return 'Chờ giao';
+            if( status == 'delivering') return 'Đang giao';
+            if( status == 'complete') return 'Đã nhận';
+            if( status == 'cancel') return 'Đã hủy ';
+         }else{
+            if( status == 'ordered') return 'Pending';
+            if( status == 'confirmed') return 'Prepare';
+            if( status == 'delivering') return 'Delivering';
+            if( status == 'complete') return 'Complete';
+            if( status == 'cancel') return 'Cancel';
          }
+         
       },
 
       async get_time_shipping_order(order_id){
@@ -423,6 +451,7 @@ createApp({
 
       get_delivery_time_activity(){
          var _delivery_type = '';
+
          if( this.order.order_delivery_type == 'once_immediately' ){
             _delivery_type = 'once';
          } else if( this.order.order_delivery_type == 'once_date_time' ){
@@ -432,14 +461,34 @@ createApp({
          } else if( this.order.order_delivery_type == 'monthly' ){
             _delivery_type = 'monthly';
          }
-         return 'Delivery ' + _delivery_type;
+
+         if(this.get_locale == 'vi'){
+            if( this.order.order_delivery_type == 'once_immediately' ){
+               return 'Giao một lần';
+            } else if( this.order.order_delivery_type == 'once_date_time' ){
+               return 'Giao một lần';
+            } else if( this.order.order_delivery_type == 'weekly' ){
+               return 'Giao hàng tuần';
+            } else if( this.order.order_delivery_type == 'monthly' ){
+               return 'Giao hàng tháng';
+            }
+         }else{
+            return 'Delivery ' + _delivery_type;
+         }
+         
 
       },
 
       get_payment_method_activity(){
          if( this.order != null && this.order.order_payment_method == 'cash' ){
+            if(this.get_locale == 'vi'){
+               return 'Tiền mặt';
+            }
             return 'By Cash';
          }else{
+            if(this.get_locale == 'vi'){
+               return 'Tiền mặt';
+            }
             return 'By Cash';
          }
       },

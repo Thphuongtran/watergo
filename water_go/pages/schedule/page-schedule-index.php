@@ -70,9 +70,9 @@
             <div class='order-item-title-container'>
                <div class='order-item-title-container-tile01'>
                   <h3 class='order-title'><?php echo __('Order', 'watergo'); ?> #{{ order.order_number}}</h3>
-                  <h3 class='order-type text-order-type' 
-                     :class="get_type_order(order.order_delivery_type)"
-                  >{{print_type_order_text(order.order_delivery_type)}}</h3>
+                  <h3 class='order-type text-order-type' :class="get_type_order(order.order_delivery_type)">
+                     {{print_type_order_text(order.order_delivery_type)}}
+                  </h3>
                </div>
 
                <div class='order-item-title-container-tile02'>
@@ -84,7 +84,7 @@
                      class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'weekly'"
-                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day}} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ get_title_weekly_compact(order.order_time_shipping.order_time_shipping_day) }} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
                   <p 
                      v-if="order.order_delivery_type == 'monthly'"
                      class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
@@ -127,7 +127,9 @@ var app = Vue.createApp({
 
          datePickerValue: null,
 
-         paged: 0
+         paged: 0,
+
+         get_locale: '<?php echo get_locale(); ?>'
 
       }
    },
@@ -141,12 +143,32 @@ var app = Vue.createApp({
 
    methods: {
 
+      get_title_weekly_compact( title ){
+         if( this.get_locale == 'vi' ){
+            if( title == 'Monday') return 'Thứ Hai';
+            if( title == 'Tuesday') return 'Thứ Ba';
+            if( title == 'Wednesday') return 'Thứ Tư';
+            if( title == 'Thursday') return 'Thứ Năm';
+            if( title == 'Friday') return 'Thứ Sáu';
+            if( title == 'Saturday') return 'Thứ Bảy';
+            if( title == 'Sunday') return 'Chủ Nhật';
+         }
+         return title;
+      },
+
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoChat(){ window.gotoChat() },
       gotoScheduleOrderDetail( id) { window.gotoScheduleOrderDetail(id) },
       common_get_product_price( price, discount_percent ){ return window.common_get_product_price( price, discount_percent ); },
       get_type_order(order_type){ return window.get_type_order(order_type)},
-      print_type_order_text(order_type){ return window.print_type_order_text(order_type)},
+      print_type_order_text(order_type){ 
+         if( this.get_locale == 'vi' ){
+            if( order_type == 'once_date_time' || order_type == 'once_immediately' ) return 'Một Lần';
+            if( order_type == 'weekly' ) return 'Hàng tuần';
+            if( order_type == 'monthly' ) return 'Hàng tháng';
+         }
+         return window.print_type_order_text(order_type);
+      },
 
       async get_notification_count(){
          var form = new FormData();
@@ -258,6 +280,31 @@ var app = Vue.createApp({
 
             $(document).ready(function(){
 
+               // Define an object that holds the month and day names for different locales
+               var localeData = {
+                  'en_US': {
+                     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                     monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                     dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                     dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                  },
+                  'vi': {
+                     monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                     monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+                     dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+                     dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                     dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                  }
+               };
+
+               // Get the locale-specific month and day names based on this.locale
+               var locale = 'en_US'; // Default to English
+               var get_locale = '<?php echo get_locale(); ?>';
+               if ( get_locale != undefined && localeData[get_locale] != undefined) {
+                  locale = get_locale;
+               }
+
                $('.ui-date-picker-wrapper').addClass('active');
                $('.ui-date-picker-wrapper').addClass('schedule-datepicker');
                
@@ -265,7 +312,14 @@ var app = Vue.createApp({
                   minDate: 0,
                   dateFormat: "dd/mm/yy",
                   firstDay: 1,
-                  dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                  // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+
+                  monthNames:       localeData[locale].monthNames,
+                  monthNamesShort:  localeData[locale].monthNamesShort,
+                  dayNames:         localeData[locale].dayNames,
+                  dayNamesShort:    localeData[locale].dayNamesShort,
+                  dayNamesMin:      localeData[locale].dayNamesMin,
+                  
                   onSelect: async function(dateText, inst){
                      if(dateText != undefined || dateText != '' || dateText != null){
                         window.app.loading = true;

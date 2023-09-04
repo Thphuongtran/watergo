@@ -438,7 +438,7 @@
 			display: flex;
 			flex-flow: row nowrap;
 			align-items: center;
-         max-width: 165px;
+         // max-width: 165px;
          width: auto;
 
          &.exapend-size{
@@ -594,7 +594,9 @@
 		.tt01{
 			font-weight: 500;
 			font-size: 14px;
-			line-height: 1.4;
+			line-height: 1.0;
+         padding-right: 10px;
+         margin-bottom: 6px;
 		}
 		.tt02{
 			color: #858585;

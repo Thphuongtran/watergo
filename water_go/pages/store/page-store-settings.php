@@ -17,13 +17,17 @@
 
       <div class='inner mt20'>
          <ul class='list-settings'>
-            <li @click='gotoPageUserLanguage'>
-               <span class='title'><?php echo __('Language', 'watergo'); ?></span>
-               <span class='subtitle'>{{ user_language }}</span>
-            </li>
             <li v-if='is_user_login_social == false' @click='gotoPageUserPassword'>
                <span class='title'><?php echo __('Password', 'watergo'); ?></span>
             </li>
+
+            <li @click='gotoPageStoreTermConditions'>
+               <span class='title'><?php echo __('Terms & Conditions', 'watergo'); ?></span>
+            </li>
+            <li @click='gotoPageStorePrivacyPolicy'>
+               <span class='title'><?php echo __('Privacy Policy', 'watergo'); ?></span>
+            </li>
+
             <li @click='gotoPageUserDeleteAccount'>
                <span class='title'><?php echo __('Delete Account', 'watergo'); ?></span>
             </li>
@@ -79,6 +83,9 @@ createApp({
    },
    methods: {
 
+      gotoPageStoreTermConditions(){ window.gotoPageStoreTermConditions()},
+      gotoPageStorePrivacyPolicy(){ window.gotoPageStorePrivacyPolicy()},
+
       // CHECK USER LOGIN IS SOCIAL 
       async check_user_login_social(){
          var form = new FormData();
@@ -129,7 +136,6 @@ createApp({
       gotoPageUserLanguage(){ window.gotoPageUserLanguage()},
       gotoPageUserPassword(){ window.gotoPageUserPassword()},
       gotoPageUserDeleteAccount(){ window.gotoPageUserDeleteAccount()},
-      gotoPageUserTermConditions(){ window.gotoPageUserTermConditions()},
       goBack(){ window.goBack()},
 
    },

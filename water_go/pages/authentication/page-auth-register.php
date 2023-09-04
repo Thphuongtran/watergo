@@ -95,13 +95,13 @@
             <button @click='btn_goto_login' class='btn btn-second mt15'><?php echo __('Log In', 'watergo'); ?></button>
          </div>
 
-         <p class='t-second t-center mt25'><?php echo __('Or log in with', 'watergo'); ?></p>
+         <!-- <p class='t-second t-center mt25'><?php echo __('Or log in with', 'watergo'); ?></p> -->
 
-         <div class='form-group mt20'>
+         <!-- <div class='form-group mt20'>
             <button @click='login_social_apple' class='btn-icon' ref='button-signup'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'><?php echo __('Log in with Apple', 'watergo'); ?></span></button>
             <button @click='login_social_google' class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'><?php echo __('Log in with Google', 'watergo'); ?></span></button>
             <button @click='login_social_zalo' class='btn-icon' ref='button-login'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'><?php echo __('Log in with Zalo', 'watergo'); ?></span></button>
-         </div>
+         </div> -->
 
       </div>
 
@@ -158,9 +158,9 @@ createApp({
 
          // LANGUAGE
          languages: [
-           { id: 'en_US', name: 'English'},
-           { id: 'vi', name: 'Vietnamese'},
-           { id: 'ko_KR', name: 'Korean'},
+           { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
+           { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
+         //   { id: 'ko_KR', name: 'Korean'},
          ],
          selectedLanguage: {},
          currentLocale: '',
@@ -308,10 +308,10 @@ createApp({
                      this.loading = false;
 
                   if( res.message == 'email_is_not_correct_format' ){
-                     this.res_text_sendcode = 'Email is not correct format.';
+                     this.res_text_sendcode = '<?php echo __("Email is not correct format.", 'watergo'); ?>';
                   }
                   else if( res.message == 'email_already_exists' ){
-                     this.res_text_sendcode = 'Email already register.';
+                     this.res_text_sendcode = '<?php echo __("Email already register.", 'watergo'); ?>';
                   }
                   else if( res.message == 'sendcode_success' ){
                      this.res_text_sendcode = '';
@@ -319,10 +319,10 @@ createApp({
                   }
 
                }else{
-                  this.res_text_sendcode = 'Get Code Verify Error.';
+                  this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
                }
             }else{
-               this.res_text_sendcode = 'Email is not correct format.';
+               this.res_text_sendcode = '<?php echo __("Email is not correct format.", 'watergo'); ?>';
             }
          }
          
@@ -358,27 +358,27 @@ createApp({
                      }
 
                      if( res.message == 'resgiter_error' ){
-                        this.res_text_sendcode = 'Register Error.'; 
+                        this.res_text_sendcode = '<?php echo __("Register Error.", 'watergo'); ?>';
                      }
                      if( res.message == 'email_already_exists' ){
-                        this.res_text_sendcode = 'Email already exists.';
+                        this.res_text_sendcode = '<?php echo __("Email already exists.", 'watergo'); ?>';
                      }
                      if( res.message == 'user_exists' ){
-                        this.res_text_sendcode = 'Username already exists.'; 
+                        this.res_text_sendcode = '<?php echo __("Username already exists.", 'watergo'); ?>';
                      }
                      if( res.message == 'code_is_not_match' ){
-                        this.res_text_sendcode = 'Code is not match.';
+                        this.res_text_sendcode = '<?php echo __("Code is not match.", 'watergo'); ?>';
                      }
 
 
                   }else{
-                     this.res_text_sendcode = 'Register Error.';   
+                     this.res_text_sendcode = '<?php echo __("Register Error.", 'watergo'); ?>';
                   }
                }else{
-                  this.res_text_sendcode = 'Email is not verify.';
+                  this.res_text_sendcode = '<?php echo __("Email is not verify.", 'watergo');?>';
                }
             }else{
-               this.res_text_sendcode = 'All field must be not empty.';
+               this.res_text_sendcode = '<?php echo __("All field must be not empty.", 'watergo'); ?>';
             }
          }
          this.loading = false;
@@ -387,8 +387,8 @@ createApp({
    },
 
    async created() {
-     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
      await this.getLocale();
+     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
    },
 
 }).mount('#authentication');

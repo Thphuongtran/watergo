@@ -145,7 +145,16 @@
          </button> -->
          <button @click='addToCart(true)' class='btn-text'><?php echo __('Add to Cart', 'watergo'); ?></button>
          <button @click='gotoPageOrder' class='btn-primary' 
-            :class='check_can_order == false ? "disabled" : "" '><?php echo __('Order', 'watergo'); ?></button>
+            :class='check_can_order == false ? "disabled" : "" '>
+            <?php 
+               // echo __('Order', 'watergo'); 
+               if( get_locale() == 'vi' ){
+                  echo 'Đặt hàng';
+               }else{
+                  echo 'Order';
+               }
+            ?>
+         </button>
       </div>
 
       <div v-if='modal_store_working == true' class='modal-popup open'>
@@ -179,11 +188,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-<script type='module'>
-
-var { createApp } = Vue;
-
-createApp({
+<script>
+var app = Vue.createApp({
    data (){
       return {
 
@@ -512,4 +518,6 @@ createApp({
 
    }
 }).mount('#app');
+window.app = app;
+
 </script>

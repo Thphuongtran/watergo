@@ -116,9 +116,7 @@
                <label for='select_type02'><?php echo __('Delivery weekly', 'watergo'); ?></label>
             </div>
             <div v-show='delivery_type.weekly == true' class='deliverySelect_weekly'>
-
                <components_weekly_select ref='components_weekly_select'></components_weekly_select>
-
             </div>
 
             <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'><?php echo __('Add Day', 'watergo'); ?></button>
@@ -138,7 +136,7 @@
                   </div>
                   <div class='btn-wrapper-order'>
                      <select data-id='0' class='btn_select_monthly_time btn-dropdown'>
-                        <option value='' selected disabled><?php echo __('Select time', 'watergo') ?></option>
+                        <option value='' selected disabled><?php echo __('Select time', 'watergo'); ?></option>
                         <option value='7:00-8:00'>7:00  -  8:00</option>
                         <option value='8:00-9:00'>8:00  -  9:00</option>
                         <option value='9:00-10:00'>9:00  -  10:00</option>
@@ -163,11 +161,11 @@
       </div>
 
       <div class='break-line'></div>
-      <div class='inner'><p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p><p>By Cash</p></div>
+      <div class='inner'><p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p><p><?php echo __('By Cash', 'watergo'); ?></p></div>
 
       <div class='product-detail-bottomsheet cell-placeorder'>
          <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></p>
-         <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary' :class='canPlaceOrder == false ? "disable" : "" '><?php echo __('Place Order', 'watergo'); ?></button>
+         <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary btn-order' :class='canPlaceOrder == false ? "disable" : "" '><?php echo __('Place Order', 'watergo'); ?></button>
       </div>
 
    </div>
@@ -212,6 +210,8 @@ var app = Vue.createApp({
 
    data(){
       return {
+
+         get_locale: '<?php echo get_locale(); ?>',
 
          loading:       true,
          banner_open:   false,
@@ -313,6 +313,13 @@ var app = Vue.createApp({
    },
 
    methods: { 
+      
+      title_select_time_compact( title ){
+         if( this.get_locale == 'vi' ){
+            return 'Chọn thời gian';
+         }
+         return title;
+      },
       
 
       isTimeRange(startTime, endTime) {
@@ -416,6 +423,8 @@ var app = Vue.createApp({
 
       btn_select_date_once(){
 
+         
+
          $(function(){
 
             function date_once( targetElement ){
@@ -423,12 +432,45 @@ var app = Vue.createApp({
                $('.ui-date-picker-wrapper').addClass('datepicker-order-product');
 
                var id   = targetElement.data('id');
+               
+               // Define an object that holds the month and day names for different locales
+               var localeData = {
+                  'en_US': {
+                     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                     monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                     dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                     dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                  },
+                  'vi': {
+                     monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                     monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+                     dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+                     dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                     dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                  }
+               };
+
+               // Get the locale-specific month and day names based on this.locale
+               var locale = 'en_US'; // Default to English
+               var get_locale = '<?php echo get_locale(); ?>';
+               if ( get_locale != undefined && localeData[get_locale] != undefined) {
+                  locale = get_locale;
+               }
 
                targetElement.datepicker({
                   dateFormat: "dd/mm/yy",
                   minDate: 0,
                   firstDay: 1,
-                  dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+
+                  monthNames:       localeData[locale].monthNames,
+                  monthNamesShort:  localeData[locale].monthNamesShort,
+                  dayNames:         localeData[locale].dayNames,
+                  dayNamesShort:    localeData[locale].dayNamesShort,
+                  dayNamesMin:      localeData[locale].dayNamesMin,
+
+                  // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+
                   onSelect: function(dateText, inst){
                      if(dateText != undefined || dateText != '' || dateText != null){
 
@@ -461,7 +503,7 @@ var app = Vue.createApp({
                            { label: '19:00  -  20:00', value: '19:00-20:00', time: 19},
                            { label: '20:00  -  21:00', value: '20:00-21:00', time: 20}
                         ];
-                        var _selectDom = `<option value=''>Select time</option>`;
+                        var _selectDom = `<option value=''><?php echo __('Select time', 'watergo'); ?></option>`;
 
                         _currentSelectDate.setHours(0, 0, 0, 0);
                         _currentDay.setHours(0, 0, 0, 0);
@@ -493,6 +535,8 @@ var app = Vue.createApp({
                }
 
                targetElement.datepicker('show');
+
+               
             }
 
             $('.btn_select_date_once').on('click', function(){
@@ -532,7 +576,7 @@ var app = Vue.createApp({
             $('.ui-datepicker .ui-datepicker-title').empty();
             $('.ui-date-picker-wrapper').addClass('active');
             $('.ui-date-picker-wrapper').addClass('datepicker-monthly');
-            $('.ui-datepicker .ui-datepicker-title').html('Everymonth');
+            $('.ui-datepicker .ui-datepicker-title').html('<?php echo __("Everymonth", 'watergo'); ?>');
 
             var id     = el.data('id');
             var date   = el.val();
@@ -598,7 +642,7 @@ var app = Vue.createApp({
                el.datepicker('show');
             }
 
-            $('.ui-datepicker .ui-datepicker-title').html('Everymonth');
+            $('.ui-datepicker .ui-datepicker-title').html('<?php echo __("Everymonth", 'watergo'); ?>');
             $('.ui-datepicker-calendar thead').remove();
             $('.ui-widget-header a').remove();
 
@@ -641,11 +685,11 @@ var app = Vue.createApp({
             var _dom = `
                <div class='group-select-delivery-time group-select-delivery-time_parent'>
                   <div class='btn-wrapper-order'>
-                     <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
+                     <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly_parent btn-dropdown' placeholder='<?php echo __("Select date", 'watergo'); ?>' readonly>
                   </div>
                   <div class='btn-wrapper-order'>
                      <select data-id='${this.dom_monthly}' class='btn_select_monthly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
+                        <option value='' selected disabled><?php echo __("Select time", 'watergo'); ?></option>
                         <option value='7:00-8:00'>7:00  -  8:00</option>
                         <option value='8:00-9:00'>8:00  -  9:00</option>
                         <option value='9:00-10:00'>9:00  -  10:00</option>
@@ -709,7 +753,7 @@ var app = Vue.createApp({
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
-                  $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
+                  $('.btn_select_time_once').empty().append('<option value="--"><?php echo __('Select time', 'watergo'); ?></option>');
                }
 
             break;
@@ -723,7 +767,7 @@ var app = Vue.createApp({
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
-                  $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
+                  $('.btn_select_time_once').empty().append('<option value="--"><?php echo __('Select time', 'watergo'); ?></option>');
                }
 
                $('.btn_select_monthly').val('');
@@ -739,7 +783,7 @@ var app = Vue.createApp({
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
-                  $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
+                  $('.btn_select_time_once').empty().append('<option value="--"><?php echo __('Select time', 'watergo'); ?></option>');
                }
 
             break;

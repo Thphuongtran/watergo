@@ -1,0 +1,357 @@
+# Translation of Plugins - Easy WP SMTP by SendLayer &#8211; WordPress SMTP and Email Log Plugin - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Easy WP SMTP by SendLayer &#8211; WordPress SMTP and Email Log Plugin - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-07-19 11:37:29+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.0-alpha.4\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Easy WP SMTP by SendLayer &#8211; WordPress SMTP and Email Log Plugin - Stable (latest release)\n"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:372
+msgid "When enabled, your SMTP password is stored in the database using AES-256 encryption."
+msgstr "Khi được bật, mật khẩu SMTP của bạn được lưu trữ trong cơ sở dữ liệu sử dụng mã hóa AES-256."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:368
+msgid "Encrypt Password"
+msgstr "Mã hóa mật khẩu"
+
+#. translators: %s is PHP version
+#: inc/deprecated/class-easywpsmtp-admin.php:66
+msgid "Your PHP version is %s, encryption function requires PHP version 5.3.0 or higher."
+msgstr "Phiên bản PHP của bạn là %s, chức năng mã hóa yêu cầu PHP 5.3.0 hoặc cao hơn."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:58
+msgid "PHP OpenSSL extension is not installed on the server. It is required for encryption to work properly. Please contact your server administrator or hosting provider and ask them to install it."
+msgstr "Gói mở rộng PHP OpenSSL không được cài đặt trên máy chủ. Nó là bắt buộc để chức năng mã hóa hoạt động hợp lí. Hãy liên hệ người quản lý máy chủ hoặc nhà cung cấp hosting và yêu cầu họ cài đặt."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:55
+msgid "PHP OpenSSL extension is not installed on the server. It's required by Easy WP SMTP plugin to operate properly. Please contact your server administrator or hosting provider and ask them to install it."
+msgstr "Gói mở rộng PHP OpenSSL không được cài đặt trên máy chủ. Nó là bắt buộc để Easy WP và SMTP hoạt động phù hợp. Hãy liên hệ người quản lý áy chủ hoặc nhà cung cấp hosting và yêu cầu họ cài đặt."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:464
+msgid "Hide Debug Log"
+msgstr "Ẩn nhật ký gỡ lỗi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:454
+#: inc/deprecated/class-easywpsmtp-admin.php:462
+msgid "Show Debug Log"
+msgstr "Hiện nhật ký gỡ lỗi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:568
+msgid "rating"
+msgstr "đánh giá"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:558
+msgid "Rate Us"
+msgstr "Đánh giá chúng tôi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:551
+msgid "Support Forum"
+msgstr "Diễn đàn hỗ trợ"
+
+#. translators: %s is replaced by support forum URL
+#: inc/deprecated/class-easywpsmtp-admin.php:547
+msgctxt "%s is replaced by \"Support Forum\" link"
+msgid "Having issues or difficulties? You can post your issue on the %s"
+msgstr "Gặp lỗi hoặc hó khăn? Bạn có thể gửi vấn đề tại %s"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:541
+msgid "Support"
+msgstr "Hỗ trợ"
+
+#. translators: %s is replaced by rating link
+#: inc/deprecated/class-easywpsmtp-admin.php:564
+msgctxt "%s is replaced by \"rating\" link"
+msgid "Like the plugin? Please give us a %s"
+msgstr "Thích gói mở rộng này? Hãy đánh giá chúng tôi %s"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:379
+#: src/Admin/Pages/MiscTab.php:169
+msgid "Allow Insecure SSL Certificates"
+msgstr "Cho phép chứng chỉ SSL không an toàn"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:382
+msgid "Allows insecure and self-signed SSL certificates on SMTP server. It's highly recommended to keep this option disabled."
+msgstr "Cho phép chứng chỉ SSL không an toàn và tự ký trên máy chủ SMTP. Lời khuyên là nên tắt tùy chọn này."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:328
+#: inc/deprecated/class-easywpsmtp-admin.php:391
+#: inc/deprecated/class-easywpsmtp-admin.php:434
+#: inc/deprecated/class-easywpsmtp-admin.php:486
+msgctxt "\"Note\" as in \"Note: keep this in mind\""
+msgid "Note:"
+msgstr "Lưu ý:"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:328
+msgid "when you click \"Save Changes\", your actual password is stored in the database and then used to send emails. This field is replaced with a gag (#easywpsmtpgagpass#). This is done to prevent someone with the access to Settings page from seeing your password (using password fields unmasking programs, for example)."
+msgstr "khi bạn nhấp vào \"Lưu thay đổi\", mật khẩu thực tế của bạn được lưu trữ trong cơ sở dữ liệu và sau đó được sử dụng để gửi email. Trường này được thay thế bằng một chuỗi (#easywpsmtpgagpass#). Điều này được thực hiện để ngăn người nào đó có quyền truy cập vào trang Cài đặt nhìn thấy mật khẩu của bạn (ví dụ: sử dụng các trường mật khẩu để hiển thị các chương trình)."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:486
+msgid "debug log for this test email will be automatically displayed right after you send it. Test email also ignores \"Enable Domain Check\" option."
+msgstr "Nhật ký gỡ lỗi cho email thử nghiệm này sẽ được tự động hiển thị ngay sau khi bạn gửi. Email thử nghiệm cũng bỏ qua tùy chọn \"Bật kiểm tra tên miền\"."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:198
+msgid "SMTP Settings"
+msgstr "Cài đặt SMTP"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:362
+#: src/Admin/Pages/MiscTab.php:126
+msgid "Block all emails"
+msgstr "Chặn tất cả email"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:343
+msgid "Additional Settings (Optional)"
+msgstr "Tuỳ chọn bổ sung (Không bắt buộc)"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:351
+msgid "This option is useful when you are using several email aliases on your SMTP server. If you don't want your aliases to be replaced by the address specified in \"From\" field, enter them in this field."
+msgstr "Tuỳ chọn này chỉ cần nếu bạn đang sử dụng nhiều địa chỉ email khác nhau. Nếu bạn muốn các địa chỉ email không bị ghi đè (thay vì bị dùng chung mục \"Địa chỉ email gửi\" ở phía trên), hãy nhập ở mục này."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:350
+msgid "Comma separated emails list. Example value: email1@domain.com, email2@domain.com"
+msgstr "Danh sách email, cách nhau bởi dấu phẩy. Ví dụ: admin@codetot.com, admin@codetot.net."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:347
+msgid "Don't Replace \"From\" Field"
+msgstr "Địa chỉ người gửi không thay thế"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:26 src/Admin/Area.php:424
+msgid "Log cleared."
+msgstr "Nhật ký đã xoá."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:200
+#: inc/deprecated/class-easywpsmtp-admin.php:432
+msgid "Test Email"
+msgstr "Kiểm tra gửi Email"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:25 src/Admin/Area.php:423
+msgid "Are you sure want to clear log?"
+msgstr "Bạn có chắc muốn xoá nhật ký?"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:393
+#: src/Admin/Pages/MiscTab.php:222
+msgid "View Log"
+msgstr "Xem nhật ký"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:393
+#: src/Admin/Pages/MiscTab.php:223
+msgid "Clear Log"
+msgstr "Xoá nhật ký"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:386
+#: src/Admin/Pages/MiscTab.php:196
+msgid "Enable Debug Log"
+msgstr "Bật nhật ký debug lỗi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:360
+msgid "Coma-separated domains list. Example: domain1.com, domain2.com"
+msgstr "Danh sách tên miền, cách bởi dấu phẩy. Ví dụ: codetot.com, codetot.net."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:355 src/Admin/Pages/MiscTab.php:87
+msgid "Enable Domain Check"
+msgstr "Bật kiểm tra tên miền"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:244
+msgid "Optional. This email address will be used in the 'Reply-To' field of the email. Leave it blank to use 'From' email as the reply-to value."
+msgstr "Tuỳ chọn. Địa chỉ email này sẽ được sử dụng trong mục \"Reply-To\" của email. Bỏ trống sẽ sử dụng địa chỉ email của mục \"Từ\"."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:241
+#: src/Admin/ConnectionSettings.php:316
+msgid "Reply-To Email Address"
+msgstr "Địa chỉ Reply-To"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:389
+msgid "Check this box to enable mail debug log"
+msgstr "Đánh dấu để bật nhật ký debug lỗi mail"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:358
+msgid "This option is usually used by developers only. SMTP settings will be used only if the site is running on following domain(s):"
+msgstr "Tuỳ chọn này thường của lập trình viên. Thiết lập SMTP sẽ được sử dụng chỉ khi website đang dùng các tên miền sau:"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:199
+msgid "Additional Settings"
+msgstr "Cài đặt thêm"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:213
+msgid "SMTP Configuration Settings"
+msgstr "Cấu hình SMTP"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:508
+msgid "Write your email message"
+msgstr "Nhập nội dung của bạn"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:494
+msgid "Enter the recipient's email address"
+msgstr "Nhập email người nhận"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:172
+msgid "Please enter a valid email address in the recipient email field."
+msgstr "Vui lòng nhập địa chỉ email hợp lệ trong mục người nhận."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:312 src/Admin/Area.php:418
+#: src/Admin/Pages/DebugEventsTab.php:150 src/Admin/UserFeedback.php:95
+msgid "Yes"
+msgstr "Có"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:306
+msgid "No"
+msgstr "Không"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:333
+#: inc/deprecated/class-easywpsmtp-admin.php:398
+msgid "Save Changes"
+msgstr "Lưu thay đổi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:505
+#: src/Admin/Pages/TestTab.php:230
+msgid "Message"
+msgstr "Tin nhắn"
+
+#: assets/languages/easy-wp-smtp-vue.php:411
+#: inc/deprecated/class-easywpsmtp-admin.php:275
+#: src/Providers/OptionsAbstract.php:320
+msgid "None"
+msgstr "Không mục nào"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:158
+msgid "Settings saved."
+msgstr "Đã lưu mọi cài đặt."
+
+#: inc/deprecated/class-easywpsmtp.php:440
+#: inc/deprecated/class-easywpsmtp.php:448 src/Admin/Area.php:263
+#: src/Admin/Area.php:264 src/Admin/Area.php:1063
+#: src/Admin/Pages/SettingsTab.php:48
+msgid "Settings"
+msgstr "Thiết lập"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:160
+msgid "Settings are not saved."
+msgstr "Cài đặt đã lưu."
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: inc/deprecated/class-easywpsmtp-admin.php:38 src/Admin/Area.php:244
+#: src/Admin/Area.php:245 src/Admin/Area.php:252 src/Admin/Area.php:253
+#: src/Admin/DashboardWidget.php:164 src/SiteHealth.php:43
+msgid "Easy WP SMTP"
+msgstr "Easy WP SMTP"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:102
+msgid "Please enter a valid email address in the 'FROM' field."
+msgstr "Vui lòng nhập một địa chỉ email hợp lệ trong mục 'Từ'. Cài đặt không được lưu."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:71
+msgid "Easy WP SMTP Settings"
+msgstr "Cài đặt Easy WP SMTP"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:501
+msgid "Enter a subject for your message"
+msgstr "Nhập tiêu đề cho email của bạn"
+
+#. translators: %s URL to the plugin's settings page.
+#: inc/deprecated/class-easywpsmtp.php:365
+msgid "Please configure your SMTP credentials in the <a href=\"%s\">settings menu</a> in order to send email using Easy WP SMTP plugin."
+msgstr "Bạn cần <a href=\"%s\">cấu hình</a> thông tin SMTP để có thể gửi email sử dụng gói mở rộng Easy WP SMTP."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:513
+#: src/Admin/Pages/TestTab.php:261
+msgid "Send Test Email"
+msgstr "Gửi email kiểm tra thử"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:498
+#: src/Admin/Pages/ExportTab.php:214 src/Admin/Pages/TestTab.php:217
+msgid "Subject"
+msgstr "Tiêu đề"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:491
+msgid "To"
+msgstr "Tới"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:327
+msgid "The password to login to your mail server"
+msgstr "Mật khẩu đăng nhập tài khoản mail"
+
+#: assets/languages/easy-wp-smtp-vue.php:405
+#: inc/deprecated/class-easywpsmtp-admin.php:324
+#: src/Providers/OptionsAbstract.php:431
+msgid "SMTP Password"
+msgstr "Mật khẩu SMTP"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:320
+msgid "The username to login to your mail server"
+msgstr "Tài khoản đăng nhập mail"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:313
+msgid "This options should always be checked 'Yes'"
+msgstr "Mục này thường nên để \"Có\""
+
+#: inc/deprecated/class-easywpsmtp-admin.php:299
+#: src/Providers/OptionsAbstract.php:392
+msgid "SMTP Authentication"
+msgstr "Chứng thực SMTP"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:295
+msgid "The port to your mail server"
+msgstr "Cổng của dịch vụ mail"
+
+#: assets/languages/easy-wp-smtp-vue.php:384
+#: inc/deprecated/class-easywpsmtp-admin.php:292
+#: src/Providers/OptionsAbstract.php:353
+msgid "SMTP Port"
+msgstr "Cổng SMTP"
+
+#: assets/languages/easy-wp-smtp-vue.php:417
+#: src/Providers/OptionsAbstract.php:340
+msgid "TLS"
+msgstr "TLS"
+
+#: assets/languages/easy-wp-smtp-vue.php:414
+#: src/Providers/OptionsAbstract.php:330
+msgid "SSL"
+msgstr "SSL"
+
+#: assets/languages/easy-wp-smtp-vue.php:378
+#: inc/deprecated/class-easywpsmtp-admin.php:261
+#: src/Providers/OptionsAbstract.php:292
+msgid "SMTP Host"
+msgstr "Máy chủ SMTP"
+
+#: assets/languages/easy-wp-smtp-vue.php:173
+#: inc/deprecated/class-easywpsmtp-admin.php:227
+#: src/Admin/ConnectionSettings.php:248 src/Admin/Pages/ExportTab.php:207
+msgid "From Name"
+msgstr "Tên email gửi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:230
+msgid "This text will be used in the 'FROM' field"
+msgstr "Tên này sẽ được dùng làm tên của người gửi email"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:220
+#: src/Admin/ConnectionSettings.php:208
+msgid "From Email Address"
+msgstr "Địa chỉ email gửi"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:264
+msgid "Your mail server"
+msgstr "Máy chủ email"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:223
+msgid "This email address will be used in the 'From' field."
+msgstr "Địa chỉ email này sẽ sử dụng làm địa chỉ gửi email."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:149
+msgid "Please enter a valid port in the 'SMTP Port' field."
+msgstr "Vui lòng nhập cổng SMTP chính xác."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:268
+#: src/Providers/OptionsAbstract.php:309
+msgid "Type of Encryption"
+msgstr "Loại mã hoá"
+
+#: src/Admin/ConnectionSettings.php:200
+msgid "General Settings"
+msgstr "Thiết lập chung"

@@ -72,7 +72,9 @@
                >
                   <div class='img'>
                      <img :src='product.product_image.url'>
-                     <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                     <span v-show='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                     <span v-show='product_is_mark_out_of_stock(product) == true' 
+                        class='badge-discount badge-out-of-stock size-large'><?php echo __('Out of Stock', 'watergo'); ?></span>
                   </div>
                   <div class='box-wrapper'>
                      <p class='tt01'>{{ product.name }} </p>
@@ -155,12 +157,13 @@ var app = Vue.createApp({
       },
 
       has_discount( product ){return window.has_discount(product);},
+      product_is_mark_out_of_stock( product ){ return window.product_is_mark_out_of_stock(product); },
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
       ratingNumber(rating){ return parseInt(rating).toFixed(1); },
 
       async findStore( store_id ){
-         this.loading = true;
+
          var form = new FormData();
          form.append('action', 'atlantis_find_store');
          form.append('store_id', store_id);
@@ -179,33 +182,33 @@ var app = Vue.createApp({
                this.store = res.data;
             }
          }
-         await this.findReview();
-         await this.get_total_review(this.store.id);
+         await this.findReview(store_id);
+         await this.get_total_review(store_id);
 
 
          if( this.store.store_type == "both" ){
 
             var _both = [
-               {label: "Water", value: "water", active: false},
-               {label: "Ice", value: "ice", active: false}
+               {label: '<?php echo __("Water", 'watergo'); ?>', value: "water", active: false},
+               {label: '<?php echo __("Ice", 'watergo'); ?>', value: "ice", active: false}
             ];
 
             this.store_type.push(..._both);
             this.store_type[0].active = true;
 
          }else if(this.store.store_type == "water"){
-            this.store_type.push({label: "Water", value: "water", active: true});   
+            this.store_type.push({label: '<?php echo __("Water", 'watergo'); ?>', value: "water", active: true});   
          }else if(this.store.store_type == "ice"){
-            this.store_type.push({label: "Ice", value: "ice", active: true });
+            this.store_type.push({label: '<?php echo __("Ice", 'watergo'); ?>', value: "ice", active: true });
          }
 
-         this.loading = false;
+
       },
 
-      async findReview(){
+      async findReview( store_id){
          var form = new FormData();
          form.append('action', 'atlantis_get_review_store');
-         form.append('store_id', this.store_id);
+         form.append('store_id', store_id);
          form.append('extension', 'small');
          var r = await window.request(form);
          if( r != undefined ){
@@ -216,10 +219,10 @@ var app = Vue.createApp({
          }
       },
 
-      async get_all_product_by_store(){
+      async get_all_product_by_store( store_id){
          var form = new FormData();
          form.append('action', 'atlantis_get_all_product_by_store');
-         form.append('store_id', this.store.id);
+         form.append('store_id', store_id);
          form.append('limit', -1);
          var r = await window.request(form);
          if( r != undefined ){
@@ -267,7 +270,7 @@ var app = Vue.createApp({
          });
       },
 
-      async check_current_user_is_store( ){
+      async check_current_user_is_store(){
          var form = new FormData();
          form.append('action', 'atlantis_get_current_user_id');
          var r = await window.request(form);
@@ -349,10 +352,10 @@ var app = Vue.createApp({
    },
 
    async created(){
-      this.loading = true;
       const urlParams            = new URLSearchParams(window.location.search);
       this.store_id              = urlParams.get('store_id');
       const hash_id              = urlParams.get('hash_id');
+      this.loading = true;
 
       await this.get_current_location();
       await this.check_current_user_is_store();
@@ -360,10 +363,9 @@ var app = Vue.createApp({
       if( hash_id != undefined ){
          await this.mark_user_read_notification(hash_id);
       }
-      
       await this.findStore(this.store_id);
-      await this.get_all_product_by_store()
-      await this.get_review_rating_average(this.store.id);
+      await this.get_all_product_by_store(this.store_id)
+      await this.get_review_rating_average(this.store_id);
 
 
       window.appbar_fixed();

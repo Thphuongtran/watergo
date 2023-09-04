@@ -3,14 +3,14 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css', []);
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
    wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common-dist.js' );
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] );
 
 }
 
@@ -135,7 +135,8 @@ function callback_from_login_social(){
 }
 
 
-add_action('init', 'language_custom');
+// add_action('init', 'language_custom');
+add_action('after_setup_theme', 'language_custom');
 function language_custom($locale) {
    $locale = "vi";
    $headers = array_change_key_case(getallheaders(),CASE_LOWER);
@@ -144,7 +145,7 @@ function language_custom($locale) {
       // echo 'USE APPLANGUAGE ' . $locate;
    } else if(isset($_COOKIE['site_lang'])){
       $locale = $_COOKIE['site_lang'];
-      // echo 'USE SITELANG ' . $locate;
+      // echo 'USE SITELANG ' . $locale;
    }
    if($locale == "en") $locale = "en_US";
    switch_to_locale($locale);
@@ -330,3 +331,17 @@ function load_language() {
 }
 
 add_action('after_setup_theme', 'load_language');
+
+function allow_all_roles_to_switch_language() {
+    // Get all the roles
+    $roles = wp_roles()->roles;
+    
+    // Loop through each role and add the 'switch_languages' capability
+    foreach ($roles as $role => $details) {
+        $role_object = get_role($role);
+        if (!$role_object->has_cap('switch_languages')) {
+            $role_object->add_cap('switch_languages');
+        }
+    }
+}
+add_action('init', 'allow_all_roles_to_switch_language');

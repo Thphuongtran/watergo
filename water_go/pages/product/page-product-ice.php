@@ -30,11 +30,14 @@
             </div>
 
             <div class='box-category'>
-               <ul class='navbar auto-resize-375'>
+               <ul class='navbar auto-resize-375 navbar-icon'>
                   <li @click='select_category(cat.id)' 
                      v-for='(cat, index) in categoryIce' :key='index' 
                      :class='cat.active == true ? "active" : ""'>
-                     {{ cat.name }}
+                     <span class='icon'>
+                        <img :src="cat.icon">
+                     </span>
+                     <span class='text'>{{ cat.name }}</span>
                   </li>
                </ul>
             </div>
@@ -188,6 +191,20 @@ createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'category_found' ){
                res.data.some( (item, index) => item.active = false);
+               res.data.forEach( item => {
+                  if( item.id == 1 ){
+                     item.icon = '<?php echo THEME_URI . '/assets/images/cat-da-bi.svg'; ?>';
+                  }
+                  if( item.id == 2 ){
+                     item.icon = '<?php echo THEME_URI . '/assets/images/cat-da-nghien.svg'; ?>';
+                  }
+                  if( item.id == 3 ){
+                     item.icon = '<?php echo THEME_URI . '/assets/images/cat-da-cuc.svg'; ?>';
+                  }
+                  if( item.id == 4 ){
+                     item.icon = '<?php echo THEME_URI . '/assets/images/cat-da-cay.svg'; ?>';
+                  }
+               });
                this.categoryIce.push( ...res.data);
             }
          }

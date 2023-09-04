@@ -4,18 +4,18 @@ var components_weekly_select = {
          <div class="group-select-delivery-time group-select-delivery-time_parent">
             <div class="btn-wrapper-order">
                <select @change='btn_select_day($event, slot.day)' v-model="slot.day" class="btn_select_weekly_day btn-dropdown">
-                  <option value='' selected disabled>Select day</option>
+                  <option value='' selected disabled>{{ title_compact('Select date') }}</option>
                   <option :disabled="isDayDisabled(day_of_week, slot.id)" 
                      v-for="(day_of_week, indexWeek) in dayOfWeeks" 
                      :value="day_of_week" 
                      :key="indexWeek">
-                     {{ day_of_week }}
+                     {{ get_title_weekly_compact(day_of_week) }}
                   </option>
                </select>
             </div>
             <div class="btn-wrapper-order">
                <select v-model="slot.time" class="btn_select_weekly_time btn-dropdown">
-                  <option value='' selected disabled>Select time</option>
+                  <option value='' selected disabled>{{ title_compact('Select time') }}</option>
                   <option 
                      v-for="(hour, indexHour) in hourSelect" 
                      :value="hour.value" 
@@ -66,6 +66,33 @@ var components_weekly_select = {
    },
 
    methods: {
+
+      get_title_weekly_compact( title ){
+         if( this.$root.get_locale == 'vi' ){
+            if( title == 'Monday' ) return 'Thứ Hai';
+            if( title == 'Tuesday' ) return 'Thứ Ba';
+            if( title == 'Wednesday' ) return 'Thứ Tư';
+            if( title == 'Thursday' ) return 'Thứ Năm';
+            if( title == 'Friday' ) return 'Thứ Sáu';
+            if( title == 'Saturday' ) return 'Thứ Bảy';
+            if( title == 'Sunday' ) return 'Chủ Nhật';
+
+         }else{
+            return title;
+         }
+      },
+
+      title_compact( title ){
+         if( this.$root.get_locale == 'vi' ){
+            if( title == 'Select date'){
+               return 'Chọn ngày';
+            }
+            if( title == 'Select time'){
+               return 'Chọn thời gian';
+            }
+         }
+         return title;
+      },
 
       btn_select_day(e, day){
          if( day != undefined ){

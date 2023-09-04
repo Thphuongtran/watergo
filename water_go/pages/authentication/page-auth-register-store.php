@@ -127,11 +127,11 @@ createApp({
                var res = JSON.parse( JSON.stringify(r));
 
                if( res.message == 'error_email_format' ){
-                  this.res_text_sendcode = 'Email format error.';
+                  this.res_text_sendcode = '<?php echo __("Email format error.", 'watergo'); ?>';
                   this.loading = false;
                }
                else if( res.message == 'email_already_exists' ){
-                  this.res_text_sendcode = 'Email already register.';
+                  this.res_text_sendcode = '<?php echo __("Email already register.", 'watergo'); ?>';
                   this.loading = false;
                }
                else if( res.message == 'sendcode_success' ){
@@ -141,7 +141,7 @@ createApp({
                }
 
             }else{
-               this.res_text_sendcode = 'Get Code Verify Error.';
+               this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
                this.loading = false;
             }
          }else{
@@ -170,15 +170,15 @@ createApp({
                   this.gotoNotification('register-success');
                }
                else if( res.message == 'resgiter_error' ){
-                  this.res_text_sendcode = 'Register Error.'; 
+                  this.res_text_sendcode = '<?php echo __("Register Error.", 'watergo'); ?>';
                   this.loading = false;
                }
             }else{
-               this.res_text_sendcode = 'Register Error.';   
+               this.res_text_sendcode = '<?php echo __("Register Error.", 'watergo'); ?>';
                this.loading = false;
             }
          }else{
-            this.res_text_sendcode = 'Field is not empty.';
+            this.res_text_sendcode = '<?php echo __("Field is not empty.", 'watergo'); ?>';
             this.loading = false;
          }
       },

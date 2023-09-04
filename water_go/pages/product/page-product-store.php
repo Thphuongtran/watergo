@@ -9,7 +9,7 @@
       <div class='appbar style01'>
          <div class='appbar-top'>
             <div class='leading'>
-               <p class='leading-title'>Product</p>
+               <p class='leading-title'><?php echo __('Product', 'watergo'); ?></p>
             </div>
             <div class='action'>
                <!-- <div @click='gotoChat' class='btn-badge ml10'>
@@ -52,7 +52,7 @@
             </ul>
 
             <div class='box-search box-search-home'>
-               <input class='input-search' type="text" v-model='productSearch' placeholder='Search product '>
+               <input class='input-search' type="text" v-model='productSearch' placeholder='<?php echo __("Search product", 'watergo'); ?>'>
                <span class='icon-search'>
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M4.90688 0.60506C5.87126 0.205599 6.90488 0 7.94872 0C8.99256 0 10.0262 0.205599 10.9906 0.60506C11.9549 1.00452 12.8312 1.59002 13.5693 2.32813C14.3074 3.06623 14.8929 3.94249 15.2924 4.90688C15.6918 5.87126 15.8974 6.90488 15.8974 7.94872C15.8974 8.99256 15.6918 10.0262 15.2924 10.9906C14.9914 11.7172 14.5848 12.3938 14.0869 12.999L19.7747 18.6868C20.0751 18.9872 20.0751 19.4743 19.7747 19.7747C19.4743 20.0751 18.9872 20.0751 18.6868 19.7747L12.999 14.0869C12.3938 14.5848 11.7172 14.9914 10.9906 15.2924C10.0262 15.6918 8.99256 15.8974 7.94872 15.8974C6.90488 15.8974 5.87126 15.6918 4.90688 15.2924C3.94249 14.8929 3.06623 14.3074 2.32813 13.5693C1.59002 12.8312 1.00452 11.9549 0.60506 10.9906C0.2056 10.0262 0 8.99256 0 7.94872C0 6.90488 0.2056 5.87126 0.60506 4.90688C1.00452 3.94249 1.59002 3.06623 2.32813 2.32813C3.06623 1.59002 3.94249 1.00452 4.90688 0.60506ZM7.94872 1.53846C7.10691 1.53846 6.27335 1.70427 5.49562 2.02641C4.71789 2.34856 4.01123 2.82073 3.41598 3.41598C2.82073 4.01123 2.34856 4.71789 2.02641 5.49562C1.70427 6.27335 1.53846 7.10691 1.53846 7.94872C1.53846 8.79053 1.70427 9.62409 2.02641 10.4018C2.34856 11.1795 2.82073 11.8862 3.41598 12.4815C4.01123 13.0767 4.71789 13.5489 5.49562 13.871C6.27335 14.1932 7.10691 14.359 7.94872 14.359C8.79053 14.359 9.62409 14.1932 10.4018 13.871C11.1795 13.5489 11.8862 13.0767 12.4815 12.4815C13.0767 11.8862 13.5489 11.1795 13.871 10.4018C14.1932 9.62409 14.359 8.79053 14.359 7.94872C14.359 7.10691 14.1932 6.27335 13.871 5.49562C13.5489 4.71789 13.0767 4.01123 12.4815 3.41598C11.8862 2.82073 11.1795 2.34856 10.4018 2.02641C9.62409 1.70427 8.79053 1.53846 7.94872 1.53846Z" fill="#252831"/>
@@ -68,10 +68,19 @@
                   <select v-model='product_tab_filter_select'>
                      <option :value="{ value: ''}" disabled><?php echo __('Filter', 'watergo'); ?></option>
                      <option :value="{ value: 'out_of_stock' }"><?php echo __('Out of Stock', 'watergo'); ?></option>
-                     <option :value="{ value: 'availble' }"><?php echo __('Availble', 'watergo'); ?></option>
+                     <option :value="{ value: 'available' }"><?php echo __('Available', 'watergo'); ?></option>
                   </select>
                </div>
-               <button @click='gotoProductStoreAdd(store_id, get_product_tab_value)' class='btn btn-outline'><?php echo __('Add New', 'watergo'); ?></button>
+               <button @click='gotoProductStoreAdd(store_id, get_product_tab_value)' class='btn btn-outline'>
+                  <?php 
+                     // echo __('Add New', 'watergo'); 
+                     if( get_locale() == 'vi' ){
+                        echo 'Thêm mới';
+                     }else{
+                        echo 'Add New';
+                     }
+                  ?>
+               </button>
             </div>
 
          </div>
@@ -111,7 +120,7 @@
                      <!-- <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div> -->
                   </div>
                   <div class='product-bagde'>
-                     <div v-if='product_is_availble(product) == "availble" ' class='availble'><?php echo __('Availble', 'watergo'); ?></div>
+                     <div v-if='product_is_availble(product) == "available" ' class='availble'><?php echo __('Available', 'watergo'); ?></div>
                      <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'><?php echo __('Out of Stock', 'watergo'); ?></div>
                   </div>
                </div>
@@ -143,8 +152,8 @@ var app = Vue.createApp({
          product_tab_filter_select: { value: '' },
 
          product_tab: [
-            { label: 'Water', value: 'water', shown: false, active: false},
-            { label: 'Ice', value: 'ice', shown: false, active: false}
+            { label: '<?php echo __("Water", 'watergo'); ?>', value: 'water', shown: false, active: false},
+            { label: '<?php echo __("Ice", 'watergo'); ?>', value: 'ice', shown: false, active: false}
          ],
          product_tab_value: '',
 
@@ -181,7 +190,7 @@ var app = Vue.createApp({
       
       filter_products(){
          var _filter = this.products;
-         if(this.product_tab_filter_select.value == 'availble'){
+         if(this.product_tab_filter_select.value == 'available'){
             return _filter.filter( p => p.is_availble == true );
          }
          if(this.product_tab_filter_select.value == 'out_of_stock'){
@@ -267,7 +276,7 @@ var app = Vue.createApp({
          if(product.mark_out_of_stock == null){
             product.mark_out_of_stock = 0;
          }
-         if( product.mark_out_of_stock == 0 ) return 'availble';
+         if( product.mark_out_of_stock == 0 ) return 'available';
          return 'out_of_stock';
       },
 

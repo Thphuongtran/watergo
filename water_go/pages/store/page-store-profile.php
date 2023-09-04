@@ -39,7 +39,14 @@
 
             <div class='user-prefs'>
                <div class='username'>{{ store.name }}</div>
-               <button @click='gotoStoreDetail(store.id)' class='btn-text arrow-right'>View Store
+               <button @click='gotoStoreDetail(store.id)' class='btn-text arrow-right'>
+                  <?php 
+                     if( get_locale() == 'vi' ){
+                        echo 'Xem Thông Tin';
+                     }else{
+                        echo 'View Store';
+                     }
+                  ?>
                   <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1 11L6 6L1 1" stroke="#2790F9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>

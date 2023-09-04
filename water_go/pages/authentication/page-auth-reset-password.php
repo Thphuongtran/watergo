@@ -114,13 +114,13 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'email_already_exists' ){
-               this.res_text_sendcode = 'Email already register.';   
+               this.res_text_sendcode = '<?php echo __("Email already register.", 'watergo'); ?>';
             }
             else if( res.message == 'sendcode_success' ){
                this.res_text_sendcode = '';
             }
          }else{
-            this.res_text_sendcode = 'Get Code Verify Error.';
+            this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
          }
          this.loading = false;
          
@@ -129,9 +129,9 @@ createApp({
       async btn_reset_password(){
          var code = this.code01 + this.code02 + this.code03 + this.code04;
          if( this.inputPassword != '' && this.inputRepassword != '' ){
-            this.res_text_sendcode = 'Password is not empty';
+            this.res_text_sendcode = '<?php echo __("Password is not empty", 'watergo'); ?>';
             if( this.inputPassword != this.inputRepassword ){
-               this.res_text_sendcode = 'Password is not match';
+               this.res_text_sendcode = '<?php echo __("Password is not match", 'watergo'); ?>';
             }else{
                this.loading = true;
                this.res_text_sendcode = '';
@@ -146,7 +146,7 @@ createApp({
                   this.loading = false;
                   var res = JSON.parse( JSON.stringify(r));
                   if( res.message == 'code_is_not_correct' ){
-                     this.res_text_sendcode = 'Password is not match';
+                     this.res_text_sendcode = '<?php echo __("Password is not match", 'watergo'); ?>';
                   }
                   if( res.message == 'reset_password_ok' ){
                      this.banner_open = true;

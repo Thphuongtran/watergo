@@ -118,19 +118,21 @@
       
       <div v-if='carts.length > 0' class='product-detail-bottomsheet cell-placeorder'>
          <div class='price-total'>
-            <div class='line1'>Total: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></div>
+            <div class='line1'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></div>
             <div v-if="count_product_total_price.price != null" class='line2'>
                {{ count_product_total_price.price }}
             </div>
          </div>
-         <button @click="gotoPageOrder" :class='count_product_select == 0 ? "disabled": ""' class='btn-primary'>Check Out({{count_product_select}})</button>
+         <button @click="gotoPageOrder" :class='count_product_select == 0 ? "disabled": ""' class='btn-primary'><?php echo __('Check Out', 'watergo'); ?> ({{count_product_select}})</button>
       </div>
 
       <div class='modal-popup' :class='popup_delete_item == true ? "open" : ""'>
          <div class='modal-wrapper'>
             <p class='heading'><?php echo __('Are you sure to remove this product from your cart', 'watergo'); ?>?</p>
             <div class='actions'>
-               <button @click='buttonCloseModal_btn_delete_item' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+               <button @click='buttonCloseModal_btn_delete_item' class='btn btn-outline'>
+                  <?php echo __('Cancel', 'watergo'); ?>
+               </button>
                <button @click='buttonCloseModal_delete_confirm' class='btn btn-primary'><?php echo __('Delete', 'watergo'); ?></button>
             </div>
          </div>

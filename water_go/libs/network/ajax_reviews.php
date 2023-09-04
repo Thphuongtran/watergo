@@ -362,8 +362,11 @@ function atlantis_get_review_store(){
          $res[$k]->nickname      = get_user_meta( $vl->user_id, 'nickname', true );
          $res[$k]->user_avatar   = func_atlantis_get_images($vl->user_id, 'user_avatar', true);
 
+         // wp_send_json_error(['message' => 'bug', 'data' => strlen( $vl->contents) ]);
+         // wp_die();
+
          if( $extension == 'small' ){
-            if( mb_strlen($vl->contents, 'UTF8-8') >= 72  ){
+            if( mb_strlen($vl->contents, 'UTF-8') >= 72  ){
                $res[$k]->contents = mb_substr($vl->contents, 0, 72, 'UTF-8') . '...';
             }
          }

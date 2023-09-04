@@ -52,6 +52,7 @@ createApp({
          loading: false,
          notifications: [],
          paged: 0,
+         get_locale: '<?php echo get_locale(); ?>',
       }
    },
 
@@ -101,19 +102,53 @@ createApp({
       },
 
       title_compact( item ){
-         if( item.order_status == 'ordered' && item.send_to == 'store' ){
-            return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
-         }
-         if( item.order_status == 'cancel' && item.send_to == 'store' ){
-            return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
+
+         if( this.get_locale == 'en_US' || this.get_locale != 'vi'){
+            if( item.order_status == 'ordered' && item.send_to == 'store' ){
+               return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
+            }
+            if( item.order_status == 'cancel' && item.send_to == 'store' ){
+               return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> was canceled`;
+            }
+
+            if( item.order_status == 'delivering' && item.send_to == 'user' ){
+               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is delivering`;
+            }
+            if( item.order_status == 'completed' && item.send_to == 'user' ){
+               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is completed`;
+            }
+
+            if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is confirmed`;
+            }
+
+            if( item.order_status == 'cancel' && item.send_to == 'user' ){
+               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
+            }
          }
 
-         if( item.order_status == 'confirmed' && item.send_to == 'user' ){
-            return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is confirmed`;
-         }
+         if( this.get_locale == 'vi' ){
+            if( item.order_status == 'ordered' && item.send_to == 'store' ){
+               return `Bạn có đơn mới <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đang chờ xác nhận`;
+            }
+            if( item.order_status == 'cancel' && item.send_to == 'store' ){
+               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã bị huỷ`;
+            }
 
-         if( item.order_status == 'cancel' && item.send_to == 'user' ){
-            return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
+            if( item.order_status == 'delivering' && item.send_to == 'user' ){
+               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đang trên đường giao tới bạn`;
+            }
+            if( item.order_status == 'completed' && item.send_to == 'user' ){
+               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được giao thành công`;
+            }
+
+            if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được xác nhận`;
+            }
+
+            if( item.order_status == 'cancel' && item.send_to == 'user' ){
+               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được huỷ`;
+            }
          }
 
       },

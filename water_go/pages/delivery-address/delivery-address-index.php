@@ -47,17 +47,18 @@
                >
                </div>
             </div>
-            <div @click='change_default_delivery_address(delivery.id )' class='content'>
+            <div @click='change_default_delivery_address(delivery.id )' class='list-tile-address content '>
                <div class='tt01'>{{ delivery.address }}</div>
                <div class='gr-horizontal'>
                   <span class='tt02'>{{ delivery.name }}</span><span class='tt02'> (+84) {{ removeZeroLeading(delivery.phone) }}</span>
+                  <div class='action'>
+                     <button class='btn-text btn-edit-delivery-address' @click='gotoDeliveryAddressEdit(delivery.id)'><?php echo __('Edit', 'watergo'); ?></button>
+                  </div>
                </div>
                <span v-if='delivery.primary == true' class='badge-default'><?php echo __('Default', 'watergo'); ?></span>
             </div>
-            <div class='action'>
-               <button class='btn-text btn-edit-delivery-address' @click='gotoDeliveryAddressEdit(delivery.id)'><?php echo __('Edit', 'watergo'); ?></button>
-            </div>
          </li>
+
       </ul>
    </div>
 

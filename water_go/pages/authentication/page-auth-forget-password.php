@@ -132,14 +132,14 @@
    </div>
 
    <!-- BANNER -->
-   <div v-if='banner_open == true' class='banner'>
+   <div v-if='banner_open == true' class='banner banner-change-password'>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
 
-         <h3><?php echo __('Congratulations', 'watergo');?>!</h3>
+         <h3 class="pb10"><?php echo __('Congratulations', 'watergo');?>!</h3>
          <p><?php echo __('Your password has been reset successfully<br>Now login with your new password', 'watergo'); ?></p>
       </div>
 
@@ -167,9 +167,6 @@ createApp({
 
          res_text_sendcode: '',
          inputEmail: '',
-
-         res_text_sendcode: '',
-
          inputPassword: '',
          inputRepassword: '',
 
@@ -216,21 +213,21 @@ createApp({
 
                } else if( res.message == 'email_is_not_correct_format' ){
                   this.loading = false;
-                  this.res_text_sendcode = 'Email is not correct format.';
+                  this.res_text_sendcode = '<?php echo __("Email is not correct format.", 'watergo'); ?>';
                } else if( res.message == 'email_non_exists' ){
                   this.loading = false;
-                  this.res_text_sendcode = 'Email is not exitst.';
+                  this.res_text_sendcode = '<?php echo __("Email is not exitst.", 'watergo'); ?>';
                }else{
                   this.loading = false;
-                  this.res_text_sendcode = 'Get Code Verify Error.';
+                  this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
                }
 
             }else{
                this.loading = false;
-               this.res_text_sendcode = 'Get Code Verify Error.';
+               this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
             }
          }else{
-            this.res_text_sendcode = 'Email is not empty.';
+            this.res_text_sendcode = '<?php echo __("Email is not empty.", 'watergo'); ?>';
          }
       },
 
@@ -251,13 +248,13 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'email_already_exists' ){
-               this.res_text_sendcode = 'Email already register.';   
+               this.res_text_sendcode = '<?php echo __("Email already register.", 'watergo'); ?>';   
             }
             else if( res.message == 'sendcode_success' ){
                this.res_text_sendcode = '';
             }
          }else{
-            this.res_text_sendcode = 'Get Code Verify Error.';
+            this.res_text_sendcode = '<?php echo __("Get Code Verify Error.", 'watergo'); ?>';
          }
          this.loading = false;
          
@@ -268,7 +265,7 @@ createApp({
          if( this.inputPassword != '' && this.inputRepassword != '' && code != ''){
             
             if( this.inputPassword != this.inputRepassword ){
-               this.res_text_sendcode = 'Password is not match.';
+               this.res_text_sendcode = '<?php echo __("Password is not match.", 'watergo'); ?>';
             }else{
 
                this.loading = true;
@@ -285,7 +282,7 @@ createApp({
                   var res = JSON.parse( JSON.stringify(r));
 
                   if( res.message == 'code_is_not_correct' ){
-                     this.res_text_sendcode = 'Code is not match.';
+                     this.res_text_sendcode = '<?php echo __("Code is not match.", 'watergo'); ?>';
                   }
                   if( res.message == 'reset_password_ok' ){
                      this.banner_open = true;
@@ -294,7 +291,7 @@ createApp({
             }
 
          }else{
-            this.res_text_sendcode = 'Password and Code is not empty.';
+            this.res_text_sendcode = '<?php echo __("Password and Code is not empty.", 'watergo'); ?>';
          }
       },
 

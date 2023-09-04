@@ -28,13 +28,16 @@
             </li>
             <li @click='gotoPageUserLanguage'>
                <span class='title'><?php echo __('Language', 'watergo'); ?></span>
-               <span class='subtitle'>{{ user_language }}</span>
+               <span class='subtitle'>{{ get_language_compact }}</span>
             </li>
             <li v-if='is_user_login_social == false' @click='gotoPageUserPassword'>
                <span class='title'><?php echo __('Password', 'watergo'); ?></span>
             </li>
             <li @click='gotoPageUserTermConditions'>
                <span class='title'><?php echo __('Terms & Conditions', 'watergo'); ?></span>
+            </li>
+            <li @click='gotoPageUserPrivacyPolicy'>
+               <span class='title'><?php echo __('Privacy Policy', 'watergo'); ?></span>
             </li>
             <li @click='gotoPageUserDeleteAccount'>
                <span class='title'><?php echo __('Delete Account', 'watergo'); ?></span>
@@ -84,10 +87,26 @@ var app = Vue.createApp({
 
          is_user_login_social: false,
 
+         get_locale: '<?php echo get_locale(); ?>',
+
 
       }
    },
+
+   computed: {
+
+      get_language_compact(){
+         if( this.get_locale == 'vi'){
+            if( this.user_language == 'Vietnamese') return 'Tiếng Việt';
+            if( this.user_language == 'English') return 'Tiếng Anh';
+         }
+         return this.user_language;
+      },
+   },
+
    methods: {
+
+      gotoPageUserPrivacyPolicy(){ window.gotoPageUserPrivacyPolicy()},
 
       // CHECK USER LOGIN IS SOCIAL 
       async check_user_login_social(){

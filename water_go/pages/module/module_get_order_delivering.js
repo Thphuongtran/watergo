@@ -16,7 +16,7 @@ const module_get_order_delivering = {
             </svg>
          </div>
 
-         <div class='title'>Order <span class='t-primary'>{{ get_order_number }}</span> is awaiting store confirmation</div>
+         <div class='title' v-html='title_compact(get_order_number)'></div>
 
          <div class='icon-arrow'>
             <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,6 +45,14 @@ const module_get_order_delivering = {
       gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id)},
 
       addLeadingZeros(n){ return window.addLeadingZeros( parseInt(n))},
+
+      title_compact( order_number ){
+         if( this.$root.get_locale == 'vi'){
+            return `Đơn <span class='t-primary'>${order_number}</span> đang chờ cửa hàng xác nhận`;
+         }else{
+            return `Order <span class='t-primary'>${order_number}</span> is awaiting store confirmation`;
+         }
+      },
 
       async get_order_ordered(){
          var form = new FormData();

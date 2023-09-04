@@ -46,6 +46,11 @@ function convertVietnameseToLatin(text) {
     });
 }
 
+function product_is_mark_out_of_stock( product ){
+   if( product.mark_out_of_stock != undefined && product.mark_out_of_stock != null && product.mark_out_of_stock == 1 ) return true;
+   return false;
+}
+
 function get_start_and_end_of_year(year) {
    function formatDate(date) {
       const year = date.getFullYear();
@@ -736,10 +741,22 @@ function request(formdata){
    }
 }
 
+
+function gotoPageUserPrivacyPolicy(){
+   window.location.href = window.watergo_domain + 'user/?user_page=user-privacy-policy&appt=N';
+}
+
 function gotoHome(){
    window.location.href = window.watergo_domain + 'home';
 }
 
+
+function gotoPageStoreTermConditions(){
+   window.location.href = window.watergo_domain + 'store/?store_page=store-term-conditions&appt=N';   
+}
+function gotoPageStorePrivacyPolicy(){
+   window.location.href = window.watergo_domain + 'store/?store_page=store-privacy-policy&appt=N';   
+}
 
 function has_discount( product ){
    if( product.has_discount == null || parseInt(product.has_discount) == 0 ) return false;
@@ -904,8 +921,7 @@ function get_type_order(order_type){
 }
 
 function print_type_order_text(order_type){
-   if( order_type == 'once_date_time') return 'Once';
-   if( order_type == 'once_immediately') return 'Once';
+   if( order_type == 'once_date_time' || order_type == 'once_immediately') return 'Once';
    if( order_type == 'weekly') return 'Weekly';
    if( order_type == 'monthly') return 'Monthly';
 }
@@ -940,13 +956,8 @@ function gotoStoreDetail(store_id){
 function gotoCart(){
    window.location.href = window.watergo_domain + 'cart/?appt=N';
 }
-function goBack( refresh = false ){
-   if(refresh == true ){
-      window.location.href = '?appt=X&data=refresh';
-   }else{
-      window.location.href = '?appt=X';
-   }
-}
+function goBack(){ window.location.href = '?appt=X'; }
+function goBackRefresh(){ window.location.href = '?appt=X&data=refresh'; }
 
 function gotoOrderProduct(){
    window.location.href = window.watergo_domain + 'order/?order_page=order-product&appt=N';

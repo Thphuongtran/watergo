@@ -11,7 +11,7 @@ $login_url_par = http_build_query($get);
    <div class='banner page-welcome<?php echo isset($_GET["appt"]) ? " d-none" : ""; ?>'>
       <div class='banner-head'>
          <div class='heading'><?php echo __('WELCOME', 'watergo'); ?> !</div>
-         <p class='ttl'><?php echo __('Please login to explode more', 'watergo'); ?></p>
+         <p class='ttl'><?php echo __('Please login to explore more', 'watergo'); ?></p>
          <div class='logo-brand'>
             <img src="<?php echo THEME_URI . '/assets/images/logo-vertical.png'; ?>">
          </div>
@@ -51,7 +51,7 @@ $login_url_par = http_build_query($get);
             <div class="dropdown dropdown-language">
                <div class="dropdown-toggle" @click="toggleDropdown">
                <div class="selected-option">
-                  <img :src="getFlagImage(selectedLanguage.id)" :alt="selectedLanguage.id" class="flag-image" />
+                  <img :src="getFlagImage(selectedLanguage.id)" class="flag-image" />
                   <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -101,9 +101,9 @@ $login_url_par = http_build_query($get);
          <p class='t-second t-center mt25'><?php echo __('Or log in with', 'watergo'); ?></p>
 
          <div class='form-group mt20'>
-            <button @click='login_social_apple' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'><?php echo __('Log in with Apple', 'watergo'); ?></span></button>
-            <button @click='login_social_google' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'><?php echo __('Log in with Google', 'watergo'); ?></span></button>
-            <button @click='login_social_zalo' class='btn-icon'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'><?php echo __('Log in with Zalo', 'watergo'); ?></span></button>
+            <button @click='login_social_apple' class='btn-icon btn-social'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'><?php echo __('Log in with Apple', 'watergo'); ?></span></button>
+            <button @click='login_social_google' class='btn-icon btn-social'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'><?php echo __('Log in with Google', 'watergo'); ?></span></button>
+            <button @click='login_social_zalo' class='btn-icon btn-social'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'><?php echo __('Log in with Zalo', 'watergo'); ?></span></button>
          </div>
 
       </div>
@@ -129,17 +129,20 @@ createApp({
          term_conditions: true,
          page_welcome: true,
          languages: [
-           { id: 'en_US', name: 'English'},
-           { id: 'vi', name: 'Vietnamese'},
-           { id: 'ko_KR', name: 'Korean'},
+           { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
+           { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
+         //   { id: 'ko_KR', name: 'Korean'},
          ],
          selectedLanguage: {},
          currentLocale: '',
-         showDropdown: false
+         showDropdown: false,
+
+         get_locate: '<?php echo get_locale(); ?>',
       }
    },
    
    methods: {
+
       toggleDropdown() {
          this.showDropdown = !this.showDropdown;
       },
@@ -155,13 +158,11 @@ createApp({
          form.append('action', 'app_change_language_callback');
          form.append('language', language);
          var r = await window.request(form);
-
-         console.log('get current locale')
-         console.log(r)
-
+         // console.log('get current locale')
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'change_language_successfully' ){
+               this.loading = true;
                if( window.appBridge != undefined ){
                   window.appBridge.setLanguage(res.data);
                   window.appBridge.close('refresh');
@@ -185,7 +186,6 @@ createApp({
          var form = new FormData();
          form.append('action', 'get_current_locale_callback');
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'current_locale_found' ){
@@ -237,39 +237,37 @@ createApp({
                      
                   }
                   if(res.message == 'login_error' ){
-                     this.res_text_sendcode = 'Email or password is incorrect';
+                     this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
                   if(res.message == 'user_not_found' ){
-                     this.res_text_sendcode = 'Email or password is incorrect';
+                     this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
                }else{
-                  this.res_text_sendcode = 'Email or password is incorrect';   
+                  this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                }
             }else{
-               this.res_text_sendcode = 'Username or Password must be not empty.';
+               this.res_text_sendcode = '<?php echo __("Username or Password must be not empty.", 'watergo'); ?>';
             }
          }
          this.loading = false;
          
       },
 
-
       moveFocus(event, nextInput){
          var input = event.target;
          var id = event.target.id;
-
          if (event.key === "Backspace" && !input.value && input.previousElementSibling) {
             input.previousElementSibling.focus();
          } else if (input.value && input.nextElementSibling) {
             input.nextElementSibling.focus();
          }
-
       },
+
    },
 
    async created() {
-     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
      await this.getLocale();
+     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
    },
 
 }).mount('#authentication');

@@ -80,10 +80,10 @@
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
                <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
 
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_weekly_day_compact(date_time.order_time_shipping_day) }}</div>
                <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
 
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>Date {{ date_time.order_time_shipping_day }}</div>
+               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ date_time.order_time_shipping_day }}</div>
                <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
          </div>
       </div>
@@ -91,7 +91,7 @@
       <div class='break-line'></div>
       <div class='box-payment-method'>
          <p class='heading-02'><?php echo __('Payment method', 'watergo') ?> </p>
-         <p class='heading-03'>{{ get_payment_method_activity }}</p>
+         <p class='heading-03'><?php echo __('By Cash', 'watergo'); ?></p>
       </div>
 
       <div class='break-line'></div>
@@ -121,7 +121,7 @@
                <path d="M2.46324 0.532123L3.84663 0.115438C4.47637 -0.0745494 5.15373 -0.028874 5.75226 0.243938C6.35079 0.51675 6.82958 0.998053 7.09927 1.598L7.96014 3.51308C8.1921 4.02899 8.25672 4.60458 8.14493 5.15908C8.03313 5.71358 7.75053 6.21916 7.33678 6.60488L5.83255 8.00743C5.81396 8.0248 5.79871 8.04541 5.78754 8.06827C5.63004 8.38995 5.86921 9.24915 6.61841 10.5475C7.46345 12.0109 8.11598 12.5893 8.41849 12.5001L10.3927 11.8959C10.9334 11.7308 11.5122 11.739 12.048 11.9194C12.5837 12.0998 13.0496 12.4433 13.3804 12.9018L14.6037 14.596C14.9878 15.128 15.1657 15.7813 15.1044 16.4346C15.0431 17.0878 14.7468 17.6966 14.2704 18.1479L13.2179 19.1437C12.8518 19.4904 12.4074 19.7434 11.9224 19.8811C11.4374 20.0189 10.9263 20.0372 10.4327 19.9346C7.50178 19.3246 4.87584 16.9645 2.53241 12.906C0.188144 8.84497 -0.54272 5.38649 0.398986 2.54221C0.556623 2.06602 0.826564 1.63478 1.186 1.28492C1.54544 0.935054 1.98298 0.67685 2.46324 0.532123ZM2.82492 1.72884C2.53675 1.81564 2.27371 1.97052 2.05801 2.18041C1.84232 2.3903 1.68032 2.64903 1.5857 2.93472C0.774002 5.38566 1.43153 8.49912 3.61495 12.2809C5.79671 16.0603 8.16181 18.1854 10.6869 18.7104C10.9832 18.772 11.29 18.761 11.5811 18.6782C11.8723 18.5955 12.139 18.4436 12.3587 18.2354L13.4104 17.2403C13.667 16.9974 13.8266 16.6696 13.8598 16.3179C13.8929 15.9661 13.7971 15.6143 13.5904 15.3277L12.367 13.6327C12.1889 13.3858 11.9381 13.2009 11.6497 13.1038C11.3613 13.0066 11.0497 13.0022 10.7586 13.091L8.77934 13.6968C7.68429 14.0227 6.65425 13.1101 5.53587 11.1717C4.58833 9.53166 4.25998 8.34662 4.665 7.51908C4.74333 7.35907 4.85 7.2149 4.98001 7.09323L6.48424 5.69067C6.70712 5.48298 6.85936 5.21071 6.91959 4.91208C6.97983 4.61345 6.94503 4.30345 6.82009 4.0256L5.95922 2.11136C5.81401 1.78822 5.55615 1.529 5.23379 1.38208C4.91143 1.23516 4.54662 1.2106 4.20748 1.31299L2.82409 1.72967L2.82492 1.72884Z" fill="#2790F9"/>
                </svg>
 
-               <span class='text'><?php __('Call', 'watergo'); ?></span>
+               <span class='text'><?php echo __('Call', 'watergo'); ?></span>
             </a>
          </div>
       </div>
@@ -158,11 +158,26 @@ var app = Vue.createApp({
 
          order_number: null,
 
-         order: null
+         order: null,
+
+         get_locale: '<?php echo get_locale(); ?>'
       }
    },
 
    methods: {
+      get_weekly_day_compact( title ){
+         if( this.get_locale == 'vi' ){
+            if( title == 'Monday') return 'Thứ Hai';
+            if( title == 'Tuesday') return 'Thứ Ba';
+            if( title == 'Wednesday') return 'Thứ Tư';
+            if( title == 'Thursday') return 'Thứ Năm';
+            if( title == 'Friday') return 'Thứ Sáu';
+            if( title == 'Saturday') return 'Thứ Bảy';
+            if( title == 'Sunday') return 'Chủ Nhật';
+         }
+         return title;
+      },
+
       add_extra_space_order_time_shipping_time(n){ return window.add_extra_space_order_time_shipping_time(n)},
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       gotoChatMessenger(){
@@ -249,7 +264,20 @@ var app = Vue.createApp({
          } else if( this.order.order_delivery_type == 'monthly' ){
             _delivery_type = 'monthly';
          }
-         return 'Delivery ' + _delivery_type;
+
+         if(this.get_locale == 'vi'){
+            if( this.order.order_delivery_type == 'once_immediately' ){
+               return 'Giao một lần';
+            } else if( this.order.order_delivery_type == 'once_date_time' ){
+               return 'Giao một lần';
+            } else if( this.order.order_delivery_type == 'weekly' ){
+               return 'Giao hàng tuần';
+            } else if( this.order.order_delivery_type == 'monthly' ){
+               return 'Giao hàng tháng';
+            }
+         }else{
+            return 'Delivery ' + _delivery_type;
+         }
 
       },
 

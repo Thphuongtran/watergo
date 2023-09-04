@@ -54,7 +54,7 @@ function atlantis_get_language(){
 // 'ko_KR',
 
 function func_quick_app_change_language_callback( $language ){
-   $cookie_name   = "site_lang";		
+   $cookie_name   = "site_lang";
    setcookie($cookie_name, $language, time() + 604800, "/", "", 0);
    if($language == "en_US") $language = "en";
 }

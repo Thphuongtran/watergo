@@ -23,7 +23,7 @@
             <img class='login-align' width='210' src="<?php echo THEME_URI . '/assets/images/watergo_logo_business.svg'; ?>" alt="Login Image">
          </div>
 
-         <div class='box-language t-center'>
+         <!-- <div class='box-language t-center'>
             <div class="dropdown dropdown-language">
                <div class="dropdown-toggle" @click="toggleDropdown">
                <div class="selected-option">
@@ -40,13 +40,13 @@
                </ul>
                </div>
             </div>
-         </div>
+         </div> -->
 
          <div class='heading-01 t-center'><?php echo __('Log In', 'watergo'); ?></div>
            
          <div class='form-group'>
             <span>Email</span>
-            <input v-model='inputEmail' type="email" placeholder=<?php echo __('Enter your email', 'watergo' ); ?>'>
+            <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo' ); ?>'>
          </div>
 
          <div class='form-group'>
@@ -100,9 +100,9 @@ createApp({
          page_welcome: true,
 
          languages: [
-           { id: 'en_US', name: 'English'},
-           { id: 'vi', name: 'Vietnamese'},
-           { id: 'ko_KR', name: 'Korean'},
+           { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
+           { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
+         //   { id: 'ko_KR', name: 'Korean'},
          ],
          selectedLanguage: {},
          currentLocale: '',
@@ -191,17 +191,17 @@ createApp({
                      
                   }
                   if(res.message == 'login_error' ){
-                     this.res_text_sendcode = 'Email or password is incorrect';
+                     this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
                   if(res.message == 'user_not_found' ){
-                     this.res_text_sendcode = 'Email or password is incorrect';
+                     this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
 
                }else{
-                  this.res_text_sendcode = 'Email or password is incorrect';   
+                  this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                }
             }else{
-               this.res_text_sendcode = 'Username or Password must be not empty.';
+               this.res_text_sendcode = '<?php echo __("Username or Password must be not empty.", 'watergo'); ?>';
             }
          }
          this.loading = false;

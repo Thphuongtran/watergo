@@ -1,3 +1,8 @@
+<?php 
+// echo '<pre>';
+// print_r(getallheaders());
+// echo '</pre>';
+?>
 <div id='app'>
    <div v-if='loading == false' class='page-review-form'>
 
@@ -46,9 +51,21 @@ var app = Vue.createApp({
          languages: [
            { id: 'en_US', name: 'English'},
            { id: 'vi', name: 'Vietnamese'},
-           { id: 'ko_KR', name: 'Korean'},
+         //   { id: 'ko_KR', name: 'Korean'},
          ],
          
+      }
+   },
+
+   watch: {
+      user_language: function(val){
+         if( val == 'vi' ){
+            this.languages[0].name = 'Tiếng Anh';
+            this.languages[1].name = 'Tiếng Việt';
+         }else{
+            this.languages[0].name = 'English';
+            this.languages[1].name = 'Vietnamese';
+         }
       }
    },
 
@@ -65,18 +82,27 @@ var app = Vue.createApp({
       },
 
       async changeLanguage(language){
+         this.loading = true;
          var form = new FormData();
          form.append('action', 'app_change_language_callback');
          form.append('language', language);
          var r = await window.request(form);
-
+         window.appbar_fixed();
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'change_language_successfully'){
                this.user_language   = language;
-               this.back_refresh    = true;
+               // this.back_refresh    = true;
+                  // window.location.href = `?appt=X&data=refresh`;
+                  // alert(this.user_language)
+               if( window.appBridge != undefined ){
+                  window.appBridge.setLanguage(this.user_language);
+                  window.appBridge.close();
+                  // window.appBridge.refresh();
+               }
             }
          }
+         this.loading = false;
 
       },
 

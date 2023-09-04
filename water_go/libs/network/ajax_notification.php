@@ -246,3 +246,193 @@ function atlantis_notification_count(){
       
    }
 }
+
+
+/**
+ * @access PROTOCAL
+ */
+
+function protocal_atlantis_notification_to_user( $args ){
+   $args = isset($args) ? $args : [];
+
+   $time_created     = atlantis_current_datetime();
+
+   $order_status     = $args['order_status'];
+   $order_id         = $args['order_id'];
+
+   global $wpdb;
+
+   $sql = "SELECT * FROM wp_watergo_notification WHERE order_id = $order_id AND order_status = 'ordered' ";
+   $get_order = $wpdb->get_results($sql);
+
+   if( empty( $get_order )) return;
+
+   $get_order              = $get_order[0];
+   $link                   = get_bloginfo('home') . '/order/?order_page=order-detail&order_id='. $order_id .'&hash_id='. $get_order->hash_id .'&appt=N';
+
+   if( $order_status == 'confirmed'){
+      // $user_id_from_store_id  = func_atlantis_get_user_id_from_store_id($get_order->order_id);
+      
+      $wpdb->insert('wp_watergo_notification', [
+         'order_status'       => 'confirmed',
+         'time_created'       => $time_created,
+         'user_id'            => $get_order->user_id,
+         'store_id'           => $get_order->store_id, // note this is user_id
+         'notification_type'  => 'order',
+         'is_read'            => 0,
+         'link'               => $link,
+         'order_id'           => $get_order->order_id,
+         'attachment_url'     => $get_order->attachment_url,
+         'order_number'       => $get_order->order_number,
+         'send_to'            => 'user',
+         'hash_id'            => $get_order->hash_id
+      ]);
+
+      bj_push_notification( 
+         $get_order->user_id,
+         'Watergo',
+         'Your order #' . str_pad( $get_order->order_number , 4, "0", STR_PAD_LEFT) . ' is confirmed',
+         $link 
+      );
+   }
+
+   if( $order_status == 'delivering' ){
+
+      $wpdb->insert('wp_watergo_notification', [
+         'order_status'       => 'delivering',
+         'time_created'       => $time_created,
+         'user_id'            => $get_order->user_id,
+         'store_id'           => $get_order->store_id, // note this is user_id
+         'notification_type'  => 'order',
+         'is_read'            => 0,
+         'link'               => $link,
+         'order_id'           => $get_order->order_id,
+         'attachment_url'     => $get_order->attachment_url,
+         'order_number'       => $get_order->order_number,
+         'send_to'            => 'user',
+         'hash_id'            => $get_order->hash_id
+      ]);
+
+      bj_push_notification( 
+         $get_order->user_id,
+         'Watergo',
+         'Your order #' . str_pad( $get_order->order_number , 4, "0", STR_PAD_LEFT) . ' is delivering',
+         $link 
+      );
+
+   }
+
+   if( $order_status == 'completed' ){
+      $wpdb->insert('wp_watergo_notification', [
+         'order_status'       => 'completed',
+         'time_created'       => $time_created,
+         'user_id'            => $get_order->user_id,
+         'store_id'           => $get_order->store_id, // note this is user_id
+         'notification_type'  => 'order',
+         'is_read'            => 0,
+         'link'               => $link,
+         'order_id'           => $get_order->order_id,
+         'attachment_url'     => $get_order->attachment_url,
+         'order_number'       => $get_order->order_number,
+         'send_to'            => 'user',
+         'hash_id'            => $get_order->hash_id
+      ]);
+
+      bj_push_notification( 
+         $get_order->user_id,
+         'Watergo',
+         'Your order #' . str_pad( $get_order->order_number , 4, "0", STR_PAD_LEFT) . ' is completed',
+         $link 
+      );
+
+   
+   }
+
+
+
+
+}
+
+function protocal_atlantis_notification_to_store( $args ){
+   $args = isset($args) ? $args : [];
+
+   $time_created     = atlantis_current_datetime();
+
+   $order_status     = $args['order_status'];
+   $store_id         = $args['store_id'];
+   $order_id         = $args['order_id'];
+   $user_id          = $args['user_id'];
+   $order_number     = $args['order_number'];
+   $attachment_url   = $args['attachment_url'];
+   $hash             = $args['hash'];
+
+   $link             = get_bloginfo('home') . '/order/?order_page=order-store-detail&order_id='. $order_id .'&hash_id='. $hash .'&appt=N';
+   $user_id_from_store_id = func_atlantis_get_user_id_from_store_id($store_id);
+
+   global $wpdb;
+
+   if( $order_status == 'ordered' ){
+
+      $wpdb->insert('wp_watergo_notification', [
+         'order_status'       => $order_status,
+         'time_created'       => $time_created,
+         'user_id'            => $user_id,
+         'store_id'           => $store_id, // note this is user_id
+         'notification_type'  => 'order',
+         'is_read'            => 0,
+         'link'               => $link,
+         'order_id'           => $order_id,
+         'attachment_url'     => $attachment_url,
+         'order_number'       => $order_number,
+         'send_to'            => 'store',
+         'hash_id'            => $hash
+      ]);
+
+      bj_push_notification( 
+         (int) $user_id_from_store_id,
+         'Watergo',
+         'You have new order #' . str_pad( $order_number , 4, "0", STR_PAD_LEFT),
+         $link 
+      );
+
+   }
+
+   if( $order_status == 'cancel' ){
+
+      $sql = "SELECT * FROM wp_watergo_notification WHERE order_id = $order_id AND order_status = 'ordered' ";
+      $get_order = $wpdb->get_results($sql);
+
+      if( !empty($get_order)){
+         $get_order              = $get_order[0];
+         $link                   = get_bloginfo('home') . '/order/?order_page=order-store-detail&order_id='. $order_id .'&hash_id='. $get_order->hash_id .'&appt=N';
+         $store_id               = $get_order->store_id;
+         $user_id_from_store_id  = func_atlantis_get_user_id_from_store_id($store_id);
+
+         $inserted = $wpdb->insert('wp_watergo_notification', [
+            'order_status'       => 'cancel',
+            'time_created'       => $time_created,
+            'user_id'            => $get_order->user_id,
+            'store_id'           => $store_id,
+            'notification_type'  => 'order',
+            'is_read'            => 0,
+            'link'               => $link,
+            'order_id'           => $order_id,
+            'attachment_url'     => $get_order->attachment_url,
+            'order_number'       => $get_order->order_number,
+            'send_to'            => 'store',
+            'hash_id'            => $get_order->hash_id
+         ]);
+
+         bj_push_notification( 
+            (int) $user_id_from_store_id,
+            'Watergo',
+            'Your order #' . str_pad( $get_order->order_number , 4, "0", STR_PAD_LEFT) . ' is canceled',
+            $link 
+         );
+
+      }
+
+
+   }
+
+}

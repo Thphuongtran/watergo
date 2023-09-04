@@ -40,6 +40,9 @@ if( is_user_logged_in() ){
    if( $user_page == 'user-term-conditions' ){
       get_template_part('pages/user/page-user-term-conditions');
    }
+   if( $user_page == 'user-privacy-policy' ){
+      get_template_part('pages/user/page-user-privacy-policy');
+   }
 
 }else{
 

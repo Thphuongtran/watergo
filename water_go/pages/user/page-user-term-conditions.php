@@ -1,3 +1,7 @@
+<?php 
+   $get_post = get_post( 309 );
+?>
+
 <div id='app'>
 
    <div class='appbar'>
@@ -15,11 +19,11 @@
    </div>
    <div class='inner'>
       <p class='t-term-conditions'>
-         Exclusive reports and current films: experience a broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be.
-         Exclusive reports and current films: experience a broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be Exclusive reports and current films: experience a broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be
-         Exclusive reports and current films: experience a broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be.
-         Exclusive reports and current films: experience a broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be Exclusive reports and current films: experience a broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be
-         broad range of topics from the fascinating world of Mercedes-Benz. To find out about offers in your location, please go to the local Mercedes-Be
+         <?php 
+            if( !empty($get_post) ){
+               echo $get_post->post_content;
+            } 
+         ?>
       </p>
    </div>
 

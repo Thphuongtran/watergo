@@ -33,7 +33,7 @@
             <div class='form-group style01'>
                <span><?php echo __('Address', 'watergo'); ?></span>
                
-               <input v-model='delivery_address_location' type="text" name="" id="search-address" placeholder="">
+               <input v-model='delivery_address_location' type="text" name="" id="search-address" placeholder="<?php echo __('Enter a Location', 'water'); ?>">
             </div>
 
             <div class='form-group switch'>
@@ -64,7 +64,9 @@
          <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
          <p class='heading'><?php echo __('Do you want to delete this delivery address', 'watergo'); ?>?</p>
          <div class='actions'>
-            <button @click='buttonModalCancel' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
+            <button @click='buttonModalCancel' class='btn btn-outline'>
+               <?php echo __('Cancel', 'watergo'); ?>
+            </button>
             <button @click='buttonModalConfirm' class='btn btn-primary'><?php echo __('Delete', 'watergo'); ?></button>
          </div>
       </div>
@@ -132,7 +134,7 @@ var app = Vue.createApp({
             address != ''){
                var _phoneNumberString = String( this.delivery_address_phone);
             if( this.validatePhoneNumber( _phoneNumberString) == false ){
-               this.text_res = 'Phone numner is not invalid';
+               this.text_res = '<?php echo __("Phone number is invalid", 'watergo'); ?>';
                this.loading = false;
 
             }else{
@@ -162,7 +164,7 @@ var app = Vue.createApp({
 
             }
          }else{
-            this.text_res = 'Field must be not empty.';
+            this.text_res = '<?php echo __("Field must be not empty.", 'watergo'); ?>';
             this.loading = false;
          }
       },

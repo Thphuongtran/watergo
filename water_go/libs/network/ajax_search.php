@@ -279,3 +279,32 @@ function atlantis_search_store(){
 
    }
 }
+
+
+add_action( 'wp_ajax_nopriv_atlantis_search_store_from_admin', 'atlantis_search_store_from_admin' );
+add_action( 'wp_ajax_atlantis_search_store_from_admin', 'atlantis_search_store_from_admin' );
+
+function atlantis_search_store_from_admin(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_search_store_from_admin'){
+
+      $store_name = isset($_POST['store_name']) ? $_POST['store_name'] : '';
+
+      if( $store_name == '' ){
+         wp_send_json_error([ 'message' => 'get_store_error' ]);
+         wp_die();
+      }
+
+      global $wpdb;
+      $sql = "SELECT * FROM wp_watergo_store WHERE LOWER(name) LIKE '%$store_name%' ";
+      $res = $wpdb->get_results( $sql );
+
+      if( !empty($res) ){
+         wp_send_json_success([ 'message' => 'store_found', 'data' => $res ]);
+         wp_die();
+      }
+
+      wp_send_json_error([ 'message' => 'store_not_found' ]);
+      wp_die();
+
+   }
+}

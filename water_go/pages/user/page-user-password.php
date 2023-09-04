@@ -103,23 +103,24 @@ createApp({
          form.append('new_password', this.new_password);
          form.append('confirm_password', this.confirm_password);
          var r = await window.request(form);
+         window.appbar_fixed();
          if( r != undefined ){
             var res = JSON.parse(JSON.stringify(r));
             if(res.message == 'field_must_not_empty' ){
-               this.t_res = 'Field must be not empty.';
+               this.t_res = '<?php echo __("Field must be not empty.", 'watergo' ); ?>';
                this.loading = false;
+            
             }else if( res.message == 'password_is_not_same'){
-               this.t_res = 'Password it not same.';
+               this.t_res = '<?php echo __("Password it not same.", 'watergo'); ?>';
                this.loading = false;
             }else if( res.message == 'current_password_is_not_correct'){
-               this.t_res = 'Current Password it not correct.';
+               this.t_res = '<?php echo __("Current Password it not correct.", 'watergo'); ?>';
                this.loading = false;
             }else if( res.message == 'user_change_password_ok'){
                this.banner_open = true;
                this.loading = false;
             }
          }
-         console.log(r);
       },
 
       gotoNotification(code){ window.gotoNotification(code);},

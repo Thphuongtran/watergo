@@ -85,7 +85,7 @@
                <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item small-size'>{{ get_shortname_day_of_week(time_shipping.order_time_shipping_day) }} - {{ time_shipping.order_time_shipping_datetime }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item small-size'>Date {{ time_shipping.order_time_shipping_day }} - {{ time_shipping.order_time_shipping_datetime }}</div>
+               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item small-size'><?php echo __('Date', 'watergo'); ?> {{ time_shipping.order_time_shipping_day }} - {{ time_shipping.order_time_shipping_datetime }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
          </div>
       </div>
@@ -93,7 +93,7 @@
       <div class='break-line'></div>
       <div class='box-payment-method'>
          <p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p>
-         <p class='heading-03'>By Cash</p>
+         <p class='heading-03'><?php echo __('By Cash', 'watergo'); ?> </p>
       </div>
 
       <div class='break-line'></div>
@@ -151,7 +151,9 @@
             <div v-show='order.order_status != "complete" || order.order_status != "cancel"' class='btn-gr'>
                <!-- <button @click='btn_cancel_order' v-if='order.order_status == "ordered"' class='btn btn-outline'>Cancel</button> -->
                <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
-               <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn btn-primary'><?php echo __('Delivering', 'watergo'); ?></button>
+               <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn btn-primary'>
+                  <?php echo __('Delivering', 'watergo'); ?>
+               </button>
                <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn btn-primary'><?php echo __('Complete', 'watergo'); ?></button>
             </div>
 
@@ -200,14 +202,18 @@ var app = Vue.createApp({
             {label: 'Reason 2', active: false},
             {label: 'Reason 3', active: false},
             {label: 'Reason 4', active: false},
-            {label: 'Others', active: false}
+            {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 
-         order: null
+         order: null,
+
+         get_locale: '<?php echo get_locale();?>'
       }
    },
 
    methods: {
+
+
 
       // PERFORM CANCEL ORDER
       btn_cancel_order(){this.popup_confirm_cancel = true;},
@@ -236,7 +242,7 @@ var app = Vue.createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'cancel_done' ) {
-                  this.goBack(true);
+                  this.goBack();
                }
             }
             this.loading = false;
@@ -284,11 +290,22 @@ var app = Vue.createApp({
       order_formatDate(timestamp){ return window.order_formatDate(timestamp)},
       get_fulldate_from_day(day ){ return window.get_fulldate_from_day(day) },
       get_fullday_form_dayOfWeek(dayOfWeek ){ return window.get_fullday_form_dayOfWeek(dayOfWeek) },
-      get_shortname_day_of_week(dayOfWeek ){ return window.get_shortname_day_of_week(dayOfWeek) },
-
-      goBack( refresh = false ){ 
-         window.goBack( refresh); 
+      // 
+      get_shortname_day_of_week(dayOfWeek ){ 
+         if( this.get_locale == 'vi' ){
+            if(dayOfWeek == 'Monday') return 'T2';
+            if(dayOfWeek == 'Tuesday') return 'T3';
+            if(dayOfWeek == 'Wednesday') return 'T4';
+            if(dayOfWeek == 'Thursday') return 'T5';
+            if(dayOfWeek == 'Friday') return 'T6';
+            if(dayOfWeek == 'Saturday') return 'T7';
+            if(dayOfWeek == 'Sunday') return 'CN';
+         }else{
+            return window.get_shortname_day_of_week(dayOfWeek);
+         }
       },
+
+      goBack(){ window.goBack() },
 
       async get_time_shipping_order(order_id){
          var form = new FormData();
@@ -348,8 +365,20 @@ var app = Vue.createApp({
          } else if( this.order != null && this.order.order_delivery_type == 'monthly' ){
             _delivery_type = 'monthly';
          }
-         console.log(this.order)
-         return 'Delivery ' + _delivery_type;
+
+         if(this.get_locale == 'vi'){
+            if( this.order.order_delivery_type == 'once_immediately' ){
+               return 'Giao một lần';
+            } else if( this.order.order_delivery_type == 'once_date_time' ){
+               return 'Giao một lần';
+            } else if( this.order.order_delivery_type == 'weekly' ){
+               return 'Giao hàng tuần';
+            } else if( this.order.order_delivery_type == 'monthly' ){
+               return 'Giao hàng tháng';
+            }
+         }else{
+            return 'Delivery ' + _delivery_type;
+         }
 
       },
 

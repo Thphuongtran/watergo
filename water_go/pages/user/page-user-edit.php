@@ -131,16 +131,16 @@ var app = Vue.createApp({
                }
 
                if( res.message == 'email_is_not_correct_format' ){
-                  this.text_err = 'Email is not correct format.';
+                  this.text_err = '<?php echo __("Email is not correct format.", 'watergo'); ?>';
                   this.loading = false;
                }
                if( res.message == 'email_already_exists' ){
-                  this.text_err = 'Email already exists.';
+                  this.text_err = '<?php echo __("Email already exists.", 'watergo'); ?>';
                   this.loading = false;
                }
             }
          }else{
-            this.text_err = 'Name or Email is not empty.';
+            this.text_err = '<?php echo __("Name or Email is not empty.", 'watergo'); ?>';
             this.loading = false;
          }
 

@@ -182,6 +182,7 @@ var app = Vue.createApp({
             $(".btn-email-verify").removeClass("is-send");
          }
       }
+      
    },
 
    methods: {
@@ -269,16 +270,16 @@ var app = Vue.createApp({
                var res = JSON.parse( JSON.stringify(r));
                 // DISPLAY ERROR
                if( res.message == 'email_already_exists' ){
-                  this.text_err = 'Email already exists.';
+                  this.text_err = '<?php echo __("Email already exists.", 'watergo'); ?>';
                }
                if( res.message == 'code_is_not_match' ){
-                  this.text_err = 'Code is not match.';
+                  this.text_err = '<?php echo __("Code is not match.", 'watergo'); ?>';
                }
                if( res.message == 'phonenumber_is_not_correct_format' ){
-                  this.text_err = 'Phone number is not correct format.';
+                  this.text_err = '<?php echo __("Phone number is not correct format.", 'watergo'); ?>';
                }
                if( res.message == 'store_edit_error' ){
-                  this.text_err = 'Store Edit Error.';
+                  this.text_err = '<?php echo __("Store Edit Error.", 'watergo'); ?>';
                }
                if( res.message == 'store_profile_update_ok'){
                   this.goBackUpdate(this.store.id);
@@ -287,9 +288,10 @@ var app = Vue.createApp({
 
             this.loading = false;
          }else if( address == "" || lat == "" || lng == ""){
-            this.text_err = this.res_text_sendcode = 'Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất';
+            // Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất
+            this.text_err = this.res_text_sendcode = '<?php echo __("Invalid address, please select the address in the suggestion book", 'watergo'); ?>';
          } else{
-            this.text_err = this.res_text_sendcode = 'All field must be not empty.';
+            this.text_err = this.res_text_sendcode = '<?php echo __("All field must be not empty.", 'watergo'); ?>';
          }
 
 

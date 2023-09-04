@@ -390,27 +390,37 @@ function atlantis_add_order(){
                // wp_send_json_error(['message' => 'bug', 'res' => $get_attachment_url  ]);
                // wp_die();
 
-               $get_user_id_from_store_id = func_atlantis_get_user_id_from_store_id($store_id);
+               // $get_user_id_from_store_id = func_atlantis_get_user_id_from_store_id($store_id);
 
-               if( $get_user_id_from_store_id != 0){
-                  bj_push_notification( 
-                     (int) $get_user_id_from_store_id,
-                     'Watergo',
-                     'You have new order #' . str_pad( $order_number , 4, "0", STR_PAD_LEFT),
-                     $link_app 
-                  );
-                  func_atlantis_add_notification(
-                     $user_id,
-                     $store_id,
-                     'ordered',
-                     $order_id, 
-                     $link_app,
-                     $attachment_url,
-                     $order_number,
-                     'store',
-                     $hash_id_for_link_app
-                  );
-               }
+               // if( $get_user_id_from_store_id != 0){
+               // bj_push_notification( 
+               //    (int) $get_user_id_from_store_id,
+               //    'Watergo',
+               //    'You have new order #' . str_pad( $order_number , 4, "0", STR_PAD_LEFT),
+               //    $link_app 
+               // );
+
+               protocal_atlantis_notification_to_store([
+                  'order_status'       => 'ordered',
+                  'order_id'           => $order_id,
+                  'user_id'            => $user_id,
+                  'store_id'           => $store_id,
+                  'attachment_url'     => $attachment_url,
+                  'order_number'       => $order_number,
+                  'hash'               => $hash_id_for_link_app
+               ]);
+               // func_atlantis_add_notification(
+               //    $user_id,
+               //    $store_id,
+               //    'ordered',
+               //    $order_id, 
+               //    $link_app,
+               //    $attachment_url,
+               //    $order_number,
+               //    'store',
+               //    $hash_id_for_link_app
+               // );
+               // }
 
                // wp_send_json_error(['message' => 'bug', 'res' => $ce, 'user_id' => $user_id  ]);
                // wp_die();
@@ -983,23 +993,23 @@ function atlantis_cancel_order(){
       ],[ 'order_id' => $order_id ]);
 
 
-      $push_res = func_atlantis_order_status_notification( 
-         $order_id,
-         'store',
-         'cancel'
-      );
+      // $push_res = func_atlantis_order_status_notification( 
+      //    $order_id,
+      //    'store',
+      //    'cancel'
+      // );
 
-      $_order_number    = $push_res['order_number'];
-      $_link_app        = $push_res['link'];
-      $_user_id         = $push_res['user_id'];
-      $_store_id        = $push_res['store_id'];
+      // $_order_number    = $push_res['order_number'];
+      // $_link_app        = $push_res['link'];
+      // $_user_id         = $push_res['user_id'];
+      // $_store_id        = $push_res['store_id'];
 
-      bj_push_notification( 
-         $_store_id,
-         'Watergo',
-         'Your order #' .  str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is canceled',
-         $_link_app
-      );
+      // bj_push_notification( 
+      //    $_store_id,
+      //    'Watergo',
+      //    'Your order #' .  str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is canceled',
+      //    $_link_app
+      // );
 
 
       if( $order_type == 'weekly' || $order_type == 'monthly' ){
@@ -1007,6 +1017,12 @@ function atlantis_cancel_order(){
             'order_repeat_is_keep_repeat' => 0
          ], ['order_repeat_order_id_parent' => $order_id]);
       }
+
+      protocal_atlantis_notification_to_store([
+         'order_id'     => $order_id,
+         'order_status' => 'cancel'
+      ]);
+
       wp_send_json_success(['message' => 'cancel_done']);
       wp_die();
 
@@ -1204,36 +1220,55 @@ function atlantis_order_status(){
             for( $i = 0; $i < count($wheres); $i++ ){
                
                $_order_id        = $wheres[$i];
-               $push_res         = func_atlantis_order_status_notification( $_order_id, 'user', 'confirmed');
-               $_order_number    = $push_res['order_number'];
-               $_link_app        = $push_res['link'];
-               $_user_id         = $push_res['user_id'];
+               // $push_res         = func_atlantis_order_status_notification( $_order_id, 'user', 'confirmed');
+               // $_order_number    = $push_res['order_number'];
+               // $_link_app        = $push_res['link'];
+               // $_user_id         = $push_res['user_id'];
 
-               // wp_send_json_error(['message' => 'bug', 'res' => $push_res ]);
+               // $order_by_sql  = $wpdb->get_results("SELECT order_by FROM wp_watergo_order WHERE order_id = $_order_id ");
+               // $order_by      = $order_by_sql[0]->order_by;
+               
+               // bj_push_notification( 
+               //    $_user_id,
+               //    'Watergo',
+               //    'Your order #' . str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is confirmed',
+               //    $_link_app
+               // );
+
+               // wp_send_json_error(['message' => 'bug', 'res' => 'confirmed']);
                // wp_die();
 
-               $order_by_sql  = $wpdb->get_results("SELECT order_by FROM wp_watergo_order WHERE order_id = $_order_id ");
-               $order_by      = $order_by_sql[0]->order_by;
-               
-               bj_push_notification( 
-                  $_user_id,
-                  'Watergo',
-                  'Your order #' . str_pad( $_order_number , 4, "0", STR_PAD_LEFT) . ' is confirmed',
-                  $_link_app
-               );
-
+               protocal_atlantis_notification_to_user([
+                  'order_status' => 'confirmed',
+                  'order_id'     => $_order_id
+               ]);
             }
-
-
             
          }
          if( $status == 'delivering' ){
             $order_status = 'delivering';
             $order_time = "order_time_delivery = %s ";
+
+            for( $i = 0; $i < count($wheres); $i++ ){
+               $_order_id        = $wheres[$i];
+               protocal_atlantis_notification_to_user([
+                  'order_status' => 'delivering',
+                  'order_id'     => $_order_id
+               ]);
+            }
+
          }
          if( $status == 'complete' ){
             $order_status = 'complete';
             $order_time = "order_time_completed = %s ";
+
+            for( $i = 0; $i < count($wheres); $i++ ){
+               $_order_id        = $wheres[$i];
+               protocal_atlantis_notification_to_user([
+                  'order_status' => 'completed',
+                  'order_id'     => $_order_id
+               ]);
+            }
 
             
             // IF ORDER IS WEEKLY OR MONTHLY - MAKE NEW ORDER
@@ -1439,6 +1474,47 @@ function atlantis_order_callback(){
       wp_die();
 
 
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_count_total_order_by_user', 'atlantis_count_total_order_by_user' );
+add_action( 'wp_ajax_atlantis_count_total_order_by_user', 'atlantis_count_total_order_by_user' );
+
+function atlantis_count_total_order_by_user(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_total_order_by_user'){
+      
+      $user_id = get_current_user_id();
+
+      global $wpdb;
+
+      $sql = "SELECT statuses.order_status, COUNT(orders.order_status) AS total_count
+         FROM
+         (
+         SELECT 'ordered' AS order_status
+         UNION ALL
+         SELECT 'confirmed' AS order_status
+         UNION ALL
+         SELECT 'delivering' AS order_status
+         UNION ALL
+         SELECT 'complete' AS order_status
+         UNION ALL
+         SELECT 'cancel' AS order_status
+         ) AS statuses
+         LEFT JOIN wp_watergo_order AS orders 
+         ON statuses.order_status = orders.order_status
+         WHERE orders.order_by = $user_id
+         GROUP BY statuses.order_status
+      ";
+      
+      $res = $wpdb->get_results($sql);
+
+      if( empty( $res )){
+         wp_send_json_error(['message' => 'order_not_found' ]);
+         wp_die();
+      }
+      wp_send_json_success(['message' => 'count_order_by_status', 'data' => $res ]);
+      wp_die();  
    }
 }
 

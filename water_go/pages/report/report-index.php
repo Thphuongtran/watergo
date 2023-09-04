@@ -69,7 +69,16 @@
          <div class='appbar-bottom'>
             <ul class='navbar style-expaned'>
                <li @click='select_filter_datetime("d")' :class='filter_datetime[0].active == true ? "active" : ""'><?php echo __('Day', 'watergo'); ?></li>
-               <li @click='select_filter_datetime("m")' :class='filter_datetime[1].active == true ? "active" : ""'><?php echo __('Month', 'watergo'); ?></li>
+               <li @click='select_filter_datetime("m")' :class='filter_datetime[1].active == true ? "active" : ""'>
+                  <?php 
+                     // echo __('Month', 'watergo'); 
+                     if( get_locale() == 'vi' ){
+                        echo 'Tháng';
+                     }else{
+                        echo 'Month';
+                     }
+                  ?>
+               </li>
                <li @click='select_filter_datetime("y")' :class='filter_datetime[2].active == true ? "active" : ""'><?php echo __('Year', 'watergo'); ?></li>
             </ul>
 
@@ -79,7 +88,7 @@
       <div class='inner mt30'>
          
          <div class='box-profit'>
-            <div class='order-count'><?php echo __('SOLD', 'watergo')?>: <span class='highlight'>{{ get_data_report.sold }}</span> <?php echo __('Orders', 'watergo'); ?></div>
+            <div class='order-count'><?php echo __('SOLD', 'watergo')?>: <span class='highlight'>{{ get_data_report.sold }}</span> <?php if( get_locale() == 'vi'){ echo 'Đơn'; } else{ echo 'Orders'; } ?></div>
             <div v-if='report_rank.rank != "today"' class='rank rank_sold' :class='get_data_report.rank_sold'>
 
                <svg v-if='get_data_report.rank_sold == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,7 +104,7 @@
          </div>
 
          <div class='box-profit'>
-            <div class='order-count'><?php echo __('CANCELED', 'watergo'); ?>: <span class='highlight'>{{ get_data_report.cancel }}</span> <?php echo __('Orders', 'watergo'); ?></div>
+            <div class='order-count'><?php echo __('CANCELED', 'watergo'); ?>: <span class='highlight'>{{ get_data_report.cancel }}</span> <?php if( get_locale() == 'vi'){ echo 'Đơn'; } else{ echo 'Orders'; } ?></div>
             <div v-if='report_rank.rank != "today"' class='rank rank_cancel' :class='get_data_report.rank_cancel'>
 
                <svg v-if='get_data_report.rank_cancel == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -291,11 +300,43 @@ var app = Vue.createApp({
                   $('.ui-date-picker-wrapper').addClass('active');
                   $('.ui-date-picker-wrapper').addClass('schedule-datepicker');
 
+                  // Define an object that holds the month and day names for different locales
+                  var localeData = {
+                     'en_US': {
+                        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                        monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                        dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                        dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                     },
+                     'vi': {
+                        monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                        monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+                        dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+                        dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                        dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                     }
+                  };
+
+                  // Get the locale-specific month and day names based on this.locale
+                  var locale = 'en_US'; // Default to English
+                  var get_locale = '<?php echo get_locale(); ?>';
+                  if ( get_locale != undefined && localeData[get_locale] != undefined) {
+                     locale = get_locale;
+                  }
+
                   $('#datepicker').datepicker({
-                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                     // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
                      dateFormat: "dd/mm/yy",
                      firstDay: 1,
                      maxDate: 0,
+
+                     monthNames:       localeData[locale].monthNames,
+                     monthNamesShort:  localeData[locale].monthNamesShort,
+                     dayNames:         localeData[locale].dayNames,
+                     dayNamesShort:    localeData[locale].dayNamesShort,
+                     dayNamesMin:      localeData[locale].dayNamesMin,
+
                      onSelect: async function(dateText, inst){
                         if(dateText != undefined || dateText != '' || dateText != null){
                            $('#datepicker').attr('value', dateText); 

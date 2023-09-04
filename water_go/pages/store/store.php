@@ -13,7 +13,7 @@ if( $store_page == 'store-detail'){
 
 
 
-$allow_store = ['store-profile', 'store-edit', 'store-settings', 'store-adverstising'];
+$allow_store = ['store-profile', 'store-edit', 'store-settings', 'store-adverstising', 'store-privacy-policy', 'store-term-conditions'];
 
 if( in_array($store_page, $allow_store) ){
    
@@ -30,11 +30,18 @@ if( in_array($store_page, $allow_store) ){
       if( $store_page == 'store-settings'){
          get_template_part('pages/store/page-store-settings');
       }
+
       if( $store_page == 'store-adverstising'){
          get_template_part('pages/store/page-store-adverstising-inquery');
       }
 
+      if( $store_page == 'store-privacy-policy'){
+         get_template_part('pages/store/page-store-privacy-policy');
+      }
 
+      if( $store_page == 'store-term-conditions'){
+         get_template_part('pages/store/page-store-term-conditions');
+      }
 
    }else{
       get_template_part('pages/authentication/page-auth-store-login');

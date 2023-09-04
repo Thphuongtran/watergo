@@ -1,0 +1,202 @@
+# Translation of Plugins - Easy WP SMTP by SendLayer &#8211; WordPress SMTP and Email Log Plugin - Stable (latest release) in Korean
+# This file is distributed under the same license as the Plugins - Easy WP SMTP by SendLayer &#8211; WordPress SMTP and Email Log Plugin - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-06-23 01:26:47+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.0-alpha.6\n"
+"Language: ko_KR\n"
+"Project-Id-Version: Plugins - Easy WP SMTP by SendLayer &#8211; WordPress SMTP and Email Log Plugin - Stable (latest release)\n"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:508
+msgid "Write your email message"
+msgstr "이메일내용을 입력하세요"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:494
+msgid "Enter the recipient's email address"
+msgstr "수신이메일주소를 입력하세요"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:213
+msgid "SMTP Configuration Settings"
+msgstr "SMTP 구성설정"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:172
+msgid "Please enter a valid email address in the recipient email field."
+msgstr "수신이메일란에 유효한 이메일주소를 입력하세요"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:312 src/Admin/Area.php:418
+#: src/Admin/Pages/DebugEventsTab.php:150 src/Admin/UserFeedback.php:95
+msgid "Yes"
+msgstr "네"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:306
+msgid "No"
+msgstr "아니오"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:333
+#: inc/deprecated/class-easywpsmtp-admin.php:398
+msgid "Save Changes"
+msgstr "변경 사항 저장"
+
+#: inc/deprecated/class-easywpsmtp.php:440
+#: inc/deprecated/class-easywpsmtp.php:448 src/Admin/Area.php:263
+#: src/Admin/Area.php:264 src/Admin/Area.php:1063
+#: src/Admin/Pages/SettingsTab.php:48
+msgid "Settings"
+msgstr "설정"
+
+#. translators: %s URL to the plugin's settings page.
+#: inc/deprecated/class-easywpsmtp.php:365
+msgid "Please configure your SMTP credentials in the <a href=\"%s\">settings menu</a> in order to send email using Easy WP SMTP plugin."
+msgstr "Easy WP SMTP 플러그인을 사용하여 메일을 발송하기 위해 <a href=\"%s\">설정메뉴</a>에서 SMTP환경을 구성하여 주세요."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:513
+#: src/Admin/Pages/TestTab.php:261
+msgid "Send Test Email"
+msgstr "테스트 이메일 발송"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:505
+#: src/Admin/Pages/TestTab.php:230
+msgid "Message"
+msgstr "내용"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:501
+msgid "Enter a subject for your message"
+msgstr "메시지 제목을 입력"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:498
+#: src/Admin/Pages/ExportTab.php:214 src/Admin/Pages/TestTab.php:217
+msgid "Subject"
+msgstr "제목"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:491
+msgid "To"
+msgstr "To"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:327
+msgid "The password to login to your mail server"
+msgstr "메일서버 로그인 암호"
+
+#: assets/languages/easy-wp-smtp-vue.php:405
+#: inc/deprecated/class-easywpsmtp-admin.php:324
+#: src/Providers/OptionsAbstract.php:431
+msgid "SMTP Password"
+msgstr "SMTP 암호"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:320
+msgid "The username to login to your mail server"
+msgstr "메일서버 로그인 사용자명(ID)"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:313
+msgid "This options should always be checked 'Yes'"
+msgstr "이 항목은 항상 '예'로 체크되어 있어야 합니다."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:299
+#: src/Providers/OptionsAbstract.php:392
+msgid "SMTP Authentication"
+msgstr "SMTP 인증"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:295
+msgid "The port to your mail server"
+msgstr "메일서버 포트번호"
+
+#: assets/languages/easy-wp-smtp-vue.php:384
+#: inc/deprecated/class-easywpsmtp-admin.php:292
+#: src/Providers/OptionsAbstract.php:353
+msgid "SMTP Port"
+msgstr "SMTP 포트번호"
+
+#: assets/languages/easy-wp-smtp-vue.php:417
+#: src/Providers/OptionsAbstract.php:340
+msgid "TLS"
+msgstr "TLS"
+
+#: assets/languages/easy-wp-smtp-vue.php:414
+#: src/Providers/OptionsAbstract.php:330
+msgid "SSL"
+msgstr "SSL"
+
+#: assets/languages/easy-wp-smtp-vue.php:411
+#: inc/deprecated/class-easywpsmtp-admin.php:275
+#: src/Providers/OptionsAbstract.php:320
+msgid "None"
+msgstr "없음"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:264
+msgid "Your mail server"
+msgstr "사용하고 있는 메일서버"
+
+#: assets/languages/easy-wp-smtp-vue.php:378
+#: inc/deprecated/class-easywpsmtp-admin.php:261
+#: src/Providers/OptionsAbstract.php:292
+msgid "SMTP Host"
+msgstr "SMTP 호스트"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:230
+msgid "This text will be used in the 'FROM' field"
+msgstr "이 항목은 '보낸사람'으로 사용됩니다."
+
+#: assets/languages/easy-wp-smtp-vue.php:173
+#: inc/deprecated/class-easywpsmtp-admin.php:227
+#: src/Admin/ConnectionSettings.php:248 src/Admin/Pages/ExportTab.php:207
+msgid "From Name"
+msgstr "발신자"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:223
+msgid "This email address will be used in the 'From' field."
+msgstr "이 이메일주소은 '발신자'란에 표기로 사용됩니다."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:220
+#: src/Admin/ConnectionSettings.php:208
+msgid "From Email Address"
+msgstr "발신메일주소"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:71
+msgid "Easy WP SMTP Settings"
+msgstr "Easy WP SMTP 설정"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:160
+msgid "Settings are not saved."
+msgstr "설정이 저장되지 않았습니다."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:158
+msgid "Settings saved."
+msgstr "설정이 저장되었어요."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:149
+msgid "Please enter a valid port in the 'SMTP Port' field."
+msgstr "’SMTP 포트’ 항목에 바른 포트를 입력해주세요."
+
+#: inc/deprecated/class-easywpsmtp-admin.php:102
+msgid "Please enter a valid email address in the 'FROM' field."
+msgstr "‘발신자’ 항목에 바른 이메일 주소를 입력해주세요."
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: inc/deprecated/class-easywpsmtp-admin.php:38 src/Admin/Area.php:244
+#: src/Admin/Area.php:245 src/Admin/Area.php:252 src/Admin/Area.php:253
+#: src/Admin/DashboardWidget.php:164 src/SiteHealth.php:43
+msgid "Easy WP SMTP"
+msgstr "Easy WP SMTP"
+
+#: src/Admin/ConnectionSettings.php:200
+msgid "General Settings"
+msgstr "일반 설정"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:288
+msgid "For most servers SSL/TLS is the recommended option"
+msgstr "대부분의 서버에서 SSL/TLS가 권장 옵션입니다."
+
+#: assets/languages/easy-wp-smtp-vue.php:402
+#: inc/deprecated/class-easywpsmtp-admin.php:317
+#: src/Providers/OptionsAbstract.php:414
+msgid "SMTP Username"
+msgstr "SMTP 사용자명"
+
+#: inc/deprecated/class-easywpsmtp-admin.php:268
+#: src/Providers/OptionsAbstract.php:309
+msgid "Type of Encryption"
+msgstr "암호화 유형"

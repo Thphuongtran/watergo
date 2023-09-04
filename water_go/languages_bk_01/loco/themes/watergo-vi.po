@@ -1,0 +1,1189 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Water Go\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-27 12:24+0000\n"
+"PO-Revision-Date: 2023-08-27 16:05+0000\n"
+"Last-Translator: \n"
+"Language-Team: Tiếng Việt\n"
+"Language: vi\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.4; wp-6.2.2\n"
+"X-Domain: watergo"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-add.php:52
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:211
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:49
+msgid "Add"
+msgstr "Thêm"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-add.php:18
+msgid "Add Address"
+msgstr "Thêm địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:161
+msgid "Add Date"
+msgstr "Thêm ngày"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:124
+msgid "Add Day"
+msgstr "Thêm Ngày"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-index.php:17
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:74
+msgid "Add New"
+msgstr "Thêm địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:174
+msgid "Add success"
+msgstr "Thêm vào giỏ"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:146
+msgid "Add to Cart"
+msgstr "Thêm vào Giỏ"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-add.php:34
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:34
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:76
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:81
+msgid "Address"
+msgstr "Địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-profile.php:82
+#: ../../../themes/watergo/water_go/pages/store/page-store-adverstising-inquery.php:12
+msgid "Advertising inquery"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:46
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:23
+msgid "All"
+msgstr "Tất cả"
+
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby.php:99
+msgid "Allow Access"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:91
+msgid "Are you sure to delete this<br> monthly order?"
+msgstr "Bạn muốn xóa đơn <br>hàng tuần này không?"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:90
+msgid "Are you sure to delete this<br> weekly order?"
+msgstr "Bạn muốn xóa đơn <br>hàng tháng này không?"
+
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:131
+msgid "Are you sure to remove this product from your cart"
+msgstr "Bạn có muốn xóa sản phẩm này<br> khỏi giỏ hàng của mình không?"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:71
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:114
+msgid "Availble"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:61
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:112
+msgid "Both"
+msgstr "Nước & Đá"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:47
+msgid "Brand"
+msgstr "Thương hiệu"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:135
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:124
+msgid "Call"
+msgstr "Gọi điện"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:160
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:169
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:178
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:128
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:93
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:67
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:60
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:61
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:142
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:224
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:133
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:48
+msgid "Cancel"
+msgstr "Huỷ"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:105
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:100
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:114
+msgid "Cancel Time"
+msgstr "Thời gian hủy"
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:98
+msgid "CANCELED"
+msgstr "ĐÃ HUỶ"
+
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:14
+msgid "Cart"
+msgstr "Giỏ Hàng"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:32
+msgid "Category"
+msgstr "Danh mục"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:16
+msgid "Change Password"
+msgstr "Đổi mật khẩu"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-ice.php:27
+#: ../../../themes/watergo/water_go/pages/product/page-product-water.php:27
+#: ../../../themes/watergo/water_go/pages/product/page-product-recommend.php:28
+msgid "Cheapest"
+msgstr "Rẻ nhất"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:98
+msgid "Closed"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:155
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:69
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:141
+msgid "Complete"
+msgstr "Hoàn Thành"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:104
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:113
+msgid "Complete Time"
+msgstr "Thời gian hoàn thành"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:153
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:66
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:132
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:161
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:170
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:179
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:225
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:35
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:117
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:39
+msgid "Confirm New Password"
+msgstr "Xác nhận mật khẩu mới"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:92
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:100
+msgid "Confirm Time"
+msgstr "Thời gian xác nhận"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:102
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:111
+msgid "Confirmed Time"
+msgstr "Thời gian Đã Xác Nhận"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:147
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:142
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:122
+msgid "Congratulations"
+msgstr "Chúc mừng!"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:62
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:27
+msgid "Current Password"
+msgstr "Mật khẩu hiện tại"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:71
+msgid "Date"
+msgstr "Ngày"
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:71
+msgid "Day"
+msgstr "Ngày"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-index.php:55
+msgid "Default"
+msgstr "Mặc định"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:41
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:94
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:68
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:122
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:143
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:213
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:134
+msgid "Delete"
+msgstr "Xoá"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:40
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:13
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:28
+msgid "Delete Account"
+msgstr "Xóa tài khoản"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:48
+msgid "Delete Address"
+msgstr "Xóa địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:154
+msgid "Delivering"
+msgstr "Đang giao"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:68
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:138
+msgid "Delivery"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-index.php:14
+msgid "Delivery Address"
+msgstr "Địa chỉ giao hàng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:23
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:31
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:35
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:26
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:62
+msgid "Delivery address"
+msgstr "Địa chỉ giao hàng"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:80
+msgid "Delivery Immediately"
+msgstr "Giao Ngay"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:49
+msgid "Delivery Monthly"
+msgstr "Giao hàng tháng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:131
+msgid "Delivery mothly"
+msgstr "Giao hàng tháng"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:84
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:87
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:90
+msgid "Delivery on"
+msgstr "Giao ngày"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:47
+msgid "Delivery Once"
+msgstr "Giao một lần"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:83
+msgid "Delivery once"
+msgstr "Giao một lần"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:103
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:96
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:112
+msgid "Delivery Time"
+msgstr "Thời gian giao hàng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:71
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:80
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:66
+msgid "Delivery time"
+msgstr "Thời gian giao hàng"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:48
+msgid "Delivery Weekly"
+msgstr "Giao hàng tuần"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:116
+msgid "Delivery weekly"
+msgstr "Giao hàng tuần"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:77
+msgid "Describe your store"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:76
+msgid "Description"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:74
+msgid "Discount"
+msgstr "Giảm giá"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:176
+msgid "Do you want to complete <span class='t-primary'>All Order</span>"
+msgstr "Bạn muốn hoàn thành tất cả <span class='t-primary'>đơn hàng</span>?"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:158
+msgid "Do you want to confirm <span class='t-primary'>All Order</span>"
+msgstr "Bạn muốn xác nhận tất cả <span class='t-primary'>đơn hàng</span>?"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:65
+msgid "Do you want to delete this delivery address"
+msgstr "Bạn muốn xoá địa  chỉ giao hàng này không?"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:222
+msgid "Do you want to delete this product"
+msgstr "Bạn muốn xoá sản phẩm này không?"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:140
+msgid "Do you want to delete this review"
+msgstr "Bạn muốn xoá đánh giá này không?"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:167
+msgid "Do you want to delivering <span class='t-primary'>All Order</span>"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:32
+msgid "Don’t worry when it happens <br> Reset your password"
+msgstr "Đừng lo lắng khi điều đó xảy ra."
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-index.php:58
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:121
+msgid "Edit"
+msgstr "Sửa"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:18
+msgid "Edit Address"
+msgstr "Sửa địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-detail.php:19
+msgid "Edit Info"
+msgstr "Chỉnh sửa thông tin"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-edit.php:23
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:46
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:21
+msgid "Edit Profile"
+msgstr "Chỉnh sửa hồ sơ"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:82
+msgid "Enter address"
+msgstr "Nhập địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:28
+msgid "Enter current password"
+msgstr "Nhập mật khẩu hiện tại"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:32
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:36
+msgid "Enter new password"
+msgstr "Nhập mật khẩu mới"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:67
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:67
+msgid "Enter owner name"
+msgstr "Nhập tên chủ cửa hàng"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:113
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:118
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:35
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:40
+msgid "Enter password"
+msgstr "Nhập mật khẩu"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:81
+msgid "Enter Percentage"
+msgstr "Nhập số phần trăm"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:88
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:87
+msgid "Enter phone"
+msgstr "Nhập số điện thoại"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:164
+msgid "Enter Product Description"
+msgstr "Nhập mô tả sản phẩm"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:72
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:72
+msgid "Enter store name"
+msgstr "Nhập tên cửa hàng"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:94
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:53
+msgid "Enter you email"
+msgstr "Nhập địa chỉ email"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:49
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:18
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:36
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:73
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:92
+msgid "Enter your email"
+msgstr "Nhập địa chỉ email"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:112
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:54
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:37
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:78
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:81
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:97
+msgid "Enter your password"
+msgstr "Nhập mật khẩu của bạn"
+
+#: ../../../themes/watergo/water_go/pages/support/page-support-add.php:19
+msgid "Enter your question"
+msgstr "Nhập câu hỏi của bạn"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:13
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:47
+msgid "Enter your username"
+msgstr "Nhập tên tài khoản của bạn"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:197
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:188
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:64
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:89
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:72
+msgid "Exit"
+msgstr "Xong"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:69
+msgid "Filter"
+msgstr "Lọc"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:58
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:82
+msgid "Forget Password"
+msgstr "Quên mật khẩu"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:31
+msgid "Forgot Password"
+msgstr "Quên mật khẩu"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:86
+msgid "From"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:51
+msgid "Go Shopping Now"
+msgstr "Đặt hàng ngay"
+
+#: ../../../themes/watergo/water_go/pages/home/home.php:13
+msgid "Home"
+msgstr "Trang Chủ"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:68
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:90
+msgid "I agree with"
+msgstr "Tôi đồng ý"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:118
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:87
+msgid "I agree with <span class='t-primary'>Terms and Conditions</span>"
+msgstr "Tôi đồng ý  <span class='t-primary'>Điều khoản sử dụng</span>"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:29
+msgid "I don't want to use WaterGo app anymore"
+msgstr "Tôi không muốn sử dụng ứng dụng WaterGo nữa"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:37
+msgid "I have a privacy concern"
+msgstr "Tôi có một mối lo ngại về quyền riêng tư"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:33
+msgid "I want to create another account"
+msgstr "Tôi muốn tạo một tài khoản khác"
+
+#: ../../../themes/watergo/water_go/pages/home/home.php:77
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby.php:46
+#: ../../../themes/watergo/water_go/pages/product/page-product-ice.php:12
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:57
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:108
+msgid "Ice"
+msgstr "Đá"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:90
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:73
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:82
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:68
+msgid "Immediately (within 1 hour)"
+msgstr "Giao ngay (trong vòng 1 giờ)"
+
+#. Author of the theme
+msgid "Khách"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:30
+#: ../../../themes/watergo/water_go/pages/user/page-user-language.php:13
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:21
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:116
+msgid "Length * Width"
+msgstr "Chiều cao * Độ rộng"
+
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby.php:97
+msgid "Location information is not available"
+msgstr "Không cập nhật được vị trí của bạn"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:128
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:152
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:45
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:74
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:46
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:147
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:69
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:96
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:95
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:127
+msgid "Log In"
+msgstr "Đăng nhập"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:52
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:104
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:101
+msgid "Log in with Apple"
+msgstr "Đăng nhập bằng Apple"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:53
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:105
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:102
+msgid "Log in with Google"
+msgstr "Đăng nhập bằng Google"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:54
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:106
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:103
+msgid "Log in with Zalo"
+msgstr "Đăng nhập Zalo"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:43
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:31
+msgid "Log Out"
+msgstr "Đăng xuất"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:22
+msgid "Login"
+msgstr "Đăng nhập"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:58
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:46
+msgid "Logout"
+msgstr "Đăng xuất"
+
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby.php:31
+msgid "Map"
+msgstr "Bản đồ"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:204
+msgid "Mark as out of stock"
+msgstr "Đánh dấu hết hàng"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index.php:16
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:72
+msgid "Month"
+msgstr "Tháng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:15
+msgid "Monthly order list"
+msgstr "Danh sách đơn hàng tháng"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:88
+msgid "My Reviews"
+msgstr "Đánh giá của tôi"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-add.php:26
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:26
+#: ../../../themes/watergo/water_go/pages/user/page-user-edit.php:67
+msgid "Name"
+msgstr "Tên"
+
+#: ../../../themes/watergo/water_go/pages/home/home.php:116
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby-store.php:13
+msgid "Nearby"
+msgstr "Gần Đây"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-ice.php:26
+#: ../../../themes/watergo/water_go/pages/product/page-product-water.php:26
+#: ../../../themes/watergo/water_go/pages/product/page-product-recommend.php:27
+msgid "Nearest"
+msgstr "Gần nhất"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:46
+msgid "New first"
+msgstr "Đơn cũ trước"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:31
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:112
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:34
+msgid "New Password"
+msgstr "mật khẩu mới"
+
+#: ../../../themes/watergo/water_go/pages/support/support-index.php:71
+msgid "No Results Match"
+msgstr "Không có kết quả phù hợp"
+
+#: ../../../themes/watergo/water_go/pages/notification/notification-index.php:14
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:21
+#: ../../../themes/watergo/water_go/pages/store/page-store-profile.php:60
+msgid "Notification"
+msgstr "Thông báo"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:61
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:49
+msgid "Okay"
+msgstr "Đồng ý"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:47
+msgid "Old first"
+msgstr "Đơn mới trước"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:49
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:101
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:98
+msgid "Or log in with"
+msgstr "Hoặc"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index.php:14
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:14
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:44
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:7
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:72
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:37
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:148
+msgid "Order"
+msgstr "Đơn Hàng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:194
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:185
+msgid "Order Successfully"
+msgstr "Đặt hàng thành công"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:101
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:88
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:110
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:99
+msgid "Ordered Time"
+msgstr "Thời gian đặt hàng"
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:82
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:98
+msgid "Orders"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:41
+msgid "Other"
+msgstr "Khác"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:70
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:115
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:35
+msgid "Out of Stock"
+msgstr "Hết hàng"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:66
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:66
+msgid "Owner"
+msgstr "Chủ cửa hàng"
+
+#. Name of the template
+msgid "Page Conditions"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:34
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:111
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:53
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:36
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:77
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:80
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:96
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:25
+msgid "Password"
+msgstr "Mật khẩu"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:59
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:67
+msgid "Password Changed"
+msgstr "Mật khẩu đã được thay đổi"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:166
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:95
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:93
+msgid "Payment method"
+msgstr "Phương thức thanh toán"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:78
+msgid "Percentage Discount"
+msgstr "Phần trăm giảm"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-add.php:30
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:30
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:87
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:86
+msgid "Phone"
+msgstr "Số điện thoại"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:167
+msgid "Photo"
+msgstr "Hình ảnh"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:170
+msgid "Place Order"
+msgstr "Đặt hàng"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:14
+msgid "Please login to explode more"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby.php:98
+msgid "Please share your location for a better experience on Watergo"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:45
+msgid "Please tell us the reason"
+msgstr "Hãy cho chúng tôi biết lý do"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:63
+msgid "Price"
+msgstr "Giá"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-detail.php:54
+msgid "Product"
+msgstr "Sản Phẩm"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:162
+msgid "Product Description"
+msgstr "Mô tả sản phẩm"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:96
+msgid "products"
+msgstr "sản phẩm"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:11
+msgid "Profile"
+msgstr "Hồ sơ"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:94
+msgid "purchase"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:56
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:130
+msgid "Quantity"
+msgstr "Số lượng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:138
+msgid "Re-Order"
+msgstr "Đặt hàng lại"
+
+#: ../../../themes/watergo/water_go/pages/home/home.php:84
+#: ../../../themes/watergo/water_go/pages/product/page-product-recommend.php:13
+msgid "Recommend"
+msgstr "Sản phẩm đề xuất"
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:9
+msgid "Report"
+msgstr "Báo cáo"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:100
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:25
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:108
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:30
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:63
+msgid "Resend"
+msgstr "gửi lại"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:72
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:20
+msgid "Reset your password"
+msgstr "Đặt lại mật khẩu của bạn"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:122
+msgid "Review Store"
+msgstr "Đánh giá cửa hàng"
+
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:85
+msgid "Review Successfully"
+msgstr "Đăng thành công"
+
+#: ../../../themes/watergo/water_go/pages/review/review-index.php:13
+msgid "Reviews"
+msgstr "Đánh giá"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-detail.php:35
+msgid "reviews"
+msgstr "đánh giá"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:49
+#: ../../../themes/watergo/water_go/pages/user/page-user-edit.php:80
+#: ../../../themes/watergo/water_go/pages/user/page-user-review-edit.php:43
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:45
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:212
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:50
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:119
+msgid "Save"
+msgstr "Lưu lại"
+
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:15
+msgid "Schedule"
+msgstr "Lịch giao"
+
+#: ../../../themes/watergo/water_go/pages/support/support-index.php:38
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#: ../../../themes/watergo/water_go/pages/search/search-index.php:20
+msgid "Search by product or store name"
+msgstr "Tìm kiếm sản phẩm hoặc tên cửa hàng"
+
+#: ../../../themes/watergo/water_go/pages/home/home.php:85
+#: ../../../themes/watergo/water_go/pages/home/home.php:117
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:111
+msgid "See All"
+msgstr "Xem tất cả"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-detail.php:36
+msgid "See all"
+msgstr "Xem tất cả"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:62
+msgid "Select All"
+msgstr "Chọn Tất Cả"
+
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-add.php:44
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-edit.php:40
+msgid "Select as default address"
+msgstr "Chọn làm địa chỉ mặc định"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:50
+msgid "Select Brand"
+msgstr "Chọn thương hiệu"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:167
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:148
+msgid "Select Cancellation Reason"
+msgstr "Chọn lý do hủy"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:35
+msgid "Select Category"
+msgstr "Chọn danh mục"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:101
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:137
+msgid "Select date"
+msgstr "Chọn ngày"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:94
+msgid "Select Date & Time"
+msgstr "Chọn Ngày & Giờ"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:78
+msgid "Select delivery time"
+msgstr "Chọn thời gian giao hàng"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:100
+msgid "Select Product"
+msgstr "Chọn sản phẩm"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:133
+msgid "Select Quantity"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:105
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:141
+msgid "Select time"
+msgstr "Chọn thời gian"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:148
+msgid "Select Volume"
+msgstr "Chọn thể tích"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:104
+msgid "Select Weight"
+msgstr "Chọn khối lượng"
+
+#: ../../../themes/watergo/water_go/pages/support/support-index.php:79
+msgid "Send a Message"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/support/page-support-add.php:23
+msgid "Send Message"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/support/support-index.php:78
+msgid "Send message to tell us more and we’ll help you"
+msgstr "Bạn đang gặp vấn đề cần hỗ trợ?"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:13
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:70
+#: ../../../themes/watergo/water_go/pages/store/page-store-profile.php:90
+#: ../../../themes/watergo/water_go/pages/store/page-store-settings.php:13
+msgid "Settings"
+msgstr "Cài đặt"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:48
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:127
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:75
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:9
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:45
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:97
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:43
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:94
+msgid "Sign Up"
+msgstr "Đăng ký  "
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:98
+msgid "Size Description"
+msgstr "Mô tả kích thước"
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:82
+msgid "SOLD"
+msgstr "ĐÃ BÁN"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store.php:110
+msgid "Sold"
+msgstr "Đã bán"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-ice.php:19
+#: ../../../themes/watergo/water_go/pages/product/page-product-water.php:18
+#: ../../../themes/watergo/water_go/pages/product/page-product-recommend.php:20
+msgid "Sort"
+msgstr "Lọc"
+
+#: ../../../themes/watergo/water_go/pages/store/page-store-profile.php:7
+msgid "Store"
+msgstr "Cửa Hàng"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:154
+msgid "Store Closed"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:71
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:71
+msgid "Store Name"
+msgstr "Tên cửa hàng"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:178
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:197
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:159
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:44
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:126
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:48
+msgid "Submit"
+msgstr "Xác nhận  "
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-profile.php:78
+#: ../../../themes/watergo/water_go/pages/store/page-store-profile.php:73
+msgid "Support"
+msgstr "Hỗ trợ"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-settings.php:37
+#: ../../../themes/watergo/water_go/pages/user/page-user-term-conditions.php:12
+msgid "Terms & Conditions"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-login.php:70
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:92
+msgid "Terms and Conditions"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:24
+#: ../../../themes/watergo/water_go/pages/delivery-address/delivery-address-index.php:31
+msgid "There is no address"
+msgstr "Không có địa chỉ"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:30
+msgid "There is no monthly order"
+msgstr "Không có đơn hàng tháng"
+
+#: ../../../themes/watergo/water_go/pages/cart/cart.php:50
+msgid "There is no product in your cart"
+msgstr "Giỏ hàng đang trống"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:29
+msgid "There is no weekly order"
+msgstr "Không có đơn hàng tuần"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:178
+msgid "This Product is <span class='t-primary'>Out of Stock</span"
+msgstr "Sản phẩm này đã  <span class='t-primary'>hết hàng</span>"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:167
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:162
+msgid "This Product is <span class='t-primary'>Out of Stock</span>"
+msgstr "Sản phẩm này đã  <span class='t-primary'>hết hàng</span>"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:91
+msgid "To"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-top-related.php:13
+msgid "Top Products"
+msgstr "Sản Phẩm đề xuất"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:111
+msgid "Top products"
+msgstr "Sản Phẩm đề xuất"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-ice.php:28
+#: ../../../themes/watergo/water_go/pages/product/page-product-water.php:28
+#: ../../../themes/watergo/water_go/pages/product/page-product-recommend.php:29
+msgid "Top Rated"
+msgstr "Đánh giá tốt nhất"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index.php:83
+#: ../../../themes/watergo/water_go/pages/order/page-order-product.php:169
+#: ../../../themes/watergo/water_go/pages/order/page-order-store-detail.php:150
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:125
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:134
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:65
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:97
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-detail.php:132
+msgid "Total"
+msgstr "Tổng cộng"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:56
+#: ../../../themes/watergo/water_go/pages/schedule/page-schedule-index.php:57
+msgid "Total order"
+msgstr "Tổng đơn"
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:114
+msgid "TOTAL PROFIT"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:12
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:46
+msgid "User name"
+msgstr "Tên tài khoản"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:95
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:54
+msgid "Verify"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register-store.php:22
+msgid "Verify your email"
+msgstr "Xác nhận email của bạn"
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:129
+msgid "View"
+msgstr "Xem"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-detail.php:83
+msgid "View Store"
+msgstr "Xem cửa hàng"
+
+#: ../../../themes/watergo/water_go/pages/home/home.php:76
+#: ../../../themes/watergo/water_go/pages/nearby/page-nearby.php:45
+#: ../../../themes/watergo/water_go/pages/product/page-product-water.php:11
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:53
+#: ../../../themes/watergo/water_go/pages/store/page-store-edit.php:104
+msgid "Water"
+msgstr "Nước"
+
+#. Name of the theme
+msgid "Water Go"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:145
+msgid "Water Volume"
+msgstr "Thể tích sản phẩm"
+
+#: ../../../themes/watergo/water_go/pages/support/page-support-notification.php:13
+#: ../../../themes/watergo/water_go/pages/support/page-support-detail.php:13
+#: ../../../themes/watergo/water_go/pages/support/support-index.php:22
+#: ../../../themes/watergo/water_go/pages/support/page-support-add.php:12
+#: ../../../themes/watergo/water_go/pages/support/page-support-notification-detail.php:12
+msgid "WaterGo Support"
+msgstr "WaterGo Hỗ Trợ"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:54
+msgid "We are sorry to see you leave"
+msgstr "Chúng tôi rất tiếc khi thấy bạn rời đi"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:73
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-reset-password.php:21
+msgid "We have sent a code to your email"
+msgstr "Chúng tôi đã gửi mã xác nhận đến email của bạn."
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:100
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:63
+msgid "We have sent a code to your email."
+msgstr "Chúng tôi đã gửi mã xác nhận đến email của bạn."
+
+#: ../../../themes/watergo/water_go/pages/order/order-index.php:16
+msgid "Week"
+msgstr "Đơn tuần"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-filter.php:14
+msgid "Weekly order list"
+msgstr "Danh sách đặt hàng tuần"
+
+#: ../../../themes/watergo/water_go/pages/product/page-product-store-view.php:101
+msgid "Weight"
+msgstr "Khối lượng"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-login.php:13
+msgid "WELCOME"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-review-edit.php:19
+msgid "What ‘s your rate"
+msgstr "Bạn có hài lòng với đơn này không?"
+
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:19
+msgid "What's your rate"
+msgstr "Bạn có hài lòng với đơn này không?"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:55
+msgid ""
+"When you delete your account, you won't <br>be able to log in again by "
+"deleted account."
+msgstr ""
+"Khi bạn xóa tài khoản của mình, bạn sẽ không thể đăng nhập lại bằng tài "
+"khoản đã xóa."
+
+#: ../../../themes/watergo/water_go/pages/order/order-index-store.php:186
+msgid "Why do you want to cancel <span class='t-primary'>All Order</span>"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-delete-account.php:24
+msgid "Why do you want to delete your account"
+msgstr "Tại sao bạn muốn xóa tài khoản của mình?"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-review-edit.php:13
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:13
+msgid "Write Review"
+msgstr "Viết đánh giá"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-review-edit.php:38
+msgid "Write your review"
+msgstr "Viết đánh giá của bạn"
+
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:38
+msgid "Write your review...."
+msgstr "Viết đánh giá của bạn..."
+
+#: ../../../themes/watergo/water_go/pages/report/report-index.php:73
+msgid "Year"
+msgstr "Năm"
+
+#: ../../../themes/watergo/water_go/pages/order/page-order-detail.php:174
+msgid "You already review this order"
+msgstr ""
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-password.php:60
+msgid "Your password has been changed successfully"
+msgstr "Mật khẩu của bạn đã được thay đổi thành công"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-forget-password.php:143
+msgid ""
+"Your password has been reset successfully<br>Now login with your new password"
+msgstr ""
+"Mật khẩu của bạn đã được đặt lại thành công. <br>Bây giờ hãy đăng nhập bằng "
+"mật khẩu mới của bạn"
+
+#: ../../../themes/watergo/water_go/pages/support/page-support-notification.php:22
+#: ../../../themes/watergo/water_go/pages/support/page-support-add.php:18
+msgid "Your Question"
+msgstr "Câu hỏi của bạn"
+
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-store-register.php:148
+#: ../../../themes/watergo/water_go/pages/authentication/page-auth-register.php:123
+msgid "Your registration has been successful"
+msgstr "Bạn đã đăng ký tài khoản thành công"
+
+#: ../../../themes/watergo/water_go/pages/user/page-user-review-edit.php:29
+#: ../../../themes/watergo/water_go/pages/review/page-review-form.php:29
+msgid "Your Review"
+msgstr "Chia sẻ trải nghiệm của bạn "
