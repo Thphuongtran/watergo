@@ -1,12 +1,12 @@
 <div id='app'>
 
-   <div v-show='loading == true'>
+   <div v-show='loading == true && order != null && order.order_hidden == 0'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
    
-   <div v-show='loading == false && order != null' class='page-order-detail'>
+   <div v-show='loading == false && order != null && order.order_hidden == 0' class='page-order-detail'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -130,13 +130,12 @@
 
          <div class='product-detail-bottomsheet'
             :class='[
-               get_layout_text_price,
-               order_status == "complete" ? "cell-re-order" : ""
+               get_layout_text_price, get_layout_cell_reorder 
             ]'
          >
-            <p class='price-total' :class='order_status != "complete" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
+            <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
-               v-if='order_status == "complete" || order_status == "cancel" '
+               v-if='check_can_reorder == true'
                @click='buttonReOrder' 
                class='btn-primary'><?php echo __('Re-Order', 'watergo'); ?></button>
          </div>
@@ -177,7 +176,13 @@
          <p class='heading'><?php echo __('You already review this order', 'watergo'); ?> !</p>
       </div>
    </div>
-   
+
+   <div class='modal-popup' :class=' loading == false && ( order == null || order.order_hidden == 1 ) ? "open" : ""'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='goBack' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'><?php echo __('Content Not Found', 'watergo'); ?> </p>
+      </div>
+   </div>
 
    <div v-show='banner_open == true' class='banner' :class='banner_open == true ? "z-index-5": ""'>
       <div class='banner-head'>
@@ -233,6 +238,8 @@ createApp({
    },
 
    methods: {
+
+      
 
       get_title_weekly_compact( title ){
          if( this.get_locale == 'vi' ){
@@ -424,6 +431,27 @@ createApp({
 
    computed: {
 
+      check_can_reorder(){
+         if( 
+            ( this.order.order_delivery_type == 'once_immediately' || this.order.order_delivery_type == 'once_date_time' ) && 
+            ( this.order.order_status == "complete" || this.order.order_status == "cancel" )
+         ){
+            return true;
+         }else{
+            return false;
+         }
+      },
+
+      get_layout_cell_reorder(){
+         if( 
+            ( this.order.order_delivery_type == 'once_immediately' || this.order.order_delivery_type == 'once_date_time' ) && 
+            ( this.order.order_status == "complete" || this.order.order_status == "cancel" )
+         ){
+            return "cell-re-order";
+         }
+      },
+      
+
       get_layout_text_price(){
 
          if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering" ){
@@ -515,7 +543,7 @@ createApp({
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER
       
-      if( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ){
+      if( this.order != null && ( this.order.order_status == 'complete' || this.order.order_status == 'cancel' ) ){
          if( this.order.order_repeat_id == null || this.order.order_repeat_id == 0){
             var _formCheckReorder = new FormData();
             _formCheckReorder.append('action', 'atlantis_is_product_out_of_stock_from_order');
@@ -531,6 +559,7 @@ createApp({
          }
       }
 
+      console.log(this.order)
 
       setTimeout(() => {}, 200);
       

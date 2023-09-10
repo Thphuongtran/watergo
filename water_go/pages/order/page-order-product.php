@@ -164,7 +164,7 @@
       <div class='inner'><p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p><p><?php echo __('By Cash', 'watergo'); ?></p></div>
 
       <div class='product-detail-bottomsheet cell-placeorder'>
-         <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></p>
+         <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }} </span></p>
          <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary btn-order' :class='canPlaceOrder == false ? "disable" : "" '><?php echo __('Place Order', 'watergo'); ?></button>
       </div>
 
@@ -253,6 +253,30 @@ var app = Vue.createApp({
    },
 
    watch: {
+      delivery_address_primary: {
+         handler( val ){
+            if( val != undefined || val != null ){
+               if( this.delivery_type.once_immediately == true ){
+                  this.canPlaceOrder = true;
+               }else{
+                  this.canPlaceOrder = false;
+               }
+               if( this.delivery_type.once_date_time == true ){
+                  if( 
+                     this.delivery_data.once_date.length > 0 &&
+                     ( this.delivery_data.once_date[0].day && this.delivery_data.once_date[0].day !== '' ) &&
+                     ( this.delivery_data.once_date[0].time && this.delivery_data.once_date[0].time !== '' )
+                  ){
+                     this.canPlaceOrder = true;
+                  }else{
+                     this.canPlaceOrder = false;
+                  }
+               }
+            }
+         },
+         deep: true
+      },
+
       delivery_data: {
          handler( val ){
 
@@ -270,6 +294,7 @@ var app = Vue.createApp({
                      ( val.once_date[0].day && val.once_date[0].day !== '' ) &&
                      ( val.once_date[0].time && val.once_date[0].time !== '' )
                   ){
+                     console.log('Can Order Once date time');
                      this.canPlaceOrder = true;
                   }else{
                      this.canPlaceOrder = false;
@@ -310,6 +335,24 @@ var app = Vue.createApp({
          deep: true,
 
       },
+
+      // UPDATE FIX CHECK CAN ORDER FOR once_date_time
+      delivery_type: {
+         handler( type ){
+            if( type.once_date_time == true  ){
+               if( 
+                  this.delivery_data.once_date.length > 0 &&
+                  ( this.delivery_data.once_date[0].day && this.delivery_data.once_date[0].day !== '' ) &&
+                  ( this.delivery_data.once_date[0].time && this.delivery_data.once_date[0].time !== '' )
+               ){
+                  this.canPlaceOrder = true;
+               }else{
+                  this.canPlaceOrder = false;
+               }
+            }
+         },
+         deep: true
+      }      
    },
 
    methods: { 
@@ -899,8 +942,6 @@ var app = Vue.createApp({
                }
             }
 
-            console.log(this.delivery_data.weekly);
-
             var form = new FormData();
             form.append('action',            'atlantis_add_order');
             form.append('delivery_data',     JSON.stringify( delivery_data ) );
@@ -940,8 +981,6 @@ var app = Vue.createApp({
          }else{
             this.canPlaceOrder = false;
          }
-
-         // console.log(_productSelected)         
 
       },
 
@@ -1230,8 +1269,6 @@ var app = Vue.createApp({
          }
 
       }
-
-
 
       setTimeout( () => {
          this.btn_select_date_once();

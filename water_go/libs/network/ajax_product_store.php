@@ -87,7 +87,7 @@ function atlantis_get_product_from_store(){
       }
 
       $products = func_atlantis_get_product_by([
-         'id' => $store_id,
+         'id'     => $store_id,
          'get_by' => 'store_id',
          'get_by_product_type' => $type_product
       ]);
@@ -340,21 +340,28 @@ function atlantis_action_product_store(){
       if( $event == 'delete' ){
          global $wpdb;
          // DO DELETE IMAGE
-         $list_attachment_id_delete = isset($_POST['list_attachment_id_delete']) ? $_POST['list_attachment_id_delete'] : null;
-         if($list_attachment_id_delete != null ){
-            $list_attachment_id_delete = json_decode( $list_attachment_id_delete );
-            foreach ($list_attachment_id_delete as $attachment_id) {
-               // Delete the attachment
-               wp_delete_attachment($attachment_id, true);
-            }
-            $wpdb->delete('wp_watergo_attachment',[ 'related_id' => $product_id ], [ '%d' ]);
-         }
-         $deleted = $wpdb->delete('wp_watergo_products',[ 'id' => $product_id ], [ '%d' ]);
+         // $list_attachment_id_delete = isset($_POST['list_attachment_id_delete']) ? $_POST['list_attachment_id_delete'] : null;
+         // if($list_attachment_id_delete != null ){
+         //    $list_attachment_id_delete = json_decode( $list_attachment_id_delete );
+         //    foreach ($list_attachment_id_delete as $attachment_id) {
+         //       // Delete the attachment
+         //       wp_delete_attachment($attachment_id, true);
+         //    }
+         //    $wpdb->delete('wp_watergo_attachment',[ 'related_id' => $product_id ], [ '%d' ]);
+         // }
+         // $deleted = $wpdb->delete('wp_watergo_products',[ 'id' => $product_id ], [ '%d' ]);
 
-         if( $deleted ){
-            wp_send_json_success([ 'message' => 'action_product_ok', 'data' => $product_id]);
+         // if( $deleted ){
+         //    wp_send_json_success([ 'message' => 'action_product_ok', 'data' => $product_id]);
+         //    wp_die();
+         // }
+
+         $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 1], [ 'id' => $product_id ]);
+         if($updated ){
+            wp_send_json_success(['message' => 'action_product_ok' ]);
             wp_die();
          }
+
          wp_send_json_error([ 'message' => 'action_product_error']);
          wp_die();
       }

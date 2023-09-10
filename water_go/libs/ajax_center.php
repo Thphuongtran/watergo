@@ -46,13 +46,13 @@ function func_atlantis_get_order_fullpack( $args ){
    // GET ALL 
 
    if( $get_by == 'order_id' ){
-      $sql = "SELECT * FROM wp_watergo_order WHERE order_id = $related_id";
+      $sql = "SELECT * FROM wp_watergo_order WHERE order_id = $related_id AND order_hidden != 1 ";
    }
    if( $get_by == 'user_id'  ){
-      $sql = "SELECT * FROM wp_watergo_order WHERE order_by = $related_id";
+      $sql = "SELECT * FROM wp_watergo_order WHERE order_by = $related_id AND order_hidden != 1 ";
    }
    if( $get_by == 'store_id' ){
-      $sql = "SELECT * FROM wp_watergo_order WHERE order_store_id = $related_id";
+      $sql = "SELECT * FROM wp_watergo_order WHERE order_store_id = $related_id AND order_hidden != 1 ";
    }
 
    if( $order_status != '' ){
@@ -217,24 +217,29 @@ function func_atlantis_get_product_by( $args ){
 
    $sql = "SELECT * FROM wp_watergo_products ";
    if( $get_by == 'store_id' ){
-      $sql .= " WHERE wp_watergo_products.store_id = $id";
+      $sql .= " WHERE wp_watergo_products.store_id = $id ";
+
       if( $exclude_id != null && is_array($exclude_id) && count($exclude_id) > 0 ){
          $exclude_id = implode(',', $exclude_id);
          $sql .= " AND wp_watergo_products.id NOT IN ($exclude_id)";
       }else if ( $exclude_id != null && $exclude_id != 0 ) {
          $sql .= " AND wp_watergo_products.id NOT IN ($exclude_id)";
       }
+      $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
    if( $get_by == 'product_id'){
-      $sql .= " WHERE wp_watergo_products.id = $id";
+      $sql .= " WHERE wp_watergo_products.id = $id ";
+      $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
 
    if( $get_by == 'category_id' ){
       $sql .= " WHERE wp_watergo_products.category = $id ";
+
    }
 
    if( $get_by_product_type != null ){
       $sql .= " AND wp_watergo_products.product_type = '$get_by_product_type' ";
+      $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
 
    if( $limit == -1 ){
@@ -651,12 +656,15 @@ require_once THEME_DIR . '/libs/network/ajax_share.php';
 // TESTING API FOR ALL
 function atlantis_testing(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_testing' ){
-      
 
-      $user = get_user_by('id', 1);
-      $first_name = get_user_meta( $user->data->ID, 'first_name', true );
+      $email = isset($_POST['email']) ? $_POST['email'] : '';
+      $account_hidden = get_user_meta( $user->data->ID, 'account_hidden', true ); 
+
+
+      $user = get_user_by('email', $email);
+      // $first_name = get_user_meta( $user->data->ID, 'first_name', true );
       
-      wp_send_json_success(['message' => 'bug', 'user_id' => $user->ID , 'user' => $user, 'data' => $first_name]);
+      wp_send_json_success(['message' => 'bug', 'user' => $user, 'account_hidden' => $account_hidden]);
       wp_die();
 
    }

@@ -17,12 +17,36 @@ add_action( 'wp_ajax_atlantis_forget_password', 'atlantis_forget_password' );
 
 function atlantis_login(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_login' ){
-      $email = isset($_POST['email']) ? $_POST['email'] : '';
-      $password = isset($_POST['password']) ? $_POST['password'] : '';
+      $email      = isset($_POST['email']) ? $_POST['email'] : '';
+      $password   = isset($_POST['password']) ? $_POST['password'] : '';
 
       if( !is_email($email) && $email == '' && $password == ''  ){
          wp_send_json_error([ 'message' => 'login_error' ]);
          wp_die();
+      }
+
+      $user = get_user_by('email', $email);
+
+      if( $user ){
+
+         $user_id = $user->data->ID;
+
+         $is_user_store = get_user_meta($user_id , 'user_store', true);
+            
+         if($is_user_store == true || $is_user_store == 1 ){
+            wp_send_json_error([ 'message' => 'login_error' ]);
+            wp_die();
+         }
+         
+         // ACCOUNT DELETE
+         $is_account_hidden = get_user_meta($user_id, 'account_hidden', true) != ''
+            ? (int) get_user_meta($user_id , 'account_hidden', true) 
+            : null;
+
+         if($is_account_hidden == true || $is_account_hidden == 1){
+            wp_send_json_error([ 'message' => 'account_delete' ]);
+            wp_die();
+         }
       }
 
       $user_login = wp_signon( [
@@ -112,6 +136,7 @@ function atlantis_register_user(){
          'user_pass'  => $password,
          'user_email' => $email,
          'first_name' => $username,
+         'role'       => 'subscriber'
       ]);
 
       if ( ! is_wp_error( $user_id ) ) {
@@ -219,6 +244,16 @@ function atlantis_store_login(){
             ? (int) get_user_meta($user_id , 'user_store', true) 
             : null;
 
+         // ACCOUNT DELETE
+         $is_account_hidden = get_user_meta($user_id, 'account_hidden', true) != ''
+            ? (int) get_user_meta($user_id , 'account_hidden', true) 
+            : null;
+
+         if($is_account_hidden == true || $is_account_hidden == 1){
+            wp_send_json_error([ 'message' => 'account_delete' ]);
+            wp_die();
+         }
+
          // THIS IS STORE USER
          if($is_user_store == true || $is_user_store == 1 ){
             // LOGIN
@@ -316,7 +351,8 @@ function atlantis_store_register(){
          'user_login' => $email,
          'user_email' => $email,
          'user_pass'  => $password,
-         'first_name' => $email
+         'first_name' => $email,
+         'role'       => 'subscriber'
       ]);
 
 
@@ -420,7 +456,8 @@ function atlantis_store_register_from_admin(){
          'user_login' => $email,
          'user_email' => $email,
          'user_pass'  => $password,
-         'first_name' => $email
+         'first_name' => $email,
+         'role'       => 'subscriber'
       ]);
 
       if( ! $user_id ){

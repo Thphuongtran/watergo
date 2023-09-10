@@ -98,11 +98,11 @@ function developerThemeConstruct() {
 	// WP version
 	remove_action( 'wp_head', 'wp_generator' );
 	// remove WP version from css
-   add_filter( 'style_loader_src', function ( $src ) {
-	   if ( strpos( $src, 'ver=' ) )
-		   $src = remove_query_arg( 'ver', $src );
-	   return $src; }
-   , 9999 );
+   // add_filter( 'style_loader_src', function ( $src ) {
+	//    if ( strpos( $src, 'ver=' ) )
+	// 	   $src = remove_query_arg( 'ver', $src );
+	//    return $src; }
+   // , 9999 );
 	// remove Wp version from scripts
 	add_filter( 'script_loader_src', function ( $src ) {
 	   if ( strpos( $src, 'ver=' ) )

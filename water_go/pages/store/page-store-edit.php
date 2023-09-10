@@ -182,7 +182,6 @@ var app = Vue.createApp({
             $(".btn-email-verify").removeClass("is-send");
          }
       }
-      
    },
 
    methods: {

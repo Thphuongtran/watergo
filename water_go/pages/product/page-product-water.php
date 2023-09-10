@@ -282,7 +282,6 @@ createApp({
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
          var r = await window.request(form);
-         // console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -328,24 +327,24 @@ createApp({
       sortFeatureCurrentValue: async function( val ){
 
          if( val == 0 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), 0 );
-            this.loading = false;
+            // this.products = [];
+            // this.loading = true;
+            // await this.load_product_sort(this.get_text_filter(), 0 );
+            // this.loading = false;
             window.appbar_fixed();
          }
          if( val == 1 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), 0 );
-            this.loading = false;
+            // this.products = [];
+            // this.loading = true;
+            // await this.load_product_sort(this.get_text_filter(), 0 );
+            // this.loading = false;
             window.appbar_fixed();
          }
          if( val == 2 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort(this.get_text_filter(), 0 );
-            this.loading = false;
+            // this.products = [];
+            // this.loading = true;
+            // await this.load_product_sort(this.get_text_filter(), 0 );
+            // this.loading = false;
             window.appbar_fixed();
          }
       }
@@ -359,6 +358,7 @@ createApp({
       await this.load_product_sort('nearest', 0);
       await this.load_category();
       await this.load_brand();
+
 
       this.loading = false;
 

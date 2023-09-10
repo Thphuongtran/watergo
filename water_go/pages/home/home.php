@@ -57,6 +57,12 @@
             </div>
          </div>
 
+         <div class='inner'> 
+
+            
+
+         </div>
+
          <div class='slider-container'>
             <ul class='sliders'>
                <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
@@ -164,7 +170,6 @@
 
 <script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
 <script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js'; ?>'></script>
-
 <script>
 
 var app = Vue.createApp({

@@ -307,7 +307,6 @@ var app = Vue.createApp({
             uploadImages:     false,
             productImages:    false,
          }
-         
       }
    },
 
@@ -768,8 +767,6 @@ var app = Vue.createApp({
 
             }
          }
-         console.log();
-
       },
 
       async get_product_category(){

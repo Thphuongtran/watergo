@@ -16,13 +16,12 @@ add_action( 'wp_ajax_nopriv_atlantis_get_support_question_user', 'atlantis_get_s
 add_action( 'wp_ajax_atlantis_get_support_question_user', 'atlantis_get_support_question_user' );
 
 
+
 function atlantis_support(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_support' ){
 
-      if(is_user_logged_in() == true ){
+      if( is_user_logged_in() ){
          $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
       }else{
          wp_send_json_error(['message' => 'no_login_invalid' ]);
          wp_die();
@@ -30,16 +29,25 @@ function atlantis_support(){
 
       global $wpdb;
 
-      $sql = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL";
-      $res = $wpdb->get_results($sql);
-      if( empty( $res )){
+      $sql_admin = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL";
+      $res_admin = $wpdb->get_results($sql_admin);
+
+      // $sql_user = "SELECT * FROM wp_watergo_supports WHERE user_id = $user_id ";
+      // $res_user = $wpdb->get_results($sql_user);
+
+      // $mergedData = [];
+      // $mergedData = array_merge( $res_user, $res_admin);
+
+
+      if( empty( $res_admin )){
          wp_send_json_error([ 'message' => 'no_support_service_found' ]);
          wp_die();
-      }else{
-         wp_send_json_success([ 'message' => 'get_support_ok', 'data' => $res ]);
-         wp_die();  
       }
       
+      // sort($mergedData);
+      wp_send_json_success([ 'message' => 'get_support_ok', 'data' => $res_admin ]);
+      wp_die();
+
    }
 }
 
@@ -70,7 +78,7 @@ function atlantis_add_support(){
       ]);
 
       wp_send_json_success([ 'message' => 'question_add_ok' ]);
-      wp_die();  
+      wp_die();
    }
 }
 
@@ -134,6 +142,7 @@ function atlantis_support_make_as_read(){
 
       wp_send_json_success([ 'message' => 'support_mark_as_read', ]);
       wp_die();
+
    }
 }
 

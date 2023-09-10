@@ -1,5 +1,4 @@
 <?php wp_footer(); ?>
-<footer></footer>
 <script>
 
    /**
@@ -124,6 +123,7 @@
     */
 
    async function callbackResume(data){
+
 
       if ( data != "undefined" && data != "" ) {
          var partial = data.split('|');

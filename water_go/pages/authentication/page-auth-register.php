@@ -81,11 +81,12 @@
             <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
 
-         <div class='form-check style01 mt15'>
+         <div class='form-check style01 mt15' style="display:flex; align-items: center;column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'><?php echo __( "I agree with <span class='t-primary'>Terms and Conditions</span>", 'watergo'); ?></span>
+               <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?> </span>
             </label>
+            <button @click='gotoPageUserTermConditions' class='link-term-condition t-primary'><?php echo __('Terms and Conditions', 'watergo'); ?></button>
          </div>
 
          <p class='t-red mt15'>{{ res_text_sendcode }}</p>
@@ -180,6 +181,9 @@ createApp({
    },
 
    methods: {
+      
+      gotoPageUserTermConditions(){ window.gotoPageUserTermConditions()},
+
       toggleDropdown() {
          this.showDropdown = !this.showDropdown;
       },

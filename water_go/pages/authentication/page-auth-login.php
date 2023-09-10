@@ -89,7 +89,7 @@ $login_url_par = http_build_query($get);
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
                <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?> </span>
             </label>
-            <a href="/user-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;"><?php echo __('Terms and Conditions', 'watergo'); ?></a>
+            <button @click='gotoPageUserTermConditions' class='link-term-condition t-primary'><?php echo __('Terms and Conditions', 'watergo'); ?></button>
          </div>
 
          <div class='form-group'>
@@ -143,6 +143,9 @@ createApp({
    
    methods: {
 
+      gotoPageUserPrivacyPolicy(){ window.gotoPageUserPrivacyPolicy()},
+      gotoPageUserTermConditions(){ window.gotoPageUserTermConditions()},
+
       toggleDropdown() {
          this.showDropdown = !this.showDropdown;
       },
@@ -165,7 +168,8 @@ createApp({
                this.loading = true;
                if( window.appBridge != undefined ){
                   window.appBridge.setLanguage(res.data);
-                  window.appBridge.close('refresh');
+                  // window.appBridge.close('refresh');
+                  window.appBridge.refresh;
                }
             }
          }
@@ -225,6 +229,7 @@ createApp({
                form.append('email', this.inputEmail);
                form.append('password', this.inputPassword);
                var r = await window.request(form);
+               console.log(r)
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
@@ -240,6 +245,9 @@ createApp({
                      this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
                   if(res.message == 'user_not_found' ){
+                     this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
+                  }
+                  if(res.message == 'account_delete' ){
                      this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
                }else{
@@ -266,8 +274,15 @@ createApp({
    },
 
    async created() {
-     await this.getLocale();
-     this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+      await this.getLocale();
+      this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const page_welcome = urlParams.get('page_welcome');
+      if(page_welcome != undefined && page_welcome == 1 ){
+         this.page_welcome = false;
+      }
+
    },
 
 }).mount('#authentication');

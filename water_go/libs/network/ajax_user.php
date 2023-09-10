@@ -415,7 +415,7 @@ function atlantis_update_user(){
          $update_data['user_email'] = $email;
 
          if( ! is_email($email)){
-            wp_send_json_success([ 'message' => 'email_is_not_correct_format' ]);
+            wp_send_json_error([ 'message' => 'email_is_not_correct_format' ]);
             wp_die();
          }
 
@@ -734,3 +734,63 @@ function atlantis_get_delivery_address_primary(){
    }
 
 }
+
+/**
+ * @access HIDDEN ACCOUNT | store + product
+ */
+
+add_action( 'wp_ajax_nopriv_atlantis_hidden_account', 'atlantis_hidden_account' );
+add_action( 'wp_ajax_atlantis_hidden_account', 'atlantis_hidden_account' );
+
+function atlantis_hidden_account(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_hidden_account'){
+      // $email = isset($_POST['email']) ? $_POST['email'] : '';
+      // if( $email == '' || ! is_email($email) ){
+      //    wp_send_json_error([ 'message' => 'email_is_not_correct_format' ]);
+      //    wp_die();
+      // }
+      // $user       = get_user_by('email', $email);
+
+      if(is_user_logged_in() == true ){
+         $user_id = get_current_user_id();
+         $user = get_user_by('id', $user_id);
+         $prefix_user = 'user_' . $user->data->ID;
+      }else{
+         wp_send_json_error([ 'message' => 'no_login_invalid' ]);
+         wp_die();
+      }
+
+      $is_user_store = get_user_meta($user_id, 'user_store', true) != '' 
+         ? (int) get_user_meta($user_id, 'user_store', true) 
+         : null;
+      $store_id = null;
+
+      global $wpdb;
+      if($is_user_store == true || $is_user_store == 1 ){
+         $sql_find_store = "SELECT id FROM wp_watergo_store WHERE user_id = $user_id LIMIT 1";
+         $res_store = $wpdb->get_results( $sql_find_store);
+
+         if( ! empty( $res_store )){
+            $store_id = $res_store[0]->id;
+            $wpdb->update('wp_watergo_store', [ 'store_hidden' => 1], ['id' => $store_id]);
+            $wpdb->update('wp_watergo_products', [ 'product_hidden' => 1], ['store_id' => $store_id]);
+            $wpdb->update('wp_watergo_order', [ 'order_hidden' => 1], ['order_store_id' => $store_id]);
+            $wpdb->update('wp_watergo_notification', [ 'notfication_hidden' => 1], ['store_id' => $store_id]);
+         }
+      }else{
+         $wpdb->update('wp_watergo_order', [ 'order_hidden' => 1 ], ['order_by' => $user_id]);
+         $wpdb->update('wp_watergo_notification', [ 'notfication_hidden' => 1], ['user_id' => $user_id]);
+      }
+
+      update_user_meta( $user_id, 'account_hidden', 1 );
+
+      $table = $wpdb->prefix."bj_user_push_token";
+      $wpdb->update($table , ["token" => "","status" => ""], ["user_id" => $user_id],["%s","%s"],["%d"]);
+
+      wp_logout();
+      wp_send_json_success(['message' => 'account_hidden_ok']);
+      wp_die();
+   }
+}
+
+

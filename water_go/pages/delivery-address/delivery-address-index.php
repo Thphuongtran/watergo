@@ -34,7 +34,7 @@
       </div>
 
       <ul class='list-tile col3' v-if='delivery_address.length > 0'>
-         <li 
+         <li
             v-for='(delivery, index) in delivery_address' :key='index'
          >
             <div @click='change_default_delivery_address(delivery.id )' class='leading'>
@@ -47,16 +47,18 @@
                >
                </div>
             </div>
-            <div @click='change_default_delivery_address(delivery.id )' class='list-tile-address content '>
-               <div class='tt01'>{{ delivery.address }}</div>
+
+            <div class='list-tile-address content '>
+               <div @click='change_default_delivery_address(delivery.id )' class='tt01'>{{ delivery.address }}</div>
                <div class='gr-horizontal'>
-                  <span class='tt02'>{{ delivery.name }}</span><span class='tt02'> (+84) {{ removeZeroLeading(delivery.phone) }}</span>
-                  <div class='action'>
-                     <button class='btn-text btn-edit-delivery-address' @click='gotoDeliveryAddressEdit(delivery.id)'><?php echo __('Edit', 'watergo'); ?></button>
+                  <span @click='change_default_delivery_address(delivery.id )' class='tt02'>{{ delivery.name }}</span><span class='tt02'> (+84) {{ removeZeroLeading(delivery.phone) }}</span>
+                  <div @click='gotoDeliveryAddressEdit(delivery.id)' class='action'>
+                     <button class='btn-text btn-edit-delivery-address'><?php echo __('Edit', 'watergo'); ?></button>
                   </div>
                </div>
                <span v-if='delivery.primary == true' class='badge-default'><?php echo __('Default', 'watergo'); ?></span>
             </div>
+
          </li>
 
       </ul>
@@ -79,7 +81,6 @@ var app = Vue.createApp({
          delivery_address: [],
          delivery_id_primary: 0,
          is_order_select: false,
-
          order_delivery_address: false
 
       }
@@ -94,8 +95,8 @@ var app = Vue.createApp({
    watch: {
 
       delivery_id_primary: async function( delivery_id ){
+
          var find = this.delivery_address.some( item => item.primary == 1 && item.id == delivery_id );
-         
          if( ! find ){
             this.loading = true;
             var form = new FormData();
@@ -130,7 +131,10 @@ var app = Vue.createApp({
       },
 
       gotoDeliveryAddressAdd(){ window.gotoDeliveryAddressAdd()},
-      gotoDeliveryAddressEdit(delivery_id){ window.gotoDeliveryAddressEdit(delivery_id)},
+      gotoDeliveryAddressEdit(delivery_id){ 
+         window.gotoDeliveryAddressEdit(delivery_id);
+         // console.log('Edit Delivery')
+      },
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       
       change_default_delivery_address( delivery_id ){
@@ -142,10 +146,10 @@ var app = Vue.createApp({
             // ORDER SELECT
             var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
             var _delivery                 = this.delivery_address.find( item => item.id == delivery_id );
-
             if( _delivery){
                _order_delivery_address[0] = _delivery;
                localStorage.setItem('watergo_order_delivery_address', JSON.stringify(_order_delivery_address));
+               // console.log('change default delivery');
                this.goBack();
             }
 

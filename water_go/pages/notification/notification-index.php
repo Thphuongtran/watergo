@@ -32,6 +32,14 @@
          </div>
       </div>
 
+      <!-- <div v-if='notifications.length == 0' class='modal-popup open'>
+         <div class='modal-wrapper'>
+            <div class='modal-close'><div @click='goBack' class='close-button'><span></span><span></span></div></div>
+            <p class='heading' v-if='get_locale == "vi"'>Nội dung không còn tồn tại</p>
+            <p class='heading' v-if='get_locale != "vi"'>Content Not Found </p>
+         </div>
+      </div> -->
+
    </div>
 
    <div v-show='loading == true'>
@@ -162,6 +170,8 @@ createApp({
          form.append('action', 'atlantis_notification_load_all');
          form.append('paged', paged);
          var r = await window.request(form);
+         console.log(r);
+         
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'notification_found' ){

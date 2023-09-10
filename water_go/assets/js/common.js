@@ -957,6 +957,13 @@ function gotoCart(){
    window.location.href = window.watergo_domain + 'cart/?appt=N';
 }
 function goBack(){ window.location.href = '?appt=X'; }
+// function goBack() {
+//   var newURL = window.location.href.split('?')[0] + '?appt=X';
+//   window.history.pushState({}, '', newURL);
+// }
+// function goBack() {
+//   window.history.back();
+// }
 function goBackRefresh(){ window.location.href = '?appt=X&data=refresh'; }
 
 function gotoOrderProduct(){

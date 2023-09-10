@@ -92,13 +92,32 @@
    
 </div>
 <div class='modal-popup open access-location-modal d-none'>
-         <div class='modal-wrapper'>
-            <div class='modal-close'><div class='close-button'><span></span><span></span></div></div>
-            <p class='heading pt20'><?php echo __('Location information is not available', 'watergo'); ?></p>
-            <p><?php echo __('Please share your location for a better experience on Watergo', 'watergo'); ?></p>
-            <button onclick="window.appBridge.openAppSetting()" class='btn btn-primary mt20'><?php echo __('Allow Access', 'watergo'); ?></button>
-         </div>
-      </div>
+   <div class='modal-wrapper'>
+      <div class='modal-close'><div class='close-button'><span></span><span></span></div></div>
+      <p class='heading pt20'><?php echo __('Location information is not available', 'watergo'); ?></p>
+      <p><?php echo __('Please share your location for a better experience on Watergo', 'watergo'); ?></p>
+      <button onclick="window.appBridge.openAppSetting()" class='btn btn-primary mt20'><?php echo __('Allow Access', 'watergo'); ?></button>
+   </div>
+</div>
+<div id='app-nearby'>
+   <module_get_order_delivering ref='module_get_order_delivering'></module_get_order_delivering>
+</div>
+<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js'; ?>'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script>
+var app = Vue.createApp({
+   data (){
+      return {
+         get_locale: '<?php echo get_locale(); ?>',
+      }
+   }
+})
+.component('module_get_order_delivering', module_get_order_delivering)
+.mount('#app-nearby');
+window.app = app;
+</script>
+
 <script src="<?php echo THEME_URI."/assets/js/owl.carousel.min.js?" ?>"></script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=marker&v=beta"  async defer ></script> -->

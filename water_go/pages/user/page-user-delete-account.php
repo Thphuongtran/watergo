@@ -59,7 +59,8 @@
 
                <div class='btn-fixed bottom style01'>
                   <button @click='buttonUserCancelDeleteAccount' class='btn btn-outline'><?php echo __('Cancel', 'watergo'); ?></button>
-                  <button @click='buttonUserDeleteAccount' class='btn btn-primary'><?php echo __('Continue', 'watergo'); ?></button>
+                  <button v-show='settings_delete_account_step == 0' @click='buttonUserDeleteAccount' class='btn btn-primary'><?php echo __('Continue', 'watergo'); ?></button>
+                  <button v-show='settings_delete_account_step == 1' @click='btn_delete_account' class='btn btn-primary'><?php echo __('Continue', 'watergo'); ?></button>
                </div>
             </div>
          </div>
@@ -67,6 +68,12 @@
 
       </div>
 
+   </div>
+
+   <div v-show='loading == true'>
+      <div class='progress-center'>
+         <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+      </div>
    </div>
 
 </div>
@@ -106,6 +113,22 @@ createApp({
 
       buttonUserSettingsQuestionSelected( index ){
          this.settings_delete_account_question_selected = index;
+      },
+
+      async btn_delete_account(){
+         this.loading = true;
+         var form = new FormData();
+         form.append('action', 'atlantis_hidden_account');
+         var r = await window.request(form);
+         if(r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'account_hidden_ok' ){
+               localStorage.setItem('watergo_carts', '[]');
+               // location to login
+               window.appBridge.logout();
+		         window.appBridge.close();
+            }
+         }
       },
 
       goBack(){ window.goBack();}

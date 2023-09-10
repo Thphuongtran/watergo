@@ -67,7 +67,7 @@
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
                <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>
             </label>
-            <a href="/store-terms-and-conditions/?appt=N" class='t-primary' style="text-decoration: none; height: 26px;padding-top: 4px;"><?php echo __('Terms and Conditions', 'watergo'); ?></a>
+            <button @click='gotoPageStoreTermConditions' class='link-term-condition t-primary'><?php echo __('Terms and Conditions', 'watergo'); ?></button>
          </div>
 
          <div class='form-group'>
@@ -112,6 +112,9 @@ createApp({
 
    
    methods: {
+
+      gotoPageStoreTermConditions(){window.gotoPageStoreTermConditions() },
+
       toggleDropdown() {
          this.showDropdown = !this.showDropdown;
       },
@@ -194,6 +197,9 @@ createApp({
                      this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
                   if(res.message == 'user_not_found' ){
+                     this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
+                  }
+                  if(res.message == 'account_delete' ){
                      this.res_text_sendcode = '<?php echo __("Email or password is incorrect", 'watergo'); ?>';
                   }
 

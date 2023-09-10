@@ -76,7 +76,7 @@ $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = ".get_current_user_id(
 
       <div class='support-bottomsheet'>
          <p><?php echo __("Send message to tell us more and we’ll help you", 'watergo');?> </p>
-         <button @click='gotoPageSupportAdd' class='btn btn-primary'><?php echo __('Send a Message', 'watergo'); ?></button>
+         <button @click='gotoPageSupportAdd' class='btn btn-primary max-w100'><?php echo __('Send a Message', 'watergo'); ?></button>
       </div>
 
    </div>
@@ -108,9 +108,7 @@ createApp({
       gotoPageSupportAdd(){window.gotoPageSupportAdd()},
       gotoPageSupportNotification(){ window.gotoPageSupportNotification()},
 
-
       async get_admin_support_question(){
-
          // var form = new FormData();
          // form.append('action', 'atlantis_get_admin_supports_for_user');
          // var r = await window.request(form);

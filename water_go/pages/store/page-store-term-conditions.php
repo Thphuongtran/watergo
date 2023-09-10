@@ -1,5 +1,5 @@
 <?php
-   $get_post = get_post( 312 );
+   $get_post = get_post( 433 );
 ?>
 
 <div id='app'>
@@ -17,14 +17,12 @@
          </div>
       </div>
    </div>
-   <div class='inner'>
-      <p class='t-term-conditions'>
-         <?php 
-            if( !empty($get_post) ){
-               echo $get_post->post_content;
-            } 
-         ?>
-      </p>
+   <div class='inner post-term-conditions'>
+      <?php 
+         if( !empty($get_post) ){
+            echo wpautop($get_post->post_content);
+         } 
+      ?>
    </div>
 
 </div>

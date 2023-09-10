@@ -25,7 +25,7 @@ function atlantis_notification_mark_read_notification_hash_id(){
       }
       global $wpdb;
 
-      $is_read = $wpdb->get_results( "SELECT is_read FROM wp_watergo_notification WHERE hash_id = '$hash_id' AND is_read = 0 ");
+      $is_read = $wpdb->get_results( "SELECT is_read FROM wp_watergo_notification WHERE hash_id = '$hash_id' AND is_read = 0 AND notification_hidden != 1 ");
       if( ! empty( $is_read )){
          $wpdb->update('wp_watergo_notification', [
             'is_read'   => 1,
@@ -49,7 +49,7 @@ function atlantis_notification_mark_read_notification(){
 
       global $wpdb;
 
-      $is_read = $wpdb->get_results( "SELECT is_read FROM wp_watergo_notification WHERE id = $id_notification AND is_read = 0 ");
+      $is_read = $wpdb->get_results( "SELECT is_read FROM wp_watergo_notification WHERE id = $id_notification AND is_read = 0");
       if( ! empty( $is_read )){
          $wpdb->update('wp_watergo_notification', [
             'is_read'   => 1,
@@ -110,7 +110,6 @@ function func_atlantis_order_status_notification( $order_id, $send_to, $status )
       $link      = get_bloginfo('home') . '/order/?order_page=order-store-detail&order_id='. $order_id .'&hash_id='. $hash_id .'&appt=N';
    }
 
-
    $time_created     = atlantis_current_datetime();
 
    $sql_clone = "INSERT INTO wp_watergo_notification(
@@ -170,7 +169,9 @@ function atlantis_notification_load_all(){
 
       global $wpdb;
 
-      $get_store_id  = $wpdb->get_results("SELECT id FROM wp_watergo_store WHERE user_id = $user_id ");
+      $get_store_id  = $wpdb->get_results("SELECT id FROM wp_watergo_store WHERE user_id = $user_id 
+         AND store_hidden != 1
+      ");
       $store_id      = $get_store_id[0]->id;
 
       $condition  = "user_id = $user_id";
@@ -182,7 +183,8 @@ function atlantis_notification_load_all(){
       }
 
       $sql = "SELECT * FROM wp_watergo_notification 
-         WHERE $condition AND $condition2
+         WHERE $condition AND $condition2 
+         AND notification_hidden != 1
          ORDER BY 
             time_created DESC,
             is_read DESC
@@ -219,7 +221,7 @@ function atlantis_notification_count(){
          : null;
 
       global $wpdb;
-      $get_store_id  = $wpdb->get_results("SELECT id FROM wp_watergo_store WHERE user_id = $user_id ");
+      $get_store_id  = $wpdb->get_results("SELECT id FROM wp_watergo_store WHERE user_id = $user_id AND store_hidden != 1");
       $store_id      = $get_store_id[0]->id;
       // $store_id = func_get_store_id_from_current_user();
       
@@ -231,7 +233,7 @@ function atlantis_notification_count(){
          $condition2 = "send_to = 'store'";
       }
 
-      $sql     = "SELECT COUNT(*) as count FROM wp_watergo_notification WHERE $condition AND is_read = 0 AND $condition2 ";
+      $sql     = "SELECT COUNT(*) as count FROM wp_watergo_notification WHERE $condition AND is_read = 0 AND $condition2 AND notification_hidden != 1";
       // $sql     = "SELECT COUNT(*) as count FROM wp_watergo_notification WHERE ($condition1) AND is_read = 0 AND ($condition2)";
 
       $res     = $wpdb->get_results( $sql );

@@ -89,7 +89,7 @@ function template_store_manager_index(){
 
 
    
-   <div class='tablenav bottom'>
+   <!-- <div class='tablenav bottom'>
       <div class="tablenav-pages"><span class="displaying-num">{{ total_items }} <?php echo __('items', 'wordpress'); ?></span>
 
       <span class="pagination-links">
@@ -110,7 +110,7 @@ function template_store_manager_index(){
          </button>
       </span>
 
-   </div>
+   </div> -->
 
    </div>
 
@@ -329,7 +329,6 @@ var app = Vue.createApp({
             both: false
          },
          select_type_product_text: '',
-
          search_store_name: '',
 
          /**
@@ -753,7 +752,7 @@ var app = Vue.createApp({
          var form = new FormData();
          form.append('action', 'atlantis_load_store');
          form.append('paged', paged );
-         form.append('limit', 10 );
+         form.append('limit', 50 );
          var r = await window.request(form);
          if( r != undefined ){
             if( r.message == 'store_found' ){

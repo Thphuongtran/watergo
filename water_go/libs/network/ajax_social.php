@@ -8,8 +8,21 @@ function app_social_process_user_login($email, $name){
    if( !is_email($email ) ) wp_die();
    $check_user = email_exists( $email );
    $check_user_name = username_exists($email);
-
+   
    if($check_user_name == false){
+
+      $user = get_user_by('email', $email);
+
+      // ACCOUNT DELETE
+      $is_account_hidden = get_user_meta($user->data->ID, 'account_hidden', true) != ''
+         ? (int) get_user_meta($user->data->ID , 'account_hidden', true) 
+         : null;
+
+      if($is_account_hidden == true || $is_account_hidden == 1){
+         wp_send_json_error([ 'message' => 'account_delete' ]);
+         wp_die();
+      }
+
       $args = array (
          'user_login'         =>  $email,
          'user_pass'          =>  md5($email),

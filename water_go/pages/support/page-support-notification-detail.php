@@ -20,7 +20,7 @@
             {{ support.question.replace(/\\/g, '') }}
          </div>
          <div class='answer'>
-            {{ support.answer.replace(/\\/g, '') }}
+            {{ check_answer(support) }}
          </div>
       </div>
    </div>
@@ -44,7 +44,14 @@ createApp({
       }
    },
    methods: {
-      
+      check_answer( support ){
+         if( support.answer != undefined && support.answer.length > 0 ){
+            return support.answer.replace(/\\/g, '');
+         }else{
+            return '';
+         }
+      },
+
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp);},
       goBack(){ window.goBack()}
       

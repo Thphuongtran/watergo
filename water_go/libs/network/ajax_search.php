@@ -169,6 +169,7 @@ function atlantis_search_product(){
             )) AS distance
 
          FROM wp_watergo_products 
+         WHERE wp_watergo_products.product_hidden = 0
 
          LEFT JOIN wp_watergo_store 
          ON wp_watergo_store.id = wp_watergo_products.store_id
@@ -254,9 +255,9 @@ function atlantis_search_store(){
 
          FROM wp_watergo_store as store
 
-         WHERE store.name LIKE '%$search%'
+         WHERE store.name LIKE '%$search%' AND store.store_hidden = 0
              -- OR LOWER(store.name) LIKE BINARY '%$search%' COLLATE utf8_unicode_ci
-
+         
          ORDER BY distance ASC
          LIMIT $paged, $limit
       ";
@@ -295,7 +296,7 @@ function atlantis_search_store_from_admin(){
       }
 
       global $wpdb;
-      $sql = "SELECT * FROM wp_watergo_store WHERE LOWER(name) LIKE '%$store_name%' ";
+      $sql = "SELECT * FROM wp_watergo_store WHERE LOWER(name) LIKE '%$store_name%' AND store_hidden = 0 ";
       $res = $wpdb->get_results( $sql );
 
       if( !empty($res) ){

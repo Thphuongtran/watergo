@@ -1,4 +1,8 @@
-<?php function template_store_manager_add(){ ?>
+<?php 
+
+function template_store_manager_add(){
+
+?>
 <script type="text/javascript">
    var get_ajaxadmin = "<?php echo admin_url('admin-ajax.php'); ?>";;
 </script>
@@ -8,7 +12,7 @@
 <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script>
 
 <div id='app' class='wrap'>
-   
+
    <h1 class="wp-heading-inline">Add Store</h1>
    <hr class="wp-header-end">
 

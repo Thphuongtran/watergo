@@ -56,6 +56,7 @@ function atlantis_get_store_nearby(){
                sin(radians($lat)) * sin(radians(latitude))
             )) AS distance
          FROM wp_watergo_store
+         WHERE store_hidden = 0
          HAVING distance <= $how_far -- Adjust the distance value as desired (in kilometers)
          -- HAVING distance <= 1 -- testinng current store
          ORDER BY distance ASC
@@ -398,22 +399,51 @@ function atlantis_store_hidden(){
       }
 
       if( $store_mulitple != '' ){
+
          $store_decode  = json_decode( stripslashes( $store_mulitple ), true );
          $placeholders  = 0;
          $wheres = [];
          foreach( $store_decode as $ids ){
             $wheres[] = $ids;
          }
-
          $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
 
+         // STORE
          global $wpdb;
-         $sql = "UPDATE wp_watergo_store SET store_hidden = 1 WHERE id IN( $placeholders ) ";
-         $prepare = $wpdb->prepare($sql, $wheres);
+         $sql              = "UPDATE wp_watergo_store SET store_hidden = 1 WHERE id IN( $placeholders ) ";
+         $prepare          = $wpdb->prepare($sql, $wheres);
          $wpdb->get_results($prepare);
+
+         // PRODUCT
+         $sql_products     = "UPDATE wp_watergo_products SET product_hidden = 1 WHERE store_id IN( $placeholders ) ";
+         $prepare_products = $wpdb->prepare($sql_products, $wheres);
+         $wpdb->get_results($prepare_products);
+
+         // ORDER
+         $sql_order        = "UPDATE wp_watergo_order SET order_hidden = 1 WHERE order_store_id IN( $placeholders ) ";
+         $prepare_order    = $wpdb->prepare($sql_order, $wheres);
+         $wpdb->get_results($prepare_order);
+
+         // NOTIFICATION
+         $sql_notification    = "UPDATE wp_watergo_notification SET notification_hidden = 1 WHERE store_id IN( $placeholders ) ";
+         $prepare_notification = $wpdb->prepare($sql_notification, $wheres);
+         $wpdb->get_results($prepare_notification);
+
+         // ACCOUNT USER
+         $sql_list_id_user = "SELECT user_id FROM wp_watergo_store WHERE id IN ( $placeholders ) ";
+         $get_list_id_user = $wpdb->prepare($sql_list_id_user, $wheres);
+         $res = $wpdb->get_results($get_list_id_user);
+         if( ! empty( $res) ){
+            foreach( $res as $k => $vl){
+               update_user_meta( (int) $vl->user_id, 'account_hidden', 1 );
+               $table = $wpdb->prefix."bj_user_push_token";
+               $wpdb->update($table , ["token" => "","status" => ""], ["user_id" => $vl->user_id],["%s","%s"],["%d"]);
+            }
+         }
          
-         wp_send_json_success([ 'message' => 'store_hidden_ok' ]);
+         wp_send_json_success([ 'message' => 'store_hidden_ok', 'res' => $res ]);
          wp_die();
+
       }
 
       wp_send_json_error([ 'message' => 'get_store_error' ]);

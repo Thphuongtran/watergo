@@ -35,6 +35,7 @@
          <div class='appbar-bottom' :class='orders.length > 0 ? "style02" : ""'>
 
             <ul class='navbar style02 navbar-icon navbar-order'>
+
                <li @click='select_filter(filter.label)' v-for='(filter, index) in order_status_filter' 
                   :key='index' 
                   :class='filter.active == true ? "active" : ""'>
@@ -44,6 +45,7 @@
                   </span>
                   <span class='text text-small'>{{ filter.label }}</span>
                </li>
+               
             </ul>
 
             <div v-if='order_filter.length > 0' class='order-store-header'>

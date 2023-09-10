@@ -3,7 +3,10 @@
    line-height: 1.7;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
+   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+   -webkit-user-drag: none;
 }
+
 html{
    font-family: 'Be Vietnam Pro', sans-serif;
    line-height: 1.7;
@@ -13,6 +16,11 @@ html{
 
 .d-block{display: block;}
 .d-none{ display: none !important; }
+
+.max-w100{
+   max-width: 100% !important;
+   width: 100% !important;
+}
 
 .photo-upload-default{
    // width: 104px !important; height: 107px !important;
@@ -248,8 +256,6 @@ p{
       font-size: 12px;
    }
 }
-
-
 
 .btn{
    outline: none;
@@ -782,6 +788,15 @@ p{
       text-align: center;
       position: relative;
       padding: 10px 0;
+      box-shadow: none;
+
+      &:active ,
+      &:focus{
+         color: #7B7D83;
+         background: white;
+         box-shadow: none;
+         outline: none;
+      }
 
       &:after{
          content: '';
@@ -830,6 +845,7 @@ p{
          }
       }
    }
+
    &.style02{
 		li{
 			font-size: 14px;
@@ -916,7 +932,7 @@ p{
       
       img{
          width: auto;
-         height: auto;
+         height: 100%;
          text-align: center;
          object-fit: cover;
       }
@@ -1024,7 +1040,11 @@ p{
       font-size: 16px;
       font-weight: 500;
       padding: 0 15px;
+      padding-right: 5px;
       position: relative;
+      .t-primary{
+         white-space: pre;
+      }
       .line2{
          position: absolute;
          color: #918D8D;
@@ -1075,12 +1095,20 @@ p{
    &.cell-placeorder,
    &.cell-re-order{
       button{
-         flex: 0 0 140px;
          width: 140px;
       }
       .price-total{
          // width: 50%;
-         width: 100%;
+         width: calc( 100% - 140px);
+      }
+   }
+
+   &.cell-order{
+      button{
+         width: 50%;
+      }
+      .price-total{
+         width: 50%;
       }
    }
 
@@ -3154,7 +3182,7 @@ p{
 
 .btn-edit-delivery-address{
    position: relative;
-   z-index: 88;
+   z-index: 8888;
 }
 
 .text-nowrap{
@@ -3227,6 +3255,11 @@ p{
    .icon-arrow{
       width: 8px;
       margin-left: auto;
+
+      svg{
+         position: relative;
+         top: 2px;
+      }
    }
 }
 
@@ -3347,6 +3380,7 @@ p{
 
 .list-tile-address{
    width: calc( 100% - 50px) !important;
+   position: relative;
    .gr-horizontal{
       position: relative;
    }
@@ -3355,5 +3389,99 @@ p{
       width: 50px;
       right: -30px;
       top: 0;
+      z-index: 8888;
    }
 }
+
+.order-slide-wrapper{
+   width: 78%;
+   .order-slider{
+      width: 100%;
+      .slick-slide{
+         width: 100%;
+         font-size: 14px;
+      }
+   }
+}
+
+#app-nearby{
+   background: white;
+   position: relative;
+   z-index: 88;
+
+   .banner-order-delivering-space{
+      height: 65px;
+   }
+}
+
+.list-product-recommend{
+   img{
+      height: 160px !important;
+      object-fit: cover !important;
+   }
+}
+
+.link-term-condition{
+   background: none;
+   outline: none;
+   border: none;
+   box-shadow: none;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 1.0;
+   position: relative;
+   z-index: 88;
+   top: 1px;
+}
+
+.post-term-conditions{
+	ol{
+      margin-top: 10px;
+		padding-left: 18px;
+	}
+}
+
+.post-term-conditions{
+	p{
+		font-size: 16px;
+		margin-bottom: 10px;
+	}
+   br{
+      height: 10px;
+   }
+	.strong{
+		font-weight: 600;
+	}
+	
+	ul{
+		margin-bottom: 10px;
+		padding-left: 15px;
+      list-style: initial;
+      li{
+         list-style: initial;
+      }
+	}
+
+   .text-indent{
+      padding-left: 10px;
+   }
+}
+
+#footer{
+   display: none;
+}
+
+.notification-not-found{
+   width: 100%;
+   padding: 0 16px;
+   text-align: center;
+   position: fixed;
+   top: 50%;
+   left: 0;
+   transform: translateY(-50%);
+
+   p{
+      font-size: 16px;
+   }
+}
+

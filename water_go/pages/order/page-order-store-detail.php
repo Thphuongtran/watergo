@@ -1,12 +1,12 @@
 <div id='app'>
 
-   <div v-show='loading == true'>
+   <div v-show='loading == true && order != null && order.order_hidden == 0'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
-   <div v-show="loading == false && order != null" class='page-order-detail'>
+   <div v-show="loading == false && order != null && order.order_hidden == 0" class='page-order-detail'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -138,24 +138,22 @@
 
       <div class='break-line'></div>
 
-      <div class='order-bottomsheet style-store-detail'>
+      <div class='order-bottomsheet'>
          
          <div 
             v-if='order != null'
             class='product-detail-bottomsheet'
-            :class='order.order_status == "complete" || order.order_status == "cancel" ? "on-right" : ""'
+            :class='[
+               order.order_status == "complete" || order.order_status == "cancel" ? "on-right" : "cell-re-order",
+            ]'
+         
          >
             <p 
             v-if='order != null '
             class='price-total' :class='order.order_status != "complete" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
-            <div v-show='order.order_status != "complete" || order.order_status != "cancel"' class='btn-gr'>
-               <!-- <button @click='btn_cancel_order' v-if='order.order_status == "ordered"' class='btn btn-outline'>Cancel</button> -->
-               <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
-               <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn btn-primary'>
-                  <?php echo __('Delivering', 'watergo'); ?>
-               </button>
-               <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn btn-primary'><?php echo __('Complete', 'watergo'); ?></button>
-            </div>
+            <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
+            <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn-primary'><?php echo __('Delivering', 'watergo'); ?></button>
+            <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn-primary'><?php echo __('Complete', 'watergo'); ?></button>
 
          </div>
       </div>
@@ -182,6 +180,12 @@
       </div>
    </div>
 
+   <div class='modal-popup' :class='loading == false && ( order == null || order.order_hidden == 1 ) ? "open" : ""'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='goBack' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'><?php echo __('Content Not Found', 'watergo'); ?> </p>
+      </div>
+   </div>
 
 </div>
 
@@ -467,8 +471,7 @@ var app = Vue.createApp({
          //    this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
          // }
 
-      }      
-
+      }
 
       setTimeout(() => {
          window.appbar_fixed();

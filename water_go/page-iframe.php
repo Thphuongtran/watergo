@@ -558,6 +558,27 @@ var iframe = Vue.createApp({
                await window.parent.app.btn_delete_product(this.product_id);
             }
          }
+
+         // form.append('action', 'atlantis_action_product_store');
+         // form.append('event', 'delete');
+         // form.append('product_type', this.product_type);
+         // form.append('product_id', this.product_id);
+
+         // if( this.productImages.length > 0 ){
+         //    this.productImages.forEach( img => {
+         //       this.list_attachment_id_delete.push( parseInt(img.id) );
+         //    });
+         //    form.append('list_attachment_id_delete', JSON.stringify(this.list_attachment_id_delete) );
+         // }
+         // var r = await window.request(form);
+         // if( r != undefined ){
+         //    var res = JSON.parse( JSON.stringify(r));
+         //    if( res.message == 'action_product_ok' ){
+         //       var _product_id = res.data;
+         //       await window.parent.app.btn_delete_product(_product_id);
+         //    }
+         // }
+
       },
 
       async btn_action_product( event ){

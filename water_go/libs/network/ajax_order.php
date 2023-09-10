@@ -1503,7 +1503,7 @@ function atlantis_count_total_order_by_user(){
          ) AS statuses
          LEFT JOIN wp_watergo_order AS orders 
          ON statuses.order_status = orders.order_status
-         WHERE orders.order_by = $user_id
+         WHERE orders.order_by = $user_id AND orders.order_hidden != 1
          GROUP BY statuses.order_status
       ";
       
@@ -1543,7 +1543,7 @@ function atlantis_count_total_order_by_status(){
          ) AS statuses
          LEFT JOIN wp_watergo_order AS orders 
          ON statuses.order_status = orders.order_status
-         WHERE orders.order_store_id = $store_id
+         WHERE orders.order_store_id = $store_id AND orders.order_hidden != 1
          GROUP BY statuses.order_status
       ";
 
@@ -1561,33 +1561,139 @@ function atlantis_count_total_order_by_status(){
 }
 
 
+/**
+ * @access FEATURE EVERY SINGLE TAB
+ */
+add_action( 'wp_ajax_nopriv_atlantis_get_order_multiple_time', 'atlantis_get_order_multiple_time' );
+add_action( 'wp_ajax_atlantis_get_order_multiple_time', 'atlantis_get_order_multiple_time' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_order_ordered', 'atlantis_get_order_ordered' );
-add_action( 'wp_ajax_atlantis_get_order_ordered', 'atlantis_get_order_ordered' );
+// function atlantis_get_order_multiple_time(){
+//    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_order_multiple_time' ){
 
-function atlantis_get_order_ordered(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_order_ordered' ){
+//       if( is_user_logged_in()){
+//          $user_id = get_current_user_id();
+//       }else{
+//          $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+//       }
 
-      $user_id       = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
-      // for testing
-      $private_code  = isset($_POST['private_code']) ? $_POST['private_code'] : 0;
+//       $is_user_store = get_user_meta($user_id, 'user_store', true) != '' 
+//          ? (int) get_user_meta($user_id, 'user_store', true) 
+//          : null;
 
-      if( $user_id == 0 && $private_code != 'watergo.net' ){
+//       global $wpdb;
+//       // SQL IF USER
+//       // FROM wp_watergo_order WHERE order_status IN ('ordered', 'confirmed', 'delivering') AND order_by = $user_id ORDER BY order_id DESC";
+//       $sql = "SELECT 
+//          order_id,
+//          order_number,
+//          order_status
+//       FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_by = $user_id ORDER BY order_id DESC";
+//       // SQL IF STORE
+//       if($is_user_store == 1 || $is_user_store == true ){
+//          $store_id = null;
+//          $sql_find_store   = "SELECT id FROM wp_watergo_store WHERE user_id = $user_id LIMIT 1";
+//          $res_store        = $wpdb->get_results( $sql_find_store);
+//          $store_id         = $res_store[0]->id;
+//          $sql = "SELECT 
+//             order_id,
+//             order_number,
+//             order_status
+//          FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_id_store = $store_id ORDER BY order_id DESC";
+//       }      
+
+//       $res = $wpdb->get_results( $sql);
+//       if( empty( $res ) ){
+//          wp_send_json_error([ 'message' => 'order_not_found']);
+//          wp_die();
+//       }
+//       wp_send_json_success([ 'message' => 'order_found', 'data' => $res, 'is_store' => $is_user_store ]);
+//       wp_die();
+
+//    }
+// }
+function atlantis_get_order_multiple_time(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_order_multiple_time' ){
+
+      if( is_user_logged_in()){
          $user_id = get_current_user_id();
+      }else{
+         $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
       }
 
-      $sql = "SELECT * FROM wp_watergo_order WHERE order_by = $user_id AND order_status = 'ordered' ORDER BY order_id DESC LIMIT 1";
+      $is_user_store = get_user_meta($user_id, 'user_store', true) != '' 
+         ? (int) get_user_meta($user_id, 'user_store', true) 
+         : null;
 
       global $wpdb;
+      // SQL IF USER
+      // FROM wp_watergo_order WHERE order_status IN ('ordered', 'confirmed', 'delivering') AND order_by = $user_id ORDER BY order_id DESC";
+      $sql = "SELECT 
+         order_id,
+         order_number,
+         order_status
+      FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_hidden != 1 AND order_by = $user_id ORDER BY order_id DESC";
+      // SQL IF STORE
+      if($is_user_store == 1 || $is_user_store == true ){
+         $store_id = null;
+         $sql_find_store   = "SELECT id FROM wp_watergo_store WHERE user_id = $user_id AND store_hidden != 1 LIMIT 1";
+         $res_store        = $wpdb->get_results( $sql_find_store);
+         $store_id         = $res_store[0]->id;
+         $sql = "SELECT 
+            order_id,
+            order_number,
+            order_status
+         FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_hidden != 1 AND order_id_store = $store_id ORDER BY order_id DESC";
+      }      
+
       $res = $wpdb->get_results( $sql);
       if( empty( $res ) ){
-         wp_send_json_error([ 'message' => 'order_delivering_not_found']);
+         wp_send_json_error([ 'message' => 'order_not_found']);
          wp_die();
       }
-
-      wp_send_json_success([ 'message' => 'order_delivering_found', 'data' => $res[0] ]);
+      wp_send_json_success([ 'message' => 'order_found', 'data' => $res, 'is_store' => $is_user_store ]);
       wp_die();
 
    }
 }
 
+add_action( 'wp_ajax_nopriv_atlantis_is_order_confirmed', 'atlantis_is_order_confirmed' );
+add_action( 'wp_ajax_atlantis_is_order_confirmed', 'atlantis_is_order_confirmed' );
+
+
+function atlantis_is_order_confirmed(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_is_order_confirmed'){
+      $order_ids = isset( $_POST['order_ids'] ) ? $_POST['order_ids'] : '';
+
+      if( $order_ids == '' ){
+         wp_send_json_error([ 'message' => 'order_confirmed_error' ]);
+         wp_die();
+      }
+
+      $order_decode  = json_decode( stripslashes( $order_ids ), true );
+      $placeholders  = 0;
+      $wheres = [];
+      foreach( $order_decode as $ids ){
+         $wheres[] = $ids;
+      }
+
+      $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+
+      global $wpdb;
+      $sql = "SELECT order_id FROM wp_watergo_order 
+         WHERE order_id IN ($placeholders)
+         AND order_hidden != 1
+         AND order_status IN ('confirmed', 'delivering', 'complete', 'cancel')
+      ";
+      $prepare = $wpdb->prepare($sql, $wheres);
+      $res = $wpdb->get_results($prepare);
+
+      if( ! empty( $res ) ){
+         wp_send_json_success([ 'message' => 'order_confirmed_ok', 'data' => $res ]);
+         wp_die();
+      }
+
+      wp_send_json_error([ 'message' => 'order_confirmed_error' ]);
+      wp_die();
+      
+   }
+}

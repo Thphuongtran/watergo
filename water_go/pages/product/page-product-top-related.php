@@ -42,6 +42,8 @@
                <div class='img'>
                   <img :src='product.product_image.url'>
                   <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                  <span v-show='product_is_mark_out_of_stock(product) == true' 
+                        class='badge-discount badge-out-of-stock size-large'><?php echo __('Out of Stock', 'watergo'); ?></span>
                </div>
                <div class='box-wrapper'>
                   <p class='tt01'>{{ product.name }} </p>
@@ -154,6 +156,7 @@ createApp({
       },
 
       has_discount( product ){ return window.has_discount( product ); },      
+      product_is_mark_out_of_stock( product ){ return window.product_is_mark_out_of_stock(product); },
       common_price_show_currency(p){ return common_price_show_currency(p) },
       common_price_after_discount(p){ return common_price_after_discount(p) },
       
