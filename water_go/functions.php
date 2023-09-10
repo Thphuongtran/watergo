@@ -3,7 +3,7 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css', [], '3.38');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css', [], '3.39');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 

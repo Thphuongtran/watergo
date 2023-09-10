@@ -81,78 +81,85 @@
          </div>
       </div>
 
+      <div class='scaffold'>
 
-      <ul class='list-order style-store'>
-         
-         <li 
-            :class='"order-status-" + order_status_current'
-            v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
-            <div class='order-head'>
-               <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check form-check-order'><input @click='select_item(order.order_id)' type='checkbox' :checked='order.select'></div>
-               <div @click='select_item(order.order_id)' class='text-order-number'>#{{ order.order_number }}</div>
-               <div @click='select_item(order.order_id)' class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</div>
-            </div>
-            <div class='order-time'>
-               <span class='tt01'><?php echo __('Ordered Time', 'watergo'); ?>: </span>
-               <span class='tt02'>{{ order_formatDate(order.order_time_created) }}</span>
-            </div>
-            <div v-if='order.order_time_confirmed != null' class='order-time'>
-               <span class='tt01'><?php echo __('Confirm Time', 'watergo'); ?>: </span>
-               <span class='tt02'>{{ order_formatDate(order.order_time_confirmed) }}</span>
-            </div>
-            <div v-if='order.order_time_delivery != null' class='order-time'>
-               <span class='tt01'><?php echo __('Delivery Time', 'watergo'); ?>: </span>
-               <span class='tt02'>{{ order_formatDate(order.order_time_delivery) }}</span>
-            </div>
-            <div v-if='order.order_time_cancel != null' class='order-time'>
-               <span class='tt01'><?php echo __('Cancel Time', 'watergo'); ?>: </span>
-               <span class='tt02'>{{ order_formatDate(order.order_time_cancel) }}</span>
-            </div>
-
-            <div 
-               v-for='(product, prodKey) in order.order_products' :key='prodKey' class='order-prods'>
-               <div class='leading'>
-                  <img :src="product.order_group_product_image.url">
+         <ul v-show='loading_data == false' class='list-order style-store'>
+            
+            <li 
+               :class='"order-status-" + order_status_current'
+               v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
+               <div class='order-head'>
+                  <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check form-check-order'><input @click='select_item(order.order_id)' type='checkbox' :checked='order.select'></div>
+                  <div @click='select_item(order.order_id)' class='text-order-number'>#{{ order.order_number }}</div>
+                  <div @click='select_item(order.order_id)' class='text-order-type' :class='get_type_order(order.order_delivery_type)'>{{print_type_order_text(order.order_delivery_type)}}</div>
                </div>
-               <div class='prod-detail'>
-                  <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
-                  <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
+               <div class='order-time'>
+                  <span class='tt01'><?php echo __('Ordered Time', 'watergo'); ?>: </span>
+                  <span class='tt02'>{{ order_formatDate(order.order_time_created) }}</span>
                </div>
-               <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
-                  <span class='price'>
-                     {{ common_price_after_discount_and_quantity_from_group_order(product) }}
-                  </span>
-                  <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
-                     {{ common_price_after_quantity_from_group_order(product) }}
-                  </span>
+               <div v-if='order.order_time_confirmed != null' class='order-time'>
+                  <span class='tt01'><?php echo __('Confirm Time', 'watergo'); ?>: </span>
+                  <span class='tt02'>{{ order_formatDate(order.order_time_confirmed) }}</span>
                </div>
-            </div>
+               <div v-if='order.order_time_delivery != null' class='order-time'>
+                  <span class='tt01'><?php echo __('Delivery Time', 'watergo'); ?>: </span>
+                  <span class='tt02'>{{ order_formatDate(order.order_time_delivery) }}</span>
+               </div>
+               <div v-if='order.order_time_cancel != null' class='order-time'>
+                  <span class='tt01'><?php echo __('Cancel Time', 'watergo'); ?>: </span>
+                  <span class='tt02'>{{ order_formatDate(order.order_time_cancel) }}</span>
+               </div>
 
-            <div class='order-bottom'>
-               <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} <?php echo __('product', 'watergo'); ?></span>
-               <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
-            </div>
+               <div 
+                  v-for='(product, prodKey) in order.order_products' :key='prodKey' class='order-prods'>
+                  <div class='leading'>
+                     <img :src="product.order_group_product_image.url">
+                  </div>
+                  <div class='prod-detail'>
+                     <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
+                     <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
+                  </div>
+                  <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>
+                     <span class='price'>
+                        {{ common_price_after_discount_and_quantity_from_group_order(product) }}
+                     </span>
+                     <span v-if='product.order_group_product_discount_percent != 0' class='sub-price'>
+                        {{ common_price_after_quantity_from_group_order(product) }}
+                     </span>
+                  </div>
+               </div>
 
-            <div class='order-func'>
-               <button @click='gotoOrderStoreDetail(order.order_id)' class='btn-action-view'><?php echo __('View', 'watergo'); ?></button>
-               <button 
-                  v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_single_record(order.order_id, "confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
-               <!-- <button 
-                  v-if='order.order_status == "ordered"'
-                  @click='btn_action_order_single_record(order.order_id, "cancel")' class='btn-action-cancel'>Cancel</button> -->
-               <button 
-                  v-if='order.order_status == "confirmed"' 
-                  @click='btn_action_order_single_record(order.order_id, "delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
-               <button 
-                  v-if='order.order_status == "delivering"' 
-                  @click='btn_action_order_single_record(order.order_id, "complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
-            </div>
+               <div class='order-bottom'>
+                  <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} <?php echo __('product', 'watergo'); ?></span>
+                  <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
+               </div>
 
-         </li>
-      </ul>
+               <div class='order-func'>
+                  <button @click='gotoOrderStoreDetail(order.order_id)' class='btn-action-view'><?php echo __('View', 'watergo'); ?></button>
+                  <button 
+                     v-if='order.order_status == "ordered"'
+                     @click='btn_action_order_single_record(order.order_id, "confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
+                  <!-- <button 
+                     v-if='order.order_status == "ordered"'
+                     @click='btn_action_order_single_record(order.order_id, "cancel")' class='btn-action-cancel'>Cancel</button> -->
+                  <button 
+                     v-if='order.order_status == "confirmed"' 
+                     @click='btn_action_order_single_record(order.order_id, "delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
+                  <button 
+                     v-if='order.order_status == "delivering"' 
+                     @click='btn_action_order_single_record(order.order_id, "complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
+               </div>
+
+            </li>
+         </ul>
+
+         <div v-show='loading_data == true' class='progress-center'>
+            <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+         </div>
+      </div>
 
    </div>
+
    <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
@@ -214,6 +221,7 @@ var app = Vue.createApp({
       return {
 
          loading: false,
+         loading_data: false,
          popup_confirm_all_item: false,
          popup_delivering_all_item: false,
          popup_complete_all_item: false,
@@ -435,15 +443,16 @@ var app = Vue.createApp({
       },
 
       async reset_get_order_store(){
-         this.loading = true;
+         this.loading_data = true;
          this.paged = 0;
          this.orders = [];
          this.total_count = 0;
          this.order_by_filter_select = { value: 'desc' };
          await this.get_count_total_order();
          await this.get_order_store(this.order_status_current, this.paged);
+         await this.get_notification_count();
          window.appbar_fixed();
-         this.loading = false;
+         this.loading_data = false;
          
       },
 
@@ -551,7 +560,7 @@ var app = Vue.createApp({
       },
 
       async get_count_total_order(){
-         this.order_status_filter.some(item => item.count = 0);
+         // this.order_status_filter.some(item => item.count = 0);
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_status');
          var r = await window.request(form);
@@ -617,7 +626,7 @@ var app = Vue.createApp({
    // STREAM ORDER STATUS -> reload order
    watch: {
       order_status_current: async function( filter ){
-         this.loading = true;
+         this.loading_data = true;
          await this.get_count_total_order();
          this.paged = 0;
          this.orders = [];
@@ -625,7 +634,7 @@ var app = Vue.createApp({
          this.order_by_filter_select = { value: 'desc' };
          await this.get_order_store(filter, this.paged);
          window.appbar_fixed();
-         this.loading = false;
+         this.loading_data = false;
       },
    },
 

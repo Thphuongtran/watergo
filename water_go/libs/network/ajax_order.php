@@ -1488,23 +1488,23 @@ function atlantis_count_total_order_by_user(){
 
       global $wpdb;
 
-      $sql = "SELECT statuses.order_status, COUNT(orders.order_status) AS total_count
-         FROM
-         (
-         SELECT 'ordered' AS order_status
-         UNION ALL
-         SELECT 'confirmed' AS order_status
-         UNION ALL
-         SELECT 'delivering' AS order_status
-         UNION ALL
-         SELECT 'complete' AS order_status
-         UNION ALL
-         SELECT 'cancel' AS order_status
-         ) AS statuses
-         LEFT JOIN wp_watergo_order AS orders 
-         ON statuses.order_status = orders.order_status
-         WHERE orders.order_by = $user_id AND orders.order_hidden != 1
-         GROUP BY statuses.order_status
+      $sql = "SELECT statuses.order_status, COALESCE(COUNT(orders.order_status), 0) AS total_count
+            FROM
+            (
+               SELECT 'ordered' AS order_status
+               UNION ALL
+               SELECT 'confirmed' AS order_status
+               UNION ALL
+               SELECT 'delivering' AS order_status
+               UNION ALL
+               SELECT 'complete' AS order_status
+               UNION ALL
+               SELECT 'cancel' AS order_status
+            ) AS statuses
+            LEFT JOIN wp_watergo_order AS orders 
+            ON statuses.order_status = orders.order_status AND orders.order_by = $user_id 
+            AND orders.order_hidden != 1
+            GROUP BY statuses.order_status
       ";
       
       $res = $wpdb->get_results($sql);
@@ -1528,22 +1528,21 @@ function atlantis_count_total_order_by_status(){
 
       global $wpdb;
 
-      $sql = "SELECT statuses.order_status, COUNT(orders.order_status) AS total_count
+      $sql = "SELECT statuses.order_status, COALESCE(COUNT(orders.order_status), 0) AS total_count
          FROM
          (
-         SELECT 'ordered' AS order_status
-         UNION ALL
-         SELECT 'confirmed' AS order_status
-         UNION ALL
-         SELECT 'delivering' AS order_status
-         UNION ALL
-         SELECT 'complete' AS order_status
-         UNION ALL
-         SELECT 'cancel' AS order_status
+            SELECT 'ordered' AS order_status
+            UNION ALL
+            SELECT 'confirmed' AS order_status
+            UNION ALL
+            SELECT 'delivering' AS order_status
+            UNION ALL
+            SELECT 'complete' AS order_status
+            UNION ALL
+            SELECT 'cancel' AS order_status
          ) AS statuses
          LEFT JOIN wp_watergo_order AS orders 
-         ON statuses.order_status = orders.order_status
-         WHERE orders.order_store_id = $store_id AND orders.order_hidden != 1
+         ON statuses.order_status = orders.order_status AND orders.order_store_id = 13 AND orders.order_hidden != 1
          GROUP BY statuses.order_status
       ";
 

@@ -55,9 +55,17 @@ body{
    &.stop-scroll{
       overflow: hidden;
    }
-   
 }
 
+.scaffold{
+	position: relative;
+	min-height: 200px;
+	.progress-center{
+		position: absolute !important;
+		height: 100%;
+		width: 100%;
+	}
+}
 input[type="number"] {
   -moz-appearance: textfield;
 }
@@ -3484,4 +3492,6 @@ p{
       font-size: 16px;
    }
 }
+
+
 

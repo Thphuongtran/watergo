@@ -96,7 +96,7 @@ createApp({
       return{ 
          loading: false,
          sortFeatureOpen: false,
-         sortFeatureCurrentValue: 0,
+         sortFeatureCurrentValue: -1,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
          paged: 0,
@@ -305,20 +305,60 @@ createApp({
 
    computed: {
       filter_products(){
-         return this.products.filter( product => {
+         // var _filters = this.products;
+
+         // if(this.sortFeatureCurrentValue == 2 ){
+         //    // console.log('Top Rated Filter');
+         //    _filters.sort((a, b) => b.avg_rating - a.avg_rating);
+         // }
+         // else if(this.sortFeatureCurrentValue == 1 ){
+         //    // console.log('Top Cheapest');
+         //    _filters.sort((a, b) => a.price - b.price);
+         // }
+         // else if(this.sortFeatureCurrentValue == 0 ){
+         //    // console.log('Nearest');
+         //    _filters.sort((a, b) => a.distance - b.distance);
+         // }
+
+         var _filters = this.products.filter( product => {
             // Filter products based on category and brand
             var cat = this.categoryWater.find(c => c.active == true);
             var brand = this.brandWater.find(b => b.active == true);
+            var _product = product;
+
             if (cat && brand) {
-               return product.category == parseInt(cat.id) && product.brand == parseInt(brand.id);
+               _product = product.category == parseInt(cat.id) && product.brand == parseInt(brand.id);
             } else if(cat) {
-               return product.category == parseInt(cat.id);
+               _product = product.category == parseInt(cat.id);
             } else if(brand) {
-               return product.brand == parseInt(brand.id);
+               _product = product.brand == parseInt(brand.id);
             } else{
-               return product;
+               _product = product;
             }
+            return _product;
          });
+
+         if(this.sortFeatureCurrentValue == 2 ){
+            // console.log('Top Rated Filter');
+            _filters.sort((a, b) => b.avg_rating - a.avg_rating);
+         }
+         else if(this.sortFeatureCurrentValue == 1 ){
+            // console.log('Top Cheapest');
+            _filters.sort((a, b) => a.price - b.price);
+            console.log(_filters);
+         }
+         else if(this.sortFeatureCurrentValue == 0 ){
+            // console.log('Nearest');
+            _filters.sort((a, b) => a.distance - b.distance);
+         }
+
+
+         return _filters;
+
+
+         
+
+         // return _filters;
       }
    },
 
