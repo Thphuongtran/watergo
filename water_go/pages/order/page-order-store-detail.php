@@ -150,10 +150,11 @@
          >
             <p 
             v-if='order != null '
-            class='price-total' :class='order.order_status != "complete" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
-            <button @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
-            <button @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn-primary'><?php echo __('Delivering', 'watergo'); ?></button>
-            <button @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn-primary'><?php echo __('Complete', 'watergo'); ?></button>
+            class='price-total' 
+            :class='order.order_status == "complete" ? "pr15" : "" '><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
+            <button :disabled='is_button_has_pressed' @click='btn_order_status("confirmed")' v-if='order.order_status == "ordered"' class='btn-primary'><?php echo __('Confirm', 'watergo'); ?></button>
+            <button :disabled='is_button_has_pressed' @click='btn_order_status("delivering")' v-if='order.order_status == "confirmed"' class='btn-primary'><?php echo __('Delivering', 'watergo'); ?></button>
+            <button :disabled='is_button_has_pressed' @click='btn_order_status("complete")' v-if='order.order_status == "delivering"' class='btn-primary'><?php echo __('Complete', 'watergo'); ?></button>
 
          </div>
       </div>
@@ -211,13 +212,13 @@ var app = Vue.createApp({
 
          order: null,
 
+         btn_has_pressed: false,
+
          get_locale: '<?php echo get_locale();?>'
       }
    },
 
    methods: {
-
-
 
       // PERFORM CANCEL ORDER
       btn_cancel_order(){this.popup_confirm_cancel = true;},
@@ -325,6 +326,7 @@ var app = Vue.createApp({
       },
 
       async btn_order_status( order_status ){
+         this.btn_has_pressed = true;
 
          var ods = [ parseInt(this.order.order_id )];
          var timestamp = Math.floor(Date.now() / 1000);
@@ -352,6 +354,8 @@ var app = Vue.createApp({
    },
 
    computed: {
+
+      is_button_has_pressed(){ return this.btn_has_pressed; },
 
       filter_time_shipping(){
          return this.time_shipping;

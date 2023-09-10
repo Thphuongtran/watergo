@@ -34,7 +34,7 @@
          </div>
          <div class='appbar-bottom' :class='orders.length > 0 ? "style02" : ""'>
 
-            <ul class='navbar style02 navbar-icon navbar-order'>
+            <ul class='navbar style02 navbar-icon navbar-order' >
 
                <li @click='select_filter(filter.label)' v-for='(filter, index) in order_status_filter' 
                   :key='index' 
@@ -48,33 +48,36 @@
                
             </ul>
 
-            <div v-if='order_filter.length > 0' class='order-store-header'>
-               <div class='select-wrapper'>
-                  <select v-model='order_by_filter_select' class='order_filter_select'>
-                     <option :value="{ value: 'desc' } "><?php echo __('New first', 'watergo'); ?></option>
-                     <option :value="{ value: 'asc' }"><?php echo __('Old first', 'watergo'); ?></option>
-                  </select>
-                  <div class='icon'>
-                     <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M1.5 1L5.5 5L9.5 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                     </svg>
+            <div v-show='loading_data == false'>
+
+               <div v-if='order_filter.length > 0' class='order-store-header'>
+                  <div class='select-wrapper'>
+                     <select v-model='order_by_filter_select' class='order_filter_select'>
+                        <option :value="{ value: 'desc' } "><?php echo __('New first', 'watergo'); ?></option>
+                        <option :value="{ value: 'asc' }"><?php echo __('Old first', 'watergo'); ?></option>
+                     </select>
+                     <div class='icon'>
+                        <svg width="11" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.5 1L5.5 5L9.5 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </div>
                   </div>
+
+                  <div class='count-order'><?php echo __('Total order', 'watergo'); ?>: <span >{{total_order}}</span> </div>
                </div>
 
-               <div class='count-order'><?php echo __('Total order', 'watergo'); ?>: <span >{{total_order}}</span> </div>
-            </div>
+               <div v-show=' order_filter.length > 0 && ( order_status_current != "complete" && order_status_current != "cancel") ' class='order-store-action'>
+                  <div class='form-check'>
+                     <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
+                     <label @click='select_all_item'><?php echo __('Select All', 'watergo'); ?> </label>
+                  </div>
 
-            <div v-show='order_filter.length > 0 && ( order_status_current != "complete" && order_status_current != "cancel") ' class='order-store-action'>
-               <div class='form-check'>
-                  <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
-                  <label @click='select_all_item'><?php echo __('Select All', 'watergo'); ?> </label>
-               </div>
-
-               <div class='action-all'>
-                  <button v-if='order_status_current == "ordered"' @click='btn_action_all("confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
-                  <!-- <button v-if='order_status_current == "ordered"' @click='btn_action_all("cancel")' class='btn-action-cancel'>Cancel</button> -->
-                  <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
-                  <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
+                  <div class='action-all'>
+                     <button v-if='order_status_current == "ordered"' @click='btn_action_all("confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
+                     <!-- <button v-if='order_status_current == "ordered"' @click='btn_action_all("cancel")' class='btn-action-cancel'>Cancel</button> -->
+                     <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
+                     <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
+                  </div>
                </div>
             </div>
 

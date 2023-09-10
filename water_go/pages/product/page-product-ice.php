@@ -49,31 +49,40 @@
       <div class='overlay-layer'>
          
          <div class='inner'>
-            <div class='grid-masonry'>
-               <div 
-                  @click='gotoProductDetail(product.id)' 
-                  class='product-design' 
-                  v-for='(product, index) in filter_products' :key='index'
-                  :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
-               >
-                  <div class='img'>
-                     <img :src='product.product_image.url'>
-                     <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
-                  </div>
-                  <div class='box-wrapper'>
-                     <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ product.name_second }}</p>
-                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
-                        <span class='price'>
-                           {{ common_price_after_discount(product ) }}
-                        </span>
-                        <span v-if='has_discount(product) == true' class='price-sub'>
-                           {{ common_price_show_currency(product.price) }}
-                        </span>
+            <div class='scaffold'>
+
+               <div v-show='loading_data == false' class='grid-masonry'>
+                  <div 
+                     @click='gotoProductDetail(product.id)' 
+                     class='product-design' 
+                     v-for='(product, index) in products' :key='index'
+                     :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
+                  >
+                     <div class='img'>
+                        <img :src='product.product_image.url'>
+                        <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                     </div>
+                     <div class='box-wrapper'>
+                        <p class='tt01'>{{ product.name }} </p>
+                        <p class='tt02'>{{ product.name_second }}</p>
+                        <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                           <span class='price'>
+                              {{ common_price_after_discount(product ) }}
+                           </span>
+                           <span v-if='has_discount(product) == true' class='price-sub'>
+                              {{ common_price_show_currency(product.price) }}
+                           </span>
+                        </div>
                      </div>
                   </div>
                </div>
+
+               <div v-show='loading_data == true' class='progress-center'>
+                  <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+               </div>
+
             </div>
+
          </div>
 
       </div>
@@ -94,11 +103,12 @@ createApp({
    data(){
       return{ 
          loading: false,
+         loading_data: false,
          sortFeatureOpen: false,
-         sortFeatureCurrentValue: 0,
+         sortFeatureCurrentValue: -1,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
-         limit: 10,
+         limit: 20,
          paged: 0,
 
          products: [],
@@ -148,15 +158,18 @@ createApp({
       },
 
       // INIT
-      async load_product_sort( filter, paged ){
+      async load_product_sort( paged, category ){
 
          var form = new FormData();
-         form.append('action', 'atlantis_get_product_sort');
+         form.append('action', 'atlantis_get_product_sort_version2');
          form.append('product_type', 'ice');
-         form.append('filter', filter);
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
          form.append('paged', paged );
+
+         if(category != undefined && category != 0 ){
+            form.append('category', category);
+         }
          
          var r = await window.request(form);
 
@@ -172,16 +185,7 @@ createApp({
             }
          }
       },
-
-      get_text_filter(  ){
-
-         switch( this.sortFeatureCurrentValue ){
-            case 0: return 'nearest'; break;
-            case 1: return 'cheapest'; break;
-            case 2: return 'top_rated'; break;
-         }
-      },
-
+      
       async load_category(){
          var form = new FormData();
          form.append('action', 'atlantis_load_category');
@@ -224,51 +228,63 @@ createApp({
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
-         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         var category_id = 0;
+         var _is_filter = this.get_filter_cat_brand();
+         if( _is_filter ){
+            category_id = _is_filter.category_id;
+         }
 
-            await this.load_product_sort( this.get_text_filter(), this.paged++);
+         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            this.sortFeatureCurrentValue = -1;
+            await this.load_product_sort( this.paged++, category_id );
+         }
+      },
+
+
+      get_filter_cat_brand(){
+         var cat = this.categoryIce.find(c => c.active == true);
+         if (cat ) {
+            return { category_id: cat.id };
+         }else{
+            return false;
          }
       }
       
-   },
-
-   computed: {
-      filter_products(){
-         return this.products.filter( product => {
-            var cat = this.categoryIce.find(c => c.active == true);
-            if ( cat ){
-               return product.category == cat.id;
-            } else {
-               return this.products;
-            }
-         });
-      }
-   },
-   
+   },   
 
    // STREAM 
    watch: {
+
+      categoryIce: {
+         async handler( data ){
+            this.loading_data = true;
+            var _is_filter = this.get_filter_cat_brand();
+            if( _is_filter ){
+               this.sortFeatureCurrentValue = -1;
+               this.products = [];
+               var category_id = _is_filter.category_id;;
+               await this.load_product_sort(0, category_id);
+            }else{
+               await this.load_product_sort(0, 0);
+            }
+            this.loading_data = false;
+         },
+         deep: true
+      },
+
       sortFeatureCurrentValue: async function( val ){
-         if( val == 0 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort( this.get_text_filter(), 0);
-            this.loading = false;
-            window.appbar_fixed();
+
+         if(val == 2 ){
+            // console.log('Top Rated Filter');
+            this.products.sort((a, b) => b.avg_rating - a.avg_rating);
          }
-         if( val == 1 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort( this.get_text_filter(), 0);
-            this.loading = false;
-            window.appbar_fixed();
+         else if(val == 1 ){
+            // console.log('Top Cheapest');
+            this.products.sort((a, b) => a.price - b.price);
          }
-         if( val == 2 ){
-            this.products = [];
-            this.loading = true;
-            await this.load_product_sort( this.get_text_filter(), 0);
-            this.loading = false;
-            window.appbar_fixed();
+         else if(val == 0 ){
+            // console.log('Nearest');
+            this.products.sort((a, b) => a.distance - b.distance);
          }
       }
    },
@@ -279,7 +295,7 @@ createApp({
    async created(){
       this.get_current_location();
       this.loading = true;
-      await this.load_product_sort('nearest', 0);
+      await this.load_product_sort(0, 0);
       await this.load_category();
       this.loading = false;
       window.appbar_fixed();

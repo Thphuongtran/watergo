@@ -129,6 +129,7 @@
          var partial = data.split('|');
 
          if ( partial[0] == 'refresh') {
+            alert('refresh');
             if( window.appBridge != undefined ){
                window.appBridge.refresh();
             }

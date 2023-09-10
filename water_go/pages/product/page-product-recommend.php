@@ -36,7 +36,7 @@
          <div class='grid-masonry'>
             <div @click='gotoProductDetail(product.id)' 
                class='product-design' 
-               v-for='(product, index) in filter_products' :key='index'
+               v-for='(product, index) in products' :key='index'
                :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
             >
                <div class='img'>
@@ -126,14 +126,6 @@ var app = Vue.createApp({
          window.location.href = '?appt=X&data=cart_count|notification_callback=notification_count';
       },
 
-      get_text_filter(  ){
-         switch( this.sortFeatureCurrentValue ){
-            case 0: return 'nearest'; break;
-            case 1: return 'cheapest'; break;
-            case 2: return 'top_rated'; break;
-         }
-      },
-
       async handleScroll() {
          const windowTop            = window.pageYOffset || document.documentElement.scrollTop;
          const scrollEndThreshold   = 50; // Adjust this value as needed
@@ -145,6 +137,8 @@ var app = Vue.createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+            this.sortFeatureCurrentValue = -1;
+
             if( this.which_query == 'recommend' ){
                await this.get_product_recommend( this.paged++);
             }
@@ -268,58 +262,26 @@ var app = Vue.createApp({
 
    },
 
-   computed: {
-      filter_products(){
-         var _filter = this.products;
-
-         if(this.sortFeatureCurrentValue == 2 ){
-            // console.log('Top Rated Filter');
-            _filter.sort((a, b) => b.avg_rating - a.avg_rating);
-         }
-         else if(this.sortFeatureCurrentValue == 1 ){
-            // console.log('Top Cheapest');
-            _filter.sort((a, b) => a.price - b.price);
-         }
-         else if(this.sortFeatureCurrentValue == 0 ){
-            // console.log('Nearest');
-            _filter.sort((a, b) => a.distance - b.distance);
-         }
-
-         return _filter;
-
-      }
-   },
 
    // STREAM 
    watch: {
 
-      products: function ( product ){
-         console.log('stream product');
-      },
-
       sortFeatureCurrentValue: async function( val ){
 
-         if( val == 0 ){
-            // this.products = [];
-            // this.loading = true;
-            // await this.get_product_recommend(this.get_text_filter(), 0);
-            // this.loading = false;
-            // window.appbar_fixed();
+
+         if(val == 2 ){
+            // console.log('Top Rated Filter');
+            this.products.sort((a, b) => b.avg_rating - a.avg_rating);
          }
-         if( val == 1 ){
-            // this.products = [];
-            // this.loading = true;
-            // await this.get_product_recommend(this.get_text_filter(), 0);
-            // this.loading = false;
-            // window.appbar_fixed();
+         else if(val == 1 ){
+            // console.log('Top Cheapest');
+            this.products.sort((a, b) => a.price - b.price);
          }
-         if( val == 2 ){
-            // this.products = [];
-            // this.loading = true;
-            // await this.get_product_recommend(this.get_text_filter(), 0);
-            // this.loading = false;
-            // window.appbar_fixed();
+         else if(val == 0 ){
+            // console.log('Nearest');
+            this.products.sort((a, b) => a.distance - b.distance);
          }
+
       }
    },
 

@@ -128,11 +128,7 @@
                class='btn btn-outline btn-cancel-order'><?php echo __('Cancel', 'watergo'); ?></button>
          </div>
 
-         <div class='product-detail-bottomsheet'
-            :class='[
-               get_layout_text_price, get_layout_cell_reorder 
-            ]'
-         >
+         <div class='product-detail-bottomsheet' :class='get_layout_bottomsheet'>
             <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
             <button 
                v-if='check_can_reorder == true'
@@ -442,27 +438,16 @@ createApp({
          }
       },
 
-      get_layout_cell_reorder(){
-         if( 
-            ( this.order.order_delivery_type == 'once_immediately' || this.order.order_delivery_type == 'once_date_time' ) && 
-            ( this.order.order_status == "complete" || this.order.order_status == "cancel" )
-         ){
-            return "cell-re-order";
-         }
-      },
-      
-
-      get_layout_text_price(){
-
+      get_layout_bottomsheet(){
          if( this.order.order_status == "ordered" || this.order.order_status == "confirmed" || this.order.order_status == "delivering" ){
-            return "t-right";
-         }else{
-            // IF CANCEL WITH repeat
-            if( this.order.order_status == "cancel" ){
-               return "t-left";
+            return "cell-one-column";
+         }else if( this.order.order_status == "complete" || this.order.order_status == "cancel" ){
+            if( this.order.order_delivery_type == 'once_immediately' || this.order.order_delivery_type == 'once_date_time' ){
+               return "cell-re-order";
+            }else{
+               return "cell-one-column";
             }
          }
-
       },
 
       count_total_product_in_order(){

@@ -49,32 +49,39 @@
       </div>
 
       <div class='inner'>
-         <div class='grid-masonry'>
-            <div 
-               @click='gotoProductDetail(product.id)' 
-               class='product-design' 
-               v-for='(product, index) in filter_products ' :key='index'
-               :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
-            >
-               <div class='img'>
-                  <img :src='product.product_image.url'>
-                  <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
-               </div>
-               <div class='box-wrapper'>
-                  <p class='tt01'>{{ product.name }} </p>
-                  <p class='tt02'>{{ product.name_second }}</p>
-
-                  <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
-                     <span class='price'>
-                        {{ common_price_after_discount(product ) }}
-                     </span>
-                     <span v-if='has_discount(product) == true' class='price-sub'>
-                        {{ common_price_show_currency(product.price) }}
-                     </span>
+         <div class='scaffold'>
+            <div v-show='loading_data == false' class='grid-masonry'>
+               <div 
+                  @click='gotoProductDetail(product.id)' 
+                  class='product-design' 
+                  v-for='(product, index) in products ' :key='index'
+                  :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
+               >
+                  <div class='img'>
+                     <img :src='product.product_image.url'>
+                     <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                   </div>
+                  <div class='box-wrapper'>
+                     <p class='tt01'>{{ product.name }} </p>
+                     <p class='tt02'>{{ product.name_second }}</p>
 
+                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                        <span class='price'>
+                           {{ common_price_after_discount(product ) }}
+                        </span>
+                        <span v-if='has_discount(product) == true' class='price-sub'>
+                           {{ common_price_show_currency(product.price) }}
+                        </span>
+                     </div>
+
+                  </div>
                </div>
             </div>
+
+            <div v-show='loading_data == true' class='progress-center'>
+               <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+            </div>
+            
          </div>
       </div>
    </div>
@@ -106,6 +113,8 @@ createApp({
          brandWater: [],
 
          arg_get_product: 0,
+
+         loading_data: false,
          
       }
    },
@@ -161,16 +170,7 @@ createApp({
             }
          });
       },
-
-      get_text_filter(){
-
-         switch( this.sortFeatureCurrentValue ){
-            case 0: return 'nearest'; break;
-            case 1: return 'cheapest'; break;
-            case 2: return 'top_rated'; break;
-         }
-      },
-
+      
       async load_category(){
          var form = new FormData();
          form.append('action', 'atlantis_load_category');
@@ -263,8 +263,18 @@ createApp({
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
+         var category_id = 0;
+         var brand_id = 0;
+
+         var _is_filter = this.get_filter_cat_brand();
+         if( _is_filter ){
+            category_id = _is_filter.category_id;
+            brand_id = _is_filter.brand_id;
+         }
+
          if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            await this.load_product_sort( this.get_text_filter(), this.paged++ );
+            this.sortFeatureCurrentValue = -1;
+            await this.load_product_sort( this.paged++, category_id, brand_id );
          }
       },
 
@@ -272,13 +282,17 @@ createApp({
       goBack(){ window.goBack(); },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id)},
 
-      async load_product_sort( filter, paged ){
-            
+      async load_product_sort( paged, category, brand ){
          var form = new FormData();
-         form.append('action', 'atlantis_get_product_sort');
+         form.append('action', 'atlantis_get_product_sort_version2');
          form.append('product_type', 'water');
-         form.append('filter', filter);
          form.append('paged', paged);
+         if(category != undefined && category != 0 ){
+            form.append('category', category);
+         }
+         if(brand != undefined && brand != 0 ){
+            form.append('brand', brand);
+         }
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
          var r = await window.request(form);
@@ -293,7 +307,22 @@ createApp({
                });
             }
          }
+      },
+
+      get_filter_cat_brand(){
+         var cat = this.categoryWater.find(c => c.active == true);
+         var brand = this.brandWater.find(b => b.active == true);
+         if (cat && brand) {
+            return { category_id: cat.id, brand_id: brand.id };
+         } else if(cat) {
+            return { category_id: cat.id, brand_id: 0 };
+         } else if(brand) {
+            return { brand_id: brand.id, category_id: 0 };
+         } else{
+            return false;
+         }
       }
+
    },
 
    mounted() {
@@ -303,90 +332,62 @@ createApp({
       window.removeEventListener('scroll', this.handleScroll);
    },
 
-   computed: {
-      filter_products(){
-         // var _filters = this.products;
-
-         // if(this.sortFeatureCurrentValue == 2 ){
-         //    // console.log('Top Rated Filter');
-         //    _filters.sort((a, b) => b.avg_rating - a.avg_rating);
-         // }
-         // else if(this.sortFeatureCurrentValue == 1 ){
-         //    // console.log('Top Cheapest');
-         //    _filters.sort((a, b) => a.price - b.price);
-         // }
-         // else if(this.sortFeatureCurrentValue == 0 ){
-         //    // console.log('Nearest');
-         //    _filters.sort((a, b) => a.distance - b.distance);
-         // }
-
-         var _filters = this.products.filter( product => {
-            // Filter products based on category and brand
-            var cat = this.categoryWater.find(c => c.active == true);
-            var brand = this.brandWater.find(b => b.active == true);
-            var _product = product;
-
-            if (cat && brand) {
-               _product = product.category == parseInt(cat.id) && product.brand == parseInt(brand.id);
-            } else if(cat) {
-               _product = product.category == parseInt(cat.id);
-            } else if(brand) {
-               _product = product.brand == parseInt(brand.id);
-            } else{
-               _product = product;
-            }
-            return _product;
-         });
-
-         if(this.sortFeatureCurrentValue == 2 ){
-            // console.log('Top Rated Filter');
-            _filters.sort((a, b) => b.avg_rating - a.avg_rating);
-         }
-         else if(this.sortFeatureCurrentValue == 1 ){
-            // console.log('Top Cheapest');
-            _filters.sort((a, b) => a.price - b.price);
-            console.log(_filters);
-         }
-         else if(this.sortFeatureCurrentValue == 0 ){
-            // console.log('Nearest');
-            _filters.sort((a, b) => a.distance - b.distance);
-         }
-
-
-         return _filters;
-
-
-         
-
-         // return _filters;
-      }
-   },
-
    // STREAM 
    watch: {
+
+      /**
+       * @access DEEP SEARCH
+       */
+      brandWater: {
+         async handler( data ) {
+            this.loading_data = true;
+            var _is_filter = this.get_filter_cat_brand();
+            if( _is_filter ){
+               this.sortFeatureCurrentValue = -1;
+               this.products = [];
+               var category_id = _is_filter.category_id;
+               var brand_id = _is_filter.brand_id;
+               await this.load_product_sort(0, category_id, brand_id);
+            }else{
+               await this.load_product_sort(0, 0, 0);
+            }
+            this.loading_data = false;
+         },
+         deep: true
+      },
+      categoryWater: {
+         async handler( data ){
+            this.loading_data = true;
+            var _is_filter = this.get_filter_cat_brand();
+            if( _is_filter ){
+               this.sortFeatureCurrentValue = -1;
+               this.products = [];
+               var category_id = _is_filter.category_id;
+               var brand_id = _is_filter.brand_id;
+               await this.load_product_sort(0, category_id, brand_id);
+            }else{
+               await this.load_product_sort(0, 0, 0);
+            }
+            this.loading_data = false;
+         },
+         deep: true
+      },
+
       sortFeatureCurrentValue: async function( val ){
 
-         if( val == 0 ){
-            // this.products = [];
-            // this.loading = true;
-            // await this.load_product_sort(this.get_text_filter(), 0 );
-            // this.loading = false;
-            window.appbar_fixed();
+         if(val == 2 ){
+            // console.log('Top Rated Filter');
+            this.products.sort((a, b) => b.avg_rating - a.avg_rating);
          }
-         if( val == 1 ){
-            // this.products = [];
-            // this.loading = true;
-            // await this.load_product_sort(this.get_text_filter(), 0 );
-            // this.loading = false;
-            window.appbar_fixed();
+         else if(val == 1 ){
+            // console.log('Top Cheapest');
+            this.products.sort((a, b) => a.price - b.price);
          }
-         if( val == 2 ){
-            // this.products = [];
-            // this.loading = true;
-            // await this.load_product_sort(this.get_text_filter(), 0 );
-            // this.loading = false;
-            window.appbar_fixed();
+         else if(val == 0 ){
+            // console.log('Nearest');
+            this.products.sort((a, b) => a.distance - b.distance);
          }
+         
       }
    },
 
@@ -395,7 +396,7 @@ createApp({
       this.get_current_location();
       this.loading = true;
 
-      await this.load_product_sort('nearest', 0);
+      await this.load_product_sort(0, 0, 0);
       await this.load_category();
       await this.load_brand();
 

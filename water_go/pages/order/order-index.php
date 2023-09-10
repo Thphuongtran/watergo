@@ -42,7 +42,7 @@
 
             </div>
          </div>
-         <div class='appbar-bottom'>
+         <div class='appbar-bottom navbar-bottom-border'>
             <ul class='navbar style02 navbar-icon navbar-order'>
 
                <li @click='select_filter(filter.value)' v-for='(filter, index) in order_status_filter' :key='index' 

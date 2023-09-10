@@ -97,6 +97,13 @@
 
    </div>
 
+   <div class='modal-popup' :class=' loading == false && ( store == null || store.store_hidden == 1 ) ? "open" : ""'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='goBack' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'><?php echo __('Content Not Found', 'watergo'); ?> </p>
+      </div>
+   </div>
+
    <div v-show="loading == true">
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
@@ -168,6 +175,7 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_find_store');
          form.append('store_id', store_id);
          var r = await window.request(form);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
@@ -180,27 +188,34 @@ var app = Vue.createApp({
 
                res.data.distance = parseFloat(_distance).toFixed(1) + ' km';
                this.store = res.data;
+
+               await this.findReview(store_id);
+               await this.get_total_review(store_id);
+
+
+               if( this.store.store_type == "both" ){
+
+                  var _both = [
+                     {label: '<?php echo __("Water", 'watergo'); ?>', value: "water", active: false},
+                     {label: '<?php echo __("Ice", 'watergo'); ?>', value: "ice", active: false}
+                  ];
+
+                  this.store_type.push(..._both);
+                  this.store_type[0].active = true;
+
+               }else if(this.store.store_type == "water"){
+                  this.store_type.push({label: '<?php echo __("Water", 'watergo'); ?>', value: "water", active: true});   
+               }else if(this.store.store_type == "ice"){
+                  this.store_type.push({label: '<?php echo __("Ice", 'watergo'); ?>', value: "ice", active: true });
+               }
+
+
+               await this.get_all_product_by_store(store_id)
+               await this.get_review_rating_average(store_id);
+
             }
          }
-         await this.findReview(store_id);
-         await this.get_total_review(store_id);
-
-
-         if( this.store.store_type == "both" ){
-
-            var _both = [
-               {label: '<?php echo __("Water", 'watergo'); ?>', value: "water", active: false},
-               {label: '<?php echo __("Ice", 'watergo'); ?>', value: "ice", active: false}
-            ];
-
-            this.store_type.push(..._both);
-            this.store_type[0].active = true;
-
-         }else if(this.store.store_type == "water"){
-            this.store_type.push({label: '<?php echo __("Water", 'watergo'); ?>', value: "water", active: true});   
-         }else if(this.store.store_type == "ice"){
-            this.store_type.push({label: '<?php echo __("Ice", 'watergo'); ?>', value: "ice", active: true });
-         }
+         
 
 
       },
@@ -364,9 +379,6 @@ var app = Vue.createApp({
          await this.mark_user_read_notification(hash_id);
       }
       await this.findStore(this.store_id);
-      await this.get_all_product_by_store(this.store_id)
-      await this.get_review_rating_average(this.store_id);
-
 
       window.appbar_fixed();
 

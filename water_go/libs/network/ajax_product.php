@@ -753,3 +753,129 @@ function atlantis_product_hidden(){
       wp_die();
    }
 }
+
+/**
+ * @access PRODUCT SORT + FILTER
+ */
+
+add_action( 'wp_ajax_nopriv_atlantis_get_product_sort_version2', 'atlantis_get_product_sort_version2' );
+add_action( 'wp_ajax_atlantis_get_product_sort_version2', 'atlantis_get_product_sort_version2' );
+function atlantis_get_product_sort_version2(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_product_sort_version2' ){
+      $paged         = isset($_POST['paged'] )        ? (int) $_POST['paged'] : 0;
+      $perPage       = isset($_POST['perPage'] )      ? $_POST['perPage'] : 20;
+
+      $paged = $paged * $perPage;
+
+      $product_type  = isset($_POST['product_type'] ) ? $_POST['product_type'] : '';
+
+      $category = isset($_POST['category']) ? $_POST['category'] : 0;
+      // for water 
+      $brand    = isset($_POST['brand']) ? $_POST['brand'] : 0;
+
+      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
+      global $wpdb;
+
+      $sql = "SELECT 
+         -- product
+         wp_watergo_products.id,
+         wp_watergo_products.store_id,
+         wp_watergo_products.product_type,
+         wp_watergo_products.description,
+         wp_watergo_products.price,
+         wp_watergo_products.stock,
+         wp_watergo_products.category,
+         wp_watergo_products.brand,
+         wp_watergo_products.quantity,
+         wp_watergo_products.volume,
+         wp_watergo_products.weight,
+         wp_watergo_products.length_width,
+         wp_watergo_products.has_discount,
+         wp_watergo_products.discount_percent,
+         wp_watergo_products.discount_from,
+         wp_watergo_products.discount_to,
+         wp_watergo_products.created_at,
+         wp_watergo_products.mark_out_of_stock,
+         wp_watergo_products.product_hidden,
+         -- 
+         (6371 * acos(
+            cos(
+               radians($lat)) * cos(radians(wp_watergo_store.latitude)) * 
+               cos(radians(wp_watergo_store.longitude) - radians($lng)
+            ) + sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
+         )) AS distance,
+         COALESCE(COUNT(reviews_avg.avg_rating), 0) AS avg_rating
+
+         FROM wp_watergo_products  
+         
+         LEFT JOIN wp_watergo_store
+         ON wp_watergo_store.id = wp_watergo_products.store_id
+
+         LEFT JOIN (
+            SELECT store_id, AVG(rating) AS avg_rating
+            FROM wp_watergo_reviews
+            GROUP BY store_id
+         ) AS reviews_avg ON reviews_avg.store_id = wp_watergo_products.store_id
+
+         WHERE wp_watergo_products.product_type = '$product_type'
+         AND wp_watergo_products.mark_out_of_stock != 1
+         AND wp_watergo_products.product_hidden != 1 
+         
+      ";
+
+      // FILTER CAT + BRAND
+      if( $category != 0 ){
+         $sql .= " AND wp_watergo_products.category = $category ";
+      }
+      if( $brand != 0 ){
+         $sql .= " AND wp_watergo_products.brand = $brand ";
+      }
+
+      $sql .= "
+         GROUP BY wp_watergo_products.id
+         ORDER BY distance DESC
+         LIMIT $paged, $perPage
+      ";
+
+
+      $res = $wpdb->get_results($sql);
+
+      foreach( $res as $k => $vl ){
+         $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
+         $category = func_atlantis_get_product_category([
+            'category'     => $vl->category,
+            'brand'        => $vl->brand,
+            'quantity'     => $vl->quantity,
+            'volume'       => $vl->volume,
+            'weight'       => $vl->weight,
+            'product_type' => $vl->product_type,
+            'product_id'   => $vl->id
+         ]);
+
+         $res[$k]->category_name = $category['category_name'];
+         $res[$k]->brand_name = $category['brand_name'];
+         $res[$k]->quantity_name = $category['quantity_name'];
+         $res[$k]->volume_name = $category['volume_name'];
+         $res[$k]->weight_name = $category['weight_name'];
+
+         $res[$k]->description    = stripcslashes($res[$k]->description);
+
+         $res[$k]->name = $category['name'];
+         $res[$k]->name_second = $category['name_second'];
+
+
+      }
+
+      if( empty( $res ) ){
+         wp_send_json_error(['message' => 'product_not_found']);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $res]);
+      wp_die(); 
+
+
+   }
+}

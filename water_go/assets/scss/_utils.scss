@@ -64,6 +64,9 @@ body{
 		position: absolute !important;
 		height: 100%;
 		width: 100%;
+      top: 10px;
+      left: initial;
+      transform: initial;
 	}
 }
 input[type="number"] {
@@ -234,6 +237,7 @@ p{
 .pt0{ padding-top: 0 !important;}
 
 .pr10{padding-right: 8px !important;}
+.pr15{padding-right: 15px !important;}
 .pl10{padding-left: 8px !important;}
 
 .pb5{ padding-bottom: 5px !important;}
@@ -3493,5 +3497,16 @@ p{
    }
 }
 
+.remove-bottom-border{
+   border-bottom: none !important; 
+}
 
-
+.product-detail-bottomsheet{
+   &.cell-one-column{
+      .price-total{
+         padding-right: 15px;
+         width: 100%;
+         text-align: right;
+      }
+   }
+}

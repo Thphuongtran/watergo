@@ -147,6 +147,11 @@ function atlantis_find_store(){
       $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id ";
 
       $res = $wpdb->get_results($sql);
+      
+      if( empty( $res ) ){
+         wp_send_json_error([ 'message' => 'store_not_found' ]);
+         wp_die();
+      }
 
       foreach( $res as $k => $vl ){
          $res[$k]->store_image = func_atlantis_get_images($vl->id, 'store', true);
@@ -155,10 +160,6 @@ function atlantis_find_store(){
 
       $res[0]->store_image_full = func_atlantis_get_images($vl->id, 'store', true,"large");
 
-      if( empty( $res ) ){
-         wp_send_json_error([ 'message' => 'store_not_found' ]);
-         wp_die();
-      }
       wp_send_json_success(['message' => 'store_found', 'data' => $res[0] ]);
       wp_die();
       

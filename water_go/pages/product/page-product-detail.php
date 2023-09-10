@@ -4,13 +4,13 @@
       <div class='product-detail-wrapper'>
          <div class='product-header'>
             <div class='top'>
-               <button @click='goBack' class='btn-action'>
+               <a href='?appt=X' class='btn-action'>
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="14" cy="14" r="14" fill="black" fill-opacity="0.2"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M4 14C4 13.4477 4.44772 13 5 13H22.5C23.0523 13 23.5 13.4477 23.5 14C23.5 14.5523 23.0523 15 22.5 15H5C4.44772 15 4 14.5523 4 14Z" fill="white"/>
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M14.5309 6.37534C14.8759 6.8066 14.806 7.4359 14.3747 7.78091L6.60078 14L14.3747 20.2192C14.806 20.5642 14.8759 21.1935 14.5309 21.6247C14.1859 22.056 13.5566 22.1259 13.1253 21.7809L4.3753 14.7809C4.13809 14.5911 4 14.3038 4 14C4 13.6963 4.13809 13.4089 4.3753 13.2192L13.1253 6.21917C13.5566 5.87416 14.1859 5.94408 14.5309 6.37534Z" fill="white"/>
                   </svg>
-               </button>
+               </a>
 
                <!-- <button @click='btn_share' class='btn-action'>
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,6 +176,13 @@
       
    </div>
 
+   <div class='modal-popup' :class='loading == false && ( product == null || product.product_hidden == 1 ) ? "open" : ""'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='goBack' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'><?php echo __('Content Not Found', 'watergo'); ?> </p>
+      </div>
+   </div>
+
    <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
@@ -336,11 +343,17 @@ var app = Vue.createApp({
                   this.canOrder = true;
                }
 
+
+               await this.get_review_rating_average( this.product.store_id);
+               await this.get_purchase_store( this.product.store_id);
+
+               await this.findStore(this.product.store_id);
+               await this.get_all_product_by_store( parseInt(this.product.store_id), product_id);
+
             }
          }
       
-         await this.findStore(this.product.store_id);
-         await this.get_all_product_by_store( parseInt(this.product.store_id), product_id);
+         
       },
 
       async findStore( store_id ){
@@ -471,51 +484,41 @@ var app = Vue.createApp({
       const product_id = urlParams.get('product_id');
       await this.get_current_user_id();
       await this.findProduct(product_id);
-      await this.get_review_rating_average( this.product.store_id);
-      await this.get_purchase_store( this.product.store_id);
 
-      
+      if( this.product != null ){
 
-      // GET QUANTITY 
-      var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-      // 
-      if (_cartItems && _cartItems.length > 0) {
-         _cartItems.some( store => {
-            store.products.some( product => product.product_select = false );
-            store.products.some( product => {
-               if( product.product_id == this.product.id ){
-                  // if( this.product.stock >= product.product_quantity_count ) {
+         // GET QUANTITY 
+         var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
+         // 
+         if (_cartItems && _cartItems.length > 0) {
+            _cartItems.some( store => {
+               store.products.some( product => product.product_select = false );
+               store.products.some( product => {
+                  if( product.product_id == this.product.id ){
                      this.product_quantity_count = product.product_quantity_count;
-                  // }
-               }
+                  }
+               });
             });
-         });
-         localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
+         }
+
+         window.appbar_fixed();
+
+         (function($){
+            $(document).ready(function(){
+               $('.product-slider ul').slick({
+                  dots: false,
+                  arrows: false,
+                  infinite: false,
+                  autoplay: true,
+                  duration: 1000,
+                  speed: 300,
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+               })
+            });
+         })(jQuery);
       }
-
-      // this.product_exists_in_cart = window.check_product_exists_in_cart(product_id);
-      // this.get_product_from_cart = window.get_product_from_cart(product_id);
-
-      // console.log(this.product)
-
-      // console.log()
-
-      window.appbar_fixed();
-
-      (function($){
-         $(document).ready(function(){
-            $('.product-slider ul').slick({
-               dots: false,
-               arrows: false,
-               infinite: false,
-               autoplay: true,
-               duration: 1000,
-               speed: 300,
-               slidesToShow: 1,
-               slidesToScroll: 1,
-            })
-         });
-      })(jQuery);
 
       this.loading = false;
 
