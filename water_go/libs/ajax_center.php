@@ -234,7 +234,7 @@ function func_atlantis_get_product_by( $args ){
 
    if( $get_by == 'category_id' ){
       $sql .= " WHERE wp_watergo_products.category = $id ";
-
+      $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
 
    if( $get_by_product_type != null ){

@@ -240,7 +240,8 @@ var app = Vue.createApp({
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
-         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         if (scrollPosition + windowHeight >= documentHeight ) {
             await this.get_order_filter( this.paged++);
          }
       }

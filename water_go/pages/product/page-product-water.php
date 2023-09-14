@@ -54,7 +54,7 @@
                <div 
                   @click='gotoProductDetail(product.id)' 
                   class='product-design' 
-                  v-for='(product, index) in products ' :key='index'
+                  v-for='(product, index) in filter_products ' :key='index'
                   :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
                >
                   <div class='img'>
@@ -115,6 +115,85 @@ createApp({
          arg_get_product: 0,
 
          loading_data: false,
+         
+      }
+   },
+
+   computed: {
+
+      filter_products(){
+         var _products = this.products;
+         if(this.sortFeatureCurrentValue == 2 ){
+            // console.log('Top Rated Filter');
+            _products.sort((a, b) => b.avg_rating - a.avg_rating);
+         }
+         else if(this.sortFeatureCurrentValue == 1 ){
+            // console.log('Top Cheapest');
+            _products.sort((a, b) => a.price - b.price);
+         }
+         else if(this.sortFeatureCurrentValue == 0 ){
+            // console.log('Nearest');
+            _products.sort((a, b) => a.distance - b.distance);
+         }
+         return _products;
+      },
+   },
+
+   // STREAM 
+   watch: {
+
+      /**
+       * @access DEEP SEARCH
+       */
+      brandWater: {
+         async handler( data ) {
+            this.loading_data = true;
+            var _is_filter = this.get_filter_cat_brand();
+            if( _is_filter ){
+               this.sortFeatureCurrentValue = -1;
+               this.products = [];
+               var category_id = _is_filter.category_id;
+               var brand_id = _is_filter.brand_id;
+               await this.load_product_sort(0, category_id, brand_id);
+            }else{
+               await this.load_product_sort(0, 0, 0);
+            }
+            this.loading_data = false;
+         },
+         deep: true
+      },
+      categoryWater: {
+         async handler( data ){
+            this.loading_data = true;
+            var _is_filter = this.get_filter_cat_brand();
+            if( _is_filter ){
+               this.sortFeatureCurrentValue = -1;
+               this.products = [];
+               var category_id = _is_filter.category_id;
+               var brand_id = _is_filter.brand_id;
+               await this.load_product_sort(0, category_id, brand_id);
+            }else{
+               await this.load_product_sort(0, 0, 0);
+            }
+            this.loading_data = false;
+         },
+         deep: true
+      },
+
+      sortFeatureCurrentValue: function( val ){
+
+         // if(val == 2 ){
+         //    // console.log('Top Rated Filter');
+         //    this.products.sort((a, b) => b.avg_rating - a.avg_rating);
+         // }
+         // else if(val == 1 ){
+         //    // console.log('Top Cheapest');
+         //    this.products.sort((a, b) => a.price - b.price);
+         // }
+         // else if(val == 0 ){
+         //    // console.log('Nearest');
+         //    this.products.sort((a, b) => a.distance - b.distance);
+         // }
          
       }
    },
@@ -260,6 +339,7 @@ createApp({
          const scrollPosition       = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight         = window.innerHeight;
          const documentHeight       = document.documentElement.scrollHeight;
+         // const documentHeight       = window.pageYOffset;
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
@@ -272,8 +352,7 @@ createApp({
             brand_id = _is_filter.brand_id;
          }
 
-         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-            this.sortFeatureCurrentValue = -1;
+         if (scrollPosition + windowHeight >= documentHeight ) {
             await this.load_product_sort( this.paged++, category_id, brand_id );
          }
       },
@@ -332,64 +411,6 @@ createApp({
       window.removeEventListener('scroll', this.handleScroll);
    },
 
-   // STREAM 
-   watch: {
-
-      /**
-       * @access DEEP SEARCH
-       */
-      brandWater: {
-         async handler( data ) {
-            this.loading_data = true;
-            var _is_filter = this.get_filter_cat_brand();
-            if( _is_filter ){
-               this.sortFeatureCurrentValue = -1;
-               this.products = [];
-               var category_id = _is_filter.category_id;
-               var brand_id = _is_filter.brand_id;
-               await this.load_product_sort(0, category_id, brand_id);
-            }else{
-               await this.load_product_sort(0, 0, 0);
-            }
-            this.loading_data = false;
-         },
-         deep: true
-      },
-      categoryWater: {
-         async handler( data ){
-            this.loading_data = true;
-            var _is_filter = this.get_filter_cat_brand();
-            if( _is_filter ){
-               this.sortFeatureCurrentValue = -1;
-               this.products = [];
-               var category_id = _is_filter.category_id;
-               var brand_id = _is_filter.brand_id;
-               await this.load_product_sort(0, category_id, brand_id);
-            }else{
-               await this.load_product_sort(0, 0, 0);
-            }
-            this.loading_data = false;
-         },
-         deep: true
-      },
-
-      sortFeatureCurrentValue: async function( val ){
-
-         if(val == 2 ){
-            // console.log('Top Rated Filter');
-            this.products.sort((a, b) => b.avg_rating - a.avg_rating);
-         }
-         else if(val == 1 ){
-            // console.log('Top Cheapest');
-            this.products.sort((a, b) => a.price - b.price);
-         }
-         else if(val == 0 ){
-            // console.log('Nearest');
-            this.products.sort((a, b) => a.distance - b.distance);
-         }
-         
-      }
-   },
 
    async created(){
          

@@ -136,7 +136,8 @@ var app = Vue.createApp({
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
-         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         if (scrollPosition + windowHeight >= documentHeight ) {
             this.sortFeatureCurrentValue = -1;
 
             if( this.which_query == 'recommend' ){

@@ -463,6 +463,7 @@ function atlantis_get_product_top_related(){
       $category_id = isset($_POST['category_id']) ? $_POST['category_id'] : 0;
       $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
       $limit = 10;
+      
       $res = func_atlantis_get_product_by([
          'id'           => $category_id,
          'get_by'       => 'category_id',
@@ -685,13 +686,13 @@ add_action( 'wp_ajax_atlantis_get_all_product_by_store', 'atlantis_get_all_produ
 
 function atlantis_get_all_product_by_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_all_product_by_store' ){
-      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+      $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
 
       $res = func_atlantis_get_product_by([
-         'id'     => $store_id,
-         'get_by' => 'store_id',
-         'exclude_id' => $product_id
+         'id'           => $store_id,
+         'get_by'       => 'store_id',
+         'exclude_id'   => $product_id
       ]);
 
       if( empty($res ) ){

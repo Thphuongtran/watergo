@@ -109,7 +109,7 @@
 
       <div class='box-func-order-detail-store'>
          
-         <!-- <button 
+         <button 
             @click='gotoChatMessenger' 
             class='btn-chat'>
             <span class='icon'>
@@ -124,7 +124,7 @@
                </svg>
             </span>
             <span class='text'>Chat</span>
-         </button> -->
+         </button>
 
          <a v-if='order != null && order.order_delivery_address.phone != undefined' :href='"tel:" + order.order_delivery_address.phone' class='btn-call'>
             <span class='icon'>

@@ -23,13 +23,13 @@
          </div>
       </div>
 
-      <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
+      <!-- <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
          <ul>
             <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""'><?php echo __('Nearest'); ?></li>
             <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""'><?php echo __('Cheapest'); ?></li>
             <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""'><?php echo __('Top Rated'); ?></li>
          </ul>
-      </div>
+      </div> -->
 
       <div v-if='products.length > 0 && loading == false ' class='inner'>
          <div class='grid-masonry'>
@@ -136,7 +136,8 @@ createApp({
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
-         if (scrollPosition + windowHeight + scrollEndThreshold >= documentHeight - scrollEndThreshold) {
+         // if (scrollPosition + windowHeight + scrollEndThreshold >= documentHeight - scrollEndThreshold) {
+         if (scrollPosition + windowHeight >= documentHeight ) {
             
             await this.get_top_related_product( this.paged++);
          }

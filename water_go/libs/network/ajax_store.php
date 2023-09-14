@@ -437,11 +437,15 @@ function atlantis_store_hidden(){
          if( ! empty( $res) ){
             foreach( $res as $k => $vl){
                update_user_meta( (int) $vl->user_id, 'account_hidden', 1 );
+               // FORCE ACCOUNT TO LOGOUT -> DELETE from wp_usermeta [ column - session_tokens ]
+               update_user_meta( (int) $vl->user_id, 'session_tokens', "" );
                $table = $wpdb->prefix."bj_user_push_token";
                $wpdb->update($table , ["token" => "","status" => ""], ["user_id" => $vl->user_id],["%s","%s"],["%d"]);
             }
          }
          
+
+
          wp_send_json_success([ 'message' => 'store_hidden_ok', 'res' => $res ]);
          wp_die();
 

@@ -127,6 +127,7 @@
 
       if ( data != "undefined" && data != "" ) {
          var partial = data.split('|');
+         // alert(data);
 
          if ( partial[0] == 'refresh') {
             alert('refresh');
@@ -216,7 +217,7 @@
             });
          }
 
-         if ( partial[0] == 'notification_count') {
+         if ( partial[0] == 'notification_count' || ( partial[1] != undefined && partial[1] == 'notification_count' ) ) {
             await get_notification_count().then( (data) => window.app.notification_count = data );
          }
          // if( dara == 'notification_update_data' ){}
@@ -241,20 +242,35 @@
          }
 
          if( partial[0] == 'delivery_just_add' ){
-            // window.app.delivery_address = [];
-            await get_delivery_address().then( (data) => {
-               data.forEach( item => {
-                  var _exists = window.app.delivery_address.some( address => address.id == item.id );
-                  if( ! _exists ){
-                     if ( item.primary == 1 ){
-                        window.app.delivery_address.forEach( item => item.primary = 0);
-                        window.app.delivery_address.push(item);
-                     }else{
-                        window.app.delivery_address.push(item);
+
+            // FOR ROLE USER ORDER
+            if( partial[1] != undefined && partial[1] == 'is_order_select'){
+               await get_delivery_address().then( (data) => {
+                  data.forEach( item => {
+                     var _exists = window.app.delivery_address.some( address => address.id == item.id );
+                     if( ! _exists ){
+                     //    if ( item.primary == 1 ){
+                           // window.app.delivery_address.forEach( item => item.primary = 0);
+                           window.app.delivery_address.push(item);
                      }
-                  }
+                  });
                });
-            });
+            }else{
+
+               await get_delivery_address().then( (data) => {
+                  data.forEach( item => {
+                     var _exists = window.app.delivery_address.some( address => address.id == item.id );
+                     if( ! _exists ){
+                        if ( item.primary == 1 ){
+                           window.app.delivery_address.forEach( item => item.primary = 0);
+                           window.app.delivery_address.push(item);
+                        }else{
+                           window.app.delivery_address.push(item);
+                        }
+                     }
+                  });
+               });
+            }
          }
 
          if( partial[0] == 'delivery_just_delete'){
@@ -291,14 +307,14 @@
          }
 
          // SECOND ROUTE
-         if( partial[1] != undefined ){
-            for( var i = 1; i < partial.length; i++ ){
-               var multi_part = partial[i].split('=');
-               if( multi_part[0] == 'notification_callback' && multi_part[1] == 'notification_count' ){
-                  await get_notification_count().then( (data) => window.app.notification_count = data );  
-               }
-            }
-         }
+         // if( partial[1] != undefined ){
+         //    for( var i = 1; i < partial.length; i++ ){
+         //       var multi_part = partial[i].split('=');
+         //       if( multi_part[0] == 'notification_callback' && multi_part[1] == 'notification_count' ){
+         //          await get_notification_count().then( (data) => window.app.notification_count = data );  
+         //       }
+         //    }
+         // }
 
       }
    }

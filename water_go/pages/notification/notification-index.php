@@ -191,10 +191,12 @@ createApp({
          const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
+
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
 
-         if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
+         if (scrollPosition + windowHeight >= documentHeight ) {
             await this.load_all_notification( this.paged++);
          }
       }

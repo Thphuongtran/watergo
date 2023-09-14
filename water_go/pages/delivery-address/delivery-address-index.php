@@ -14,7 +14,8 @@
                <p class='leading-title'><?php echo __('Delivery Address', 'watergo'); ?></p>
             </div>
             <div class='action'>
-               <button class='btn btn-primary small' @click='gotoDeliveryAddressAdd'><?php echo __('Add New', 'watergo'); ?></button>
+               <button v-show='is_order_select == false' class='btn btn-primary small' @click='gotoDeliveryAddressAdd'><?php echo __('Add New', 'watergo'); ?></button>
+               <button v-show='is_order_select == true' class='btn btn-primary small' @click='gotoDeliveryAddressAdd_when_order_select'><?php echo __('Add New', 'watergo'); ?></button>
             </div>
          </div>
       </div>
@@ -131,6 +132,11 @@ var app = Vue.createApp({
       },
 
       gotoDeliveryAddressAdd(){ window.gotoDeliveryAddressAdd()},
+      // ROLE FOR USER ORDER
+      gotoDeliveryAddressAdd_when_order_select(){
+         window.location.href = window.watergo_domain + 'delivery-address/?delivery_address_page=delivery-address-add&is_order_select=1&appt=N';
+      },
+
       gotoDeliveryAddressEdit(delivery_id){ 
          window.gotoDeliveryAddressEdit(delivery_id);
          // console.log('Edit Delivery')
@@ -188,6 +194,7 @@ var app = Vue.createApp({
       await this.get_delivery_address();
 
       if( is_order_select != undefined && is_order_select != null){
+         // ROLE FOR USER ORDER
          this.is_order_select = true;
          var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
 
