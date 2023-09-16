@@ -58,14 +58,14 @@ function func_get_product_category($res_product){
             'product_id'   => $product->id,
          ]);
 
-         $description = $res_product[$k]->description;
+         // $description = $res_product[$k]->description;
 
          $res_product[$k]->category_name  = $category['category_name'];
          $res_product[$k]->brand_name     = $category['brand_name'];
          $res_product[$k]->quantity_name  = $category['quantity_name'];
          $res_product[$k]->volume_name    = $category['volume_name'];
          $res_product[$k]->weight_name    = $category['weight_name'];
-         $res_product[$k]->description    = stripcslashes($description);
+         // $res_product[$k]->description    = stripcslashes($description);
          $res_product[$k]->name           = $category['name'];
          $res_product[$k]->name_second    = $category['name_second'];
       }
@@ -126,37 +126,24 @@ function atlantis_search_product(){
       $paged   = isset($_POST['paged']) ?  $_POST['paged'] : 0;
       $paged   = $paged * $limit;
 
-      $search  = isset($_POST['search']) ? strtolower(convertVietnameseToLatin($_POST['search'])) : '';
-      // $search  = isset($_POST['search']) ? $_POST['search'] : '';
+      $search  = isset($_POST['search']) ? strtolower($_POST['search']) : '';
 
       global $wpdb;
 
       $sql_category = "SELECT * FROM wp_watergo_product_category
          WHERE category IN ('water_brand', 'ice_category', 'water_category')
+         AND LOWER(name) LIKE '%$search%'
       ";
-      // $sql_category = "SELECT * FROM wp_watergo_product_category
-      //    WHERE category IN ('water_brand', 'ice_category', 'water_category')
-      //    AND name LIKE '%$search%'
-      // ";
 
       $res_category        = $wpdb->get_results($sql_category);
-      $res = [];
-      if( !empty( $res_category ) ){
-         foreach( $res_category as $k => $vl ){
-            $wordConvert = strtolower(convertVietnameseToLatin( $vl->name ));
-            if( word_by_word_match( $search, $wordConvert ) ){
-               $res[$k] = $vl;
-            }
-            // $res[$k] = $vl;
-         }
-      }
 
-      if( empty( $res ) ){
+      if( empty( $res_category ) ){
          wp_send_json_error(['message' => 'search_not_found 1' ]);
          wp_die();
       }
 
       // fetch product 
+
 
       $sql_product   = "SELECT 
             wp_watergo_products.*,
@@ -169,29 +156,27 @@ function atlantis_search_product(){
             )) AS distance
 
          FROM wp_watergo_products 
-         WHERE wp_watergo_products.product_hidden = 0
 
          LEFT JOIN wp_watergo_store 
-         ON wp_watergo_store.id = wp_watergo_products.store_id
+         ON wp_watergo_store.id = wp_watergo_products.store_id AND wp_watergo_store.store_hidden != 1
 
       ";
 
-      $res_product   = [];
       $product_query = [];
 
-      foreach( $res as $kCat => $vlCat ){
+      foreach( $res_category as $kCat => $vlCat ){
          $id_category         = (int) $vlCat->id;
 
          if( $vlCat->category == "ice_category" ){
-            $product_query['ice_category']['category']   = 'category';
+            $product_query['ice_category']['category']   = 'wp_watergo_products.category';
             $product_query['ice_category']['id'][]       = $id_category;
          }
          if( $vlCat->category == "water_category"){
-            $product_query['water_category']['category']   = 'category';
+            $product_query['water_category']['category']   = 'wp_watergo_products.category';
             $product_query['water_category']['id'][]       = $id_category;
          }
          if( $vlCat->category == "water_brand"){
-            $product_query['water_brand']['category']   = 'brand';
+            $product_query['water_brand']['category']   = 'wp_watergo_products.brand';
             $product_query['water_brand']['id'][]       = $id_category;
          }
 
@@ -199,12 +184,14 @@ function atlantis_search_product(){
 
       sort( $product_query);
 
+      $res_product   = [];
+
       if( !empty( $product_query )){
 
          $list_id       = implode(',', $product_query[0]['id'] );
          $type          = $product_query[0]['category'];
          $sql_product  .= "
-            WHERE $type IN ($list_id) 
+            WHERE wp_watergo_products.product_hidden != 1 AND $type IN ($list_id) 
             ORDER BY distance ASC
             LIMIT $paged, 10
          ";
@@ -255,7 +242,7 @@ function atlantis_search_store(){
 
          FROM wp_watergo_store as store
 
-         WHERE store.name LIKE '%$search%' AND store.store_hidden = 0
+         WHERE store.name LIKE '%$search%' AND store.store_hidden != 1
              -- OR LOWER(store.name) LIKE BINARY '%$search%' COLLATE utf8_unicode_ci
          
          ORDER BY distance ASC
@@ -296,7 +283,7 @@ function atlantis_search_store_from_admin(){
       }
 
       global $wpdb;
-      $sql = "SELECT * FROM wp_watergo_store WHERE LOWER(name) LIKE '%$store_name%' AND store_hidden = 0 ";
+      $sql = "SELECT * FROM wp_watergo_store WHERE LOWER(name) LIKE '%$store_name%' AND store_hidden != 1 ";
       $res = $wpdb->get_results( $sql );
 
       if( !empty($res) ){

@@ -2,6 +2,7 @@
 $get = $_GET;
 $get["appt"] = "N";
 $login_url_par = http_build_query($get);  
+
 ?>
 <style type="text/css">
    .banner.page-welcome .banner-footer a{ width: 100%; position: absolute; bottom: 15%; }
@@ -49,8 +50,8 @@ $login_url_par = http_build_query($get);
 
          <div class='box-language t-center'>
             <div class="dropdown dropdown-language">
-               <div class="dropdown-toggle" @click="toggleDropdown">
-               <div class="selected-option">
+               <div class="dropdown-toggle">
+               <div class="selected-option" @click="toggleDropdown">
                   <img :src="getFlagImage(selectedLanguage.id)" class="flag-image" />
                   <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M1 1L6 6L11 1" stroke="#181E32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -146,14 +147,14 @@ createApp({
       gotoPageUserPrivacyPolicy(){ window.gotoPageUserPrivacyPolicy()},
       gotoPageUserTermConditions(){ window.gotoPageUserTermConditions()},
 
-      toggleDropdown() {
-         this.showDropdown = !this.showDropdown;
-      },
+      toggleDropdown() { this.showDropdown = !this.showDropdown; },
+
       selectLanguage(language) {
-         this.selectedLanguage = language;
-         this.changeLanguage(language.id);
+         if( this.selectedLanguage.id != language.id ){
+            this.selectedLanguage = language;
+            this.changeLanguage(language.id);
+         }
          this.showDropdown = false;
-         this.toggleDropdown();
       },
 
       async changeLanguage(language){
@@ -165,11 +166,11 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'change_language_successfully' ){
-               this.loading = true;
+               // this.loading = true;
                if( window.appBridge != undefined ){
                   window.appBridge.setLanguage(res.data);
                   // window.appBridge.close('refresh');
-                  window.appBridge.refresh;
+                  window.appBridge.refresh();
                }
             }
          }
@@ -229,11 +230,10 @@ createApp({
                form.append('email', this.inputEmail);
                form.append('password', this.inputPassword);
                var r = await window.request(form);
-               console.log(r)
+
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'login_ok' ){
-
 
                      if( window.appBridge != undefined ){
                         window.appBridge.loginSuccess(res.token);

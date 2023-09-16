@@ -368,8 +368,8 @@ var app = Vue.createApp({
                });
             }
          }
-
       },
+      
 
       async get_count_total_order(){
          // this.order_status_filter.some(item => item.count = 0);

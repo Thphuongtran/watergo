@@ -344,7 +344,6 @@ var app = Vue.createApp({
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       gotoChat(){ window.gotoChat(); },
 
-
       btn_select_reason( key ){
          this.reason_cancel.some( item => { 
             item.active = false;
@@ -413,10 +412,11 @@ var app = Vue.createApp({
       // BUTTON DO ALL ACTION
       async btn_do_all_action(){
          var order_ids = [];
+
+         
          this.orders.forEach( od => {
             if( od.select == true ){ order_ids.push( parseInt( od.order_id) ); }
          });
-
          
          if( this.status_change_all != 'cancel' ){
             if( order_ids.length > 0 ){

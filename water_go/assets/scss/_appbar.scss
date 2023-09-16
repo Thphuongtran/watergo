@@ -49,6 +49,7 @@
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
+      white-space: nowrap;
       
       .datetime-display{
          display: flex;

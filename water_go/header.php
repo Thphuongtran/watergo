@@ -1,10 +1,10 @@
 <?php 
+
    atlantis_setup_language();
 
-   // 
+   
    $get_locale = get_locale();
 
-   // SET AUTO LANGUAGE VI FOR APP STORE
    if( is_user_logged_in() ){
       $user_id = get_current_user_id();
       $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 

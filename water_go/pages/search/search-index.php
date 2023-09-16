@@ -1,7 +1,6 @@
 <div id='app'>
 
-   <div v-if='loading == false' class='page-search'>
-
+   <div class='page-search'>
       <div class='page-appbar-support'>
          <div class='appbar'>
 
@@ -84,13 +83,10 @@
             
          </div>
       </div>
-
-
-
    </div>
    
 </div>
-<script type='module'>
+<script>
 
 var { createApp } = Vue;
 
@@ -262,3 +258,8 @@ createApp({
    }
 }).mount('#app');
 </script>
+<style>
+   .box-search.style01 .input-search{
+      padding-right: 15px;
+   }
+</style>

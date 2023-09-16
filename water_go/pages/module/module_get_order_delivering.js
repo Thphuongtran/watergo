@@ -1,6 +1,6 @@
 const module_get_order_delivering = {
    template: `
-      <div class='banner-order-delivering-space' :class='banner_delivering_active == true ? "d-block" : ""'></div>
+      <div class='banner-order-delivering-space' v-show='orders.length > 0'></div>
       <div 
          class='banner-order-delivering' :class='banner_delivering_active == true ? "" : "d-none"'>
 
@@ -15,9 +15,9 @@ const module_get_order_delivering = {
             </svg>
          </div>
 
-         <div class='order-slide-wrapper'>
-            <ul class='order-slider'></ul>
-         </div>
+         <div class='order-slide-wrapper'><ul class='order-slider'>
+
+         </ul></div>
 
          <div class='icon-arrow'>
             <svg width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,9 +69,9 @@ const module_get_order_delivering = {
       title_compact( order ){
          var _order_number = window.addLeadingZeros( parseInt(order.order_number));
          if( this.$root.get_locale == 'vi'){
-            return `Đơn <span class='t-primary'>#${_order_number}</span> đang chờ cửa hàng xác nhận`;
+            return `<p>Đơn <span class='t-primary'>#${_order_number}</span> đang chờ cửa hàng xác nhận</p>`;
          }else{
-            return `Order <span class='t-primary'>#${_order_number}</span> is awaiting store confirmation`;
+            return `<p>Order <span class='t-primary'>#${_order_number}</span> is awaiting store confirmation</p>`;
          }
       },
 
@@ -84,6 +84,7 @@ const module_get_order_delivering = {
             if( res.message == 'order_found' ){
 
                this.is_store = res.is_store == 0 || res.is_store == null ? false : true;
+
                res.data.forEach( _order => {
                   var _order_exists = this.orders.find( item => item.order_id == _order.order_id );
                   if( ! _order_exists ){
@@ -146,6 +147,7 @@ const module_get_order_delivering = {
       },
 
       initializeSlick() {
+
          $('.order-slide-wrapper .order-slider').slick({
             dots: false,
             arrows: false,
@@ -156,11 +158,13 @@ const module_get_order_delivering = {
             autoplay: true,
             autoplaySpeed: 4000,
          });
+
       },
 
    },
 
    async mounted(){
+
       this.initializeSlick();
       await setInterval( async () => {
          await this.get_order_ordered();

@@ -3,14 +3,14 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css', [], '3.43');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css', [], '3.53');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
    wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.34');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.53');
 
 }
 
@@ -270,20 +270,6 @@ function bj_push_notification($user_id, $title, $content, $link = "#"){
    $data = curl_exec ( $ch );
    curl_close ( $ch );   
    return json_decode($data);
-
-   // $res = wp_remote_post($url, array(
-   //    'headers' => $headers,
-   //    'body'    => json_encode($body),
-   // ));
-
-   // print_r($res);
-
-   // if (is_wp_error($response)) {
-   //    return null; // Handle the error as needed
-   // }
-
-   // $data = wp_remote_retrieve_body($response);
-   // return json_decode($data);
 }
 
 
@@ -331,17 +317,3 @@ function load_language() {
 }
 
 add_action('after_setup_theme', 'load_language');
-
-function allow_all_roles_to_switch_language() {
-    // Get all the roles
-    $roles = wp_roles()->roles;
-    
-    // Loop through each role and add the 'switch_languages' capability
-    foreach ($roles as $role => $details) {
-        $role_object = get_role($role);
-        if (!$role_object->has_cap('switch_languages')) {
-            $role_object->add_cap('switch_languages');
-        }
-    }
-}
-add_action('init', 'allow_all_roles_to_switch_language');

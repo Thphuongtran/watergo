@@ -2,7 +2,14 @@
 
    pv_update_user_token();
 
+   // echo '<pre>';
+   // print_r(getallheaders());
+   // echo '</pre>';
 ?>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
 <div id='app'>
 
    <div v-if='loading == false'>
@@ -10,7 +17,26 @@
          <div class='appbar'>
             <div class='appbar-top'>
                <div class='leading'>
-                  <span class='leading-title'><?php echo __('Home', 'watergo'); ?></span>
+
+                  <div class='box-language'>
+                     <div class="dropdown dropdown-language">
+                        <div class="dropdown-toggle">
+                           <div class="selected-option" @click="toggleDropdown">
+                              <img :src="getFlagImage(selectedLanguage.id)" class="flag-image" />
+                              <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M1 1L6 6L11 1" stroke="#C1CCDC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                           </div>
+                           <ul class="dropdown-menu" :class="{ 'show': showDropdown == true }">
+                              <li v-for="language in languages" :key="language.id" @click="selectLanguage(language)" :class="{ 'selected': currentLocale === language.id }">
+                                 <img :src="getFlagImage(language.id)" :alt="language.id" class="flag-image" />
+                                 {{ language.name }}
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+
                </div>
                <div class='action'>
                   <div @click='gotoCart' class='btn-badge'>
@@ -47,105 +73,163 @@
             </div>
             <div class='appbar-bottom style01'>
                <div class='box-search box-search-home'>
-                  <input @click='gotoSearch' class='input-search' type="text" v-model='inputSearch' :placeholder='placeholderInputSearch' readonly>
+                  <input @click='gotoSearch' class='input-search' type="text" v-model='inputSearch' placeholder='<?php echo __('Find products or stores by name', 'watergo'); ?>' readonly>
                   <span class='icon-search'>
-                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <path fill-rule="evenodd" clip-rule="evenodd" d="M4.90688 0.60506C5.87126 0.205599 6.90488 0 7.94872 0C8.99256 0 10.0262 0.205599 10.9906 0.60506C11.9549 1.00452 12.8312 1.59002 13.5693 2.32813C14.3074 3.06623 14.8929 3.94249 15.2924 4.90688C15.6918 5.87126 15.8974 6.90488 15.8974 7.94872C15.8974 8.99256 15.6918 10.0262 15.2924 10.9906C14.9914 11.7172 14.5848 12.3938 14.0869 12.999L19.7747 18.6868C20.0751 18.9872 20.0751 19.4743 19.7747 19.7747C19.4743 20.0751 18.9872 20.0751 18.6868 19.7747L12.999 14.0869C12.3938 14.5848 11.7172 14.9914 10.9906 15.2924C10.0262 15.6918 8.99256 15.8974 7.94872 15.8974C6.90488 15.8974 5.87126 15.6918 4.90688 15.2924C3.94249 14.8929 3.06623 14.3074 2.32813 13.5693C1.59002 12.8312 1.00452 11.9549 0.60506 10.9906C0.2056 10.0262 0 8.99256 0 7.94872C0 6.90488 0.2056 5.87126 0.60506 4.90688C1.00452 3.94249 1.59002 3.06623 2.32813 2.32813C3.06623 1.59002 3.94249 1.00452 4.90688 0.60506ZM7.94872 1.53846C7.10691 1.53846 6.27335 1.70427 5.49562 2.02641C4.71789 2.34856 4.01123 2.82073 3.41598 3.41598C2.82073 4.01123 2.34856 4.71789 2.02641 5.49562C1.70427 6.27335 1.53846 7.10691 1.53846 7.94872C1.53846 8.79053 1.70427 9.62409 2.02641 10.4018C2.34856 11.1795 2.82073 11.8862 3.41598 12.4815C4.01123 13.0767 4.71789 13.5489 5.49562 13.871C6.27335 14.1932 7.10691 14.359 7.94872 14.359C8.79053 14.359 9.62409 14.1932 10.4018 13.871C11.1795 13.5489 11.8862 13.0767 12.4815 12.4815C13.0767 11.8862 13.5489 11.1795 13.871 10.4018C14.1932 9.62409 14.359 8.79053 14.359 7.94872C14.359 7.10691 14.1932 6.27335 13.871 5.49562C13.5489 4.71789 13.0767 4.01123 12.4815 3.41598C11.8862 2.82073 11.1795 2.34856 10.4018 2.02641C9.62409 1.70427 8.79053 1.53846 7.94872 1.53846Z" fill="#252831"/>
+                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M17.2 17.2L20 20M19.2 11.6C19.2 7.40264 15.7974 4 11.6 4C7.40264 4 4 7.40264 4 11.6C4 15.7974 7.40264 19.2 11.6 19.2C15.7974 19.2 19.2 15.7974 19.2 11.6Z" stroke="#5E6D83" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
                   </span>
                </div>
             </div>
          </div>
 
-         <div class='inner'> 
-
-            
-
-         </div>
-
-         <div class='slider-container'>
-            <ul class='sliders'>
-               <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
-               <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
-               <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/demo-home-slide01.png' ?>" alt=""></li>
-            </ul>
+         <div class='inner'>
+            <div class='slider-container'>
+               <ul class='sliders'>
+                  <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/home-slider-demo.png' ?>"></li>
+                  <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/home-slider-demo.png' ?>"></li>
+                  <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/home-slider-demo.png' ?>"></li>
+               </ul>
+            </div>
          </div>
 
          <div class='inner'>
             <div class='gr-btn'>
                <button @click='gotoProductWater' class='btn-outline btn-home'>
                   <div class='icon'>
-                     <img src='<?php echo THEME_URI . '/assets/images/home-icon-water.svg'; ?>'>
+
+                     <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.3734 17.6743C13.9512 17.6732 15.4642 17.0463 16.5802 15.9309C17.6962 14.8156 18.3242 13.303 18.3262 11.7252C18.3262 7.96298 12.8835 1.98017 12.651 1.72511C12.6154 1.68769 12.5727 1.6579 12.5253 1.63754C12.4779 1.61718 12.4268 1.60669 12.3753 1.60669C12.3237 1.60669 12.2726 1.61719 12.2252 1.63756C12.1778 1.65792 12.1351 1.68772 12.0996 1.72513C11.867 1.98017 6.42431 7.96298 6.42431 11.7252C6.42549 13.3026 7.05265 14.8151 8.16807 15.9305C9.28348 17.0459 10.796 17.6731 12.3734 17.6743ZM16.4882 10.2886C16.5889 10.2906 16.6847 10.332 16.7552 10.4038C16.8257 10.4757 16.8652 10.5724 16.8652 10.6731C16.8652 10.7737 16.8257 10.8704 16.7552 10.9423C16.6847 11.0142 16.5888 11.0555 16.4882 11.0575C16.3875 11.0555 16.2917 11.0142 16.2212 10.9423C16.1507 10.8704 16.1112 10.7737 16.1112 10.673C16.1112 10.5724 16.1507 10.4757 16.2212 10.4038C16.2917 10.3319 16.3876 10.2906 16.4882 10.2886ZM12.3734 15.3899C13.3455 15.3893 14.2777 15.0031 14.9654 14.3161C15.6531 13.6291 16.0403 12.6973 16.0418 11.7252C16.0433 11.6267 16.0835 11.5327 16.1537 11.4636C16.2239 11.3945 16.3184 11.3558 16.417 11.3558C16.5155 11.3558 16.61 11.3945 16.6802 11.4636C16.7504 11.5328 16.7905 11.6267 16.792 11.7252C16.7899 12.8961 16.3235 14.0183 15.4952 14.8459C14.6669 15.6735 13.5443 16.1389 12.3734 16.1401C12.2741 16.1398 12.179 16.1001 12.1089 16.0298C12.0389 15.9595 11.9995 15.8643 11.9995 15.765C11.9995 15.6657 12.0389 15.5705 12.1089 15.5002C12.179 15.4299 12.2741 15.3902 12.3734 15.3899ZM22.4448 20.1499C20.3779 21.6276 17.8961 22.4128 15.3554 22.393C11.8531 22.4094 7.36027 20.2176 4.26004 21.5265C4.11672 21.5869 3.95817 21.6013 3.80631 21.5677C3.65445 21.5341 3.51678 21.4542 3.41231 21.339L1.96074 19.7936C1.87792 19.7066 1.81684 19.6013 1.78248 19.4862C1.74812 19.3712 1.74146 19.2496 1.76303 19.1315C1.7846 19.0133 1.8338 18.902 1.90661 18.8065C1.97942 18.711 2.07378 18.6341 2.18199 18.582C3.66115 17.9356 5.26459 17.6231 6.87823 17.6668C8.99275 17.5383 13.1604 18.9008 15.3517 18.9646C16.9747 18.9721 18.5579 18.4623 19.8716 17.5092C20.0087 17.4072 20.1761 17.3543 20.3469 17.3591C20.5177 17.3638 20.6819 17.426 20.8131 17.5355L22.486 18.9646C22.5722 19.0389 22.6406 19.1316 22.6862 19.2359C22.7318 19.3402 22.7535 19.4534 22.7495 19.5671C22.7456 19.6809 22.7161 19.7923 22.6634 19.8932C22.6106 19.994 22.5359 20.0817 22.4448 20.1499Z" fill="url(#paint0_linear_3023_61)"/>
+                        <defs>
+                        <linearGradient id="paint0_linear_3023_61" x1="1.74999" y1="11.9999" x2="22.75" y2="11.9999" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#00C0FF"/>
+                        <stop offset="1" stop-color="#5558FF"/>
+                        </linearGradient>
+                        </defs>
+                     </svg>
+
                   </div>
                   <span class='text'><?php echo __('Water', 'watergo'); ?></span>
                </button>
                <button @click='gotoProductIce' class='btn-outline btn-home'>
                   <div class='icon'>
-                     <img src='<?php echo THEME_URI . '/assets/images/home-icon-ice.svg'; ?>'>
+
+                     <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.4448 20.15C20.3779 21.6276 17.8962 22.4129 15.3555 22.3931C11.8532 22.4095 7.3603 20.2176 4.26007 21.5266C4.11675 21.587 3.9582 21.6014 3.80634 21.5678C3.65448 21.5342 3.51681 21.4542 3.41234 21.339L1.96077 19.7936C1.87795 19.7067 1.81687 19.6014 1.78251 19.4863C1.74815 19.3712 1.74149 19.2497 1.76306 19.1315C1.78463 19.0134 1.83383 18.9021 1.90664 18.8066C1.97945 18.7111 2.07381 18.6341 2.18202 18.5821C3.66118 17.9357 5.26462 17.6232 6.87826 17.6669C8.99278 17.5384 13.1605 18.9009 15.3517 18.9647C16.9747 18.9721 18.5579 18.4623 19.8716 17.5093C20.0087 17.4073 20.1761 17.3544 20.3469 17.3591C20.5177 17.3639 20.682 17.426 20.8131 17.5355L22.4861 18.9647C22.5723 19.039 22.6407 19.1317 22.6863 19.236C22.7319 19.3403 22.7535 19.4535 22.7495 19.5672C22.7456 19.681 22.7161 19.7924 22.6634 19.8932C22.6107 19.9941 22.536 20.0818 22.4448 20.15Z" fill="url(#paint0_linear_3023_66)"/>
+                        <path d="M7.57834 12.2517C7.29167 12.5384 7.29167 12.9684 7.57834 13.255C7.865 13.5417 8.295 13.5417 8.58167 13.255C8.86834 12.9684 8.86834 12.5384 8.58167 12.2517C8.295 11.965 7.865 11.965 7.57834 12.2517ZM17.755 4.08167C18.0417 3.795 18.0417 3.365 17.755 3.07834C17.4684 2.79167 17.0384 2.79167 16.7517 3.07834C16.465 3.365 16.465 3.795 16.7517 4.08167C17.0384 4.36834 17.4684 4.36834 17.755 4.08167ZM8.58167 4.08167C8.86834 3.795 8.86834 3.365 8.58167 3.07834C8.295 2.79167 7.865 2.79167 7.57834 3.07834C7.29167 3.365 7.29167 3.795 7.57834 4.08167C7.865 4.36834 8.295 4.36834 8.58167 4.08167ZM16.7517 12.2517C16.465 12.5384 16.465 12.9684 16.7517 13.255C17.0384 13.5417 17.4684 13.5417 17.755 13.255C18.0417 12.9684 18.0417 12.5384 17.755 12.2517C17.4684 11.965 17.0384 11.965 16.7517 12.2517ZM19.1167 7.45001H17.97L18.9017 6.51834C19.1884 6.23167 19.1884 5.80167 18.9017 5.51501C18.615 5.22834 18.185 5.22834 17.8984 5.51501L15.9633 7.45001H14.3867L16.035 5.80167C16.3217 5.51501 16.3217 5.08501 16.035 4.79834C15.7484 4.51167 15.3183 4.51167 15.0317 4.79834L13.3833 6.44668V4.87001L15.3183 2.935C15.605 2.64834 15.605 2.21834 15.3183 1.93167C15.0317 1.645 14.6017 1.645 14.315 1.93167L13.3833 2.86334V1.71667C13.3833 1.28667 13.0967 1 12.6667 1C12.2367 1 11.95 1.28667 11.95 1.71667V2.86334L11.0183 1.93167C10.7317 1.645 10.3017 1.645 10.015 1.93167C9.72834 2.21834 9.72834 2.64834 10.015 2.935L11.95 4.87001V6.44668L10.3017 4.79834C10.015 4.51167 9.58501 4.51167 9.29834 4.79834C9.01167 5.08501 9.01167 5.51501 9.29834 5.80167L10.9467 7.45001H9.37001L7.435 5.51501C7.14834 5.22834 6.71834 5.22834 6.43167 5.51501C6.145 5.80167 6.145 6.23167 6.43167 6.51834L7.36334 7.45001H6.21667C5.78667 7.45001 5.5 7.73668 5.5 8.16668C5.5 8.59668 5.78667 8.88335 6.21667 8.88335H7.36334L6.43167 9.81501C6.145 10.1017 6.145 10.5317 6.43167 10.8183C6.71834 11.105 7.14834 11.105 7.435 10.8183L9.37001 8.88335H10.9467L9.29834 10.5317C9.01167 10.8183 9.01167 11.2484 9.29834 11.535C9.58501 11.8217 10.015 11.8217 10.3017 11.535L11.95 9.88668V11.4633L10.015 13.3984C9.72834 13.685 9.72834 14.115 10.015 14.4017C10.3017 14.6884 10.7317 14.6884 11.0183 14.4017L11.95 13.47V14.6167C11.95 15.0467 12.2367 15.3334 12.6667 15.3334C13.0967 15.3334 13.3833 15.0467 13.3833 14.6167V13.47L14.315 14.4017C14.6017 14.6884 15.0317 14.6884 15.3183 14.4017C15.605 14.115 15.605 13.685 15.3183 13.3984L13.3833 11.4633V9.88668L15.0317 11.535C15.3183 11.8217 15.7484 11.8217 16.035 11.535C16.3217 11.2484 16.3217 10.8183 16.035 10.5317L14.3867 8.88335H15.9633L17.8984 10.8183C18.185 11.105 18.615 11.105 18.9017 10.8183C19.1884 10.5317 19.1884 10.1017 18.9017 9.81501L17.97 8.88335H19.1167C19.5467 8.88335 19.8334 8.59668 19.8334 8.16668C19.8334 7.73668 19.5467 7.45001 19.1167 7.45001Z" fill="url(#paint1_linear_3023_66)"/>
+                        <defs>
+                        <linearGradient id="paint0_linear_3023_66" x1="1.75002" y1="12" x2="22.75" y2="12" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#00C0FF"/>
+                        <stop offset="1" stop-color="#5558FF"/>
+                        </linearGradient>
+                        <linearGradient id="paint1_linear_3023_66" x1="5.49955" y1="8.16658" x2="19.8334" y2="8.16658" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#00C0FF"/>
+                        <stop offset="1" stop-color="#5558FF"/>
+                        </linearGradient>
+                        </defs>
+                     </svg>
+
                   </div>
                   <span class='text'><?php echo __('Ice', 'watergo'); ?></span>
                </button>
             </div>
 
-            <div class='home-contents mt40'>
+            <div class='home-contents'>
 
                <div v-if='productRecommend.length > 0' class='list-product-recommend'>
                   <div class='gr-heading'>
-                     <p class='heading'><?php echo __('Recommend', 'watergo'); ?></p>
-                     <span @click='gotoProductRecommend' class='link'><?php echo __('See All', 'watergo'); ?></span>
+                     <p class='heading'><?php echo __('Recommend product', 'watergo'); ?></p>
+                     <span @click='gotoProductRecommend' class='link'><?php echo __('See all', 'watergo'); ?></span>
                   </div>
 
                   <div class='list-horizontal'>
-                     <ul>
-                        <li 
-                           @click='gotoProductDetail(product.id)'
-                           v-for='(product, index) in productRecommend' :key='index' class='product-design small-size'
-                           :class='product.product_image.dummy != undefined ? "img-dummy" : "" '
+
+                     <div class='list-scroll-horizontal'>
+                        <div 
+                           v-for='(productGroup, productGroupIndex) in splitArray(productRecommend, 2)' :key='productGroupIndex'
+                           class='product-container'
                         >
-                           <div class='img'>
-                              <img :src='product.product_image.url'>
-                              <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
+                           <div v-for="(product, index) in productGroup" :key="index" @click="gotoProductDetail(product.id)" class='product-block'>
+                              <div class="img" :class='{ "img-dummy": product.product_image.dummy != undefined }'>
+                                 <img :src="product.product_image.url">
+                                 <span v-if="has_discount(product) == true" class="badge-discount">-{{ product.discount_percent }}%</span>
+                              </div>
+                              <p class="tt01">{{ product.name }} </p>
+                              <p class="tt02">{{ product.name_second }}</p>
+                              <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
+                                 <span class="price">
+                                    {{ common_price_after_discount(product) }}
+                                 </span>
+                                 <span v-if="has_discount(product) == true" class="price-sub">
+                                    {{ common_price_show_currency(product.price) }}
+                                 </span>
+                              </div>
                            </div>
-                           <p class='tt01'>{{ product.name }} </p>
-                           <p class='tt02'>{{ product.name_second }}</p>
-                           <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
-                              <span class='price'>
-                                 {{ common_price_after_discount(product ) }}
-                              </span>
-                              <span v-if='has_discount(product) == true' class='price-sub'>
-                                 {{ common_price_show_currency( product.price ) }}
-                              </span>
-                           </div>
-                        </li>
-                     </ul>
+                        </div>
+
+                     </div>
+
                   </div>
+
+                  <div class='list-horizontal' style='margin-top: 18px;'>
+
+                     <div class='list-scroll-horizontal'>
+                        <div 
+                           v-for='(productGroup, productGroupIndex) in splitArray(productRecommend, 2)' :key='productGroupIndex'
+                           class='product-container'
+                        >
+                           <div v-for="(product, index) in productGroup" :key="index" @click="gotoProductDetail(product.id)" class='product-block'>
+                              <div class="img" :class='{ "img-dummy": product.product_image.dummy != undefined }'>
+                                 <img :src="product.product_image.url">
+                                 <span v-if="has_discount(product) == true" class="badge-discount">-{{ product.discount_percent }}%</span>
+                              </div>
+                              <p class="tt01">{{ product.name }} </p>
+                              <p class="tt02">{{ product.name_second }}</p>
+                              <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
+                                 <span class="price">
+                                    {{ common_price_after_discount(product) }}
+                                 </span>
+                                 <span v-if="has_discount(product) == true" class="price-sub">
+                                    {{ common_price_show_currency(product.price) }}
+                                 </span>
+                              </div>
+                           </div>
+                        </div>
+
+                     </div>
+
+                  </div>
+
                </div>
 
-               <div v-if='storeNearby.length > 0' class='list-product-recommend more-space'>
-                  <div class='gr-heading mt40'>
-                     <p class='heading'><?php echo __('Nearby', 'watergo'); ?></p>
-                     <span @click='gotoNearbyStore' class='link'><?php echo __('See All', 'watergo'); ?></span>
+               <div v-if='storeNearby.length > 0' class='list-product-recommend' style='margin-top: 28px;'>
+                  <div class='gr-heading'>
+                     <p class='heading'><?php echo __('Nearby store', 'watergo'); ?></p>
+                     <span @click='gotoNearbyStore' class='link'><?php echo __('See all', 'watergo'); ?></span>
                   </div>
 
                   <div class='list-horizontal'>
-                     <ul>
-                        <li 
-                           @click='gotoStoreDetail(store.id)'
-                           v-for='(store, index) in storeNearby' :key='index' class='product-design small-size store-style'
-                           :class='store.store_image.dummy != undefined ? "img-dummy" : "" '
-                        >
-                           <div class='img'>
-                              <img :src='store.store_image.url'>
-                           </div>
-                           <p class='tt01'>{{ store.name }} </p>
-                           <p class='product-meta'>
-                              <span class='store-distance'>{{ mathCeilDistance(store.distance) }} km</span>
-                              <svg v-if='store.avg_rating > 0' width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.32901 11.7286L3.77618 13.8689C3.61922 13.9688 3.45514 14.0116 3.28391 13.9973C3.11269 13.9831 2.96287 13.926 2.83446 13.8261C2.70604 13.7262 2.60616 13.6012 2.53482 13.4511C2.46348 13.301 2.44921 13.1335 2.49202 12.9486L3.43373 8.9035L0.287545 6.18536C0.144861 6.05695 0.0558259 5.91055 0.0204402 5.74618C-0.0149455 5.58181 -0.00438691 5.42143 0.0521161 5.26505C0.10919 5.1081 0.1948 4.97968 0.308948 4.8798C0.423095 4.77992 0.580048 4.71571 0.779806 4.68718L4.93192 4.32333L6.53712 0.513664C6.60846 0.342443 6.71918 0.214026 6.86928 0.128416C7.01939 0.0428054 7.17263 0 7.32901 0C7.48597 0 7.63921 0.0428054 7.78874 0.128416C7.93827 0.214026 8.049 0.342443 8.12091 0.513664L9.72611 4.32333L13.8782 4.68718C14.078 4.71571 14.2349 4.77992 14.3491 4.8798C14.4632 4.97968 14.5488 5.1081 14.6059 5.26505C14.663 5.422 14.6738 5.58266 14.6384 5.74704C14.6031 5.91141 14.5137 6.05752 14.3705 6.18536L11.2243 8.9035L12.166 12.9486C12.2088 13.1341 12.1945 13.3019 12.1232 13.452C12.0519 13.6021 11.952 13.7268 11.8236 13.8261C11.6952 13.926 11.5453 13.9831 11.3741 13.9973C11.2029 14.0116 11.0388 13.9688 10.8819 13.8689L7.32901 11.7286Z" fill="#FFC83A"/></svg>
-                              <span v-if='store.avg_rating > 0' class='store-rating'>{{ratingNumber(store.avg_rating)}}</span>
-                           </p>
+                     <div class='list-scroll-horizontal'>
+                        <div class='product-container'>
+                           <div 
+                              class='product-block'
+                              @click='gotoStoreDetail(store.id)'
+                              v-for='(store, index) in storeNearby' :key='index'
+                           >
+                              <div class='img' :class='store.store_image.dummy != undefined ? "img-dummy" : "" '
+                              >
+                                 <img :src='store.store_image.url'>
+                              </div>
+                              <p class='tt01'>{{ store.name }} </p>
+                              <p class='product-meta'>
+                                 <span class='store-distance'>{{ mathCeilDistance(store.distance) }} km</span>
+                                 <svg v-if='store.avg_rating > 0' width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.32901 11.7286L3.77618 13.8689C3.61922 13.9688 3.45514 14.0116 3.28391 13.9973C3.11269 13.9831 2.96287 13.926 2.83446 13.8261C2.70604 13.7262 2.60616 13.6012 2.53482 13.4511C2.46348 13.301 2.44921 13.1335 2.49202 12.9486L3.43373 8.9035L0.287545 6.18536C0.144861 6.05695 0.0558259 5.91055 0.0204402 5.74618C-0.0149455 5.58181 -0.00438691 5.42143 0.0521161 5.26505C0.10919 5.1081 0.1948 4.97968 0.308948 4.8798C0.423095 4.77992 0.580048 4.71571 0.779806 4.68718L4.93192 4.32333L6.53712 0.513664C6.60846 0.342443 6.71918 0.214026 6.86928 0.128416C7.01939 0.0428054 7.17263 0 7.32901 0C7.48597 0 7.63921 0.0428054 7.78874 0.128416C7.93827 0.214026 8.049 0.342443 8.12091 0.513664L9.72611 4.32333L13.8782 4.68718C14.078 4.71571 14.2349 4.77992 14.3491 4.8798C14.4632 4.97968 14.5488 5.1081 14.6059 5.26505C14.663 5.422 14.6738 5.58266 14.6384 5.74704C14.6031 5.91141 14.5137 6.05752 14.3705 6.18536L11.2243 8.9035L12.166 12.9486C12.2088 13.1341 12.1945 13.3019 12.1232 13.452C12.0519 13.6021 11.952 13.7268 11.8236 13.8261C11.6952 13.926 11.5453 13.9831 11.3741 13.9973C11.2029 14.0116 11.0388 13.9688 10.8819 13.8689L7.32901 11.7286Z" fill="#FFC83A"/></svg>
+                                 <span v-if='store.avg_rating > 0' class='store-rating'>{{ratingNumber(store.avg_rating)}}</span>
+                              </p>
 
-                        </li>
-                     </ul>
+                           </div>
+                        </div>
+                     </div>
                   </div>
                </div>
             </div>
@@ -187,25 +271,90 @@ var app = Vue.createApp({
 
          productRecommend: [],
          storeNearby: [],
-
          carts: [],
+
+         languages: [
+           { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
+           { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
+           { id: 'ko_KR', name: '<?php echo __("Korean", 'watergo'); ?>'},
+         ],
+
+         selectedLanguage: {},
+         currentLocale: '',
+         showDropdown: false,
 
          get_locale: '<?php echo get_locale(); ?>',
          
       }
    },
 
-   computed: {
-      placeholderInputSearch(){
-         if(this.get_locale == 'vi' ){
-            return 'Tìm sản phẩm hoặc cửa hàng';
-         }else{
-            return 'Search by product or store name';
-         }
-      }
-   },
-
    methods: {
+
+      // 
+      splitArray(arr, size) {
+         const result = []
+         for (let i = 0; i < arr.length; i += size) {
+            result.push(arr.slice(i, i + size))
+         }
+         return result
+      },
+
+      // CHANGE LANGUAGE
+      toggleDropdown() { this.showDropdown = !this.showDropdown; },
+
+      selectLanguage(language) {
+         if( this.selectedLanguage.id != language.id ){
+            this.selectedLanguage = language;
+            this.changeLanguage(language.id);
+         }
+         this.showDropdown = false;
+      },
+
+      async changeLanguage(language){
+         var form = new FormData();
+         form.append('action', 'app_change_language_callback');
+         form.append('language', language);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'change_language_successfully' ){
+               // this.loading = true;
+               if( window.appBridge != undefined ){
+                  window.appBridge.setLanguage(res.data);
+                  window.appBridge.refresh();
+                  // window.appBridge.close("data=refresh");
+               }else{
+                  window.location.reload();
+               }
+            }
+         }
+      },
+
+      getFlagImage(languageId) {
+         if (languageId === 'en_US') {
+           return get_template_directory_uri + '/assets/images/flag-us.svg';
+         } else if (languageId === 'vi') {
+           return get_template_directory_uri + '/assets/images/flag-vi.svg';
+         } else if (languageId === 'ko_KR') {
+           return get_template_directory_uri + '/assets/images/flag-kr.svg';
+         }
+         return '';
+      },
+
+      async getLocale(){
+         var form = new FormData();
+         form.append('action', 'get_current_locale_callback');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'current_locale_found' ){
+               this.currentLocale = res.data;
+               //this.selectLanguage(this.languages.find(language => language.id === this.currentLocale) || this.languages[0]);
+            }
+         }
+      },
+
+      // END CHANGE LANGUAGE
 
       has_discount( product ){ return window.has_discount( product ); },      
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
@@ -330,6 +479,9 @@ var app = Vue.createApp({
          }
       },
    },
+
+
+
    async created(){
 
       // const urlParams         = new URLSearchParams(window.location.search);
@@ -339,6 +491,9 @@ var app = Vue.createApp({
       // }
 
       this.loading = true;
+      await this.getLocale();
+      this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
+
       window.check_cart_is_exists();
 
       await this.get_current_location();
@@ -372,11 +527,12 @@ var app = Vue.createApp({
             await this.get_product_discount(10);
          }
       }
-
+   
       (function($){
          $(document).ready(function(){
+
             $('.slider-container .sliders').slick({
-               dots: false,
+               dots: true,
                arrows: false,
                infinite: true,
                speed: 400,
@@ -387,8 +543,8 @@ var app = Vue.createApp({
             });
          });
       })(jQuery);
-      
-      setTimeout(()=>{}, 500);
+
+      setTimeout(() => {},400);
       window.appbar_fixed();
       this.loading = false;
 
@@ -401,4 +557,216 @@ var app = Vue.createApp({
 
 window.app = app;
 
+
 </script>
+
+<style>
+
+   .box-language .dropdown-language{
+      position: initial;
+      top: initial;
+      right: initial;  
+   }
+   .box-language .dropdown-menu{
+      left: 0;
+      right: initial;
+   }
+
+   .box-language{
+      display: flex;
+      align-items: center;
+   }
+
+   .box-search-home .input-search {
+      border: 1px solid #C1CCDC;
+      border-radius: 12px;
+      background: white;
+      padding-left: 0;
+      height: 48px;
+      padding: 0 20px;
+   }
+   .box-search-home .input-search:placeholder {
+      color: #5E6D83;
+      font-weight: 300;
+      font-size: 16px;
+   }
+   .box-search-home .icon-search {
+      left: initial;
+      right: 20px;
+      top: 12px;
+      transform: initial;
+   }
+
+   /* SLIDE */
+   .slider-container{
+      position: relative;
+      height: 56vw;
+      overflow: initial;
+      margin-top: 12px;
+   }
+   .slider-container .slider-container img{height: 100%;}
+   .slider-container .slick-track{height: 100%;}
+   .slider-container .slick-slider{height: 100%;}
+   .slider-container .slick-slider img{
+      height: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+   }
+   .slider-container .slick-list{height: 100%;}
+   .slider-container .slick-slide{
+      height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+   }
+   .slider-container .slick-dots{
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+   }
+   .slider-container .slick-dots li {
+      width: 8px;
+      height: 8px;
+      background: #E8E8E8;
+      border-radius: 100%;
+      margin: 0 4px;
+   }
+   .slider-container .slick-dots li.slick-active {
+      background: #2491F5;
+   }
+   .slider-container .slick-dots li button {
+      display: none;
+   }
+
+   .gr-btn{
+      padding-top: 28px;
+   }
+   .btn-home{
+      height: 44px;
+      border: 1px solid #93C4FF;
+      border-radius: 12px;
+   }
+   .btn-home .text{
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+      font-size: 16px;  
+      color: #081528;
+      bottom: initial;
+   }
+   .btn-home .icon{
+      margin-right: 15px;
+   }
+
+   .gr-heading .heading{
+      font-weight: 400;
+      font-size: 20px;
+      white-space: nowrap;
+   }
+
+   .home-contents {
+      margin-top: 28px;
+      padding-bottom: 30px;
+   }
+
+   .gr-heading .link{
+      font-weight: 500;
+      font-size: 16px;
+      color: #1A68FF;
+   }
+
+   /* PRODUCT NEW DESIGN */
+
+   .list-scroll-horizontal{
+      display: flex;
+      flex-flow: row nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+   }
+
+   .product-container{
+      display: flex;
+      flex-flow: row nowrap;
+      white-space: nowrap;
+      padding-bottom: 1px;
+   }
+
+   .product-container:last-child .product-block:last-child{
+      margin-right: 0;
+   }
+
+   .product-block {
+      display: flex;
+      flex-flow: column nowrap;
+      border-radius: 16px;
+      border: 1px solid #D3D3D3;
+      overflow: hidden;
+      margin-right: 16px;
+      padding-bottom: 10px;
+      width: 164px;
+   }
+
+   .product-block .badge-discount{
+      width: 60px;
+      height: 26px;
+      line-height: 26px;
+      color: #FF4848;
+      border-radius: 16px;
+      font-weight: 400;
+      font-size: 10px;
+      left: 4px;
+      top: 4px;
+   }
+
+   .product-block .img {
+      text-align: center;
+      position: relative;
+   }
+   .product-block img {
+      width: 100%;
+      height: 100% !important;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      aspect-ratio: 1 / 1;
+   }
+   .product-block .tt01 {
+      padding: 0 16px;
+      font-weight: 500;
+      font-size: 16px;
+      color: #252831;
+   }
+   .product-block .tt02 {
+      padding: 0 16px;
+      font-weight: 300;
+      font-size: 12px;
+      color: #7B7D83;
+   }
+   .product-block .product-meta {
+      padding: 0 16px;
+      color: #7B7D83;
+      font-weight: 300;
+      font-size: 14px;
+   }
+   .product-block .product-meta svg{
+      position: relative;
+      top: 1px;
+      /* margin-right: 4px; */
+   }
+   .product-block .store-distance {
+      margin-right: 8px;
+   }
+   .product-block .price {
+      padding-right: 8px;
+      padding-left: 16px;
+      font-weight: 500;
+      font-size: 16px;
+      color: #2790F9;
+   }
+   .product-block .price-sub{
+		color: #918D8D;
+		font-weight: 400;
+		font-size: 9px;
+		text-decoration: line-through;
+   }
+
+</style>

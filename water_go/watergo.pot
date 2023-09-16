@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Water Go\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-01 15:29+0000\n"
+"POT-Creation-Date: 2023-09-15 06:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -19,7 +19,7 @@ msgstr ""
 #: page-iframe.php:201 pages/product/page-product-store-view.php:213
 #: pages/review/page-review-form.php:49
 #: pages/delivery-address/delivery-address-add.php:52
-#: libs/store_manager/template_store_manager_index.php:212
+#: libs/store_manager/template_store_manager_index.php:240
 msgid "Add"
 msgstr ""
 
@@ -35,12 +35,13 @@ msgstr ""
 msgid "Add Day"
 msgstr ""
 
-#: pages/product/page-product-store-view.php:812
-#: libs/store_manager/template_store_manager_index.php:219
+#: pages/product/page-product-store-view.php:810
+#: libs/store_manager/template_store_manager_index.php:247
 msgid "Add Ice Product"
 msgstr ""
 
 #: pages/delivery-address/delivery-address-index.php:17
+#: pages/delivery-address/delivery-address-index.php:18
 msgid "Add New"
 msgstr ""
 
@@ -53,16 +54,16 @@ msgstr ""
 msgid "Add Store"
 msgstr ""
 
-#: pages/product/page-product-detail.php:183
+#: pages/product/page-product-detail.php:191
 msgid "Add success"
 msgstr ""
 
-#: pages/product/page-product-detail.php:146
+#: pages/product/page-product-detail.php:151
 msgid "Add to Cart"
 msgstr ""
 
-#: pages/product/page-product-store-view.php:811
-#: libs/store_manager/template_store_manager_index.php:218
+#: pages/product/page-product-store-view.php:809
+#: libs/store_manager/template_store_manager_index.php:246
 msgid "Add Water Product"
 msgstr ""
 
@@ -70,12 +71,12 @@ msgstr ""
 #: pages/delivery-address/delivery-address-add.php:34
 #: pages/delivery-address/delivery-address-edit.php:34
 #: pages/store/page-store-edit.php:81
-#: libs/store_manager/template_store_manager_index.php:156
+#: libs/store_manager/template_store_manager_index.php:184
 #: libs/store_manager/template_store_manager_add.php:82
 msgid "Address"
 msgstr ""
 
-#: pages/store/page-store-adverstising-inquery.php:12
+#: pages/store/page-store-adverstising-inquery.php:17
 #: pages/store/page-store-profile.php:89
 msgid "Advertising inquery"
 msgstr ""
@@ -85,18 +86,22 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: pages/authentication/page-auth-store-register.php:423
-#: pages/authentication/page-auth-store-register.php:439
-#: pages/authentication/page-auth-register.php:381
+#: pages/authentication/page-auth-store-register.php:427
+#: pages/authentication/page-auth-store-register.php:443
+#: pages/authentication/page-auth-register.php:385
 #: pages/store/page-store-edit.php:293
-#: libs/store_manager/template_store_manager_index.php:545
+#: libs/store_manager/template_store_manager_index.php:640
 #: libs/store_manager/template_store_manager_add.php:234
 #: libs/store_manager/template_store_manager_add.php:252
 msgid "All field must be not empty."
 msgstr ""
 
-#: pages/nearby/page-nearby.php:99
+#: pages/nearby/page-nearby.php:114
 msgid "Allow Access"
+msgstr ""
+
+#. Author of the theme
+msgid "Anonymous"
 msgstr ""
 
 #: pages/order/page-order-filter.php:91
@@ -118,13 +123,13 @@ msgstr ""
 
 #: pages/authentication/page-auth-store-register.php:61
 #: pages/store/page-store-edit.php:112
-#: libs/store_manager/template_store_manager_index.php:200
+#: libs/store_manager/template_store_manager_index.php:228
 #: libs/store_manager/template_store_manager_add.php:126
 msgid "Both"
 msgstr ""
 
 #: page-iframe.php:35 pages/product/page-product-store-view.php:47
-#: libs/store_manager/template_store_manager_index.php:225
+#: libs/store_manager/template_store_manager_index.php:253
 msgid "Brand"
 msgstr ""
 
@@ -141,15 +146,15 @@ msgstr ""
 
 #: page-iframe.php:214 pages/product/page-product-store-view.php:226
 #: pages/cart/cart.php:134 pages/user/page-user-delete-account.php:61
-#: pages/user/page-user-profile.php:142 pages/user/page-user-settings.php:63
+#: pages/user/page-user-profile.php:143 pages/user/page-user-settings.php:63
 #: pages/delivery-address/delivery-address-edit.php:68
-#: pages/order/page-order-filter.php:93 pages/order/order-index-store.php:164
-#: pages/order/order-index-store.php:173 pages/order/order-index-store.php:182
+#: pages/order/page-order-filter.php:93 pages/order/order-index-store.php:176
+#: pages/order/order-index-store.php:185 pages/order/order-index-store.php:194
 #: pages/order/page-order-detail.php:128 pages/store/page-store-settings.php:52
 msgid "Cancel"
 msgstr ""
 
-#: pages/order/order-index-store.php:106
+#: pages/order/order-index-store.php:112
 #: pages/order/page-order-store-detail.php:105
 #: pages/order/page-order-detail.php:114
 msgid "Cancel Time"
@@ -181,23 +186,23 @@ msgstr ""
 msgid "Check Out"
 msgstr ""
 
-#: pages/product/page-product-detail.php:98
+#: pages/product/page-product-detail.php:99
 msgid "Closed"
 msgstr ""
 
 #: pages/authentication/page-auth-forget-password.php:285
-#: pages/authentication/page-auth-store-register.php:415
-#: pages/authentication/page-auth-register.php:370
+#: pages/authentication/page-auth-store-register.php:419
+#: pages/authentication/page-auth-register.php:374
 #: pages/store/page-store-edit.php:275
 msgid "Code is not match."
 msgstr ""
 
-#: pages/order/order-index-store.php:75 pages/order/order-index-store.php:147
+#: pages/order/order-index-store.php:79 pages/order/order-index-store.php:153
 #: pages/order/page-order-store-detail.php:157
 msgid "Complete"
 msgstr ""
 
-#: pages/order/order-index-store.php:284
+#: pages/order/order-index-store.php:297
 msgid "complete"
 msgstr ""
 
@@ -207,10 +212,10 @@ msgid "Complete Time"
 msgstr ""
 
 #: page-iframe.php:215 pages/product/page-product-store-view.php:227
-#: pages/order/order-index-store.php:72 pages/order/order-index-store.php:138
-#: pages/order/order-index-store.php:165 pages/order/order-index-store.php:174
-#: pages/order/order-index-store.php:183
-#: pages/order/page-order-store-detail.php:153
+#: pages/order/order-index-store.php:76 pages/order/order-index-store.php:144
+#: pages/order/order-index-store.php:177 pages/order/order-index-store.php:186
+#: pages/order/order-index-store.php:195
+#: pages/order/page-order-store-detail.php:155
 msgid "Confirm"
 msgstr ""
 
@@ -221,11 +226,11 @@ msgid "Confirm New Password"
 msgstr ""
 
 #: pages/schedule/page-schedule-detail.php:100
-#: pages/order/order-index-store.php:98
+#: pages/order/order-index-store.php:104
 msgid "Confirm Time"
 msgstr ""
 
-#: pages/order/order-index-store.php:256
+#: pages/order/order-index-store.php:269
 msgid "confirmed"
 msgstr ""
 
@@ -235,12 +240,19 @@ msgid "Confirmed Time"
 msgstr ""
 
 #: pages/authentication/page-auth-forget-password.php:142
-#: pages/authentication/page-auth-store-register.php:147
-#: pages/authentication/page-auth-register.php:122
+#: pages/authentication/page-auth-store-register.php:148
+#: pages/authentication/page-auth-register.php:123
 msgid "Congratulations"
 msgstr ""
 
+#: pages/product/page-product-detail.php:181
+#: pages/order/page-order-store-detail.php:187
+#: pages/order/page-order-detail.php:179 pages/store/page-store-detail.php:103
+msgid "Content Not Found"
+msgstr ""
+
 #: pages/user/page-user-delete-account.php:62
+#: pages/user/page-user-delete-account.php:63
 msgid "Continue"
 msgstr ""
 
@@ -263,13 +275,13 @@ msgstr ""
 msgid "Day"
 msgstr ""
 
-#: pages/delivery-address/delivery-address-index.php:55
+#: pages/delivery-address/delivery-address-index.php:60
 msgid "Default"
 msgstr ""
 
 #: page-iframe.php:203 pages/product/page-product-store-view.php:215
-#: pages/cart/cart.php:136 pages/user/page-user-profile.php:122
-#: pages/user/page-user-profile.php:143
+#: pages/cart/cart.php:136 pages/user/page-user-profile.php:123
+#: pages/user/page-user-profile.php:144
 #: pages/delivery-address/delivery-address-edit.php:70
 #: pages/order/page-order-filter.php:41 pages/order/page-order-filter.php:94
 msgid "Delete"
@@ -284,15 +296,15 @@ msgstr ""
 msgid "Delete Address"
 msgstr ""
 
-#: pages/order/page-order-store-detail.php:155
+#: pages/order/page-order-store-detail.php:156
 msgid "Delivering"
 msgstr ""
 
-#: pages/order/order-index-store.php:271
+#: pages/order/order-index-store.php:284
 msgid "delivering"
 msgstr ""
 
-#: pages/order/order-index-store.php:74 pages/order/order-index-store.php:144
+#: pages/order/order-index-store.php:78 pages/order/order-index-store.php:150
 msgid "Delivery"
 msgstr ""
 
@@ -301,7 +313,7 @@ msgid "Delivery Address"
 msgstr ""
 
 #: pages/schedule/page-schedule-detail.php:26
-#: pages/user/page-user-profile.php:62
+#: pages/user/page-user-profile.php:63
 #: pages/order/page-order-store-detail.php:31
 #: pages/order/page-order-detail.php:35 pages/order/page-order-product.php:23
 msgid "Delivery address"
@@ -333,7 +345,7 @@ msgstr ""
 msgid "Delivery once"
 msgstr ""
 
-#: pages/order/order-index-store.php:102
+#: pages/order/order-index-store.php:108
 #: pages/order/page-order-store-detail.php:103
 #: pages/order/page-order-detail.php:112
 msgid "Delivery Time"
@@ -358,29 +370,29 @@ msgid "Describe your store"
 msgstr ""
 
 #: pages/store/page-store-edit.php:76
-#: libs/store_manager/template_store_manager_index.php:151
+#: libs/store_manager/template_store_manager_index.php:179
 #: libs/store_manager/template_store_manager_add.php:77
 msgid "Description"
 msgstr ""
 
 #: page-iframe.php:62 pages/product/page-product-store-view.php:74
-#: libs/store_manager/template_store_manager_index.php:229
+#: libs/store_manager/template_store_manager_index.php:257
 msgid "Discount"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:230
+#: libs/store_manager/template_store_manager_index.php:258
 msgid "Discount From"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:231
+#: libs/store_manager/template_store_manager_index.php:259
 msgid "Discount To"
 msgstr ""
 
-#: pages/order/order-index-store.php:180
+#: pages/order/order-index-store.php:192
 msgid "Do you want to complete <span class='t-primary'>All Order</span>"
 msgstr ""
 
-#: pages/order/order-index-store.php:162
+#: pages/order/order-index-store.php:174
 msgid "Do you want to confirm <span class='t-primary'>All Order</span>"
 msgstr ""
 
@@ -392,11 +404,11 @@ msgstr ""
 msgid "Do you want to delete this product"
 msgstr ""
 
-#: pages/user/page-user-profile.php:140
+#: pages/user/page-user-profile.php:141
 msgid "Do you want to delete this review"
 msgstr ""
 
-#: pages/order/order-index-store.php:171
+#: pages/order/order-index-store.php:183
 msgid "Do you want to delivering <span class='t-primary'>All Order</span>"
 msgstr ""
 
@@ -404,8 +416,8 @@ msgstr ""
 msgid "Don’t worry when it happens <br> Reset your password"
 msgstr ""
 
-#: pages/user/page-user-profile.php:121
-#: pages/delivery-address/delivery-address-index.php:58
+#: pages/user/page-user-profile.php:122
+#: pages/delivery-address/delivery-address-index.php:57
 msgid "Edit"
 msgstr ""
 
@@ -417,7 +429,7 @@ msgstr ""
 msgid "Edit Info"
 msgstr ""
 
-#: pages/user/page-user-edit.php:23 pages/user/page-user-profile.php:46
+#: pages/user/page-user-edit.php:23 pages/user/page-user-profile.php:47
 #: pages/store/page-store-edit.php:21
 msgid "Edit Profile"
 msgstr ""
@@ -427,24 +439,24 @@ msgid "Edit Store"
 msgstr ""
 
 #: libs/store_manager/template_store_manager_index.php:58
-#: libs/store_manager/template_store_manager_index.php:166
+#: libs/store_manager/template_store_manager_index.php:194
 #: libs/store_manager/template_store_manager_add.php:92
 msgid "Email"
 msgstr ""
 
-#: pages/authentication/page-auth-store-register.php:411
-#: pages/authentication/page-auth-register.php:364
+#: pages/authentication/page-auth-store-register.php:415
+#: pages/authentication/page-auth-register.php:368
 #: pages/user/page-user-edit.php:138 pages/store/page-store-edit.php:272
-#: libs/store_manager/template_store_manager_index.php:527
+#: libs/store_manager/template_store_manager_index.php:622
 #: libs/store_manager/template_store_manager_add.php:226
 msgid "Email already exists."
 msgstr ""
 
 #: pages/authentication/page-auth-forget-password.php:251
 #: pages/authentication/page-auth-reset-password.php:117
-#: pages/authentication/page-auth-store-register.php:358
+#: pages/authentication/page-auth-store-register.php:362
 #: pages/authentication/page-auth-register-store.php:134
-#: pages/authentication/page-auth-register.php:314
+#: pages/authentication/page-auth-register.php:318
 msgid "Email already register."
 msgstr ""
 
@@ -453,10 +465,10 @@ msgid "Email format error."
 msgstr ""
 
 #: pages/authentication/page-auth-forget-password.php:216
-#: pages/authentication/page-auth-store-register.php:355
-#: pages/authentication/page-auth-store-register.php:369
-#: pages/authentication/page-auth-register.php:311
-#: pages/authentication/page-auth-register.php:325
+#: pages/authentication/page-auth-store-register.php:359
+#: pages/authentication/page-auth-store-register.php:373
+#: pages/authentication/page-auth-register.php:315
+#: pages/authentication/page-auth-register.php:329
 #: pages/user/page-user-edit.php:134
 #: libs/store_manager/template_store_manager_add.php:238
 msgid "Email is not correct format."
@@ -470,22 +482,25 @@ msgstr ""
 msgid "Email is not exitst."
 msgstr ""
 
-#: pages/authentication/page-auth-store-register.php:434
-#: pages/authentication/page-auth-register.php:378
+#: pages/authentication/page-auth-store-register.php:438
+#: pages/authentication/page-auth-register.php:382
 msgid "Email is not verify."
 msgstr ""
 
-#: pages/authentication/page-auth-store-login.php:194
 #: pages/authentication/page-auth-store-login.php:197
-#: pages/authentication/page-auth-store-login.php:201
-#: pages/authentication/page-auth-login.php:240
-#: pages/authentication/page-auth-login.php:243
-#: pages/authentication/page-auth-login.php:246
+#: pages/authentication/page-auth-store-login.php:200
+#: pages/authentication/page-auth-store-login.php:203
+#: pages/authentication/page-auth-store-login.php:207
+#: pages/authentication/page-auth-login.php:245
+#: pages/authentication/page-auth-login.php:248
+#: pages/authentication/page-auth-login.php:251
+#: pages/authentication/page-auth-login.php:254
 msgid "Email or password is incorrect"
 msgstr ""
 
+#: pages/home/home.php:247 pages/authentication/page-auth-store-login.php:103
 #: pages/authentication/page-auth-login.php:132
-#: pages/authentication/page-auth-register.php:161
+#: pages/authentication/page-auth-register.php:162
 msgid "English"
 msgstr ""
 
@@ -566,14 +581,14 @@ msgstr ""
 msgid "Enter your username"
 msgstr ""
 
-#: pages/order/page-order-product.php:579
-#: pages/order/page-order-product.php:645
+#: pages/order/page-order-product.php:622
+#: pages/order/page-order-product.php:688
 msgid "Everymonth"
 msgstr ""
 
 #: pages/authentication/page-auth-reset-password.php:72
 #: pages/review/page-review-form.php:89 pages/user/page-user-password.php:64
-#: pages/order/page-order-detail.php:188 pages/order/page-order-product.php:195
+#: pages/order/page-order-detail.php:192 pages/order/page-order-product.php:195
 msgid "Exit"
 msgstr ""
 
@@ -581,7 +596,7 @@ msgstr ""
 msgid "Field is not empty."
 msgstr ""
 
-#: pages/delivery-address/delivery-address-add.php:152
+#: pages/delivery-address/delivery-address-add.php:161
 msgid "Field must be not empty"
 msgstr ""
 
@@ -592,6 +607,10 @@ msgstr ""
 
 #: pages/product/page-product-store.php:69
 msgid "Filter"
+msgstr ""
+
+#: pages/home/home.php:73
+msgid "Find products or stores by name"
 msgstr ""
 
 #: pages/authentication/page-auth-store-login.php:58
@@ -611,9 +630,9 @@ msgstr ""
 #: pages/authentication/page-auth-forget-password.php:227
 #: pages/authentication/page-auth-forget-password.php:257
 #: pages/authentication/page-auth-reset-password.php:123
-#: pages/authentication/page-auth-store-register.php:366
+#: pages/authentication/page-auth-store-register.php:370
 #: pages/authentication/page-auth-register-store.php:144
-#: pages/authentication/page-auth-register.php:322
+#: pages/authentication/page-auth-register.php:326
 msgid "Get Code Verify Error."
 msgstr ""
 
@@ -621,7 +640,7 @@ msgstr ""
 msgid "Go Shopping Now"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:178
+#: libs/store_manager/template_store_manager_index.php:206
 #: libs/store_manager/template_store_manager_add.php:104
 msgid "Hide"
 msgstr ""
@@ -630,18 +649,11 @@ msgstr ""
 msgid "Hide Store"
 msgstr ""
 
-#: pages/home/home.php:13
-msgid "Home"
-msgstr ""
-
 #: pages/authentication/page-auth-store-login.php:68
 #: pages/authentication/page-auth-login.php:90
-msgid "I agree with"
-msgstr ""
-
 #: pages/authentication/page-auth-store-register.php:118
 #: pages/authentication/page-auth-register.php:87
-msgid "I agree with <span class='t-primary'>Terms and Conditions</span>"
+msgid "I agree with"
 msgstr ""
 
 #: pages/user/page-user-delete-account.php:29
@@ -656,12 +668,12 @@ msgstr ""
 msgid "I want to create another account"
 msgstr ""
 
-#: pages/home/home.php:86 pages/product/page-product-ice.php:12
-#: pages/product/page-product-store.php:156 pages/nearby/page-nearby.php:46
+#: pages/home/home.php:130 pages/product/page-product-ice.php:12
+#: pages/product/page-product-store.php:156 pages/nearby/page-nearby.php:61
 #: pages/authentication/page-auth-store-register.php:57
-#: pages/store/page-store-detail.php:193 pages/store/page-store-detail.php:202
+#: pages/store/page-store-detail.php:200 pages/store/page-store-detail.php:209
 #: pages/store/page-store-edit.php:108
-#: libs/store_manager/template_store_manager_index.php:196
+#: libs/store_manager/template_store_manager_index.php:224
 #: libs/store_manager/template_store_manager_add.php:122
 msgid "Ice"
 msgstr ""
@@ -673,13 +685,13 @@ msgid "Immediately (within 1 hour)"
 msgstr ""
 
 #: pages/store/page-store-edit.php:291
-#: libs/store_manager/template_store_manager_index.php:543
+#: libs/store_manager/template_store_manager_index.php:638
 #: libs/store_manager/template_store_manager_add.php:250
 msgid "Invalid address, please select the address in the suggestion book"
 msgstr ""
 
-#. Author of the theme
-msgid "Khách"
+#: pages/home/home.php:249
+msgid "Korean"
 msgstr ""
 
 #: pages/user/page-user-settings.php:30 pages/user/page-user-language.php:18
@@ -687,11 +699,11 @@ msgid "Language"
 msgstr ""
 
 #: page-iframe.php:104 pages/product/page-product-store-view.php:116
-#: libs/store_manager/template_store_manager_index.php:236
+#: libs/store_manager/template_store_manager_index.php:264
 msgid "Length * Width"
 msgstr ""
 
-#: pages/nearby/page-nearby.php:97
+#: pages/nearby/page-nearby.php:112
 msgid "Location information is not available"
 msgstr ""
 
@@ -700,29 +712,29 @@ msgstr ""
 #: pages/authentication/page-auth-store-login.php:74
 #: pages/authentication/page-auth-login.php:69
 #: pages/authentication/page-auth-login.php:96
-#: pages/authentication/page-auth-store-register.php:128
-#: pages/authentication/page-auth-store-register.php:152
+#: pages/authentication/page-auth-store-register.php:129
+#: pages/authentication/page-auth-store-register.php:153
 #: pages/authentication/page-auth-register-store.php:46
-#: pages/authentication/page-auth-register.php:95
-#: pages/authentication/page-auth-register.php:127
+#: pages/authentication/page-auth-register.php:96
+#: pages/authentication/page-auth-register.php:128
 msgid "Log In"
 msgstr ""
 
 #: pages/authentication/page-auth-login.php:104
 #: pages/authentication/page-auth-register-store.php:52
-#: pages/authentication/page-auth-register.php:101
+#: pages/authentication/page-auth-register.php:102
 msgid "Log in with Apple"
 msgstr ""
 
 #: pages/authentication/page-auth-login.php:105
 #: pages/authentication/page-auth-register-store.php:53
-#: pages/authentication/page-auth-register.php:102
+#: pages/authentication/page-auth-register.php:103
 msgid "Log in with Google"
 msgstr ""
 
 #: pages/authentication/page-auth-login.php:106
 #: pages/authentication/page-auth-register-store.php:54
-#: pages/authentication/page-auth-register.php:103
+#: pages/authentication/page-auth-register.php:104
 msgid "Log in with Zalo"
 msgstr ""
 
@@ -746,7 +758,7 @@ msgstr ""
 msgid "Mark as out of stock"
 msgstr ""
 
-#: pages/order/order-index.php:16
+#: pages/order/order-index.php:17
 msgid "Month"
 msgstr ""
 
@@ -754,7 +766,7 @@ msgstr ""
 msgid "Monthly order list"
 msgstr ""
 
-#: pages/user/page-user-profile.php:88
+#: pages/user/page-user-profile.php:89
 msgid "My Reviews"
 msgstr ""
 
@@ -768,8 +780,12 @@ msgstr ""
 msgid "Name or Email is not empty."
 msgstr ""
 
-#: pages/home/home.php:126 pages/nearby/page-nearby-store.php:13
+#: pages/nearby/page-nearby-store.php:13
 msgid "Nearby"
+msgstr ""
+
+#: pages/home/home.php:176
+msgid "Nearby store"
 msgstr ""
 
 #: pages/product/page-product-ice.php:26
@@ -778,7 +794,7 @@ msgstr ""
 msgid "Nearest"
 msgstr ""
 
-#: pages/order/order-index-store.php:52
+#: pages/order/order-index-store.php:56
 msgid "New first"
 msgstr ""
 
@@ -788,7 +804,7 @@ msgstr ""
 msgid "New Password"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:260
+#: libs/store_manager/template_store_manager_index.php:288
 msgid "No products found."
 msgstr ""
 
@@ -809,34 +825,34 @@ msgstr ""
 msgid "Okay"
 msgstr ""
 
-#: pages/order/order-index-store.php:53
+#: pages/order/order-index-store.php:57
 msgid "Old first"
 msgstr ""
 
 #: pages/authentication/page-auth-login.php:101
 #: pages/authentication/page-auth-register-store.php:49
-#: pages/authentication/page-auth-register.php:98
+#: pages/authentication/page-auth-register.php:99
 msgid "Or log in with"
 msgstr ""
 
 #: pages/schedule/page-schedule-index.php:72
-#: pages/schedule/page-schedule-detail.php:37 pages/order/order-index.php:14
+#: pages/schedule/page-schedule-detail.php:37 pages/order/order-index.php:15
 #: pages/order/order-index-store.php:7
 #: pages/order/page-order-store-detail.php:44
 #: pages/order/page-order-product.php:14
 msgid "Order"
 msgstr ""
 
-#: pages/order/page-order-detail.php:185 pages/order/page-order-product.php:192
+#: pages/order/page-order-detail.php:189 pages/order/page-order-product.php:192
 msgid "Order Successfully"
 msgstr ""
 
-#: pages/order/order-index-store.php:243
+#: pages/order/order-index-store.php:256
 msgid "ordered"
 msgstr ""
 
 #: pages/schedule/page-schedule-detail.php:99
-#: pages/order/order-index-store.php:94
+#: pages/order/order-index-store.php:100
 #: pages/order/page-order-store-detail.php:101
 #: pages/order/page-order-detail.php:110
 msgid "Ordered Time"
@@ -846,15 +862,17 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-#: pages/order/order-index-store.php:320
-#: pages/order/page-order-store-detail.php:205
-#: pages/order/page-order-detail.php:225
+#: pages/order/order-index-store.php:333
+#: pages/order/page-order-store-detail.php:210
+#: pages/order/page-order-detail.php:229
 msgid "Others"
 msgstr ""
 
 #: pages/product/page-product-store.php:70
 #: pages/product/page-product-store.php:124
-#: pages/product/page-product-detail.php:35
+#: pages/product/page-product-top-related.php:46
+#: pages/product/page-product-detail.php:36
+#: pages/product/page-product-detail.php:121
 #: pages/store/page-store-detail.php:77
 msgid "Out of Stock"
 msgstr ""
@@ -862,7 +880,7 @@ msgstr ""
 #: pages/authentication/page-auth-store-register.php:66
 #: pages/store/page-store-edit.php:66
 #: libs/store_manager/template_store_manager_index.php:57
-#: libs/store_manager/template_store_manager_index.php:141
+#: libs/store_manager/template_store_manager_index.php:169
 #: libs/store_manager/template_store_manager_add.php:67
 msgid "Owner"
 msgstr ""
@@ -878,7 +896,7 @@ msgstr ""
 #: pages/authentication/page-auth-register.php:80
 #: pages/user/page-user-settings.php:34 pages/store/page-store-edit.php:96
 #: pages/store/page-store-settings.php:21
-#: libs/store_manager/template_store_manager_index.php:171
+#: libs/store_manager/template_store_manager_index.php:199
 #: libs/store_manager/template_store_manager_add.php:97
 msgid "Password"
 msgstr ""
@@ -923,19 +941,19 @@ msgstr ""
 #: pages/delivery-address/delivery-address-add.php:30
 #: pages/delivery-address/delivery-address-edit.php:30
 #: pages/store/page-store-edit.php:86
-#: libs/store_manager/template_store_manager_index.php:161
+#: libs/store_manager/template_store_manager_index.php:189
 #: libs/store_manager/template_store_manager_add.php:87
 msgid "Phone"
 msgstr ""
 
-#: pages/delivery-address/delivery-address-add.php:125
+#: pages/delivery-address/delivery-address-add.php:130
 #: pages/delivery-address/delivery-address-edit.php:137
 msgid "Phone number is invalid"
 msgstr ""
 
-#: pages/authentication/page-auth-store-register.php:419
+#: pages/authentication/page-auth-store-register.php:423
 #: pages/store/page-store-edit.php:278
-#: libs/store_manager/template_store_manager_index.php:530
+#: libs/store_manager/template_store_manager_index.php:625
 #: libs/store_manager/template_store_manager_add.php:230
 msgid "Phone number is not correct format."
 msgstr ""
@@ -952,7 +970,7 @@ msgstr ""
 msgid "Please login to explore more"
 msgstr ""
 
-#: pages/nearby/page-nearby.php:98
+#: pages/nearby/page-nearby.php:113
 msgid "Please share your location for a better experience on Watergo"
 msgstr ""
 
@@ -961,13 +979,13 @@ msgid "Please tell us the reason"
 msgstr ""
 
 #: page-iframe.php:51 pages/product/page-product-store-view.php:63
-#: libs/store_manager/template_store_manager_index.php:227
+#: libs/store_manager/template_store_manager_index.php:255
 msgid "Price"
 msgstr ""
 
 #: pages/user/page-user-settings.php:40
-#: pages/user/page-user-privacy-policy.php:12
-#: pages/store/page-store-privacy-policy.php:12
+#: pages/user/page-user-privacy-policy.php:18
+#: pages/store/page-store-privacy-policy.php:15
 #: pages/store/page-store-settings.php:28
 msgid "Privacy Policy"
 msgstr ""
@@ -977,8 +995,8 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: pages/order/page-order-filter.php:64 pages/order/order-index.php:89
-#: pages/order/order-index-store.php:130
+#: pages/order/page-order-filter.php:64 pages/order/order-index.php:93
+#: pages/order/order-index-store.php:136
 msgid "product"
 msgstr ""
 
@@ -986,15 +1004,15 @@ msgstr ""
 msgid "Product Description"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:224
+#: libs/store_manager/template_store_manager_index.php:252
 msgid "Product Name"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:226
+#: libs/store_manager/template_store_manager_index.php:254
 msgid "Product Type"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:216
+#: libs/store_manager/template_store_manager_index.php:244
 msgid "Products"
 msgstr ""
 
@@ -1002,32 +1020,36 @@ msgstr ""
 msgid "products"
 msgstr ""
 
-#: pages/user/page-user-profile.php:11
+#: pages/user/page-user-profile.php:12
 msgid "Profile"
 msgstr ""
 
-#: pages/product/page-product-detail.php:94
+#: pages/product/page-product-detail.php:95
 msgid "purchase"
 msgstr ""
 
-#: page-iframe.php:118 pages/product/page-product-detail.php:56
+#: page-iframe.php:118 pages/product/page-product-detail.php:57
 #: pages/product/page-product-store-view.php:130
-#: libs/store_manager/template_store_manager_index.php:233
+#: libs/store_manager/template_store_manager_index.php:261
 msgid "Quantity"
 msgstr ""
 
-#: pages/order/page-order-detail.php:138
+#: pages/order/page-order-detail.php:136
 msgid "Re-Order"
 msgstr ""
 
-#: pages/home/home.php:94 pages/product/page-product-recommend.php:13
+#: pages/product/page-product-recommend.php:13
 msgid "Recommend"
+msgstr ""
+
+#: pages/home/home.php:138
+msgid "Recommend product"
 msgstr ""
 
 #: pages/authentication/page-auth-register-store.php:173
 #: pages/authentication/page-auth-register-store.php:177
-#: pages/authentication/page-auth-register.php:361
-#: pages/authentication/page-auth-register.php:375
+#: pages/authentication/page-auth-register.php:365
+#: pages/authentication/page-auth-register.php:379
 #: libs/store_manager/template_store_manager_add.php:242
 msgid "Register Error."
 msgstr ""
@@ -1070,7 +1092,7 @@ msgstr ""
 #: pages/user/page-user-review-edit.php:43 pages/user/page-user-password.php:45
 #: pages/delivery-address/delivery-address-edit.php:49
 #: pages/store/page-store-edit.php:119
-#: libs/store_manager/template_store_manager_index.php:211
+#: libs/store_manager/template_store_manager_index.php:239
 msgid "Save"
 msgstr ""
 
@@ -1094,16 +1116,16 @@ msgstr ""
 msgid "Search Store"
 msgstr ""
 
-#: pages/home/home.php:95 pages/home/home.php:127
-#: pages/product/page-product-detail.php:111
+#: pages/product/page-product-detail.php:112
 msgid "See All"
 msgstr ""
 
+#: pages/home/home.php:139 pages/home/home.php:177
 #: pages/store/page-store-detail.php:36
 msgid "See all"
 msgstr ""
 
-#: pages/order/order-index-store.php:68
+#: pages/order/order-index-store.php:72
 #: libs/store_manager/template_store_manager_index.php:51
 msgid "Select All"
 msgstr ""
@@ -1117,8 +1139,8 @@ msgstr ""
 msgid "Select Brand"
 msgstr ""
 
-#: pages/order/page-order-store-detail.php:169
-#: pages/order/page-order-detail.php:148
+#: pages/order/page-order-store-detail.php:168
+#: pages/order/page-order-detail.php:146
 msgid "Select Cancellation Reason"
 msgstr ""
 
@@ -1128,7 +1150,7 @@ msgstr ""
 
 #: pages/order/page-order-product.php:101
 #: pages/order/page-order-product.php:135
-#: pages/order/page-order-product.php:688
+#: pages/order/page-order-product.php:731
 msgid "Select date"
 msgstr ""
 
@@ -1141,7 +1163,7 @@ msgid "Select delivery time"
 msgstr ""
 
 #: pages/store/page-store-edit.php:100
-#: libs/store_manager/template_store_manager_index.php:187
+#: libs/store_manager/template_store_manager_index.php:215
 #: libs/store_manager/template_store_manager_add.php:113
 msgid "Select Product"
 msgstr ""
@@ -1152,11 +1174,11 @@ msgstr ""
 
 #: pages/order/page-order-product.php:105
 #: pages/order/page-order-product.php:139
-#: pages/order/page-order-product.php:506
-#: pages/order/page-order-product.php:692
-#: pages/order/page-order-product.php:756
-#: pages/order/page-order-product.php:770
-#: pages/order/page-order-product.php:786
+#: pages/order/page-order-product.php:549
+#: pages/order/page-order-product.php:735
+#: pages/order/page-order-product.php:799
+#: pages/order/page-order-product.php:813
+#: pages/order/page-order-product.php:829
 msgid "Select time"
 msgstr ""
 
@@ -1180,12 +1202,12 @@ msgstr ""
 msgid "Send message to tell us more and we’ll help you"
 msgstr ""
 
-#: pages/user/page-user-profile.php:70 pages/user/page-user-settings.php:13
+#: pages/user/page-user-profile.php:71 pages/user/page-user-settings.php:13
 #: pages/store/page-store-profile.php:97 pages/store/page-store-settings.php:13
 msgid "Settings"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:179
+#: libs/store_manager/template_store_manager_index.php:207
 #: libs/store_manager/template_store_manager_add.php:105
 msgid "Show"
 msgstr ""
@@ -1193,11 +1215,11 @@ msgstr ""
 #: pages/authentication/page-auth-store-login.php:75
 #: pages/authentication/page-auth-login.php:97
 #: pages/authentication/page-auth-store-register.php:48
-#: pages/authentication/page-auth-store-register.php:127
+#: pages/authentication/page-auth-store-register.php:128
 #: pages/authentication/page-auth-register-store.php:9
 #: pages/authentication/page-auth-register-store.php:45
 #: pages/authentication/page-auth-register.php:43
-#: pages/authentication/page-auth-register.php:94
+#: pages/authentication/page-auth-register.php:95
 msgid "Sign Up"
 msgstr ""
 
@@ -1223,17 +1245,17 @@ msgstr ""
 msgid "Store"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:97
+#: libs/store_manager/template_store_manager_index.php:125
 #: libs/store_manager/template_store_manager_add.php:22
 msgid "Store Avatar"
 msgstr ""
 
-#: pages/product/page-product-detail.php:163
+#: pages/product/page-product-detail.php:164
 msgid "Store Closed"
 msgstr ""
 
 #: pages/store/page-store-edit.php:281
-#: libs/store_manager/template_store_manager_index.php:533
+#: libs/store_manager/template_store_manager_index.php:628
 msgid "Store Edit Error."
 msgstr ""
 
@@ -1248,7 +1270,7 @@ msgstr ""
 #: pages/authentication/page-auth-store-register.php:71
 #: pages/store/page-store-edit.php:71
 #: libs/store_manager/template_store_manager_index.php:56
-#: libs/store_manager/template_store_manager_index.php:146
+#: libs/store_manager/template_store_manager_index.php:174
 #: libs/store_manager/template_store_manager_add.php:72
 msgid "Store Name"
 msgstr ""
@@ -1256,29 +1278,31 @@ msgstr ""
 #: pages/authentication/page-auth-forget-password.php:44
 #: pages/authentication/page-auth-forget-password.php:126
 #: pages/authentication/page-auth-reset-password.php:48
-#: pages/order/order-index-store.php:201
-#: pages/order/page-order-store-detail.php:180
-#: pages/order/page-order-detail.php:159
+#: pages/order/order-index-store.php:213
+#: pages/order/page-order-store-detail.php:179
+#: pages/order/page-order-detail.php:157
 msgid "Submit"
 msgstr ""
 
-#: pages/user/page-user-profile.php:78 pages/store/page-store-profile.php:80
+#: pages/user/page-user-profile.php:79 pages/store/page-store-profile.php:80
 msgid "Support"
 msgstr ""
 
 #: pages/user/page-user-settings.php:37
-#: pages/user/page-user-term-conditions.php:12
-#: pages/store/page-store-term-conditions.php:12
+#: pages/user/page-user-term-conditions.php:16
+#: pages/store/page-store-term-conditions.php:16
 #: pages/store/page-store-settings.php:25
 msgid "Terms & Conditions"
 msgstr ""
 
 #: pages/authentication/page-auth-store-login.php:70
 #: pages/authentication/page-auth-login.php:92
+#: pages/authentication/page-auth-store-register.php:120
+#: pages/authentication/page-auth-register.php:89
 msgid "Terms and Conditions"
 msgstr ""
 
-#: pages/delivery-address/delivery-address-index.php:31
+#: pages/delivery-address/delivery-address-index.php:32
 #: pages/order/page-order-product.php:24
 msgid "There is no address"
 msgstr ""
@@ -1299,8 +1323,8 @@ msgstr ""
 msgid "This Product is <span class='t-primary'>Out of Stock</span"
 msgstr ""
 
-#: pages/product/page-product-detail.php:171
-#: pages/order/page-order-detail.php:167
+#: pages/product/page-product-detail.php:172
+#: pages/order/page-order-detail.php:165
 msgid "This Product is <span class='t-primary'>Out of Stock</span>"
 msgstr ""
 
@@ -1312,7 +1336,7 @@ msgstr ""
 msgid "Top Products"
 msgstr ""
 
-#: pages/product/page-product-detail.php:111
+#: pages/product/page-product-detail.php:112
 msgid "Top products"
 msgstr ""
 
@@ -1324,15 +1348,15 @@ msgstr ""
 
 #: pages/cart/cart.php:121 pages/schedule/page-schedule-index.php:97
 #: pages/schedule/page-schedule-detail.php:132
-#: pages/order/page-order-filter.php:65 pages/order/order-index.php:90
-#: pages/order/order-index-store.php:131
-#: pages/order/page-order-store-detail.php:150
-#: pages/order/page-order-detail.php:134 pages/order/page-order-product.php:167
+#: pages/order/page-order-filter.php:65 pages/order/order-index.php:94
+#: pages/order/order-index-store.php:137
+#: pages/order/page-order-store-detail.php:154
+#: pages/order/page-order-detail.php:132 pages/order/page-order-product.php:167
 msgid "Total"
 msgstr ""
 
 #: pages/schedule/page-schedule-index.php:57
-#: pages/order/order-index-store.php:62
+#: pages/order/order-index-store.php:66
 msgid "Total order"
 msgstr ""
 
@@ -1345,12 +1369,12 @@ msgstr ""
 msgid "User name"
 msgstr ""
 
-#: pages/authentication/page-auth-register.php:367
+#: pages/authentication/page-auth-register.php:371
 msgid "Username already exists."
 msgstr ""
 
-#: pages/authentication/page-auth-store-login.php:204
-#: pages/authentication/page-auth-login.php:249
+#: pages/authentication/page-auth-store-login.php:210
+#: pages/authentication/page-auth-login.php:257
 msgid "Username or Password must be not empty."
 msgstr ""
 
@@ -1363,29 +1387,30 @@ msgstr ""
 msgid "Verify your email"
 msgstr ""
 
+#: pages/home/home.php:248 pages/authentication/page-auth-store-login.php:104
 #: pages/authentication/page-auth-login.php:133
-#: pages/authentication/page-auth-register.php:162
+#: pages/authentication/page-auth-register.php:163
 msgid "Vietnamese"
 msgstr ""
 
-#: pages/order/order-index-store.php:135
+#: pages/order/order-index-store.php:141
 msgid "View"
 msgstr ""
 
-#: pages/product/page-product-detail.php:83
+#: pages/product/page-product-detail.php:84
 msgid "View Store"
 msgstr ""
 
-#: libs/store_manager/template_store_manager_index.php:234
+#: libs/store_manager/template_store_manager_index.php:262
 msgid "Volume"
 msgstr ""
 
-#: pages/home/home.php:80 pages/product/page-product-store.php:155
-#: pages/product/page-product-water.php:11 pages/nearby/page-nearby.php:45
+#: pages/home/home.php:109 pages/product/page-product-store.php:155
+#: pages/product/page-product-water.php:11 pages/nearby/page-nearby.php:60
 #: pages/authentication/page-auth-store-register.php:53
-#: pages/store/page-store-detail.php:192 pages/store/page-store-detail.php:200
+#: pages/store/page-store-detail.php:199 pages/store/page-store-detail.php:207
 #: pages/store/page-store-edit.php:104
-#: libs/store_manager/template_store_manager_index.php:192
+#: libs/store_manager/template_store_manager_index.php:220
 #: libs/store_manager/template_store_manager_add.php:118
 msgid "Water"
 msgstr ""
@@ -1420,7 +1445,7 @@ msgstr ""
 msgid "We have sent a code to your email."
 msgstr ""
 
-#: pages/order/order-index.php:16
+#: pages/order/order-index.php:17
 msgid "Week"
 msgstr ""
 
@@ -1429,7 +1454,7 @@ msgid "Weekly order list"
 msgstr ""
 
 #: page-iframe.php:89 pages/product/page-product-store-view.php:101
-#: libs/store_manager/template_store_manager_index.php:237
+#: libs/store_manager/template_store_manager_index.php:265
 msgid "Weight"
 msgstr ""
 
@@ -1451,7 +1476,7 @@ msgid ""
 "deleted account."
 msgstr ""
 
-#: pages/order/order-index-store.php:190
+#: pages/order/order-index-store.php:202
 msgid "Why do you want to cancel <span class='t-primary'>All Order</span>"
 msgstr ""
 
@@ -1475,7 +1500,7 @@ msgstr ""
 msgid "Year"
 msgstr ""
 
-#: pages/order/page-order-detail.php:174
+#: pages/order/page-order-detail.php:172
 msgid "You already review this order"
 msgstr ""
 
@@ -1493,8 +1518,8 @@ msgstr ""
 msgid "Your Question"
 msgstr ""
 
-#: pages/authentication/page-auth-store-register.php:148
-#: pages/authentication/page-auth-register.php:123
+#: pages/authentication/page-auth-store-register.php:149
+#: pages/authentication/page-auth-register.php:124
 msgid "Your registration has been successful"
 msgstr ""
 
@@ -1502,6 +1527,6 @@ msgstr ""
 msgid "Your Review"
 msgstr ""
 
-#: pages/authentication/page-auth-store-register.php:437
+#: pages/authentication/page-auth-store-register.php:441
 msgid "Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất"
 msgstr ""

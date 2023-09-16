@@ -25,7 +25,7 @@
          </div>
       </div>
       
-      <ul v-if='filter_search.length > 0' class='list-chat'>
+      <ul class='list-chat'>
          <li 
             @click='gotoChatMessenger({
                host_chat: host_chat,
@@ -51,6 +51,8 @@
 
    </div>
 
+   <button @click='testing' class='btn '>Test</button>
+
    <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
@@ -60,9 +62,48 @@
 
 <script type='module'>
 
-var { createApp } = Vue;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 
-createApp({
+
+const firebaseConfig = {
+   apiKey: "AIzaSyAIiPyRBqrwY8LVx5AruzKmsjL96j_lzr4",
+   authDomain: "watergo-chat.firebaseapp.com",
+   projectId: "watergo-chat",
+   storageBucket: "watergo-chat.appspot.com",
+   messagingSenderId: "663475773045",
+   appId: "1:663475773045:web:e71a08bee3a9506c39223c",
+   measurementId: "G-4E3CS9NC3T"
+};
+
+
+
+// async function getMessengers(){
+//    const messengers = collection(db, 'messengers');
+//    const snapshots = await getDocs(messengers);
+//    var list = snapshots.docs.map(doc => doc.data());
+//    return list;
+// }
+
+// getMessengers().then((res) => {
+//    console.log(res);
+// }).catch( (e) => {
+//    console.error("Error getting documents: ", e);
+// });
+
+// const collectionRef = collection(db, "messengers");
+
+// Create a real-time listener for the collection
+// const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+//    querySnapshot.forEach((doc) => {
+//       // Handle document data here
+//       console.log(doc.id, " => ", doc.data());
+//    });
+// });
+
+// console.log(unsubscribe);
+
+var app = Vue.createApp({
    data (){
 
       return {
@@ -71,8 +112,16 @@ createApp({
          host_chat: null,
          conversations: [],
          inputSearch: '',
+         database: null,
       }
       
+   },
+
+   computed: {
+
+      get_conversations(){
+
+      }
    },
 
    methods: {
@@ -87,106 +136,23 @@ createApp({
          }
       },
 
-      gotoChatMessenger(obj){ 
-         var _user_id = null;
-         var _store_id = null;
 
-         if( this.host_chat == 'user' ){
-            _user_id = this.host_id;
-            _store_id = obj.id_from_user;
-         }
-         if( this.host_chat == 'store' ){
-            _store_id = this.host_id;
-            _user_id = obj.id_from_user;
-         }
+      
+      testing(){
 
-         window.gotoChatMessenger({
-            host_chat: obj.host_chat,
-            conversation_id: obj.conversation_id,
-            user_id: _user_id,
-            store_id: _store_id
-         })
-      },
-
-
-      async getConversation(){
-         var form = new FormData();
-         form.append('action', 'atlantis_load_conversation');
-         var r = await window.request(form);
-         if(r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'conversation_found' ){
-               this.host_chat = res.host_chat;
-               this.host_id   = res.host_id;
-               res.data.forEach((item, index ) => {
-                  var _exists = this.conversations.some( cons => cons.conversation_id === item.conversation_id );
-                  if( ! _exists ){
-                     this.conversations.push(item);
-                  }
-               });
-               
-            }
-         }
-      },
-
-      async ping_user_to_get_message(){
-         if( this.conversations.length > 0 ){
-            var _list_conversation = [];
-            this.conversations.forEach( cons => {
-               _list_conversation.push({conversation_id: cons.conversation_id});
-            });
-            var form = new FormData();
-            form.append('action', 'atlantis_ping_user_to_get_last_message');
-            form.append('list_conversation', JSON.stringify(_list_conversation));
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify( r ));
-               if( res.message == 'get_message_ok' ){
-                  res.data.forEach( message => {
-                     var conversationIndex   = this.conversations.findIndex((cons) => cons.conversation_id === message.conversation_id);
-                     if( message.content != undefined && message.timestamp != undefined){
-                        this.conversations[conversationIndex].content   = message.content;
-                        this.conversations[conversationIndex].timestamp = String(message.timestamp);
-                     }
-                  });
-               }
-            }
-         }
       }
 
-   },
-
-   computed: {
-
-      filter_search(){
-
-         if( this.inputSearch == ''){
-            return this.conversations;
-         }else{
-            return this.conversations.filter(item =>   
-               item.name.toLowerCase().includes(
-                  this.inputSearch.toLowerCase()
-               )
-            );
-         }
-      }
    },
 
    async created(){
-      this.loading = true;
-      await this.getConversation();
-      this.loading = false;
+      // Initialize Firebase
+      const appFireBase = initializeApp(firebaseConfig);
+      this.database = getFirestore(appFireBase);
 
-      setInterval( async () => {
-         await this.getConversation();
-      }, 5000);
-
-      await this.ping_user_to_get_message();
-
-      setInterval( async () => {
-         await this.ping_user_to_get_message();
-      }, 5000);
-      
    }
+
 }).mount('#app');
+window.app = app;
+
+
 </script>
