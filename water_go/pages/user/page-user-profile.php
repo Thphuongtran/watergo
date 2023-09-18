@@ -254,8 +254,7 @@ var app = Vue.createApp({
                });
             }
          }
-         // this.btn_popup_cancel();
-         // this.loading = false;
+         
       },
 
       btn_popup_cancel(){ 

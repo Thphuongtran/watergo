@@ -1,5 +1,10 @@
+<?php 
+   $user_id = get_current_user_id();
+?>
+
+
 <div id='app'>
-   <div v-show='loading == false && account != null' class='page-chat'>
+   <div v-show='loading == false' class='page-chat'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -7,17 +12,10 @@
                <button @click='goBack' class='btn-action'>
                   <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 7.44772 0.447715 7 1 7H18.5C19.0523 7 19.5 7.44772 19.5 8C19.5 8.55228 19.0523 9 18.5 9H1C0.447715 9 0 8.55228 0 8Z" fill="#252831"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/></svg>
                </button>
-               <div v-if='account != null' class='leading-group'>
-                  <div class='leading-avatar'>
-                     <img :src="get_leading_avatar">
-                  </div>
-                  <div v-if='host_chat == "store" && account != null ' class='user-info'>
-                     <div class="tt01">{{ account.user_account.first_name }}</div>
-                     <div class="tt02">Active</div>
-                  </div>
-                  <div v-if='host_chat == "user" && account != null' class='user-info'>
-                     <div class="tt01">{{ account.store_account.store_name }}</div>
-                     <div class="tt02">Active</div>
+               <div class='leading-group'>
+                  <div class='leading-avatar'><img :src='user_group.to_user.avatar' ></div>
+                  <div class='user-info'>
+                     <div class="tt01">{{ user_group.to_user.name }}</div>
                   </div>
                </div>
             </div>
@@ -28,14 +26,14 @@
                   <img :src="product.product_image.url">
                </div>
                <div class='contents'>
-                  <div class='tt01'>{{ product.name }}</div>
-                  <div class='tt02'>{{ product.name_second }}</div>
-                  <div class='tt03'>
-                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
-                        <span class='price'>
+                  <div v-if='product != null' class='tt01'>{{ product.name }}</div>
+                  <div v-if='product != null' class='tt02'>{{ product.name_second }}</div>
+                  <div v-if='product != null' class='tt03'>
+                     <div v-if='product != null' class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                        <span class='price' v-if='product != null'>
                            {{ common_price_show_currency(product.price) }}
                         </span>
-                        <span v-if='has_discount(product) == true' class='price-sub'>
+                        <span v-if='product != null && has_discount(product) == true' class='price-sub'>
                            {{ common_price_after_discount(product ) }}
                         </span>
                      </div>
@@ -46,38 +44,39 @@
 
       </div>
 
-      <div class='messenger-time'><span>{{ getCurrentDateTime }}</span></div>
+      <div class='scaffold'>
+         
+         <div class='scaffold-body'>
+            <div class='messenger-time'><span>{{ get_datetime(timestamp) }}</span></div>
 
-      <ul class='list-messenger'>
-         <li
-            v-if='messengers.length > 0'
-            v-for='(messenger, messengerKey) in filter_messengers' :key='messengerKey'
-            :class='get_class_layout_for_message(messenger)'
-         >
-            <div class='avatar'>
-               <img :src="get_avatar_user_chat(messenger)" >
-            </div>
+            <ul v-if='messages.length > 0' class='list-messenger'>
 
-            <div class='gr-messenger'>
-               <div class='messages'
-                  v-for='(messages, messagesKey) in messenger.messages' :key='messagesKey'
-               >
-               {{ messages.content }}
-               </div>
-            </div>
+               <li>
+                  <div class='avatar'><img :src='img_dummy'></div>
+                  <div class='messages'>Hi, may I ask about your product?</div>
+               </li>
 
-         </li>
-      </ul>
+               <li class='is-host'>
+                  <div class='avatar'><img :src='img_dummy'></div>
+                  <div class='messages'>Hi, may I ask about your product?</div>
+               </li>
+
+            </ul>
+
+         </div>
+
+      </div>
+
+      
 
    </div>
 
    <div class='box-form-chat'>
       <div class='box-chat'>
-         <div v-if='host_chat == "store" && account != null ' class='avatar'><img :src="account.store_account.image.url"></div>
-         <div v-if='host_chat == "user" && account != null ' class='avatar'><img :src="account.user_account.image.url"></div>
+         <div class='avatar'><img :src='user_group.from_user.avatar'></div>
          
          <label class='input-chat'>
-            <input v-model='chat_content' type='text' placeholder='Message...'>
+            <input v-model='chat_content' type='text' placeholder='<?php echo __('Message...', 'watergo'); ?>'>
             <span @click='btn_send_message' class='icon'>
                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                <circle cx="14" cy="14" r="14" fill="#2790F9"/>
@@ -89,145 +88,93 @@
       </div>
    </div>
 
-   <div v-show='loading == true'>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
+
 </div>
 
 <script type='module'>
 
-var { createApp } = Vue;
 
-createApp({
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, doc, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
+
+const firebaseConfig = {
+   apiKey: "AIzaSyAIiPyRBqrwY8LVx5AruzKmsjL96j_lzr4",
+   authDomain: "watergo-chat.firebaseapp.com",
+   projectId: "watergo-chat",
+   storageBucket: "watergo-chat.appspot.com",
+   messagingSenderId: "663475773045",
+   appId: "1:663475773045:web:e71a08bee3a9506c39223c",
+   measurementId: "G-4E3CS9NC3T"
+};
+
+
+var app = Vue.createApp({
    data (){
       
       return {
          loading: false,
-
-         product_id: null,
-         store_id: null,
-         user_id: null,
-         conversation_id: 0,
-
-         account: null,
-         host_chat: '',
-
-         messengers: [],
-         
+         messages: [],
          product: null,
+         where_app: '', // chat_to_user | chat_to_store
 
-         chat_content: '',
-         list_id_messenger: [],
+         timestamp: '',
+
+         user_group: {
+            from_user: {
+               id: null,
+               name: 'User Name',
+               avatar: '<?php echo THEME_URI . '/assets/images/avatar-dummy.png'; ?>',
+            },
+            to_user: {
+               id: null,
+               name: 'Store Name',
+               avatar: '<?php echo THEME_URI . '/assets/images/store-dummy.png'; ?>',
+            },
+         },
+
+         img_dummy: '<?php echo THEME_URI . '/assets/images/store-dummy.png'; ?>'
 
       }
    },
    methods: {
       
 
-      goBack(){ window.goBack();},
+      goBack(){ window.goBack()},
       order_formatDate(t){ return window.order_formatDate(t)},
       has_discount( product ){ return window.has_discount(product); },
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
-      get_avatar_user_chat( messenger ){
-         if( messenger.user_role == 'store' ){
-            return this.account.store_account.image.url;
-         }
-         if( messenger.user_role == 'store' ){
-            return this.account.store_account.image.url;
-         }else {
-            return this.account.user_account.image.url;
-         }
-         if( messenger.user_role == 'user' ){
-            return this.account.user_account.image.url;
-         }else {
-            return this.account.store_account.image.url;
-         }
+      // 
+      get_datetime( timestamp ){
+         var date_format = this.timestamp_to_date(timestamp);
+         return this.getTimeDifference( date_format);
+      },
+      
+      timestamp_to_date(timestamp) {
+         var date = new Date(timestamp * 1000);
+         var day = date.getDate().toString().padStart(2, '0');
+         var month = (date.getMonth() + 1).toString().padStart(2, '0');
+         var year = date.getFullYear();
+         var hours = date.getHours().toString().padStart(2, '0');
+         var minutes = date.getMinutes().toString().padStart(2, '0');
+         var seconds = date.getSeconds().toString().padStart(2, '0');
+         // YEAR MONTH DAY H:i:s
+         return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
       },
 
-      get_class_layout_for_message( messenger ){
-         if( messenger.user_role == this.host_chat ){ return 'is-host'; }
-      },
+      getTimeDifference(datetime){ return window.getTimeDifference(datetime)},
+      // 
 
-      handleScroll() {
-         (function($){
-            $(document).ready(function(){
-               $('html, body').animate({scrollTop: $(document).height()}, 800);
-            });
-         })(jQuery);
-      },
-
-      async get_new_messenger_per_second(){
-         var list_id_messenger = [];
-         this.messengers.forEach( message => {
-            list_id_messenger.push( message.message_id );
-         });
-
-         var form = new FormData();
-         form.append('action', 'atlantis_get_newest_messages');
-         form.append('conversation_id', this.conversation_id);
-         form.append('list_id_messenger', JSON.stringify(list_id_messenger ));
-         var r = await window.request(form);
-         if(r != undefined){
-            var res = JSON.parse( JSON.stringify( r) );
-            if( res.message == 'newest_messenger_ok' ){
-               if( res.data != undefined ){
-                  res.data.forEach( item => {
-                     this.messengers.push(item );
-                  });
-
-               }
-            }
-         }
-      },
-
-      async btn_send_message(){
-
-         if( this.chat_content.length > 0 ){
-            var form = new FormData();
-            form.append('action', 'atlantis_send_messenger');
-            form.append('conversation_id', this.conversation_id);
-            form.append('chat_content', this.chat_content);
-            var r = await window.request(form);
-            if( r != undefined){
-               var res = JSON.parse( JSON.stringify(r));
-               if( res.message == 'messenge_send_ok' ){
-                  this.messengers.push( res.data );
-                  this.handleScroll();
-               }
-            }
-            this.chat_content = '';
-         }
-
-      },
-
-      async get_messages( ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_messages');
-         form.append('conversation_id', this.conversation_id);
-         var r = await window.request(form);
-
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if(res.message == 'message_found'){
-               this.messengers.push( ...res.data ); 
-            }
-         }
-
-      },
-
-      get_username( user ){
-         if( user.first_name == undefined ) return user.display_name;
-         return user.first_name;
-      }, 
-
-      async get_product(){
+      async get_product( product_id ){
          var form = new FormData();
          form.append('action', 'atlantis_find_product');
-         form.append('product_id', this.product_id);
+         form.append('product_id', product_id);
          var r = await window.request(form);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
@@ -235,158 +182,88 @@ createApp({
                this.product = res.data;
             }
          }
-
       },
 
-      async get_product_newest(){
+      async get_account_store(user_id){
          var form = new FormData();
-         form.append('action', 'atlantis_find_product_newest');
-         form.append('store_id', this.store_id);
+         form.append('action', 'atlantis_get_account_store');
+         form.append('user_id', user_id);
          var r = await window.request(form);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               this.product= res.data;
+            if( res.message == 'get_account_store_ok' ){
+               return res.data;
             }
          }
       },
 
-      async get_both_user(user_id, store_id){
+      async get_account_user(user_id){
          var form = new FormData();
-         form.append('action', 'atlantis_get_both_user_messenger');
+         form.append('action', 'atlantis_get_account_user');
          form.append('user_id', user_id);
-         form.append('store_id', store_id);
          var r = await window.request(form);
          if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'user_ok'){
-               this.account = res.data;
+            let res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'get_account_user_ok' ){
+               return res.data;
             }
          }
-      },
-
-      async atlantis_load_conversations_id(user_id, store_id){
-         var form = new FormData();
-         form.append('action', 'atlantis_load_conversations_id');
-         form.append('user_id', parseInt(user_id));
-         form.append('store_id', parseInt(store_id));
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'conversation_found' ){
-               this.conversation_id = res.data;
-            }
-         }
-      },
-
-      groupMessagesByUser(messages) {
-         var result = [];
-         var currentGroup = [];
-
-         for (var i = 0; i < messages.length; i++) {
-            var message = messages[i];
-
-            if (  currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_role != message.user_role ) {
-               currentGroup = [];
-               result.push({
-                  user_role: message.user_role,
-                  user_id: parseInt( message.user_id ),
-                  messages: currentGroup
-               });
-            }
-
-            currentGroup.push({
-               user_role: message.user_role,
-               conversation_id: message.conversation_id,
-               content: message.content,
-               message_id: message.message_id,
-               user_id: message.user_id,
-               timestamp: message.timestamp
-            });
-         }
-         return result;
-      }
-   },
-
-   computed: {
-      getCurrentDateTime(){ return window.getCurrentDateTime(); },
-
-      get_leading_avatar(){
-         if( this.account != null ){
-            if( this.host_chat == 'user' ){
-               return this.account.store_account.image.url;
-            }
-            if( this.host_chat == 'store' ){
-               return this.account.user_account.image.url;
-            }
-         }
-      },
-
-      filter_messengers(){
-         if( this.messengers.length == 0) return [];
-         let sortedMessengers = this.messengers.sort((a, b) => a.message_id - b.message_id );
-         var _groupMessages = this.groupMessagesByUser(sortedMessengers);
-         return _groupMessages;
       }
 
    },
+
+
 
    async created(){
 
       this.loading = true;
       const urlParams   = new URLSearchParams(window.location.search);
-      this.conversation_id  = urlParams.get('conversation_id');
-      this.product_id       = urlParams.get('product_id');
-      
-      var store_id         = urlParams.get('store_id');
-      var user_id          = urlParams.get('user_id');
-      var host_chat        = urlParams.get('host_chat');
-      
-      this.store_id = store_id;
-      this.user_id = user_id;
-      this.host_chat = host_chat;
+      this.messenger_id  = urlParams.get('messenger_id');
+      this.where_app     = urlParams.get('where_app');
 
-      // GET USER ACCOUNT
-      await this.get_both_user(user_id, store_id);
+      const appFireBase = initializeApp(firebaseConfig);
+      this.database = getFirestore(appFireBase);
 
-      // GET CONVERSATION ID 
-      if(this.conversation_id == undefined || this.conversation_id == null ){
-         await this.atlantis_load_conversations_id(user_id, store_id);
-      }
+      if(  this.messenger_id != undefined ){
+         var getMessenger = doc(this.database, "messengers", this.messenger_id);
+         var queryGetMessenger = query( getMessenger);
 
-      // GET PRODUCT
-      if( this.product_id != null ){
-         await this.get_product();
-      }else{
-         await this.get_product_newest();
-      }
+         await onSnapshot( queryGetMessenger, async ( messagesSnapshot ) => {
+            const promises = [];
+            if( messagesSnapshot.exists() ){
+               const messagesItem = messagesSnapshot.data();
+               promises.push( this.get_product(messagesItem.pin_product));
+               this.timestamp = messagesItem.time_created.seconds;
 
-      // // GET MESSAGES
-      await this.get_messages( [0] );
+               if( this.where_app == 'chat_to_store' ){
+                  promises.push( this.user_group.to_user = await this.get_account_store(messagesItem.to_user));
+                  promises.push( this.user_group.from_user = await this.get_account_user(messagesItem.from_user));
 
-      window.appbar_fixed();
+               }
+               if( this.where_app == 'chat_to_user' ){
+                  promises.push( this.user_group.from_user = await this.get_account_store(messagesItem.to_user));
+                  promises.push( this.user_group.to_user = await this.get_account_user(messagesItem.from_user));
+               }
+            }
 
-      (function($){
-         $(document).ready(function(){
-            $('html, body').animate({
-               scrollTop: $(document).height()
-            }, 800);
+            await Promise.all( promises);
+
          });
-      })(jQuery);
-
-
-      setTimeout( () => {  }, 1000);
-      setInterval( async () => {
-         await this.get_new_messenger_per_second();
-      }, 5000);
-
-      console.log(this.product)
+      }
 
       
-      this.loading = false; 
+      setTimeout(() => {
+         this.loading = false;
+      }, 1000);
+      
+
+      
 
 
 
    }
 }).mount('#app');
+window.app = app;
+
+
 </script>

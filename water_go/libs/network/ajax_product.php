@@ -6,8 +6,8 @@ add_action( 'wp_ajax_atlantis_load_products', 'atlantis_load_products' );
 add_action( 'wp_ajax_nopriv_atlantis_load_product_recommend', 'atlantis_load_product_recommend' );
 add_action( 'wp_ajax_atlantis_load_product_recommend', 'atlantis_load_product_recommend' );
 
-// add_action( 'wp_ajax_nopriv_atlantis_load_product_recommend_home', 'atlantis_load_product_recommend_home' );
-// add_action( 'wp_ajax_atlantis_load_product_recommend_home', 'atlantis_load_product_recommend_home' );
+add_action( 'wp_ajax_nopriv_atlantis_load_product_recommend_home', 'atlantis_load_product_recommend_home' );
+add_action( 'wp_ajax_atlantis_load_product_recommend_home', 'atlantis_load_product_recommend_home' );
 
 add_action( 'wp_ajax_nopriv_atlantis_get_product_top_related', 'atlantis_get_product_top_related' );
 add_action( 'wp_ajax_atlantis_get_product_top_related', 'atlantis_get_product_top_related' );
@@ -152,6 +152,10 @@ function atlantis_load_products(){
    2. if no order user make before, let make piority product discount
    3. if no discount product yet. just random product by location nearby
 */
+
+function atlantis_load_product_recommend_home(){
+   
+}
 
 
 function atlantis_load_product_recommend(){

@@ -793,4 +793,62 @@ function atlantis_hidden_account(){
    }
 }
 
+/**
+ * @access GET USER ( FOR MESSENGER )
+ */
 
+add_action( 'wp_ajax_nopriv_atlantis_get_user_messenger', 'atlantis_get_user_messenger' );
+add_action( 'wp_ajax_atlantis_get_user_messenger', 'atlantis_get_user_messenger' );
+
+function atlantis_get_user_messenger(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_user_messenger'){
+
+      // if(is_user_logged_in() == false ){
+      //    wp_send_json_error([ 'message' => 'no_login_invalid' ]);
+      //    wp_die();
+      // }
+
+      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+      $user = get_user_by('id', $user_id);
+
+
+      if( ! $user ){
+         wp_send_json_error([ 'message' => 'user_not_found' ]);
+         wp_die();
+      }
+
+      $user_avatar = func_atlantis_get_images( $user_id, 'user_avatar', true);
+      $username    = get_user_meta($user_id, 'first_name', true);
+      if( $username == ""){
+         $username = $user->data->display_name;
+      }
+
+      wp_send_json_success([ 'message' => 'user_found', 'data' => [
+         'username'     => $username,
+         'user_avatar'  => $user_avatar,
+      ] ]);
+      wp_die();
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_user_id_from_store_id', 'atlantis_get_user_id_from_store_id' );
+add_action( 'wp_ajax_atlantis_get_user_id_from_store_id', 'atlantis_get_user_id_from_store_id' );
+
+function atlantis_get_user_id_from_store_id(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_user_id_from_store_id' ){
+      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+      global $wpdb;
+      $sql = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id AND store_hidden != 1 ";
+      $res = $wpdb->get_results($sql);
+      if( $res[0]->user_id == "" || $res[0]->user_id == null || $res[0]->user_id == 0 ){
+         wp_send_json_error([ 'message' => 'user_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_success([ 'message' => 'user_found', 'data' => $res[0]->user_id ]);
+      wp_die();
+
+   }
+}

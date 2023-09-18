@@ -1,3 +1,48 @@
+<?php 
+
+   $user_id = get_current_user_id();
+
+   global $wpdb;
+   $sql = "SELECT * from wp_usermeta where meta_key = 'user_store' AND meta_value = 1";
+   $res = $wpdb->get_results($sql);
+   $store_list = [];
+   $store_list_id = [];
+
+   if( !empty($res) ){
+      foreach( $res as $k => $vl ){
+         $store_list[] = $vl->user_id;
+      }
+      $store_list       = implode(',', $store_list );
+      $sql_get_store_id = "SELECT id FROM wp_watergo_store WHERE user_id IN( $store_list) ";
+      $res_get_store_id = $wpdb->get_results($sql_get_store_id);
+
+      if( !empty( $res_get_store_id ) ){
+         foreach( $res_get_store_id as $kk => $vll ){
+            $store_list_id[] = $vll->id;
+         }
+      }
+   }
+
+   /*
+      collection [ messengers ]
+         from_user
+         from_user_count: 0
+         to_user
+         to_user_count: 0
+         to_user_hidden: false 
+         pin_produdct: 0
+         time_created: 
+
+      collection [ messages ]
+         user_id
+         contents
+         is_read: false
+         timestamp: 
+         messenger_id: (document_id from messengers )
+   */
+   
+
+?>
 <div id='app'>
    <div v-show='loading == false' class='page-chat'>
 
@@ -27,22 +72,20 @@
       
       <ul class='list-chat'>
          <li 
-            @click='gotoChatMessenger({
-               host_chat: host_chat,
-               conversation_id: cons.conversation_id,
-               id_from_user: cons.user_id
-            })' 
-            v-for='(cons, conversationIndex) in filter_search' :key='conversationIndex' class='chat-item'>
+            v-for='(cons, conversationIndex) in get_conversations' :key='conversationIndex' class='chat-item'>
 
             <div class='leading'>
-               <img :src="cons.image.url">
+               <img :src="cons.user_avatar">
             </div>
             <div class='contents'>
                <div class='tt01'>
-                  <div class='name-chat'>{{ get_username(cons) }}</div>
-                  <div v-if='cons.timestamp != 0' class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
+                  <div class='name-chat'>{{ cons.username }}</div>
+                  <div class='time'>{{ get_datetime(cons.time_created.seconds)}}</div>
                </div>
-               <div class='tt02'>{{ cons.content }}</div>
+               <div class='tt02'>
+                  <p class='text'>{{ cons.messages }}</p>
+                  <div class='badge-is_read' v-show='cons.count_new_messages > 0'>{{ cons.count_new_messages }}</div>
+               </div>
                
             </div>
 
@@ -51,20 +94,32 @@
 
    </div>
 
-   <button @click='testing' class='btn '>Test</button>
-
    <div v-show='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
+
+   <div class='beta-show-store'>
+      <div class='list-store'>
+         <button class='beta-button' 
+            @click='chat_to_store({
+               from_user: 
+               to_user:
+               pin_product: 
+            })' 
+            v-for='(store, storeIndex ) in get_store_list' :key='storeIndex'>
+            Store {{ store }}
+         </button>
+      </div>
+   </div>
+
 </div>
 
 <script type='module'>
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
-
+import { getFirestore, collection, query, where, orderBy, getDocs, limit, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 
 const firebaseConfig = {
    apiKey: "AIzaSyAIiPyRBqrwY8LVx5AruzKmsjL96j_lzr4",
@@ -78,41 +133,17 @@ const firebaseConfig = {
 
 
 
-// async function getMessengers(){
-//    const messengers = collection(db, 'messengers');
-//    const snapshots = await getDocs(messengers);
-//    var list = snapshots.docs.map(doc => doc.data());
-//    return list;
-// }
-
-// getMessengers().then((res) => {
-//    console.log(res);
-// }).catch( (e) => {
-//    console.error("Error getting documents: ", e);
-// });
-
-// const collectionRef = collection(db, "messengers");
-
-// Create a real-time listener for the collection
-// const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
-//    querySnapshot.forEach((doc) => {
-//       // Handle document data here
-//       console.log(doc.id, " => ", doc.data());
-//    });
-// });
-
-// console.log(unsubscribe);
-
 var app = Vue.createApp({
    data (){
 
       return {
          loading: false,
-         host_id: null,
-         host_chat: null,
          conversations: [],
          inputSearch: '',
          database: null,
+         user_id: <?php echo $user_id; ?>,
+
+         store_list: '<?php echo implode(',', $store_list_id); ?>'
       }
       
    },
@@ -120,34 +151,133 @@ var app = Vue.createApp({
    computed: {
 
       get_conversations(){
+         var _filter = this.conversations;
+
+         return _filter.sort((a, b) => b.time_created - a.time_created);
+      },
+
+      get_store_list(){
+         return this.store_list.split(',');
+      },
+
+      filter_search(){
 
       }
    },
 
    methods: {
-      goBack(){ window.goBack(); },
-      getTimeDifference(datetimeInput){ return window.getTimeDifference(datetimeInput); },
-      shortString(str){ return window.shortString(str)},
+      goBack(){ window.goBack()},
 
-      get_username( user ){
-         console.log(user)
-         if( user.name == undefined || user.name == null ){
-            return user.display_name;
-         }
+      gotoChatMessenger(messenger_id){ 
+         window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&messenger_id=' + messenger_id + '&appt=N';
       },
 
-
+      get_datetime( timestamp ){
+         var date_format = this.timestamp_to_date(timestamp);
+         return this.getTimeDifference( date_format);
+      },
       
-      testing(){
+      timestamp_to_date(timestamp) {
+         var date = new Date(timestamp * 1000);
+         var day = date.getDate().toString().padStart(2, '0');
+         var month = (date.getMonth() + 1).toString().padStart(2, '0');
+         var year = date.getFullYear();
+         var hours = date.getHours().toString().padStart(2, '0');
+         var minutes = date.getMinutes().toString().padStart(2, '0');
+         var seconds = date.getSeconds().toString().padStart(2, '0');
+         // YEAR MONTH DAY H:i:s
+         return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+      },
 
-      }
+      getTimeDifference(datetime){ return window.getTimeDifference(datetime)},
+
+      shortString(str){ return window.shortString(str)},
+
+      async get_user( user_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_user_messenger');
+         form.append('user_id', user_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse(JSON.stringify( r));
+            if( res.message == 'user_found'){
+               return res.data;
+            }
+         }
+
+      },
+
+   },
+
+   async update(){
 
    },
 
    async created(){
+
+      this.loading = true;
       // Initialize Firebase
       const appFireBase = initializeApp(firebaseConfig);
       this.database = getFirestore(appFireBase);
+
+      const messengers = query( 
+         collection(this.database, "messengers"), 
+         where("from_user", '==', this.user_id),
+         where("to_user_hidden", '==', false)
+      );
+
+      await onSnapshot(messengers, async (querySnapshot) => {
+         const promises = [];
+         await querySnapshot.forEach( async (doc) => { 
+
+            if( doc != undefined ){
+               var _document_id = doc.id;
+               var _findIndex = this.conversations.findIndex( item => item.doc_id == doc.id );
+               if( _findIndex == undefined || _findIndex == -1 ){
+
+                  promises.push(
+                     this.get_user(doc.data().to_user)
+                        .then( _get_user => {
+                           this.conversations.push({
+                              doc_id: _document_id,
+                              user_avatar: _get_user.user_avatar.url,
+                              username: _get_user.username,
+                              messages: 'Tap to chat',
+                              is_read: false,
+                              count_new_messages: 0,
+                              ...doc.data()
+                           });
+                        }
+                     )
+                  );
+
+                  // QUERY GET MESSAGES
+                  const messages = query(
+                     collection(this.database, "messages"),
+                     where("messenger_id", '==', doc.id),
+                     orderBy('timestamp', 'desc'), limit(1)
+                  );
+
+                  await onSnapshot(messages, async(queryMessagesSnapshot) => {
+                     await queryMessagesSnapshot.forEach(async (doc) => {
+                        var _findIndex = this.conversations.findIndex(item => item.doc_id == doc.data().messenger_id);
+                        if ( _findIndex !== -1) {
+                           this.conversations[_findIndex].messages       = doc.data().contents;
+                           this.conversations[_findIndex].time_created   = doc.data().timestamp;
+                        }
+                     });
+                  });
+
+               }
+            }
+
+         });
+
+         await Promise.all(promises);
+         setTimeout(() => {}, 500);
+      });
+
+      this.loading = false;
 
    }
 
@@ -156,3 +286,53 @@ window.app = app;
 
 
 </script>
+
+<style>
+   #btn-testing{
+      background: #2790F9;
+      color: white;
+   }
+   .tt02 {
+      position: relative;
+   }
+   .tt02 .badge-is_read {
+      z-index: 8;
+      position: absolute;
+      right: 0;
+      top: 4px;
+      min-width: 15px;
+      height: 15px;
+      line-height: 15px;
+      color: white;
+      font-weight: 700;
+      font-size: 10px;
+      background: #FF1E1E;
+      text-align: center;
+      border-radius: 25px;
+      padding: 0 4px;
+   }
+
+   .tt02 .text{
+      word-break: break-word;
+      padding-right: 30px;
+   }
+
+   /*  */
+
+   .beta-show-store{
+      margin-top: 15px;
+      padding: 0 15px;
+   }
+
+   .beta-button{
+      background: #2790F9;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      border: none;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      padding: 0 4px;
+   }
+
+</style>

@@ -436,3 +436,50 @@ function atlantis_load_conversations_id(){
 
    }
 }
+
+
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_account_store', 'atlantis_get_account_store' );
+add_action( 'wp_ajax_atlantis_get_account_store', 'atlantis_get_account_store' );
+
+function atlantis_get_account_store(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_account_store' ){
+      $user_id       = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+      $store_avatar  = func_atlantis_get_images( $user_id, 'store', true);
+      $store_name    = '';
+      global $wpdb;
+      $sql = "SELECT name FROM wp_watergo_store WHERE user_id = $user_id LIMIT 1";
+      $res = $wpdb->get_results( $sql);
+      $store_name = $res[0]->name;
+      wp_send_json_success(['message' => 'get_account_store_ok', 'data' => [
+         'avatar' => $store_avatar['url'],
+         'name'   => $store_name,
+      ]]);
+      wp_die();
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_get_account_user', 'atlantis_get_account_user' );
+add_action( 'wp_ajax_atlantis_get_account_user', 'atlantis_get_account_user' );
+
+function atlantis_get_account_user(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_account_user' ){
+
+      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+      $user_avatar  = func_atlantis_get_images( $user_id, 'user_avatar', true);
+      $user_name    = '';
+      global $wpdb;
+      $user_name = get_user_meta($user_id, 'first_name', true);
+      if($user_name == null || $user_name == ''){
+         $user       = get_user_by('id', $user_id);
+         $user_name  = $user->data->display_name;
+      }
+
+      wp_send_json_success(['message' => 'get_account_user_ok', 'data' => [
+         'avatar' => $user_avatar['url'],
+         'name'   => $user_name,
+      ]]);
+      wp_die();
+   }
+}

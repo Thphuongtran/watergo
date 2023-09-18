@@ -49,23 +49,11 @@ var app = Vue.createApp({
          back_refresh: false,
 
          languages: [
-           { id: 'en_US', name: 'English'},
-           { id: 'vi', name: 'Vietnamese'},
-         //   { id: 'ko_KR', name: 'Korean'},
+           { id: 'en_US', name: '<?php echo __('English', 'watergo'); ?>'},
+           { id: 'vi', name: '<?php echo __('Vietnamese', 'watergo'); ?>'},
+           { id: 'ko_KR', name: '<?php echo __('Korean', 'watergo'); ?>'},
          ],
          
-      }
-   },
-
-   watch: {
-      user_language: function(val){
-         if( val == 'vi' ){
-            this.languages[0].name = 'Tiếng Anh';
-            this.languages[1].name = 'Tiếng Việt';
-         }else{
-            this.languages[0].name = 'English';
-            this.languages[1].name = 'Vietnamese';
-         }
       }
    },
 
@@ -82,7 +70,6 @@ var app = Vue.createApp({
       },
 
       async changeLanguage(language){
-         this.loading = true;
          var form = new FormData();
          form.append('action', 'app_change_language_callback');
          form.append('language', language);
@@ -92,13 +79,12 @@ var app = Vue.createApp({
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'change_language_successfully'){
                this.user_language   = language;
-               // this.back_refresh    = true;
-                  // window.location.href = `?appt=X&data=refresh`;
-                  // alert(this.user_language)
                if( window.appBridge != undefined ){
                   window.appBridge.setLanguage(this.user_language);
-                  window.appBridge.close();
-                  // window.appBridge.refresh();
+                  window.appBridge.refresh();
+                  // window.appBridge.close();
+               }else{
+                  window.location.reload();
                }
             }
          }
@@ -107,11 +93,7 @@ var app = Vue.createApp({
       },
 
       goBack(){  
-         if( this.back_refresh == false ){
-            window.location.href = `?appt=X`;
-         }else{
-            window.location.href = `?appt=X&data=change_language_update`;
-         }
+         window.location.href = `?appt=X`;
       }
    },
 

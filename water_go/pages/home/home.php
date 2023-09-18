@@ -175,7 +175,7 @@
 
                      <div class='list-scroll-horizontal'>
                         <div 
-                           v-for='(productGroup, productGroupIndex) in splitArray(productRecommend, 2)' :key='productGroupIndex'
+                           v-for='(productGroup, productGroupIndex) in splitArray2(productRecommend, 2)' :key='productGroupIndex'
                            class='product-container'
                         >
                            <div v-for="(product, index) in productGroup" :key="index" @click="gotoProductDetail(product.id)" class='product-block'>
@@ -292,11 +292,21 @@ var app = Vue.createApp({
 
       // 
       splitArray(arr, size) {
-         const result = []
-         for (let i = 0; i < arr.length; i += size) {
-            result.push(arr.slice(i, i + size))
+         var _arr = arr.slice(0, 10);
+         const result = [];
+         for (let i = 0; i < _arr.length; i += size) {
+            result.push(_arr.slice(i, i + size))
          }
-         return result
+         return result;
+      },
+
+      splitArray2(arr, size) {
+         var _arr = arr.slice(10, arr.length);
+         const result = []
+         for (let i = 0; i < _arr.length; i += size) {
+            result.push(_arr.slice(i, i + size))
+         }
+         return result;
       },
 
       // CHANGE LANGUAGE
@@ -379,7 +389,6 @@ var app = Vue.createApp({
          if( window.appBridge != undefined ){
             await window.appBridge.getLocation().then( (data) => {
                if (Object.keys(data).length === 0) {
-                  // alert("Error-1 :Không thể truy cập vị trí");
                }else{
                   let lat = data.lat;
                   let lng = data.lng;
@@ -434,6 +443,7 @@ var app = Vue.createApp({
        * @access PRODUCT DISCOUNT
        */
       async get_product_discount( limit ){
+
          var form = new FormData();
          form.append('action', 'atlantis_load_product_recommend_discount');
          form.append('perPage', limit);
@@ -441,19 +451,11 @@ var app = Vue.createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
-
                res.data.forEach(item => {
                   if (! this.productRecommend.some(existingItem => existingItem.id === item.id)) {
                      this.productRecommend.push( item );
                   }
                });
-
-               if( this.productRecommend.length < 10 ){
-                  var _rest_of =  10 - this.productRecommend.length;
-                  await this.get_product_random(_rest_of);
-               }
-            }else{
-               this.get_product_random(10);
             }
          }
       },
@@ -463,6 +465,7 @@ var app = Vue.createApp({
        */
 
       async get_product_random( limit ){
+
          var form = new FormData();
          form.append('action', 'atlantis_load_product_recommend_random');
          form.append('perPage', limit);
@@ -507,25 +510,26 @@ var app = Vue.createApp({
       form.append('lat', this.latitude);
       form.append('lng', this.longitude);
       form.append('paged', 0);
+      form.append('perPage', 20);
       var r = await window.request(form);
-
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r));
          if( res.message == 'product_found' ){
-
             res.data.forEach(item => {
                if (! this.productRecommend.some(existingItem => existingItem.id === item.id)) {
                   this.productRecommend.push( item );
                }
             });
-
-            if(this.productRecommend.length < 10 ){
-               var res_of = 10 - this.productRecommend.length;
-               await this.get_product_discount( res_of );
-            }
-         }else{
-            await this.get_product_discount(10);
          }
+      }
+
+      var _get_rest_of_data_discount = 20 - this.productRecommend.length;
+      if( _get_rest_of_data_discount > 0 && _get_rest_of_data_discount <= 20 ){
+         await this.get_product_discount(_get_rest_of_data_discount);
+      }
+      var _get_rest_of_data_random   = 20 - this.productRecommend.length;
+      if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
+         await this.get_product_random(_get_rest_of_data_random);
       }
    
       (function($){

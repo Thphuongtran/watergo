@@ -1116,44 +1116,28 @@ async function get_current_user_by_network(){
 
 /**
  * @access UPDATE
- * @param [ user_id + store_id + product_id ] for chat messenger || conversation for chat-index page
+ * @param [ from_user + to_user + product_id ] for chat messenger || conversation for chat-index page
  */
 function gotoChatMessenger( args ){
 
    if( args != undefined || args != null ){
       var product_id          = args.product_id != undefined ? parseInt(args.product_id) : null;
-      var store_id            = args.store_id != undefined ? parseInt(args.store_id) : null;
-      var conversation_id     = args.conversation_id != undefined ? parseInt(args.conversation_id) : null;
-      var user_id             = args.user_id != undefined ? parseInt(args.user_id) : null;
-      // USER | STORE
-      var host_chat           = args.host_chat != undefined ? String(args.host_chat) : null;
+      var from_user           = args.from_user != undefined ? parseInt(args.from_user) : null;
+      var to_user             = args.to_user != undefined ? parseInt(args.to_user) : null;
+      var document_id         = args.document_id != undefined ? parseInt(args.document_id) : null;
+      
+      // chat_to_user | chat_to_store
+      var where_app = args.where_app != undefined ? String( args.where_app ) : null;
 
       var url =  window.watergo_domain + 'chat/?chat_page=chat-messenger';
 
-      if( conversation_id != null ){
-         url += '&conversation_id=' + conversation_id;
-      }
+      if( product_id != null ){url += '&product_id=' + product_id;}
+      if( from_user != null ){ url += '&from_user=' + from_user; }
+      if( to_user != null ){ url += '&to_user=' + to_user; }
+      if( document_id != null ){ url += '&document_id=' + document_id; }
+      if( where_app != null ){ url += '&where_app=' + where_app; }
 
-      if( store_id != null ){
-         url += '&store_id=' + store_id;
-      }
-
-      if( product_id != null ){
-         url += '&product_id=' + product_id;
-      }
-
-      if( user_id != null ){
-         url += '&user_id=' + user_id;
-      }
-
-      if( host_chat != null ){
-         url += '&host_chat=' + host_chat;
-      }
-
-      window.location.href = url + '&appt=N';
-      
-   }else{
-      window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&appt=N';
+      window.location.href = url + '&appt=N';   
    }
 }
 

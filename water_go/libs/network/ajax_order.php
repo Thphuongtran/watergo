@@ -77,21 +77,15 @@ function getNextDay($arr) {
    return $nextDay;
 }
 
-
 function func_atlantis_get_user_id_from_store_id( $store_id ){
+   if( $store_id == null || $store_id == 0 ) return 0;
    global $wpdb;
-   $sql_get_user_id_from_store_id = "SELECT wp_users.ID as user_id
-      FROM wp_users 
-      LEFT JOIN wp_watergo_store
-      ON wp_watergo_store.user_id = wp_users.ID
-      WHERE wp_watergo_store.id = $store_id LIMIT 1
-   ";
-   $get_user_id_from_store_id = $wpdb->get_results($sql_get_user_id_from_store_id);
-   if( $get_user_id_from_store_id[0]->user_id == null || $get_user_id_from_store_id[0]->user_id == 0 ){
+   $sql = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id AND store_hidden != 1 ";
+   $res = $wpdb->get_results($sql);
+   if( $res[0]->user_id == "" || $res[0]->user_id == null || $res[0]->user_id == 0){
       return 0;
-   }else{
-      return $get_user_id_from_store_id[0]->user_id;
    }
+   return $res[0]->user_id;
 }
 
 /**
