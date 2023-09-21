@@ -21,8 +21,9 @@
       <p>
          <button @click='btn_verify_email_and_sendcode' class='btn-text' ><?php echo __('Verify your email', 'watergo'); ?>'</button>
       </p>
+
       <p v-if='isCodeSend' class='t-second-12'>
-         <?php echo __('We have sent a code to your email.', 'watetgo'); ?> <button @click='btn_verify_email_and_sendcode' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
+         <?php echo __('We have sent a code to your email.', 'watergo'); ?> <button @click='btn_verify_email_and_sendcode' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
       </p>
 
       <div v-if='isCodeSend' class='box-code-verify'>

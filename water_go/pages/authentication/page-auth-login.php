@@ -70,7 +70,7 @@ $login_url_par = http_build_query($get);
          <div class='heading-01 t-center'><?php echo __('Log In', 'watergo'); ?></div>
            
          <div class='form-group'>
-            <span>Email</span>
+            <span><?php echo __('Email', 'watergo'); ?></span>
             <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
          </div>
 
@@ -85,12 +85,23 @@ $login_url_par = http_build_query($get);
          
          <p class='t-red mt10 mb10'>{{ res_text_sendcode }}</p>
 
-         <div class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
+                
+         
+
+         <div v-if='get_locate != "ko_KR"' class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
                <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?> </span>
             </label>
             <button @click='gotoPageUserTermConditions' class='link-term-condition t-primary'><?php echo __('Terms and Conditions', 'watergo'); ?></button>
+         </div>
+
+         <div v-if='get_locate == "ko_KR"' class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
+            <label class='justify-center'>
+               <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
+               <span class='text text-nowrap'>서비스 이용약관</span>
+            </label>
+            <button @click='gotoPageUserTermConditions' class='link-term-condition t-primary'>에 모두 동의합니다</button>
          </div>
 
          <div class='form-group'>
@@ -101,7 +112,7 @@ $login_url_par = http_build_query($get);
 
          <p class='t-second t-center mt25'><?php echo __('Or log in with', 'watergo'); ?></p>
 
-         <div class='form-group mt20'>
+         <div class='form-group mt20' :class='{ version_korean: get_locate == "ko_KR"}'>
             <button @click='login_social_apple' class='btn-icon btn-social'><img src='<?php echo THEME_URI . '/assets/images/apple-logo.png' ?>'><span class='text'><?php echo __('Log in with Apple', 'watergo'); ?></span></button>
             <button @click='login_social_google' class='btn-icon btn-social'><img src='<?php echo THEME_URI . '/assets/images/gg-logo.png' ?>'><span class='text'><?php echo __('Log in with Google', 'watergo'); ?></span></button>
             <button @click='login_social_zalo' class='btn-icon btn-social'><img src='<?php echo THEME_URI . '/assets/images/zalo-logo.png' ?>'><span class='text'><?php echo __('Log in with Zalo', 'watergo'); ?></span></button>
@@ -132,7 +143,7 @@ createApp({
          languages: [
            { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
            { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
-         //   { id: 'ko_KR', name: 'Korean'},
+           { id: 'ko_KR', name: '<?php echo __("Korean", 'watergo'); ?>'},
          ],
          selectedLanguage: {},
          currentLocale: '',
@@ -288,3 +299,10 @@ createApp({
 }).mount('#authentication');
 
 </script>
+<style>
+   .version_korean .btn-social .text{
+      min-width: 110px;
+      width: auto;
+      padding-left: 15px;
+   }
+</style>

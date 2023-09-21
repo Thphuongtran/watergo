@@ -579,12 +579,16 @@ var app = Vue.createApp({
 
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
-      goBack(){window.goBack(); }
+      goBack(){window.goBack(); },
+      
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
    },
 
    async created(){
 
       this.loading = true;
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+
       this.currentYear = this.currentDate.getFullYear();
       // await this.get_messages_count();
       var year = this.currentDate.getFullYear();

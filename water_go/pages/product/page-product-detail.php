@@ -159,6 +159,7 @@
          <button @click='gotoPageOrder' class='btn-primary' :class='check_can_order == false ? "disabled" : "" '>
             <?php 
                if( get_locale() == 'vi' ){ echo 'Đặt hàng';
+               }else if( get_locale() == 'ko_KR' ){ echo '주문';
                }else{ echo 'Order'; }
             ?>
          </button>
@@ -206,7 +207,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 // import { getFirestore, collection, query, where, orderBy, addDoc, getDocs, limit, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
-import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 
 
 const firebaseConfig = {
@@ -481,47 +482,18 @@ var app = Vue.createApp({
       },
 
       async chat_to_store(){ 
-         
          var form = new FormData();
-         form.append('action', 'atlantis_get_user_id_from_store_id');
-         form.append('store_id', this.store.id);
+         form.append('action', 'atlantis_create_or_get_conversation');
+         form.append('to_user', this.store.user_id);
+         form.append('pin_product', this.product.id);
          var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'get_conversation_ok' ){
+               var conversation_id   = res.data;
 
-         if( r.message == 'user_found' ){
-
-            var   res = JSON.parse( JSON.stringify( r));
-            var   to_user = res.data;
-            var   messenger_id   = null;
-            const messengerRef   = collection(this.database, "messengers");
-            const queryMessenger = query(
-               messengerRef,
-               where("to_user", '==', parseInt(to_user)),
-               where("from_user", '==', <?php echo $user_id; ?>),
-               where("to_user_hidden", '==', false)
-            );
-            const querySnapshot = await getDocs(queryMessenger);
-            if (!querySnapshot.empty) {
-               messenger_id = querySnapshot.docs[0].id;
-            } else {
-               const data = {
-                  from_user: <?php echo $user_id; ?>,
-                  from_user_count: 0,
-                  to_user: parseInt(to_user),
-                  to_user_count: 0,
-                  to_user_hidden: false,
-                  pin_product: parseInt(this.product.id),
-                  time_created: serverTimestamp()
-               };
-               try {
-                  const newDocRef = await addDoc(messengerRef, data);
-                  messenger_id = newDocRef.id;
-               } catch (error) {
-                  // console.error("Error adding document: ", error);
-               }
+               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_store&appt=N';
             }
-
-            window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&messenger_id=' + messenger_id + '&where_app=chat_to_store&appt=N';
-
          }
       },
 
@@ -593,3 +565,10 @@ var app = Vue.createApp({
 window.app = app;
 
 </script>
+
+<style>
+   .list-tile .meta svg{
+      position: relative;
+      top: -2px;
+   }
+</style>

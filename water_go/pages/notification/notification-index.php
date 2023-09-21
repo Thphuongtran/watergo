@@ -111,7 +111,7 @@ createApp({
 
       title_compact( item ){
 
-         if( this.get_locale == 'en_US' || this.get_locale != 'vi'){
+         if( this.get_locale == 'en_US'){
             if( item.order_status == 'ordered' && item.send_to == 'store' ){
                return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
             }
@@ -133,6 +133,29 @@ createApp({
             if( item.order_status == 'cancel' && item.send_to == 'user' ){
                return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
             }
+         }
+
+         if( this.get_locale == 'ko_KR'){
+            if( item.order_status == 'ordered' && item.send_to == 'store' ){
+               return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
+            }
+            if( item.order_status == 'cancel' && item.send_to == 'store' ){
+               return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> was canceled`;
+            }
+
+            if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+               return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 확인되었습니다`;
+            }
+            if( item.order_status == 'delivering' && item.send_to == 'user' ){
+               return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 배송중입니다`;
+            }
+            if( item.order_status == 'completed' && item.send_to == 'user' ){
+               return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 배송완료되었습니다`;
+            }
+            if( item.order_status == 'cancel' && item.send_to == 'user' ){
+               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
+            }
+
          }
 
          if( this.get_locale == 'vi' ){
@@ -170,7 +193,6 @@ createApp({
          form.append('action', 'atlantis_notification_load_all');
          form.append('paged', paged);
          var r = await window.request(form);
-         console.log(r);
          
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));

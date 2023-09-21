@@ -3,14 +3,15 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.css', [], '3.55');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.66');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
    wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.55');
+   // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.64');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.66');
 
 }
 
@@ -95,12 +96,18 @@ function email_login_authenticate($user, $username, $password) {
 add_filter('authenticate', 'email_login_authenticate', 20, 3);
 
 // SETUP URL FROM JAVASCRIPT
-function loadDirectory() { ?>
+function loadDirectory() { 
+   $currency = ' đ';
+   if( get_locale() == 'ko_KR' ){
+      $currency = '동';
+   }
+   ?>
 <script type="text/javascript">
    var watergo_domain = '<?php echo get_bloginfo('url'); ?>/';
    var get_template_directory_uri = "<?php echo get_template_directory_uri(); ?>";
    var get_ajaxadmin = "<?php echo admin_url('admin-ajax.php'); ?>";
    var theme_uploads = "<?php echo THEME_UPLOADS; ?>";
+   var global_currency = "<?php echo $currency; ?>";
 </script> 
 <?php } 
 add_action('wp_head', 'loadDirectory');

@@ -1993,16 +1993,13 @@
 	}
 }
 
-
-.messenger-time{
+.message-time{
    text-align: center;
    color: #AEAEAE;
    font-size: 12px;
    font-weight: 400;
    padding: 25px 15px;
 }
-	
-	
 
 .list-messenger{
 	padding: 0 10px;
@@ -2015,8 +2012,11 @@
 		font-weight: 400;
 		font-size: 14px;
       margin-bottom: 25px;
-		display: flex;
-      margin-right: auto;
+
+      .message-wrapper{
+         display: flex;
+         margin-right: auto;
+      }
 
 		.gr-messenger{
 			width: auto;
@@ -2059,7 +2059,9 @@
 	}
 	
 	.is-host{
-		justify-content: flex-end;
+      .message-wrapper{
+		   justify-content: flex-end;
+      }
 		.avatar{
 			justify-content: flex-end;
          order: 2;

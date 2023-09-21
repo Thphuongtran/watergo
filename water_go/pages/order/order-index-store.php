@@ -18,7 +18,7 @@
                   <path d="M13.5947 9.30974C13.5947 9.69118 13.2855 10.0004 12.904 10.0004C12.5226 10.0004 12.2133 9.69118 12.2133 9.30974C12.2133 8.92829 12.5226 8.61906 12.904 8.61906C13.2855 8.61906 13.5947 8.92829 13.5947 9.30974Z" fill="#2790F9"/>
                   <path d="M16.7027 9.3235C16.7027 9.70494 16.3935 10.0142 16.012 10.0142C15.6306 10.0142 15.3214 9.70494 15.3214 9.3235C15.3214 8.94205 15.6306 8.63282 16.012 8.63282C16.3935 8.63282 16.7027 8.94205 16.7027 9.3235Z" fill="#2790F9"/>
                   </svg>
-                  <span v-if='message_count > 0' class='badge'>{{message_count}}</span>
+                  <span class='badge' :class="message_count > 0 ? 'enable' : '' " >{{ message_count }}</span>
                </div>
 
                <div @click='gotoNotificationIndex' class='btn-badge ml10'>
@@ -210,14 +210,21 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='btn_do_all_action' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
+            <button @click='btn_do_all_action' class='btn btn-primary'>
+               <?php 
+                  // SUBMIT BUTTON 
+                  if( get_locale() == 'vi'){ echo 'Gửi';
+                  }else if( get_locale() == 'ko_KR'){ echo '보내기';
+                  }else{ echo 'Submit'; }
+               ?>
+            </button>
          </div>
       </div>
    </div>
 
 
 </div>
-<script type='module'>
+<script>
 
 var app = Vue.createApp({
    data (){
@@ -253,7 +260,11 @@ var app = Vue.createApp({
          order_status_current: 'ordered',
          order_status_filter: [ 
             {
-               label: '<?php echo __("ordered", 'watergo'); ?>', value: 'ordered', active: true, 
+               label: `<?php 
+                  if(get_locale() == 'vi'){ echo 'Đơn Mới';
+                  }else if(get_locale() == 'ko_KR'){ echo 'Ordered'; 
+                  }else{ echo 'Ordered'; }
+               ?>`, value: 'ordered', active: true, 
                icon: `
                   <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="18" cy="18" r="17.75" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
@@ -266,7 +277,11 @@ var app = Vue.createApp({
                count: 0 
             },
             {
-               label: '<?php echo __("confirmed", 'watergo'); ?>', value: 'confirmed', active: false,
+               label: `<?php 
+                  if(get_locale() == 'vi'){ echo 'Cần Giao';
+                  }else if(get_locale() == 'ko_KR'){ echo 'Confirmed'; 
+                  }else{ echo 'Confirmed'; }
+               ?>`, value: 'confirmed', active: false,
                icon: `
                   <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="18.7234" cy="19.2766" r="18.4734" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
@@ -281,7 +296,11 @@ var app = Vue.createApp({
                count: 0 
             },
             {
-               label: '<?php echo __("delivering", 'watergo'); ?>', value: 'delivering', active: false, 
+               label: `<?php 
+                  if(get_locale() == 'vi'){ echo 'Đang Giao';
+                  }else if(get_locale() == 'ko_KR'){ echo 'Delivering'; 
+                  }else{ echo 'Delivering'; }
+               ?>`, value: 'delivering', active: false, 
                icon: `
                   <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="18.2553" cy="18.7446" r="18.0053" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
@@ -294,7 +313,11 @@ var app = Vue.createApp({
                count: 0 
             },
             {
-               label: '<?php echo __("complete", 'watergo'); ?>', value: 'complete', active: false, 
+               label: `<?php 
+                  if(get_locale() == 'vi'){ echo 'Đã Giao';
+                  }else if(get_locale() == 'ko_KR'){ echo 'Complete'; 
+                  }else{ echo 'Complete'; }
+               ?>`, value: 'complete', active: false, 
                icon: `
                   <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="18.5" cy="18.5" r="18.25" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
@@ -304,16 +327,11 @@ var app = Vue.createApp({
                count: 0 
             },
             {
-               label: `
-                  <?php 
-                     //echo __("cancel", 'watergo'); 
-                     if( get_locale() == 'vi'){
-                        echo 'Đã Huỷ';
-                     }else{
-                        echo 'cancel';
-                     }
-                  ?>
-               `, value: 'cancel', active: false,
+               label: `<?php 
+                  if(get_locale() == 'vi'){ echo 'Đã Huỷ';
+                  }else if(get_locale() == 'ko_KR'){ echo 'Cancel'; 
+                  }else{ echo 'Cancel'; }
+               ?>`, value: 'cancel', active: false,
                icon: `
                   <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="18" cy="18" r="17.75" fill="white" stroke="#7B7D83" stroke-width="0.5"/>
@@ -325,11 +343,16 @@ var app = Vue.createApp({
             }
          ],
 
+         // Reason for cancellation: 
+         // Misplaced product Đặt nhầm sản phẩm
+         // Change delivery information Thay đổi thông tin giao hàng
+         // Change delivery time Thay đổi thời gian giao hàng
+         // The store requested cancellation  Cửa hàng yêu cầu hủy
          reason_cancel: [
-            {label: 'Reason 1', active: false},
-            {label: 'Reason 2', active: false},
-            {label: 'Reason 3', active: false},
-            {label: 'Reason 4', active: false},
+            {label: '<?php echo __('Misplaced product', 'watergo');?>', active: false},
+            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('The store requested cancellation', 'watergo'); ?>', active: false},
             {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 
@@ -337,6 +360,8 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 
       common_price_after_discount_and_quantity_from_group_order(p){ return window.common_price_after_discount_and_quantity_from_group_order(p)},
       common_price_after_quantity_from_group_order(p){ return window.common_price_after_quantity_from_group_order(p)},
@@ -497,6 +522,7 @@ var app = Vue.createApp({
          }
          return window.print_type_order_text(order_type);
       },
+      
       order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
 
       count_total_price_in_order(order_id ){
@@ -548,25 +574,14 @@ var app = Vue.createApp({
          }
       },
 
-      async get_messages_count(){
-         var form_message_count = new FormData();
-         form_message_count.append('action', 'atlantis_count_messages');
-
-         var _atlantis_message = await window.request(form_message_count);
-         if( _atlantis_message != undefined ){
-            let res = JSON.parse( JSON.stringify( _atlantis_message));
-            if( res.message == 'message_count_found' ){
-               this.message_count = parseInt(res.data);
-            }
-         }
-
-      },
-
       async get_count_total_order(){
          // this.order_status_filter.some(item => item.count = 0);
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_status');
          var r = await window.request(form);
+         
+         console.log(r);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'count_order_by_status' ){
@@ -661,6 +676,8 @@ var app = Vue.createApp({
       
       this.loading = true;
 
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+      
       await this.get_count_total_order();
       await this.get_order_store( this.order_status_current, 0 );
       await this.get_notification_count();

@@ -1,3 +1,13 @@
+<?php 
+   $get_locale = get_locale();
+
+   $order_text = 'Order';
+   if( $get_locale == 'vi'){
+      $order_text = 'Đơn hàng';
+   }else if($get_locale == 'ko_KR'){
+      $order_text = '주문번호';
+   }
+?>
 <div id='app'>
 
    <div v-show='loading == true && order != null && order.order_hidden == 0'>
@@ -19,7 +29,7 @@
                   </svg>
                </button>
                
-               <p v-if='order_number != 0' class='leading-title'>#{{ order_number }}</p>
+               <p v-if='order_number != 0' class='leading-title'><?php echo $order_text; ?> #{{ order_number }}</p>
             </div>
             <div class='action'>
                <span class='badge-status'>{{ get_status_activity(order_status) }}</span>
@@ -154,7 +164,14 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
+            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>
+               <?php 
+                  // SUBMIT BUTTON 
+                  if( get_locale() == 'vi'){ echo 'Gửi';
+                  }else if( get_locale() == 'ko_KR'){ echo '보내기';
+                  }else{ echo 'Submit'; }
+               ?>
+            </button>
          </div>
       </div>
    </div>
@@ -385,7 +402,13 @@ createApp({
             if( status == 'delivering') return 'Đang giao';
             if( status == 'complete') return 'Đã nhận';
             if( status == 'cancel') return 'Đã hủy ';
-         }else{
+         }else if( this.get_locale == 'ko_KR' ) {
+            if( status == 'ordered') return '주문 완료';
+            if( status == 'confirmed') return '준비중';
+            if( status == 'delivering') return '배송중';
+            if( status == 'complete') return '완료';
+            if( status == 'cancel') return 'Cancel';
+         }else {
             if( status == 'ordered') return 'Pending';
             if( status == 'confirmed') return 'Prepare';
             if( status == 'delivering') return 'Delivering';
@@ -466,43 +489,48 @@ createApp({
          var _delivery_type = '';
 
          if( this.order.order_delivery_type == 'once_immediately' ){
-            _delivery_type = 'once';
+            return '<?php echo __("Delivery once", 'watergo'); ?>';
          } else if( this.order.order_delivery_type == 'once_date_time' ){
-            _delivery_type = 'once';
+            return '<?php echo __("Delivery once", 'watergo'); ?>';
          } else if( this.order.order_delivery_type == 'weekly' ){
-            _delivery_type = 'weekly';
+            return '<?php echo __("Delivery weekly", 'watergo'); ?>';
          } else if( this.order.order_delivery_type == 'monthly' ){
-            _delivery_type = 'monthly';
+            return '<?php echo __("Delivery monthly", 'watergo'); ?>';
          }
 
-         if(this.get_locale == 'vi'){
-            if( this.order.order_delivery_type == 'once_immediately' ){
-               return 'Giao một lần';
-            } else if( this.order.order_delivery_type == 'once_date_time' ){
-               return 'Giao một lần';
-            } else if( this.order.order_delivery_type == 'weekly' ){
-               return 'Giao hàng tuần';
-            } else if( this.order.order_delivery_type == 'monthly' ){
-               return 'Giao hàng tháng';
-            }
-         }else{
-            return 'Delivery ' + _delivery_type;
-         }
+         
+         // if( this.order.order_delivery_type == 'once_immediately' ){
+         //    _delivery_type = 'once';
+         // } else if( this.order.order_delivery_type == 'once_date_time' ){
+         //    _delivery_type = 'once';
+         // } else if( this.order.order_delivery_type == 'weekly' ){
+         //    _delivery_type = 'weekly';
+         // } else if( this.order.order_delivery_type == 'monthly' ){
+         //    _delivery_type = 'monthly';
+         // }
+
+         // if(this.get_locale == 'vi'){
+         //    if( this.order.order_delivery_type == 'once_immediately' ){
+         //       return 'Giao một lần';
+         //    } else if( this.order.order_delivery_type == 'once_date_time' ){
+         //       return 'Giao một lần';
+         //    } else if( this.order.order_delivery_type == 'weekly' ){
+         //       return 'Giao hàng tuần';
+         //    } else if( this.order.order_delivery_type == 'monthly' ){
+         //       return 'Giao hàng tháng';
+         //    }
+         // }else{
+         //    return 'Delivery ' + _delivery_type;
+         // }
          
 
       },
 
       get_payment_method_activity(){
          if( this.order != null && this.order.order_payment_method == 'cash' ){
-            if(this.get_locale == 'vi'){
-               return 'Tiền mặt';
-            }
-            return 'By Cash';
+            return '<?php echo __('By Cash', 'watergo'); ?>';
          }else{
-            if(this.get_locale == 'vi'){
-               return 'Tiền mặt';
-            }
-            return 'By Cash';
+            return '<?php echo __('By Cash', 'watergo'); ?>';
          }
       },
 

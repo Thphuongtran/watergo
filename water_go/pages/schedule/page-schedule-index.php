@@ -26,7 +26,7 @@
                      <path d="M13.5947 9.30974C13.5947 9.69118 13.2855 10.0004 12.904 10.0004C12.5226 10.0004 12.2133 9.69118 12.2133 9.30974C12.2133 8.92829 12.5226 8.61906 12.904 8.61906C13.2855 8.61906 13.5947 8.92829 13.5947 9.30974Z" fill="#2790F9"/>
                      <path d="M16.7027 9.3235C16.7027 9.70494 16.3935 10.0142 16.012 10.0142C15.6306 10.0142 15.3214 9.70494 15.3214 9.3235C15.3214 8.94205 15.6306 8.63282 16.012 8.63282C16.3935 8.63282 16.7027 8.94205 16.7027 9.3235Z" fill="#2790F9"/>
                      </svg>
-                     <span v-if='message_count > 0' class='badge'>{{message_count}}</span>
+                     <span class='badge' :class="message_count > 0 ? 'enable' : '' " >{{ message_count }}</span>
                   </div>
 
                   <div @click='gotoNotificationIndex' class='btn-badge ml10'>
@@ -142,6 +142,8 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 
       get_title_weekly_compact( title ){
          if( this.get_locale == 'vi' ){
@@ -437,7 +439,8 @@ var app = Vue.createApp({
    async created(){
 
       this.loading = true;
-      // await this.get_messages_count();
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+      
       await this.get_notification_count();
       var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
       await this.schedule_load_product('all', _currentDate, 0);

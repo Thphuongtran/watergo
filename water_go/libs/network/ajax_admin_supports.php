@@ -134,20 +134,28 @@ function atlantis_add_admin_support(){
       
       $question   = isset($_POST['question'])   ? $_POST['question'] : '';
       $answer     = isset($_POST['answer'])     ? $_POST['answer'] : '';
+      $select_app = isset($_POST['select_app'])     ? $_POST['select_app'] : '';
+
+      $select_app_allow = ['user_app', 'business_app'];
+
+      if( $select_app == '' || !in_array( $select_app, $select_app_allow)){
+         wp_send_json_error(['message' => 'add_admin_supports_error']);
+         wp_die();
+      }
 
       global $wpdb;
       $wpdb->insert('wp_watergo_supports', [
-         'question' => $question, 
-         'answer' => $answer, 
+         'question'     => $question, 
+         'answer'       => $answer, 
          'time_created' => time(),
-         'user_id' => $user_id,
-         'admin_id' => $user_id,
-         'is_read' => 1
+         'user_id'      => $user_id,
+         'admin_id'     => $user_id,
+         'is_read'      => 1,
+         'select_app'   => $select_app
       ]);
 
       wp_send_json_success(['message' => 'add_admin_supports_ok']);
       wp_die();
-
 
    }
 }

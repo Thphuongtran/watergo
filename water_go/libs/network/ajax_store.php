@@ -247,6 +247,8 @@ function atlantis_store_profile_edit(){
       
       $imageUpload   = isset($_FILES['imageUpload']) ? $_FILES['imageUpload'] : null;
 
+      $change_password_no_login_back = isset($_POST['change_password_no_login_back']) ? $_POST['change_password_no_login_back'] : 1;
+
       if( $id == 0 ){
          wp_send_json_error(['message' => 'store_edit_error' ]);
          wp_die();
@@ -256,7 +258,6 @@ function atlantis_store_profile_edit(){
          wp_send_json_error(['message' => 'store_edit_error' ]);
          wp_die();
       }
-
 
       $phone = str_replace(array('-', '.', ' '), '', $phone);
       $is_phone =  preg_match( '/^(032|033|034|035|036|037|038|039|086|096|097|098|081|082|083|084|085|088|091|094|056|058|092|070|076|077|078|079|089|090|093|099|059)+([0-9]{7})$/', $phone);
@@ -317,20 +318,25 @@ function atlantis_store_profile_edit(){
 
       // CHANGE PASSWORD
       if( $password != '' ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         wp_set_password($password, $user_id);
+         global $wpdb;
+         $get_user_id = "SELECT user_id FROM wp_watergo_store WHERE id = $id ";
+         $res_user_id = $wpdb->get_results($get_user_id);
+         // $user = get_user_by('id', $res_user_id[0]->user_id );
+         wp_set_password($password, $res_user_id[0]->user_id );
          $credentials = array(
             'user_login'    => $user->user_login,
             'user_password' => $password,
             'remember'      => true,
          );
-         wp_signon($credentials);
+         if($change_password_no_login_back == 1){
+            wp_signon($credentials);
+         }
       }
 
       wp_send_json_success([ 'message' => 'store_profile_update_ok' ]);
-      wp_die();   
-   
+      wp_die();
+
+
    }
 }
 

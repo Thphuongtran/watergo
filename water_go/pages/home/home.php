@@ -481,6 +481,9 @@ var app = Vue.createApp({
             }
          }
       },
+
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
+
    },
 
 
@@ -495,6 +498,8 @@ var app = Vue.createApp({
 
       this.loading = true;
       await this.getLocale();
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+
       this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
 
       window.check_cart_is_exists();

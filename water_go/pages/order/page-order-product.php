@@ -126,7 +126,7 @@
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("monthly")' :checked='delivery_type.monthly' id='select_type03' type="radio" class='form-input'>
-               <label for='select_type03'><?php echo __('Delivery mothly', 'watergo'); ?></label>
+               <label for='select_type03'><?php echo __('Delivery monthly', 'watergo'); ?></label>
             </div>
 
             <div v-show='delivery_type.monthly == true' class='deliverySelect_monthly'>
@@ -230,7 +230,15 @@ var app = Vue.createApp({
             monthly:    [],
          },
 
-         dayOfWeeks: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ],
+         dayOfWeeks: [ 
+            'Monday', 
+            'Tuesday', 
+            'Wednesday', 
+            'Thursday', 
+            'Friday', 
+            'Saturday', 
+            'Sunday'
+         ],
 
          delivery_address_primary: null,
          carts: [],
@@ -491,6 +499,13 @@ var app = Vue.createApp({
                      dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
                      dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
                      dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                  },
+                  'ko_KR': {
+                     monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                     monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                     dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                     dayNamesShort: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                     dayNamesMin: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
                   }
                };
 
@@ -1103,7 +1118,7 @@ var app = Vue.createApp({
          var _final_price = null;
 
          if( gr_price.price != gr_price.price_discount){
-            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ'
+            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ';
          }
 
          return {

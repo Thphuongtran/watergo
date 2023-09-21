@@ -1536,7 +1536,7 @@ function atlantis_count_total_order_by_status(){
             SELECT 'cancel' AS order_status
          ) AS statuses
          LEFT JOIN wp_watergo_order AS orders 
-         ON statuses.order_status = orders.order_status AND orders.order_store_id = 13 AND orders.order_hidden != 1
+         ON statuses.order_status = orders.order_status AND orders.order_store_id = $store_id AND orders.order_hidden != 1
          GROUP BY statuses.order_status
       ";
 

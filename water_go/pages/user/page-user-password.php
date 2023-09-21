@@ -1,3 +1,36 @@
+<?php 
+   $_change_password          = 'Change Password';
+   $_current_password         = 'Current Password';
+   $_enter_current_password   = 'Enter current password';
+   $_new_password             = 'New Password';
+   $_enter_new_password       = 'Enter new password';
+   $_confirm_new_password     = 'Confirm New Password';
+   $_password_changed         = 'Password Changed';
+   $_password_changed_success = 'Your password has been changed successfully';
+
+   if( get_locale() == 'vi' ){
+      $_change_password = 'Đổi mật khẩu';
+      $_current_password = 'Mật khẩu hiện tại';
+      $_enter_current_password = 'Nhập mật khẩu hiện tại';
+      $_new_password = 'Mật khẩu mới';
+      $_enter_new_password = 'Nhập mật khẩu mới';
+      $_confirm_new_password = 'Xác nhận mật khẩu mới';
+      $_password_changed = 'Mật khẩu đã được thay đổi';
+      $_password_changed_success = 'Mật khẩu của bạn đã được thay đổi thành công';
+   }
+
+   if( get_locale() == 'ko_KR' ){
+      $_change_password = '비밀번호 변경';
+      $_current_password = '현재 비밀번호';
+      $_enter_current_password = '현재 비밀번호를 입력하세요';
+      $_new_password = '새로운 비밀번호';
+      $_enter_new_password = '새로운 비밀번호를 입력하세요';
+      $_confirm_new_password = '새로운 비밀번호 확인';
+      $_password_changed = '비밀번호가 변경되었습니다';
+      $_password_changed_success = '비밀번호 변경이 완료되었습니다';
+   }
+?>
+
 <style type="text/css">
    .form-group input{border: none; outline: 0}
 </style>
@@ -13,7 +46,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'><?php echo __('Change Password', 'watergo'); ?></p>
+               <p class='leading-title'><?php echo $_change_password; ?></p>
             </div>
          </div>
       </div>
@@ -24,16 +57,16 @@
                
                <div class='form-wrapper' style="overflow-y: scroll;padding-bottom: 90px;">
                   <div class='form-group style01'>
-                     <span><?php echo __('Current Password', 'watergo'); ?></span>
-                     <input class='input-style02' v-model='current_password' type="password" placeholder='<?php echo __('Enter current password', 'watergo'); ?>'>
+                     <span><?php echo $_current_password; ?></span>
+                     <input class='input-style02' v-model='current_password' type="password" placeholder='<?php echo $_enter_current_password; ?>'>
                   </div>
                   <div class='form-group style01'>
-                     <span><?php echo __('New Password', 'watergo'); ?></span>
-                     <input v-model='new_password' type="password" placeholder='<?php echo __('Enter new password', 'watergo'); ?>'>
+                     <span><?php echo $_new_password; ?></span>
+                     <input v-model='new_password' type="password" placeholder='<?php echo $_enter_new_password; ?>'>
                   </div>
                   <div class='form-group style01'>
-                     <span><?php echo __('Confirm New Password', 'watergo'); ?></span>
-                     <input v-model='confirm_password' type="password" placeholder='<?php echo __('Enter new password', 'watergo'); ?>'>
+                     <span><?php echo $_confirm_new_password; ?></span>
+                     <input v-model='confirm_password' type="password" placeholder='<?php echo $_enter_new_password; ?>'>
                   </div>
                </div>
                <p class='t-red'>{{ t_res }}</p>
@@ -56,8 +89,8 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3><?php echo __('Password Changed', 'watergo'); ?> </h3>
-         <p><?php echo __('Your password has been changed successfully', 'watergo'); ?></p>
+         <h3><?php echo $_password_changed; ?> </h3>
+         <p><?php echo $_password_changed_success; ?></p>
       </div>
 
       <div class='banner-footer'>

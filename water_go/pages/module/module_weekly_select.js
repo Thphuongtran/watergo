@@ -76,7 +76,14 @@ var components_weekly_select = {
             if( title == 'Friday' ) return 'Thứ Sáu';
             if( title == 'Saturday' ) return 'Thứ Bảy';
             if( title == 'Sunday' ) return 'Chủ Nhật';
-
+         }else if( this.$root.get_locale == 'ko_KR' ){
+            if( title == 'Monday' ) return '월요일';
+            if( title == 'Tuesday' ) return '화요일';
+            if( title == 'Wednesday' ) return '수요일';
+            if( title == 'Thursday' ) return '목요일';
+            if( title == 'Friday' ) return '금요일';
+            if( title == 'Saturday' ) return '토요일';
+            if( title == 'Sunday' ) return '일요일';
          }else{
             return title;
          }
@@ -84,12 +91,12 @@ var components_weekly_select = {
 
       title_compact( title ){
          if( this.$root.get_locale == 'vi' ){
-            if( title == 'Select date'){
-               return 'Chọn ngày';
-            }
-            if( title == 'Select time'){
-               return 'Chọn thời gian';
-            }
+            if( title == 'Select date') return 'Chọn ngày';
+            if( title == 'Select time') return 'Chọn thời gian';
+         }
+         else if( this.$root.get_locale == 'ko_KR' ){
+            if( title == 'Select date') return '날짜 선택';
+            if( title == 'Select time') return '시간 선택';
          }
          return title;
       },

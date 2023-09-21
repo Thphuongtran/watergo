@@ -441,7 +441,6 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_count_store_pagination');
          form.append('limit', 10);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined){
             var res = JSON.parse( JSON.stringify( r) );
             if( res.message == 'store_pagination' ){
@@ -612,6 +611,7 @@ var app = Vue.createApp({
             }
 
             var r = await window.request(form);
+            console.log(r);
             
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -648,7 +648,6 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_store_profile');
          form.append('store_id', store_id);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'get_store_ok'){
@@ -787,7 +786,6 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_all_product_by_store');
          form.append('store_id', store_id);
          var r = await window.request(form);
-         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'product_found' ){

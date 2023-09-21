@@ -185,6 +185,7 @@ var app = Vue.createApp({
    },
 
    methods: {
+      
       gotoChat(){ window.gotoChat(); },
       gotoCart(){ window.gotoCart(); },
       count_product_in_cart(){return window.count_product_in_cart(); },
@@ -207,17 +208,7 @@ var app = Vue.createApp({
          this.reviews.forEach( item => item.popup_active = false);
          window.gotoEditReview(review_id);},
 
-      async get_messages_count(){
-         var form_message_count = new FormData();
-         form_message_count.append('action', 'atlantis_count_messages');
-         var _atlantis_message = await window.request(form_message_count);
-         if( _atlantis_message != undefined ){
-            let res = JSON.parse( JSON.stringify( _atlantis_message));
-            if( res.message == 'message_count_found' ){
-               this.message_count = parseInt(res.data);
-            }
-         }
-      },
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 
       async handleScroll() {
          const windowTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -311,7 +302,9 @@ var app = Vue.createApp({
 
       gotoDeliveryAddress(){ window.gotoDeliveryAddress();},
       gotoPageUserSettings(){ window.gotoPageUserSettings();},
-      gotoSupport(){ window.gotoSupport();},
+      gotoSupport(){ 
+         window.location.href = window.watergo_domain + 'support/?support_page=support-index&select_app=user_app&appt=N';
+      },
       gotoPageUserEditProfile(){ window.gotoPageUserEditProfile(); },
 
       count_product_in_cart(){ this.cart_count = window.count_product_in_cart(); },
@@ -319,7 +312,7 @@ var app = Vue.createApp({
 
    async created(){
       this.loading = true;
-      await this.get_messages_count();
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
       this.count_product_in_cart();
       await this.initReview(this.paged);
       await this.initUser();

@@ -301,24 +301,43 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 
 
 new PostTypeBuiler( [
-		'name' => 'Project',
-		'slug' => 'project',
-		'support'	=> [],
-		'rewrite'	=> [],
-		// THIS IS OVERRIDE ARGS FOR SOME REASON
-		'args'		=> [],
+   'name' => 'Admin Support Admin',
+   'slug' => 'admin_support_admin',
+   'support'	=> [],
+   'rewrite'	=> [],
+   // THIS IS OVERRIDE ARGS FOR SOME REASON
+   'args'		=> [],
 
-		// ADD CATEGORY
-		'taxonomy'	=> [
-			[
-				'name'	=> 'Category Project',
-				'slug'	=> 'category-project',
-			],
-		],
+   // ADD CATEGORY
+   // 'taxonomy'	=> [
+   // 	[
+   // 		'name'	=> 'Category Project',
+   // 		'slug'	=> 'category-project',
+   // 	],
+   // ],
 
-		// ADD TAGS
-		'tags'	=> [
-			'name'	=> 'Tag Project'
-		]
+   // ADD TAGS
+   // 'tags'	=> ['name'	=> 'Tag Project']
 
-	]);
+])
+
+new PostTypeBuiler( [
+   'name' => 'Admin Support User',
+   'slug' => 'admin_support_user',
+   'support'	=> [],
+   'rewrite'	=> [],
+   // THIS IS OVERRIDE ARGS FOR SOME REASON
+   'args'		=> [],
+
+   // ADD CATEGORY
+   // 'taxonomy'	=> [
+   // 	[
+   // 		'name'	=> 'Category Project',
+   // 		'slug'	=> 'category-project',
+   // 	],
+   // ],
+
+   // ADD TAGS
+   // 'tags'	=> ['name'	=> 'Tag Project']
+
+]);

@@ -1,13 +1,13 @@
 <?php
 
-add_action( 'wp_ajax_nopriv_atlantis_load_conversation', 'atlantis_load_conversation' );
-add_action( 'wp_ajax_atlantis_load_conversation', 'atlantis_load_conversation' );
+add_action( 'wp_ajax_nopriv_atlantis_load_all_conversation', 'atlantis_load_all_conversation' );
+add_action( 'wp_ajax_atlantis_load_all_conversation', 'atlantis_load_all_conversation' );
 
 add_action( 'wp_ajax_nopriv_atlantis_get_messages', 'atlantis_get_messages' );
 add_action( 'wp_ajax_atlantis_get_messages', 'atlantis_get_messages' );
 
-add_action( 'wp_ajax_nopriv_atlantis_send_messenger', 'atlantis_send_messenger' );
-add_action( 'wp_ajax_atlantis_send_messenger', 'atlantis_send_messenger' );
+add_action( 'wp_ajax_nopriv_atlantis_send_message', 'atlantis_send_message' );
+add_action( 'wp_ajax_atlantis_send_message', 'atlantis_send_message' );
 
 add_action( 'wp_ajax_nopriv_atlantis_get_newest_messages', 'atlantis_get_newest_messages' );
 add_action( 'wp_ajax_atlantis_get_newest_messages', 'atlantis_get_newest_messages' );
@@ -21,8 +21,8 @@ add_action( 'wp_ajax_atlantis_count_messages', 'atlantis_count_messages' );
 add_action( 'wp_ajax_nopriv_atlantis_get_product_newest_and_store', 'atlantis_get_product_newest_and_store' );
 add_action( 'wp_ajax_atlantis_get_product_newest_and_store', 'atlantis_get_product_newest_and_store' );
 
-add_action( 'wp_ajax_nopriv_atlantis_load_conversations_id', 'atlantis_load_conversations_id' );
-add_action( 'wp_ajax_atlantis_load_conversations_id', 'atlantis_load_conversations_id' );
+add_action( 'wp_ajax_nopriv_atlantis_load_all_conversations_id', 'atlantis_load_all_conversations_id' );
+add_action( 'wp_ajax_atlantis_load_all_conversations_id', 'atlantis_load_all_conversations_id' );
 
 add_action( 'wp_ajax_nopriv_atlantis_messenger_test', 'atlantis_messenger_test' );
 add_action( 'wp_ajax_atlantis_messenger_test', 'atlantis_messenger_test' );
@@ -66,99 +66,125 @@ function atlantis_ping_user_to_get_last_message(){
    }
 }
 
-function atlantis_load_conversation(){
+function atlantis_load_all_conversation(){
 
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_conversation' ){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_all_conversation' ){
 
-      $host_chat = '';
-      $sql_conversation = "SELECT conversation_id, user_id, store_id FROM wp_watergo_conversations ";
+      $placeholders = isset($_POST['placeholders']) ? $_POST['placeholders'] : 0;
+
+      $sql_conversation = "SELECT 
+         wp_watergo_conversations.*,
+         wp_watergo_messages.content as message,
+         wp_watergo_messages.timestamp
+
+         FROM wp_watergo_conversations
+         JOIN wp_watergo_messages
+         ON wp_watergo_messages.conversation_id_hash = wp_watergo_conversations.conversation_id_hash 
+      ";
+
+      if( $placeholders != 0 ){
+         $placeholders = json_decode($placeholders);
+         $wheres = [];
+         if( ! empty($placeholders) ){
+            foreach( $placeholders as $ids ){
+               $wheres[] = $ids;
+            }
+         }
+         $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+      }
+
 
       $user_id       = get_current_user_id();
       $is_user_store = get_user_meta($user_id , 'user_store', true);
+      $where_app     = isset($_POST['where_app']) ? $_POST['where_app'] : 0;
+
+      // if( $where_app == 'chat_to_store'){
+      //    $sql = "SELECT from_user_count_messages as count_new_messages 
+      //       FROM wp_watergo_conversations 
+      //       WHERE conversation_id_hash = '$conversation_id'
+      //    ";
+      // }
+
+      // if( $where_app == 'chat_to_user'){
+      //    $sql_get_ = "SELECT to_user_count_messages as count_new_messages 
+      //       FROM wp_watergo_conversations 
+      //       WHERE conversation_id_hash = '$conversation_id'
+      //    ";
+      // }
+
+      // $res = $wpdb->get_results( $sql);
+
+      // if( $res[0]->count_new_messages != null || $res[0]->count_new_messages != '' && $res[0]->count_new_messages != 0){
+         
+      //    $sql_new_message = "SELECT content as message, timestamp FROM wp_watergo_messages WHERE conversation_id_hash = '$conversation_id' ORDER BY timestamp DESC LIMIT 1 ";
+      //    $res_new_message = $wpdb->get_results( $sql_new_message );
+
+      //    wp_send_json_success(['message' => 'count_new_messages', 
+      //       'data'    => [
+      //          'count'     => (int) $res[0]->count_new_messages,
+      //          'message'   => $res_new_message[0]->message,
+      //          'timestamp' => $res_new_message[0]->timestamp
+      //       ],
+      //    ]);
+      //    wp_die();
+      // }
       
-      // GET CURRENT USER ROLE
+      // WHEN STORE LOGIN
       if( $is_user_store == 1 || $is_user_store == true ){
-         $host_chat         = 'store';
-         $user_id           = func_get_store_id_from_current_user();
-         $sql_conversation .= " WHERE store_id = $user_id";
+         $where_app         = 'chat_to_user';
+         $sql_conversation .= " WHERE to_user = $user_id 
+            AND wp_watergo_conversations.conversation_id NOT IN ($placeholders)
+            ORDER BY wp_watergo_messages.timestamp DESC
+         ";
       }else{
-         $host_chat         = 'user';
-         $sql_conversation .= " WHERE user_id = $user_id";
+      // WHEN USER LOGIN
+         $where_app         = 'chat_to_store';
+         $sql_conversation .= " WHERE from_user = $user_id 
+            AND wp_watergo_conversations.conversation_id NOT IN ($placeholders)
+            ORDER BY wp_watergo_messages.timestamp DESC
+         ";
       }
 
       global $wpdb;
-      $res_cons = $wpdb->get_results($sql_conversation);
+      // $res_cons = $wpdb->get_results($sql_conversation);
+      $prepare = $wpdb->prepare($sql_conversation, $wheres);
+      $res_cons = $wpdb->get_results($prepare);
+
 
       if( empty( $res_cons )){
-         wp_send_json_error(['message' => 'load_conversation_error']);
+         wp_send_json_error(['message' => 'conversation_not_found']);
          wp_die();
       }
 
-      // LIST CONVERSATION 
-      $list_converstations = [];
-      foreach( $res_cons as $kCons => $cons ){
-         $_user_id            = $cons->user_id;
-         $_store_id           = $cons->store_id;
-         // HOST IS STORE => GET USER INFO
-         if( $host_chat == 'store'){
-            $sql_info = "SELECT 
-                  
-                  wp_usermeta.user_id, 
-                  wp_usermeta.meta_value as name,
-                  wp_users.display_name 
+      // VL->STORE_ID IS user-id
+      foreach( $res_cons as $k => $vl ){
 
-               FROM wp_usermeta
-
-               LEFT JOIN wp_users
-               ON wp_users.ID = wp_usermeta.user_id
-               
-               WHERE wp_usermeta.user_id = $_user_id AND wp_usermeta.meta_key = 'first_name'
-            ";
-         }
-         // HOST IS USER => GET STORE INFO
-         if( $host_chat == 'user'){
-            $sql_info = "SELECT 
-               id as user_id, name 
-               FROM wp_watergo_store 
-               -- LEFT JOIN wp_users
-               -- ON wp_users.ID = wp_usermeta.user_id
-            WHERE id = $_store_id";
+         if( $where_app == 'chat_to_store' ){
+            $sql_name = "SELECT name, id FROM wp_watergo_store WHERE user_id = $vl->to_user ";
+            $res = $wpdb->get_results($sql_name);
+            $vl->name   = $res[0]->name;
+            $vl->avatar = func_atlantis_get_images( $res[0]->id, 'store', true);
+            $vl->count_new_messages = $vl->from_user_count_messages;
          }
 
-         $get_info = $wpdb->get_results( $sql_info );
-         
-         if( !empty( $get_info ) ){
-            foreach($get_info as $k => $vl ){
-               if( $host_chat == 'store'){
-                  $img = func_atlantis_get_images( $vl->user_id, 'user_avatar', true);
-                  $list_converstations[$kCons]['conversation_id']    = $cons->conversation_id;
-                  $list_converstations[$kCons]['user_id']            = $vl->user_id;
-                  $list_converstations[$kCons]['name']               = $vl->name;
-                  $list_converstations[$kCons]['image']              = $img;
-                  $list_converstations[$kCons]['content']            = 'Tap to chat';
-                  $list_converstations[$kCons]['user_role']          = 'user';
-                  $list_converstations[$kCons]['timestamp']          = 0;
-               }
-               if( $host_chat == 'user'){
-                  $img = func_atlantis_get_images( $vl->user_id, 'store', true);
-                  $list_converstations[$kCons]['conversation_id']    = $cons->conversation_id;
-                  $list_converstations[$kCons]['user_id']            = $vl->user_id;
-                  $list_converstations[$kCons]['name']               = $vl->name;
-                  $list_converstations[$kCons]['image']              = $img;
-                  $list_converstations[$kCons]['content']            = 'Tap to chat';
-                  $list_converstations[$kCons]['user_role']          = 'store';
-                  $list_converstations[$kCons]['timestamp']          = 0;
-               }
+         if( $where_app == 'chat_to_user' ){
+            $vl->avatar = func_atlantis_get_images( $vl->from_user, 'user_avatar', true);
+            $user_name = get_user_meta($vl->from_user, 'first_name', true);
+            if($user_name == null || $user_name == ''){
+               $user       = get_user_by('id', $user_id);
+               $user_name  = $user->data->display_name;
             }
+            $vl->name = $user_name;
+            $vl->count_new_messages = $vl->to_user_count_messages;
          }
+
       }
+
 
       wp_send_json_success([
          'message'   => 'conversation_found',
-         'data'      => $list_converstations,
-         'host_chat' => $host_chat, 
-         'host_id'   => $user_id,
-         // 'sql' => $sql_conversation
+         'data'      => $res_cons,
+         'where_app' => $where_app,
       ]);
       wp_die();
 
@@ -263,49 +289,69 @@ function atlantis_get_messages(){
 }
 
 
-function atlantis_send_messenger(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_send_messenger' ){
+function atlantis_send_message(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_send_message' ){
 
-      $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
+      $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
       $chat_content     = isset($_POST['chat_content']) ? $_POST['chat_content'] : '';
+      $where_app        = isset($_POST['where_app']) ? $_POST['where_app'] : '';
 
-      if($chat_content == '' || $conversation_id == 0 ){
+      if($chat_content == '' || $conversation_id == '' || $where_app == '' ){
          wp_send_json_error(['message' => 'messenger_not_found 1' ]);
          wp_die();
       }
 
       $user_id       = get_current_user_id();
       $is_user_store = get_user_meta($user_id , 'user_store', true);
-      $user_role = '';
-
-      if( $is_user_store == 1 || $is_user_store == true ){
-         $user_role  = 'store';
-         $user_id    = func_get_store_id_from_current_user();
-      }else{
-         $user_role = 'user';
-      }
 
       global $wpdb;
 
       $timestamp  = atlantis_current_datetime();
 
       $args = [
-         'conversation_id' => $conversation_id,
-         'user_id'         => $user_id,
-         'user_role'       => $user_role,
-         'content'         => $chat_content,
-         'timestamp'       => $timestamp,
-         'is_read'         => 0
+         'conversation_id_hash'   => $conversation_id,
+         'user_id'                => $user_id,
+         'content'                => $chat_content,
+         'timestamp'              => $timestamp,
+         'is_read'                => 0
       ];
 
-      $send_message = $wpdb->insert('wp_watergo_messages', $args );
-      $args['message_id'] = $wpdb->insert_id;
+      $send_message     = $wpdb->insert('wp_watergo_messages', $args );
+      $sql_get_count    = "SELECT * FROM wp_watergo_conversations WHERE conversation_id_hash = '$conversation_id'";
+      $res_get_count    = $wpdb->get_results($sql_get_count);
+      $count_messages   = 0;
 
-      if( $send_message ){
-         wp_send_json_success(['message' => 'messenge_send_ok', 'data' => $args ]);
-         wp_die();
+      // INCREMENT COUNT MESSAGE
+      // WHEN STORE LOGIN
+      if( $is_user_store == 1 || $is_user_store == true ){
+         $where_app           = 'chat_to_user';
+         $count_messages      = $res_get_count[0]->from_user_count_messages;
+         $count_messages      = $count_messages + 1;
+         $wpdb->update( 'wp_watergo_conversations', [
+            'from_user_count_messages'   => $count_messages++
+         ], ['conversation_id_hash'    => $conversation_id]);
+      }else{
+      // WHEN USER LOGIN
+         $where_app           = 'chat_to_store';
+         $count_messages      = $res_get_count[0]->to_user_count_messages;
+         $count_messages      = $count_messages + 1;
+         $wpdb->update( 'wp_watergo_conversations', [
+            'to_user_count_messages' => $count_messages++
+         ], ['conversation_id_hash'    => $conversation_id]);
       }
       
+      if( $send_message ){
+         wp_send_json_success(['message' => 'messenge_send_ok', 'data' => [
+            'message_id'             => $wpdb->insert_id,
+            'conversation_id'        => $conversation_id,
+            'user_id'                => $user_id,
+            'content'                => $chat_content,
+            'timestamp'              => $timestamp,
+            'is_read'                => 0
+         ] ]);
+         wp_die();
+      }
+
       wp_send_json_error(['message' => 'messenger_not_found 3' ]);
       wp_die();
 
@@ -396,9 +442,9 @@ function atlantis_get_product_newest_and_store(){
 }
 
 // AUTO CREATE WWHEN NO ID FOUND
-function atlantis_load_conversations_id(){
+function atlantis_load_all_conversations_id(){
 
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_conversations_id' ){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_all_conversations_id' ){
 
       $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       $user_id    = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
@@ -482,4 +528,393 @@ function atlantis_get_account_user(){
       ]]);
       wp_die();
    }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_create_or_get_conversation', 'atlantis_create_or_get_conversation' );
+add_action( 'wp_ajax_atlantis_create_or_get_conversation', 'atlantis_create_or_get_conversation' );
+
+
+function atlantis_create_or_get_conversation(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_create_or_get_conversation' ){
+
+      $from_user = isset($_POST['from_user']) ? $_POST['from_user'] : 0;
+      if( $from_user == 0){
+         $from_user  = get_current_user_id();
+      }
+      $to_user    = isset($_POST['to_user']) ? $_POST['to_user'] : 0;
+      // $where_app = isset($_POST['where_app']) ? $_POST['where_app'] : '';
+
+      // if( $where_app == '' ){
+      //    wp_send_json_error(['message' => 'conversation_not_found']);
+      //    wp_die();
+      // }
+
+      global $wpdb;
+      $sql_check_conversation = "SELECT * FROM wp_watergo_conversations WHERE from_user = $from_user AND to_user = $to_user LIMIT 1";
+      $res_check_conversation = $wpdb->get_results($sql_check_conversation);
+
+      $pin_product            = isset($_POST['pin_product']) ? $_POST['pin_product'] : 0;
+
+      if( !empty( $res_check_conversation ) ){
+         if( $pin_product != 0){
+
+            $wpdb->update('wp_watergo_conversations', [
+               'pin_product' => $pin_product,
+            ], ['conversation_id_hash' => $res_check_conversation[0]->conversation_id_hash]);
+         }
+
+         wp_send_json_success(['message' => 'get_conversation_ok', 'data' => $res_check_conversation[0]->conversation_id_hash ]);
+         wp_die();
+      }
+
+      
+      $conversation_id_hash   = bin2hex(random_bytes(32));
+      $created_at             = atlantis_current_datetime();
+
+      $inserted = $wpdb->insert( 'wp_watergo_conversations', [
+         'conversation_id_hash'  => $conversation_id_hash,
+         'from_user'             => $from_user,
+         'to_user'               => $to_user,
+         'created_at'            => $created_at,
+         'pin_product'           => $pin_product,
+         'user_product_count'    => 0,
+         'store_product_count'   => 0,
+      ]);
+
+      if( $inserted ){
+         wp_send_json_success(['message' => 'get_conversation_ok', 'data' => $conversation_id_hash ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'conversation_not_found']);
+      wp_die();
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_conversation', 'atlantis_get_conversation' );
+add_action( 'wp_ajax_atlantis_get_conversation', 'atlantis_get_conversation' );
+function atlantis_get_conversation(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_conversation'){
+      $conversation_id = isset($_POST['conversation_id']) ? (String) $_POST['conversation_id'] : 0;
+      $where_app       = isset($_POST['where_app'])       ? (String) $_POST['where_app'] : '';
+
+      if( $where_app == '' || $conversation_id == 0 ){
+         wp_send_json_error(['message' => 'conversation_not_found']);
+         wp_die();
+      }
+
+      global $wpdb;
+      $sql = "SELECT * FROM wp_watergo_conversations WHERE conversation_id_hash = '$conversation_id'";
+      $res = $wpdb->get_results($sql);
+
+      if( empty( $res )){
+         wp_send_json_error(['message' => 'conversation_not_found']);
+         wp_die();
+      }
+
+      foreach( $res as $k => $vl ){
+         // GET AVATAR + NAME STORE
+         $sql_name   = "SELECT name, id FROM wp_watergo_store WHERE user_id = $vl->to_user ";
+         $res_name   = $wpdb->get_results($sql_name);
+         $vl->store_name   = $res_name[0]->name;
+         $vl->store_avatar = func_atlantis_get_images( $res_name[0]->id , 'store', true);
+
+         // GET AVATAR + NAME USER
+         $vl->user_avatar    = func_atlantis_get_images( $vl->from_user, 'user_avatar', true);
+         $user_name     = get_user_meta($vl->from_user, 'first_name', true);
+         if($user_name == null || $user_name == ''){
+            $user       = get_user_by('id', $vl->from_user);
+            $user_name  = $user->data->display_name;
+         }
+         $vl->user_name = $user_name;  
+      }
+
+      wp_send_json_success(['message' => 'conversation_found', 'data' => $res[0]]);
+      wp_die();
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_messeges', 'atlantis_get_messeges' );
+add_action( 'wp_ajax_atlantis_get_messeges', 'atlantis_get_messeges' );
+function atlantis_get_messeges(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_messeges' ){
+
+      $limit   = isset($_POST['limit']) ? $_POST['limit'] : 25;
+      $perPage = isset($_POST['perPage']) ? $_POST['perPage'] : 0;
+      $perPage = $perPage * $limit;
+
+      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+
+      if( $conversation_id == '' ){
+         wp_send_json_error([ 'message' => 'message_not_found' ] );
+         wp_die();
+      }
+      
+      global $wpdb;
+      $sql = "SELECT * FROM wp_watergo_messages 
+         WHERE conversation_id_hash = '$conversation_id '
+         ORDER BY timestamp DESC
+      ";
+      $res = $wpdb->get_results($sql);
+
+      if( empty($res )){
+         wp_send_json_error([ 'message' => 'message_not_found' ] );
+         wp_die();
+      }
+
+      wp_send_json_success([ 'message' => 'message_found', 'data' => $res ] );
+      wp_die();
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_read_all_messages', 'atlantis_read_all_messages' );
+add_action( 'wp_ajax_atlantis_read_all_messages', 'atlantis_read_all_messages' );
+function atlantis_read_all_messages(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_read_all_messages' ){
+      
+      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+
+      if( $conversation_id == '' ){
+         wp_send_json_error(['message' => 'messages_not_found' ]);
+         wp_die();
+      }
+
+      $user_id          = get_current_user_id();
+      $is_user_store    = get_user_meta($user_id , 'user_store', true);
+
+      global $wpdb;
+      // $sql = "SELECT * FROM wp_watergo_conversations WHERE conversation_id_hash = '$conversation_id' ";
+      // $res = $wpdb->get_results($sql);
+      
+      if($is_user_store == 1 || $is_user_store == true ){
+         $updated = $wpdb->update('wp_watergo_conversations', [ 'to_user_count_messages' => 0], ['conversation_id_hash' => $conversation_id ]);
+      }else{
+         $updated = $wpdb->update('wp_watergo_conversations', [ 'from_user_count_messages' => 0], ['conversation_id_hash' => $conversation_id ]);
+      }
+
+      if( ! $updated ){
+         wp_send_json_error(['message' => 'messages_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'messages_found' ]);
+      wp_die();
+
+   }  
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_count_messeage_everytime', 'atlantis_count_messeage_everytime' );
+add_action( 'wp_ajax_atlantis_count_messeage_everytime', 'atlantis_count_messeage_everytime' );
+
+function atlantis_count_messeage_everytime(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_messeage_everytime' ){
+
+      if( is_user_logged_in() == false ){
+         wp_send_json_error(['message' => 'count_messages_not_found' ]);
+         wp_die();
+      }
+
+      $user_id          = get_current_user_id();
+      $is_user_store    = get_user_meta($user_id , 'user_store', true);
+
+      $sql = "";
+      global $wpdb;
+
+      if($is_user_store == 1 || $is_user_store == true ){
+         $sql = "SELECT SUM(to_user_count_messages) as count_message 
+            FROM wp_watergo_conversations 
+            WHERE to_user = $user_id
+         ";
+      }else{
+         $sql = "SELECT SUM(from_user_count_messages) as count_message 
+            FROM wp_watergo_conversations 
+            WHERE from_user = $user_id
+         ";
+      }
+
+      $res = $wpdb->get_results( $sql );
+      $count_message = 0;
+      if( $res[0]->count_message != "" || $res[0]->count_message != null || $res[0]->count_message != 0 ){
+         $count_message = (int) $res[0]->count_message;
+      }
+      wp_send_json_success(['message' => 'count_messages_ok', 'data' => $count_message ]);
+      wp_die();
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_count_messeage_from_conversation_id', 'atlantis_count_messeage_from_conversation_id' );
+add_action( 'wp_ajax_atlantis_count_messeage_from_conversation_id', 'atlantis_count_messeage_from_conversation_id' );
+function atlantis_count_messeage_from_conversation_id(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_messeage_from_conversation_id'){
+      $conversation_id  = isset($_POST['conversation_id'])  ? $_POST['conversation_id'] : '';
+      $where_app        = isset($_POST['where_app'])        ? $_POST['where_app'] : '';
+      $user_id          = get_current_user_id();
+
+      global $wpdb;
+      $sql = '';
+
+      if( $where_app == 'chat_to_store'){
+         $sql = "SELECT from_user_count_messages as count_new_messages 
+            FROM wp_watergo_conversations 
+            WHERE conversation_id_hash = '$conversation_id'
+         ";
+      }
+
+      if( $where_app == 'chat_to_user'){
+         $sql = "SELECT to_user_count_messages as count_new_messages 
+            FROM wp_watergo_conversations 
+            WHERE conversation_id_hash = '$conversation_id'
+         ";
+      }
+
+      $res = $wpdb->get_results( $sql);
+
+      if( $res[0]->count_new_messages != null || $res[0]->count_new_messages != '' && $res[0]->count_new_messages != 0){
+         
+         $sql_new_message = "SELECT content as message, timestamp FROM wp_watergo_messages WHERE conversation_id_hash = '$conversation_id' ORDER BY timestamp DESC LIMIT 1 ";
+         $res_new_message = $wpdb->get_results( $sql_new_message );
+
+         wp_send_json_success(['message' => 'count_new_messages', 
+            'data'    => [
+               'count'     => (int) $res[0]->count_new_messages,
+               'message'   => $res_new_message[0]->message,
+               'timestamp' => $res_new_message[0]->timestamp
+            ],
+         ]);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'count_new_messages', 'data' => [
+         'count'   => 0,
+         'message' => ''
+      ] ]);
+      wp_die();
+
+   
+      
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_get_message_realtime_per_second', 'atlantis_get_message_realtime_per_second' );
+add_action( 'wp_ajax_atlantis_get_message_realtime_per_second', 'atlantis_get_message_realtime_per_second' );
+function atlantis_get_message_realtime_per_second(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_message_realtime_per_second'){
+
+      $placeholders     = isset( $_POST['placeholders'])    ? $_POST['placeholders'] : 0;
+      $conversation_id  = isset( $_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
+      $paged            = isset( $_POST['paged'])            ? $_POST['paged'] : 0;
+
+      global $wpdb;
+
+      $wheres = [];
+      if( $placeholders != 0 ){
+         $placeholders = json_decode( stripslashes($placeholders), true);
+         if( ! empty($placeholders) ){
+            foreach( $placeholders as $ids ){
+               $wheres[] = (int) $ids;
+            }
+         }
+         $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+      }
+
+
+      $sql = "SELECT * FROM wp_watergo_messages 
+         WHERE conversation_id_hash = '$conversation_id' 
+         AND message_id NOT IN ($placeholders)
+         ORDER BY timestamp DESC
+         LIMIT $paged , 20";
+      
+      $prepare  = $wpdb->prepare( $sql, $wheres );
+      $res      = $wpdb->get_results( $prepare );
+
+      if( empty( $res )){
+         wp_send_json_error(['message' => 'message_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'message_found', 'data' => $res ]);
+      wp_die();
+
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_count_pin_product', 'atlantis_count_pin_product' );
+add_action( 'wp_ajax_atlantis_count_pin_product', 'atlantis_count_pin_product' );
+
+function atlantis_count_pin_product(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_pin_product' ){
+      $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+      $where_app        = isset($_POST['where_app']) ? $_POST['where_app'] : '';
+
+      if( $where_app == '' ){
+         wp_send_json_error(['message' => 'message_not_found' ]);
+         wp_die();
+      }
+
+      if( $where_app == 'chat_to_user'){
+
+      }
+      if( $where_app == 'chat_to_store'){
+         
+      }
+
+
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_get_last_time_message', 'atlantis_get_last_time_message' );
+add_action( 'wp_ajax_atlantis_get_last_time_message', 'atlantis_get_last_time_message' );
+
+function atlantis_get_last_time_message(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_last_time_message'){
+      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+      if( $conversation_id == '' ){
+         wp_send_json_error(['message' => 'message_time_not_found' ]);
+         wp_die();
+      }
+
+      global $wpdb;
+      $sql = "SELECT timestamp FROM wp_watergo_messages WHERE conversation_id_hash = '$conversation_id' ORDER BY timestamp DESC LIMIT 1 ";
+      $res = $wpdb->get_results( $sql);
+      if( empty( $res )){
+         wp_send_json_error(['message' => 'message_time_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'message_time_found', 'data' => $res[0]->timestamp ]);
+      wp_die();
+   }
+}
+
+add_action( 'wp_ajax_nopriv_atlantis_get_first_time_message', 'atlantis_get_first_time_message' );
+add_action( 'wp_ajax_atlantis_get_first_time_message', 'atlantis_get_first_time_message' );
+
+function atlantis_get_first_time_message(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_first_time_message'){
+      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+      if( $conversation_id == '' ){
+         wp_send_json_error(['message' => 'message_time_not_found' ]);
+         wp_die();
+      }
+
+      global $wpdb;
+      $sql = "SELECT timestamp FROM wp_watergo_messages WHERE conversation_id_hash = '$conversation_id' ORDER BY timestamp ASC LIMIT 1 ";
+      $res = $wpdb->get_results( $sql);
+      if( empty( $res )){
+         wp_send_json_error(['message' => 'message_time_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'message_time_found', 'data' => $res[0]->timestamp ]);
+      wp_die();
+   }
+
 }

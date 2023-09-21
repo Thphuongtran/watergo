@@ -17,6 +17,7 @@ add_action( 'wp_ajax_atlantis_get_support_question_user', 'atlantis_get_support_
 
 
 
+// GET ALL QUESTION FROM ADMIN
 function atlantis_support(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_support' ){
 
@@ -27,10 +28,19 @@ function atlantis_support(){
          wp_die();
       }
 
-      global $wpdb;
+      $select_app = isset($_POST['select_app']) ? $_POST['select_app'] : '';
 
-      $sql_admin = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL";
-      $res_admin = $wpdb->get_results($sql_admin);
+      if( $select_app == '' && !in_array($select_app, ['user_app', 'business_app']) ){
+         wp_send_json_error([ 'message' => 'no_support_service_found' ]);
+         wp_die();
+      }
+
+      global $wpdb;
+      $sql = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL AND select_app = '$select_app' ";
+      $res = $wpdb->get_results($sql);
+
+      // $sql_admin = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL";
+      // $res_admin = $wpdb->get_results($sql_admin);
 
       // $sql_user = "SELECT * FROM wp_watergo_supports WHERE user_id = $user_id ";
       // $res_user = $wpdb->get_results($sql_user);
@@ -39,13 +49,13 @@ function atlantis_support(){
       // $mergedData = array_merge( $res_user, $res_admin);
 
 
-      if( empty( $res_admin )){
+      if( empty( $res )){
          wp_send_json_error([ 'message' => 'no_support_service_found' ]);
          wp_die();
       }
       
       // sort($mergedData);
-      wp_send_json_success([ 'message' => 'get_support_ok', 'data' => $res_admin ]);
+      wp_send_json_success([ 'message' => 'get_support_ok', 'data' => $res ]);
       wp_die();
 
    }

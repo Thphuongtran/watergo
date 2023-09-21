@@ -65,7 +65,7 @@
          <div class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>
+               <span v-if class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>
             </label>
             <button @click='gotoPageStoreTermConditions' class='link-term-condition t-primary'><?php echo __('Terms and Conditions', 'watergo'); ?></button>
          </div>
@@ -102,11 +102,12 @@ createApp({
          languages: [
            { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
            { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
-         //   { id: 'ko_KR', name: 'Korean'},
+           { id: 'ko_KR', name: '<?php echo __("Korean", 'watergo'); ?>'},
          ],
          selectedLanguage: {},
          currentLocale: '',
-         showDropdown: false
+         showDropdown: false,
+         get_locale: '<?php echo get_locale(); ?>'
       }
    },
 

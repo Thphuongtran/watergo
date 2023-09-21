@@ -104,6 +104,7 @@ createApp({
    },
 
    watch: {
+      
       inputSearch: async function ( val ){
          this.paged = 0;
          this.searchs = [];

@@ -37,7 +37,7 @@
                   <path d="M13.5947 9.30974C13.5947 9.69118 13.2855 10.0004 12.904 10.0004C12.5226 10.0004 12.2133 9.69118 12.2133 9.30974C12.2133 8.92829 12.5226 8.61906 12.904 8.61906C13.2855 8.61906 13.5947 8.92829 13.5947 9.30974Z" fill="#2790F9"/>
                   <path d="M16.7027 9.3235C16.7027 9.70494 16.3935 10.0142 16.012 10.0142C15.6306 10.0142 15.3214 9.70494 15.3214 9.3235C15.3214 8.94205 15.6306 8.63282 16.012 8.63282C16.3935 8.63282 16.7027 8.94205 16.7027 9.3235Z" fill="#2790F9"/>
                   </svg>
-                  <span class='badge' :class="notification_count > 0 ? 'enable' : '' ">{{notification_count}}</span>
+                  <span class='badge' :class="message_count > 0 ? 'enable' : '' " >{{ message_count }}</span>
                </div>
 
             </div>
@@ -120,6 +120,7 @@ var app = Vue.createApp({
          loading_data: false,
          loading: true,
          notification_count: 0,
+         message_count: 0,
          isCancel: false,
          paged: 0,
          order_status: 'ordered',
@@ -132,11 +133,9 @@ var app = Vue.createApp({
             { 
                label: `
                   <?php 
-                     if( get_locale() == 'vi' ){
-                        echo 'Đã Đặt';
-                     }else{
-                        echo 'Ordered';
-                     }
+                     if( get_locale() == 'vi' ){echo 'Đã Đặt';
+                     }else if( get_locale() == 'ko_KR'){ echo '주문 완료';
+                     }else{ echo 'Ordered';}
                   ?>
                `, value: 'ordered', active: true,
                icon: `
@@ -153,12 +152,9 @@ var app = Vue.createApp({
             { 
                label: `
                   <?php 
-                     // echo __("Prepare", 'watergo');
-                     if( get_locale() == 'vi' ){
-                        echo 'Chờ Giao';
-                     }else{
-                        echo 'Prepare';
-                     }
+                     if( get_locale() == 'vi' ){echo 'Chờ Giao';
+                     }else if( get_locale() == 'ko_KR' ){ echo '준비중';
+                     }else{ echo 'Prepare';}
                   ?>
                `, value: 'confirmed', active: false,
                icon: `
@@ -177,12 +173,9 @@ var app = Vue.createApp({
             { 
                label: `
                   <?php 
-                     // echo __("Delivering", 'watergo'); 
-                     if( get_locale() == 'vi' ){
-                        echo 'Đang Giao';
-                     }else{
-                        echo 'Delivering';
-                     }
+                     if( get_locale() == 'vi' ){echo 'Đang Giao';
+                     }else if( get_locale() == 'ko_KR' ){ echo '배송중';
+                     }else{echo 'Delivering';}
                   
                   ?>
                `, value: 'delivering', active: false,
@@ -200,11 +193,9 @@ var app = Vue.createApp({
             { 
                label: `
                   <?php 
-                     if( get_locale() == 'vi' ){
-                        echo 'Đã Nhận';
-                     }else{
-                        echo 'Complete';
-                     }
+                     if( get_locale() == 'vi' ){echo 'Đã Nhận';
+                     }else if( get_locale() == 'ko_KR' ){ echo '완료';
+                     }else{ echo 'Complete'; }
                    ?>
                `, value: 'complete', active: false,
                icon: `
@@ -388,7 +379,9 @@ var app = Vue.createApp({
          }
       },
 
-      count_product_in_cart(){ this.cart_count = window.count_product_in_cart(); },
+      count_product_in_cart(){ this.cart_count = window.count_product_in_cart() },
+
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
 
    }, 
 
@@ -408,6 +401,7 @@ var app = Vue.createApp({
 
    async created(){
       this.loading = true;
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
       await this.get_count_total_order();
       this.count_product_in_cart();
       setTimeout( async () => {

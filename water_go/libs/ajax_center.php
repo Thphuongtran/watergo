@@ -216,6 +216,7 @@ function func_atlantis_get_product_by( $args ){
    global $wpdb;
 
    $sql = "SELECT * FROM wp_watergo_products ";
+
    if( $get_by == 'store_id' ){
       $sql .= " WHERE wp_watergo_products.store_id = $id ";
 
@@ -227,6 +228,7 @@ function func_atlantis_get_product_by( $args ){
       }
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
+
    if( $get_by == 'product_id'){
       $sql .= " WHERE wp_watergo_products.id = $id ";
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";

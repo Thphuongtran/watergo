@@ -417,15 +417,20 @@ function atlantis_load_product_recommend_random(){
 
 function atlantis_find_product(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_find_product' ){
-      $product_id    = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
-      $limit_image   = isset($_POST['limit_image']) ? $_POST['limit_image'] : true;
+      $product_id       = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+      $limit_image      = isset($_POST['limit_image']) ? $_POST['limit_image'] : true;
       // $paged         = isset($_POST['paged']) ? $_POST['paged'] : 0;
-      $image_size    = isset($_POST['image_size']) ? $_POST['image_size'] : 'medium';
+      $image_size       = isset($_POST['image_size']) ? $_POST['image_size'] : 'medium';
+
+      $random_product   = isset($_POST['random_product']) ? $_POST['random_product'] : 0;
+
       
       if($product_id == 0 ){
          wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
       }
+      $product = null;
+
       $product = func_atlantis_get_product_by([
          'id'           => $product_id,
          'get_by'       => 'product_id',
@@ -433,12 +438,59 @@ function atlantis_find_product(){
          'image_size'   => $image_size
          // 'paged'        => $paged
       ]);
-      if( empty($product )){
+
+      if( empty($product ) && $random_product == 0){
          wp_send_json_error(['message' => 'product_not_found']);
-         wp_die();  
+         wp_die();
+      }else if( empty($product) && $random_product == 1 ){
+         global $wpdb;
+         // GET RANDOM PRODUCT
+         $sql_find_store = "SELECT store_id FROM wp_watergo_products WHERE id = $product_id";
+         $res_find_store = $wpdb->get_results( $sql_find_store );
+         $store_id = (int) $res_find_store[0]->store_id ;
+
+         $sql_random_product = "SELECT * FROM wp_watergo_products WHERE store_id = $store_id AND product_hidden != 1 ORDER BY RAND() LIMIT 1";
+         $res_random_product = $wpdb->get_results( $sql_random_product);
+
+         if( empty( $res_random_product )){
+            wp_send_json_error(['message' => 'product_not_found']);
+            wp_die();
+         }
+
+         if( !empty($res_random_product ) ){
+            foreach($res_random_product as $k => $vl){
+
+               $res_random_product[$k]->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
+               $category = func_atlantis_get_product_category([
+                  'category'     => $vl->category,
+                  'brand'        => $vl->brand,
+                  'quantity'     => $vl->quantity,
+                  'volume'       => $vl->volume,
+                  'weight'       => $vl->weight,
+                  'product_type' => $vl->product_type,
+                  'product_id'   => $vl->id,
+               ]);
+
+               $res_random_product[$k]->category_name  = $category['category_name'];
+               $res_random_product[$k]->brand_name     = $category['brand_name'];
+               $res_random_product[$k]->quantity_name  = $category['quantity_name'];
+               $res_random_product[$k]->volume_name    = $category['volume_name'];
+               $res_random_product[$k]->weight_name    = $category['weight_name'];
+               $res_random_product[$k]->name           = $category['name'];
+               $res_random_product[$k]->name_second    = $category['name_second'];
+
+            }
+         }
+
+         wp_send_json_success(['message' => 'product_found', 'data' => $res_random_product[0] ]);
+         wp_die();
+
       }
+
       wp_send_json_success(['message' => 'product_found', 'data' => $product[0], 'limit_image' => $limit_image ]);
       wp_die();
+
+      
    }
 }
 

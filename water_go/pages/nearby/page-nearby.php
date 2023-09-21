@@ -48,7 +48,7 @@
                   <path d="M16.7027 9.32356C16.7027 9.70501 16.3935 10.0142 16.012 10.0142C15.6306 10.0142 15.3214 9.70501 15.3214 9.32356C15.3214 8.94211 15.6306 8.63288 16.012 8.63288C16.3935 8.63288 16.7027 8.94211 16.7027 9.32356Z" fill="#2790F9"/>
                   </svg>
                   
-                  <!-- <span class='badge' :class="message_count > 0 ? 'enable' : '' " ></span> -->
+                  <span class='badge-messages badge'>0</span>
                </a>
 
             </div>
@@ -582,6 +582,26 @@ window.app = app;
        // alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
        // return true;
    }
+
+   async function atlantis_count_messeage_everytime(){
+      var form = new FormData();
+      form.append('action', 'atlantis_count_messeage_everytime');
+      var r = await window.request(form);
+      if( r != undefined ){
+         var res = JSON.parse( JSON.stringify( r));
+         if( res.message == 'count_messages_ok' ) {
+            if( res.data > 0 ){
+               $('.badge-messages').addClass('enable');
+               $('.badge-messages').text(res.data);
+            }else{
+               $('.badge-messages').removeClass('enable');
+               $('.badge-messages').text(0);
+            }
+         }
+      }
+   }
+
+   setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1800);
 
 </script>
 

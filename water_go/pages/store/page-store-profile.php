@@ -18,7 +18,7 @@
                   <path d="M13.5947 9.30974C13.5947 9.69118 13.2855 10.0004 12.904 10.0004C12.5226 10.0004 12.2133 9.69118 12.2133 9.30974C12.2133 8.92829 12.5226 8.61906 12.904 8.61906C13.2855 8.61906 13.5947 8.92829 13.5947 9.30974Z" fill="#2790F9"/>
                   <path d="M16.7027 9.3235C16.7027 9.70494 16.3935 10.0142 16.012 10.0142C15.6306 10.0142 15.3214 9.70494 15.3214 9.3235C15.3214 8.94205 15.6306 8.63282 16.012 8.63282C16.3935 8.63282 16.7027 8.94205 16.7027 9.3235Z" fill="#2790F9"/>
                   </svg>
-                  <span v-if='message_count > 0' class='badge'>{{ message_count }}</span>
+                  <span class='badge' :class="message_count > 0 ? 'enable' : '' " >{{ message_count }}</span>
                </div>
 
                <div @click='gotoNotificationIndex' class='btn-badge ml10'>
@@ -35,10 +35,10 @@
 
       <div class='inner'>
          <div class='profile-user'>
-            <img class='avatar-circle' width='80' height='80' :src="store.store_image.url">
+            <img v-if='store != null' class='avatar-circle' width='80' height='80' :src="store.store_image.url">
 
             <div class='user-prefs'>
-               <div class='username'>{{ store.name }}</div>
+               <div v-if='store != null' class='username'>{{ store.name }}</div>
                <button @click='gotoStoreDetail(store.id)' class='btn-text arrow-right'>
                   <?php 
                      if( get_locale() == 'vi' ){
@@ -125,6 +125,8 @@ var app = Vue.createApp({
          message_count: 0,
          notification_count: 0,
 
+         select_app: ''
+
       }
    },
 
@@ -134,7 +136,9 @@ var app = Vue.createApp({
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
       
       gotoPageStoreSettings(){ window.gotoPageStoreSettings()},
-      gotoSupport(){ window.gotoSupport()},
+      gotoSupport(){ 
+         window.location.href = window.watergo_domain + 'support/?support_page=support-index&select_app=business_app&appt=N';
+      },
       gotoCart(){ window.gotoCart()},
       gotoChat(){ window.gotoChat()},
       gotoPageStoreAdverstising(){ window.gotoPageStoreAdverstising()},
@@ -161,18 +165,6 @@ var app = Vue.createApp({
          }
          this.loading = false;
          is_busy = false;
-      },
-
-      async get_messages_count(){
-         var form_message_count = new FormData();
-         form_message_count.append('action', 'atlantis_count_messages');
-         var _atlantis_message = await window.request(form_message_count);
-         if( _atlantis_message != undefined ){
-            let res = JSON.parse( JSON.stringify( _atlantis_message));
-            if( res.message == 'message_count_found' ){
-               this.message_count = parseInt(res.data);
-            }
-         }
       },
 
       async get_store(){
@@ -215,9 +207,14 @@ var app = Vue.createApp({
          }
       },
 
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
+
    },
 
    async created(){
+      const urlParams   = new URLSearchParams(window.location.search);
+      this.select_app   = urlParams.get('select_app');
+
       this.loading = true;
       await this.get_store();
       await this.check_user_notification();
@@ -226,9 +223,11 @@ var app = Vue.createApp({
       this.loading = false;
       window.appbar_fixed();
 
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
    },
 
 }).mount('#app');
+
 window.app = app;
 
 </script>

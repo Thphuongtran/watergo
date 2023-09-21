@@ -259,8 +259,7 @@ var app = Vue.createApp({
 
             if(this.inputPassword != '' && this.inputPassword.length > 0){
                form.append('password', this.inputPassword);
-            }else{
-               form.append('password', '');
+               form.append('change_password_no_login_back', 0);
             }
 
             var r = await window.request(form);

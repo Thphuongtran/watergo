@@ -1,3 +1,9 @@
+<?php 
+   $currency = ' đ';
+   if( get_locale() == 'ko_KR' ){
+      $currency = '동';
+   }
+?>
 <div id='app'>
 
    <div v-show='loading == false' class='page-cart'>
@@ -147,7 +153,7 @@
 
 
 </div>
-<script type='module'>
+<script>
 
 var app = Vue.createApp({
    data (){
@@ -169,7 +175,7 @@ var app = Vue.createApp({
       },
 
       has_discount( product ){ return window.has_discount( product ); },      
-      common_price_show_currency(p){ return window.common_price_show_currency(p) },
+      common_price_show_currency(p){ common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
       input_quantity( e ){
@@ -385,12 +391,12 @@ var app = Vue.createApp({
          var _final_price = null;
 
          if( gr_price.price != gr_price.price_discount){
-            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ';
+            _final_price = gr_price.price.toLocaleString() + '<?php echo $currency; ?>';
          }
 
          return {
             price: _final_price,
-            price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
+            price_discount: gr_price.price_discount.toLocaleString() + '<?php echo $currency; ?>'
          };
       },
 

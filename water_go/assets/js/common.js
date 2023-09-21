@@ -3,6 +3,34 @@
  */
 
 
+function truncateUTF8String(inputString, maxLength) {
+   if (inputString.length <= maxLength) {
+      return inputString;
+   }
+
+   let truncatedString = inputString.slice(0, maxLength);
+   while (truncatedString.length > 0 && (truncatedString.charCodeAt(maxLength - 1) & 0xc0) === 0x80) {
+      maxLength--;
+      truncatedString = inputString.slice(0, maxLength);
+   }
+
+   return truncatedString;
+}
+
+async function atlantis_count_messeage_everytime(){
+   var form = new FormData();
+   form.append('action', 'atlantis_count_messeage_everytime');
+   var r = await window.request(form);
+   if( r != undefined ){
+      var res = JSON.parse( JSON.stringify( r));
+      if( res.message == 'count_messages_ok' ) {
+         window.app.message_count = res.data;
+      }else{
+         window.app.message_count = 0;
+      }
+   }
+}
+
 function formatDateToDDMMYY(inputDateString) {
   const parts = inputDateString.split(/[- :]/);
   const year = parts[0].slice(-2);
@@ -603,9 +631,9 @@ function common_price_after_discount( product ){
          price = price - ( price * ( discount_percent / 100 ) );
       }
 
-      return parseInt(price).toLocaleString('vi-VN') + ' đ';
+      return parseInt(price).toLocaleString() + global_currency;
    }
-   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   return parseInt(price).toLocaleString() + global_currency;
 }
 
 function common_price_after_discount_and_quantity( product ){
@@ -631,17 +659,17 @@ function common_price_after_discount_and_quantity( product ){
       }else{
          price = price * quantity;
       }
-      return parseInt(price).toLocaleString('vi-VN') + ' đ';
+      return parseInt(price).toLocaleString() + global_currency;
    }
    price = price * quantity;
-   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   return parseInt(price).toLocaleString() + global_currency;
 }
 
 function common_price_after_quantity( product){
    var price      = product.price      != undefined ? product.price : 0;
    var quantity   = product.quantity   == undefined ? product.product_quantity_count : product.quantity;
    price          = price * quantity;
-   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   return parseInt(price).toLocaleString() + global_currency;
 }
 
 /**
@@ -653,14 +681,14 @@ function common_price_after_discount_and_quantity_from_group_order( product ){
    var discount_percent = product.order_group_product_discount_percent;
    price = price - ( price * ( discount_percent / 100 ) );
    price = price * quantity;
-   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   return parseInt(price).toLocaleString() + global_currency;
 }
 
 function common_price_after_quantity_from_group_order( product){
    var price      = product.order_group_product_price;
    var quantity   = product.order_group_product_quantity_count;
    price          = price * quantity;
-   return parseInt(price).toLocaleString('vi-VN') + ' đ';
+   return parseInt(price).toLocaleString() + global_currency;
 }
 
 
@@ -671,7 +699,7 @@ function add_extra_space_order_time_shipping_time(shipping_time){
    return start + ' - ' + end;
 }
 
-function common_price_show_currency(price){ return parseInt(price).toLocaleString('vi-VN') + ' đ'; }
+function common_price_show_currency(price){ return parseInt(price).toLocaleString() + global_currency; }
 
 
 
@@ -846,12 +874,12 @@ function count_product_total_price(){
    var _final_price = null;
 
    if( gr_price.price != gr_price.price_discount){
-      _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ';
+      _final_price = gr_price.price.toLocaleString() + global_currency;
    }
 
    return {
       price: _final_price,
-      price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
+      price_discount: gr_price.price_discount.toLocaleString() + global_currency
    };
 }
 
@@ -1019,10 +1047,6 @@ function gotoPageUserDeliveryAddress(){
 
 }
 
-function gotoSupport(){
-   window.location.href = window.watergo_domain + 'support/?support_page=support-index&appt=N';
-}
-
 /**
 * @access USER
 */
@@ -1125,7 +1149,7 @@ function gotoChatMessenger( args ){
       var from_user           = args.from_user != undefined ? parseInt(args.from_user) : null;
       var to_user             = args.to_user != undefined ? parseInt(args.to_user) : null;
       var document_id         = args.document_id != undefined ? parseInt(args.document_id) : null;
-      
+
       // chat_to_user | chat_to_store
       var where_app = args.where_app != undefined ? String( args.where_app ) : null;
 

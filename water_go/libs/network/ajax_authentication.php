@@ -39,11 +39,9 @@ function atlantis_login(){
          }
          
          // ACCOUNT DELETE
-         $is_account_hidden = get_user_meta($user_id, 'account_hidden', true) != ''
-            ? (int) get_user_meta($user_id , 'account_hidden', true) 
-            : null;
+         $is_account_hidden = get_user_meta($user_id, 'account_hidden', true);
 
-         if($is_account_hidden == true || $is_account_hidden == 1){
+         if($is_account_hidden != "" && $is_account_hidden == 1){
             wp_send_json_error([ 'message' => 'account_delete' ]);
             wp_die();
          }

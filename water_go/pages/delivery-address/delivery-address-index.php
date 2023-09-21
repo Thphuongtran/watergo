@@ -38,11 +38,20 @@
          <li
             v-for='(delivery, index) in delivery_address' :key='index'
          >
-            <div @click='change_default_delivery_address(delivery.id )' class='leading'>
+            <div v-if='is_order_select == true' @click='change_default_delivery_address(delivery.id )' class='leading'>
                <div 
                   class="radio-button" 
                   :class='[
                      delivery.is_order_select == true && is_order_select == true ? "active" : "",
+                  ]'
+               >
+               </div>
+            </div>
+
+            <div v-if='is_order_select == false' @click='change_default_delivery_address(delivery.id )' class='leading'>
+               <div 
+                  class="radio-button" 
+                  :class='[
                      delivery.primary == true && order_delivery_address == false ? "active" : "",
                   ]'
                >

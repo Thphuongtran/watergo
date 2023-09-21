@@ -19,9 +19,7 @@
          <div class='question'>
             {{ support.question }}
          </div>
-         <div class='answer'>
-            {{ support.answer }}
-         </div>
+         <div class='answer' v-html='support.answer'></div>
       </div>
 
    </div>
@@ -72,3 +70,15 @@ createApp({
    }
 }).mount('#app');
 </script>
+<style>
+
+   ul, li{
+      list-style: initial !important;
+   }
+   ul{
+      padding-left: 16px;
+   }
+   .page-support .entry-content-support .answer{
+      padding-top: 16px;
+   }
+</style>

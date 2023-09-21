@@ -1,3 +1,7 @@
+<?php 
+   $user_id = get_current_user_id();
+?>
+
 <div id='app'>
 
    <div v-show='loading == true && order != null && order.order_hidden == 0'>
@@ -110,7 +114,7 @@
       <div class='box-func-order-detail-store'>
          
          <button 
-            @click='gotoChatMessenger' 
+            @click='chat_to_user' 
             class='btn-chat'>
             <span class='icon'>
                <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,7 +180,14 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
+            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>
+               <?php 
+                  // SUBMIT BUTTON 
+                  if( get_locale() == 'vi'){ echo 'Gửi';
+                  }else if( get_locale() == 'ko_KR'){ echo '보내기';
+                  }else{ echo 'Submit'; }
+               ?>
+            </button>
          </div>
       </div>
    </div>
@@ -278,14 +289,23 @@ var app = Vue.createApp({
       },
       
 
-      async gotoChatMessenger( ){ 
-         var conversation_id = await window.is_conversation_created_or_create(this.order.order_by, this.order.store_id);
-         if(conversation_id != undefined || conversation_id != null ){
-            window.gotoChatMessenger({
-               conversation_id: conversation_id,
-               product_id: this.order.order_products[0].order_group_product_id
-            });
+      async chat_to_user( ){ 
+         var produdct_id = parseInt( this.order.order_products[0].order_group_product_id );
+         var form = new FormData();
+         form.append('action', 'atlantis_create_or_get_conversation');
+         form.append('from_user', parseInt( this.order.order_by) );
+         form.append('to_user', parseInt( <?php echo $user_id; ?> ) );
+         form.append('pin_product', produdct_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'get_conversation_ok' ){
+               var conversation_id   = res.data;
+               
+               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_user&appt=N';
+            }
          }
+
       },
 
 

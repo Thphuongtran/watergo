@@ -1,46 +1,15 @@
 <?php 
 
    $user_id = get_current_user_id();
-
-   global $wpdb;
-   $sql = "SELECT * from wp_usermeta where meta_key = 'user_store' AND meta_value = 1";
-   $res = $wpdb->get_results($sql);
-   $store_list = [];
-   $store_list_id = [];
-
-   if( !empty($res) ){
-      foreach( $res as $k => $vl ){
-         $store_list[] = $vl->user_id;
-      }
-      $store_list       = implode(',', $store_list );
-      $sql_get_store_id = "SELECT id FROM wp_watergo_store WHERE user_id IN( $store_list) ";
-      $res_get_store_id = $wpdb->get_results($sql_get_store_id);
-
-      if( !empty( $res_get_store_id ) ){
-         foreach( $res_get_store_id as $kk => $vll ){
-            $store_list_id[] = $vll->id;
-         }
-      }
+   $is_user_store = get_user_meta($user_id , 'user_store', true);
+   $where_app = '';
+   if( $is_user_store == 1 || $is_user_store == true ){
+      $where_app         = 'chat_to_user';
+      $search_placeholder = __('Search User Name', 'watergo');
+   }else{
+      $where_app         = 'chat_to_store';
+      $search_placeholder = __('Search Store Name', 'watergo');
    }
-
-   /*
-      collection [ messengers ]
-         from_user
-         from_user_count: 0
-         to_user
-         to_user_count: 0
-         to_user_hidden: false 
-         pin_produdct: 0
-         time_created: 
-
-      collection [ messages ]
-         user_id
-         contents
-         is_read: false
-         timestamp: 
-         messenger_id: (document_id from messengers )
-   */
-   
 
 ?>
 <div id='app'>
@@ -59,7 +28,7 @@
          <div class='appbar-bottom'>
             <div class='inner'>
                <div class='box-search'>
-                  <input class='input-search' type="text" v-model='inputSearch' placeholder='Search Store Name'>
+                  <input class='input-search' type="text" v-model='inputSearch' placeholder='<?php echo $search_placeholder; ?>'>
                   <span class='icon-search'>
                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.90688 0.60506C5.87126 0.205599 6.90488 0 7.94872 0C8.99256 0 10.0262 0.205599 10.9906 0.60506C11.9549 1.00452 12.8312 1.59002 13.5693 2.32813C14.3074 3.06623 14.8929 3.94249 15.2924 4.90688C15.6918 5.87126 15.8974 6.90488 15.8974 7.94872C15.8974 8.99256 15.6918 10.0262 15.2924 10.9906C14.9914 11.7172 14.5848 12.3938 14.0869 12.999L19.7747 18.6868C20.0751 18.9872 20.0751 19.4743 19.7747 19.7747C19.4743 20.0751 18.9872 20.0751 18.6868 19.7747L12.999 14.0869C12.3938 14.5848 11.7172 14.9914 10.9906 15.2924C10.0262 15.6918 8.99256 15.8974 7.94872 15.8974C6.90488 15.8974 5.87126 15.6918 4.90688 15.2924C3.94249 14.8929 3.06623 14.3074 2.32813 13.5693C1.59002 12.8312 1.00452 11.9549 0.60506 10.9906C0.2056 10.0262 0 8.99256 0 7.94872C0 6.90488 0.2056 5.87126 0.60506 4.90688C1.00452 3.94249 1.59002 3.06623 2.32813 2.32813C3.06623 1.59002 3.94249 1.00452 4.90688 0.60506ZM7.94872 1.53846C7.10691 1.53846 6.27335 1.70427 5.49562 2.02641C4.71789 2.34856 4.01123 2.82073 3.41598 3.41598C2.82073 4.01123 2.34856 4.71789 2.02641 5.49562C1.70427 6.27335 1.53846 7.10691 1.53846 7.94872C1.53846 8.79053 1.70427 9.62409 2.02641 10.4018C2.34856 11.1795 2.82073 11.8862 3.41598 12.4815C4.01123 13.0767 4.71789 13.5489 5.49562 13.871C6.27335 14.1932 7.10691 14.359 7.94872 14.359C8.79053 14.359 9.62409 14.1932 10.4018 13.871C11.1795 13.5489 11.8862 13.0767 12.4815 12.4815C13.0767 11.8862 13.5489 11.1795 13.871 10.4018C14.1932 9.62409 14.359 8.79053 14.359 7.94872C14.359 7.10691 14.1932 6.27335 13.871 5.49562C13.5489 4.71789 13.0767 4.01123 12.4815 3.41598C11.8862 2.82073 11.1795 2.34856 10.4018 2.02641C9.62409 1.70427 8.79053 1.53846 7.94872 1.53846Z" fill="#252831"/>
@@ -72,18 +41,19 @@
       
       <ul class='list-chat'>
          <li 
+            @click='go_to_chat(cons.conversation_id_hash)'
             v-for='(cons, conversationIndex) in get_conversations' :key='conversationIndex' class='chat-item'>
 
             <div class='leading'>
-               <img :src="cons.user_avatar">
+               <img :src="cons.avatar.url">
             </div>
             <div class='contents'>
                <div class='tt01'>
-                  <div class='name-chat'>{{ cons.username }}</div>
-                  <div class='time'>{{ get_datetime(cons.time_created.seconds)}}</div>
+                  <div class='name-chat'>{{ cons.name }}</div>
+                  <div class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
                </div>
                <div class='tt02'>
-                  <p class='text'>{{ cons.messages }}</p>
+                  <p class='text'>{{ truncateUTF8String(cons.message) }}</p>
                   <div class='badge-is_read' v-show='cons.count_new_messages > 0'>{{ cons.count_new_messages }}</div>
                </div>
                
@@ -100,50 +70,36 @@
       </div>
    </div>
 
-   <div class='beta-show-store'>
-      <div class='list-store'>
-         <button class='beta-button' 
-            @click='chat_to_store({
-               from_user: 
-               to_user:
-               pin_product: 
-            })' 
-            v-for='(store, storeIndex ) in get_store_list' :key='storeIndex'>
-            Store {{ store }}
-         </button>
-      </div>
-   </div>
 
 </div>
 
 <script type='module'>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, getDocs, limit, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
+// import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+// import { getFirestore, collection, query, where, orderBy, getDocs, limit, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 
-const firebaseConfig = {
-   apiKey: "AIzaSyAIiPyRBqrwY8LVx5AruzKmsjL96j_lzr4",
-   authDomain: "watergo-chat.firebaseapp.com",
-   projectId: "watergo-chat",
-   storageBucket: "watergo-chat.appspot.com",
-   messagingSenderId: "663475773045",
-   appId: "1:663475773045:web:e71a08bee3a9506c39223c",
-   measurementId: "G-4E3CS9NC3T"
-};
+// const firebaseConfig = {
+//    apiKey: "AIzaSyAIiPyRBqrwY8LVx5AruzKmsjL96j_lzr4",
+//    authDomain: "watergo-chat.firebaseapp.com",
+//    projectId: "watergo-chat",
+//    storageBucket: "watergo-chat.appspot.com",
+//    messagingSenderId: "663475773045",
+//    appId: "1:663475773045:web:e71a08bee3a9506c39223c",
+//    measurementId: "G-4E3CS9NC3T"
+// };
 
 
 
 var app = Vue.createApp({
    data (){
-
       return {
          loading: false,
          conversations: [],
          inputSearch: '',
          database: null,
          user_id: <?php echo $user_id; ?>,
-
-         store_list: '<?php echo implode(',', $store_list_id); ?>'
+         where_app: '<?php echo $where_app; ?>',
+         window_width: $(window).width()
       }
       
    },
@@ -153,40 +109,43 @@ var app = Vue.createApp({
       get_conversations(){
          var _filter = this.conversations;
 
-         return _filter.sort((a, b) => b.time_created - a.time_created);
+         if( this.inputSearch != ''){
+            _filter = this.conversations.filter(item =>   
+               item.name.toLowerCase().includes(
+                  this.inputSearch.toLowerCase()
+               )
+            );
+         }else{
+            _filter = this.conversations;
+         }
+
+         return _filter.sort((a, b) => b.count_new_messages - a.count_new_messages);
       },
 
       get_store_list(){
          return this.store_list.split(',');
       },
 
-      filter_search(){
 
-      }
    },
 
    methods: {
+
+      truncateUTF8String(n){ 
+         
+         if( this.window_width <= 320 ){
+            return window.truncateUTF8String(n, 28 );
+         }else if(this.window_width >= 375){
+            return window.truncateUTF8String(n, 32 );
+         }else{
+            return n;
+         }
+      },
+
       goBack(){ window.goBack()},
 
       gotoChatMessenger(messenger_id){ 
          window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&messenger_id=' + messenger_id + '&appt=N';
-      },
-
-      get_datetime( timestamp ){
-         var date_format = this.timestamp_to_date(timestamp);
-         return this.getTimeDifference( date_format);
-      },
-      
-      timestamp_to_date(timestamp) {
-         var date = new Date(timestamp * 1000);
-         var day = date.getDate().toString().padStart(2, '0');
-         var month = (date.getMonth() + 1).toString().padStart(2, '0');
-         var year = date.getFullYear();
-         var hours = date.getHours().toString().padStart(2, '0');
-         var minutes = date.getMinutes().toString().padStart(2, '0');
-         var seconds = date.getSeconds().toString().padStart(2, '0');
-         // YEAR MONTH DAY H:i:s
-         return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
       },
 
       getTimeDifference(datetime){ return window.getTimeDifference(datetime)},
@@ -204,79 +163,151 @@ var app = Vue.createApp({
                return res.data;
             }
          }
-
       },
 
+      async go_to_chat( conversation_id ){ 
+         var form = new FormData();
+         form.append('action', 'atlantis_count_pin_product');
+         form.append('conversation_id', conversation_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app='+ this.where_app +'&appt=N';
+         }
+      },
+
+      async atlantis_count_messeage_from_conversation_id(conversation_id){
+         var form = new FormData();
+         form.append('action', 'atlantis_count_messeage_from_conversation_id');
+         form.append('conversation_id', conversation_id);
+         form.append('where_app', this.where_app);
+         var r = await window.request(form);
+         if(r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'count_new_messages'){
+               return res.data;
+            }
+         }
+      },
+
+      async atlantis_load_all_conversation(){
+         var form = new FormData();
+         form.append('action', 'atlantis_load_all_conversation');
+         form.append('where_app', this.where_app);
+         
+         var placeholders = [];
+         if( this.conversations.length > 0 ){
+            this.conversations.forEach( item => {
+               placeholders.push(item.conversation_id);
+            });
+            form.append('placeholders', JSON.stringify(placeholders) );
+         }
+         var r = await window.request(form);
+         if( r != undefined){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'conversation_found' ){
+               res.data.forEach( item => {
+                  var _exists = this.conversations.some( cons => cons.conversation_id == item.conversation_id );
+                  if( !_exists){
+                     this.conversations.push( item );
+                  }
+               });
+            }
+         }
+      }
+
+
    },
 
-   async update(){
-
+   update(){
+      window.appbar_fixed();
    },
+
 
    async created(){
 
       this.loading = true;
+
       // Initialize Firebase
-      const appFireBase = initializeApp(firebaseConfig);
-      this.database = getFirestore(appFireBase);
+      // const appFireBase = initializeApp(firebaseConfig);
+      // this.database = getFirestore(appFireBase);
 
-      const messengers = query( 
-         collection(this.database, "messengers"), 
-         where("from_user", '==', this.user_id),
-         where("to_user_hidden", '==', false)
-      );
+      // if( window.appBridge != undefined ){
+      //    window.appBridge.setEnableScroll(false);
+      // }
 
-      await onSnapshot(messengers, async (querySnapshot) => {
-         const promises = [];
-         await querySnapshot.forEach( async (doc) => { 
-
-            if( doc != undefined ){
-               var _document_id = doc.id;
-               var _findIndex = this.conversations.findIndex( item => item.doc_id == doc.id );
-               if( _findIndex == undefined || _findIndex == -1 ){
-
-                  promises.push(
-                     this.get_user(doc.data().to_user)
-                        .then( _get_user => {
-                           this.conversations.push({
-                              doc_id: _document_id,
-                              user_avatar: _get_user.user_avatar.url,
-                              username: _get_user.username,
-                              messages: 'Tap to chat',
-                              is_read: false,
-                              count_new_messages: 0,
-                              ...doc.data()
-                           });
-                        }
-                     )
-                  );
-
-                  // QUERY GET MESSAGES
-                  const messages = query(
-                     collection(this.database, "messages"),
-                     where("messenger_id", '==', doc.id),
-                     orderBy('timestamp', 'desc'), limit(1)
-                  );
-
-                  await onSnapshot(messages, async(queryMessagesSnapshot) => {
-                     await queryMessagesSnapshot.forEach(async (doc) => {
-                        var _findIndex = this.conversations.findIndex(item => item.doc_id == doc.data().messenger_id);
-                        if ( _findIndex !== -1) {
-                           this.conversations[_findIndex].messages       = doc.data().contents;
-                           this.conversations[_findIndex].time_created   = doc.data().timestamp;
-                        }
-                     });
-                  });
-
-               }
-            }
-
+      setInterval( async () => {
+         await this.atlantis_load_all_conversation();
+      }, 1800 );
+      
+      setInterval( async () => {
+         await this.conversations.forEach( async ( cons, consIndex ) => {
+            var _res = await this.atlantis_count_messeage_from_conversation_id( cons.conversation_id_hash );
+            this.conversations[consIndex].count_new_messages = _res.count;
+            this.conversations[consIndex].message            = _res.message;
+            this.conversations[consIndex].timestamp          = _res.timestamp;
          });
+      }, 1800);
 
-         await Promise.all(promises);
-         setTimeout(() => {}, 500);
-      });
 
+      // const messengers = query( 
+      //    collection(this.database, "messengers"), 
+      //    where("from_user", '==', this.user_id),
+      //    where("to_user_hidden", '==', false)
+      // );
+
+      // await onSnapshot(messengers, async (querySnapshot) => {
+      //    const promises = [];
+      //    await querySnapshot.forEach( async (doc) => { 
+
+      //       if( doc != undefined ){
+      //          var _document_id = doc.id;
+      //          var _findIndex = this.conversations.findIndex( item => item.doc_id == doc.id );
+      //          if( _findIndex == undefined || _findIndex == -1 ){
+
+      //             promises.push(
+      //                this.get_user(doc.data().to_user)
+      //                   .then( _get_user => {
+      //                      this.conversations.push({
+      //                         doc_id: _document_id,
+      //                         user_avatar: _get_user.user_avatar.url,
+      //                         username: _get_user.username,
+      //                         messages: 'Tap to chat',
+      //                         is_read: false,
+      //                         count_new_messages: 0,
+      //                         ...doc.data()
+      //                      });
+      //                   }
+      //                )
+      //             );
+
+      //             // QUERY GET MESSAGES
+      //             const messages = query(
+      //                collection(this.database, "messages"),
+      //                where("messenger_id", '==', doc.id),
+      //                orderBy('timestamp', 'desc'), limit(1)
+      //             );
+
+      //             await onSnapshot(messages, async(queryMessagesSnapshot) => {
+      //                await queryMessagesSnapshot.forEach(async (doc) => {
+      //                   var _findIndex = this.conversations.findIndex(item => item.doc_id == doc.data().messenger_id);
+      //                   if ( _findIndex !== -1) {
+      //                      this.conversations[_findIndex].messages       = doc.data().contents;
+      //                      this.conversations[_findIndex].time_created   = doc.data().timestamp;
+      //                   }
+      //                });
+      //             });
+
+      //          }
+      //       }
+
+      //    });
+
+      //    await Promise.all(promises);
+         // setTimeout(() => {}, 500);
+      // });
+
+      window.appbar_fixed();
       this.loading = false;
 
    }
@@ -317,22 +348,9 @@ window.app = app;
       padding-right: 30px;
    }
 
-   /*  */
-
-   .beta-show-store{
-      margin-top: 15px;
-      padding: 0 15px;
-   }
-
-   .beta-button{
-      background: #2790F9;
-      color: white;
-      font-size: 14px;
-      outline: none;
-      border: none;
-      margin-right: 5px;
-      margin-bottom: 5px;
-      padding: 0 4px;
+   .list-chat{
+      overflow-y: scroll;
    }
 
 </style>
+

@@ -48,7 +48,7 @@ $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = ".get_current_user_id(
       <div class='support-content'>
          <div v-if='supports.length > 0' class='list-support'>
             <ul>
-               <li @click='gotoPageSupportDetail(item.id)' v-for='(item , index) in supports' :key='index'>
+               <li @click='gotoPageSupportDetail(item.id)' v-for='(item , index) in filter_supports' :key='index'>
                   {{ item.question }}
                </li>
             </ul>
@@ -98,6 +98,8 @@ createApp({
          loading: false,
          supports: [],
          inputSearch: "",
+
+         select_app: '',
       }
    },
 
@@ -107,21 +109,12 @@ createApp({
       gotoPageSupportDetail(support_id){ window.gotoPageSupportDetail(support_id);},
       gotoPageSupportAdd(){window.gotoPageSupportAdd()},
       gotoPageSupportNotification(){ window.gotoPageSupportNotification()},
+   },
 
-      async get_admin_support_question(){
-         // var form = new FormData();
-         // form.append('action', 'atlantis_get_admin_supports_for_user');
-         // var r = await window.request(form);
-         // if( r != undefined ){
-         //    var res = JSON.parse( JSON.stringify(r));
-         //    if( res.message == 'admin_supports_ok' ){
-         //       res.data.forEach( item => item.admin_side = true );
-         //       this.supports.push( ...res.data );
-         //    }
-         // }
-      },
-
-
+   computed: {
+      filter_supports(){
+         return this.supports.sort( (a, b) => b.time_created - a.time_created );
+      }
    },
 
    watch : {
@@ -148,12 +141,15 @@ createApp({
    },
 
    async created(){
-      this.loading = true;
+      const urlParams   = new URLSearchParams(window.location.search);
+      this.select_app   = urlParams.get('select_app');
 
-      await this.get_admin_support_question();
+      this.loading = true;
+      // await this.get_admin_support_question();
 
       var form = new FormData();
       form.append('action', 'atlantis_support');
+      form.append('select_app', this.select_app);
       if( this.supports.length == 0 ){
          var r = await window.request(form);
          if( r != undefined ){
@@ -176,3 +172,11 @@ createApp({
    }
 }).mount('#app');
 </script>
+<style>
+   .page-support .list-support li{
+      min-height: 60px;
+      height: auto;
+      padding: 6px 16px;
+      padding-right: 40px;
+   }
+</style>
