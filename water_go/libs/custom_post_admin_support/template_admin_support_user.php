@@ -189,6 +189,7 @@ function template_admin_support_user(){
                   var form = new FormData();
                   form.append('action', 'atlantis_update_user_admin_support');
                   form.append('id', this.id );
+                  form.append('question', this.question );
                   form.append('answer', this.answer );
                   form.append('select_app', this.selectedApp)
 

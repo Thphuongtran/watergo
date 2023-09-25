@@ -3,7 +3,7 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.66');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.73');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 
@@ -11,7 +11,7 @@ function stylesheet(){
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
    wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.64');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.66');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.73');
 
 }
 
@@ -147,14 +147,20 @@ add_action('after_setup_theme', 'language_custom');
 function language_custom($locale) {
    $locale = "vi";
    $headers = array_change_key_case(getallheaders(),CASE_LOWER);
-   if (isset($headers["app_language"]) && !empty($headers["app_language"])) {  
+   if (isset($headers["app_language"]) && !empty($headers["app_language"]) ) {  
       $locale = $headers["app_language"];
-      // echo 'USE APPLANGUAGE ' . $locate;
+      if( isset( $_COOKIE['site_lang'] ) && $headers["app_language"] == $_COOKIE['site_lang'] ){
+         $locale = $headers["app_language"];
+      }else{
+         $locale = $_COOKIE['site_lang'];
+      }
    } else if(isset($_COOKIE['site_lang'])){
       $locale = $_COOKIE['site_lang'];
-      // echo 'USE SITELANG ' . $locale;
    }
    if($locale == "en") $locale = "en_US";
+   if($locale == "vi") $locale = "vi";
+   if($locale == "ko") $locale = "ko_KR";
+
    switch_to_locale($locale);
 }
 

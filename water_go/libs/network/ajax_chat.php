@@ -147,8 +147,8 @@ function atlantis_load_all_conversation(){
 
       global $wpdb;
       // $res_cons = $wpdb->get_results($sql_conversation);
-      $prepare = $wpdb->prepare($sql_conversation, $wheres);
-      $res_cons = $wpdb->get_results($prepare);
+      $prepare    = $wpdb->prepare($sql_conversation, $wheres);
+      $res_cons   = $wpdb->get_results($prepare);
 
 
       if( empty( $res_cons )){
@@ -177,7 +177,6 @@ function atlantis_load_all_conversation(){
             $vl->name = $user_name;
             $vl->count_new_messages = $vl->to_user_count_messages;
          }
-
       }
 
 
@@ -308,6 +307,13 @@ function atlantis_send_message(){
 
       $timestamp  = atlantis_current_datetime();
 
+      $product_id          = isset($_POST['product_id']) ? $_POST['product_id'] : '';
+      $product_name        = isset($_POST['product_name']) ? $_POST['product_name'] : '';
+      $product_name_second = isset($_POST['product_name_second']) ? $_POST['product_name_second'] : '';
+      $product_price       = isset($_POST['product_price']) ? $_POST['product_price'] : '';
+      $product_price_discount = isset($_POST['product_price_discount']) ? $_POST['product_price_discount'] : '';
+      $product_image       = isset($_POST['product_image']) ? $_POST['product_image'] : '';
+
       $args = [
          'conversation_id_hash'   => $conversation_id,
          'user_id'                => $user_id,
@@ -315,6 +321,21 @@ function atlantis_send_message(){
          'timestamp'              => $timestamp,
          'is_read'                => 0
       ];
+
+      if( 
+         $product_id != '' &&
+         $product_name != '' &&
+         $product_name_second != '' &&
+         $product_price != '' &&
+         $product_image != '' 
+      ){
+         $args['product_id']              = $product_id;
+         $args['product_name']            = $product_name;
+         $args['product_name_second']     = $product_name_second;
+         $args['product_price']           = $product_price;
+         $args['product_price_discount']  = $product_price_discount;
+         $args['product_image']           = $product_image;
+      }
 
       $send_message     = $wpdb->insert('wp_watergo_messages', $args );
       $sql_get_count    = "SELECT * FROM wp_watergo_conversations WHERE conversation_id_hash = '$conversation_id'";
@@ -347,7 +368,13 @@ function atlantis_send_message(){
             'user_id'                => $user_id,
             'content'                => $chat_content,
             'timestamp'              => $timestamp,
-            'is_read'                => 0
+            'is_read'                => 0,
+            'product_id'             => $product_id != '' ? $product_id : null,
+            'product_name'           => $product_name != '' ? $product_name : null,
+            'product_name_second'    => $product_name_second != '' ? $product_name_second : null,
+            'product_price'          => $product_price != '' ? $product_price : null,
+            'product_price_discount' => $product_price_discount != '' ? $product_price_discount : null,
+            'product_image'          => $product_image != '' ? $product_image : null,
          ] ]);
          wp_die();
       }
@@ -484,8 +511,6 @@ function atlantis_load_all_conversations_id(){
 }
 
 
-
-
 add_action( 'wp_ajax_nopriv_atlantis_get_account_store', 'atlantis_get_account_store' );
 add_action( 'wp_ajax_atlantis_get_account_store', 'atlantis_get_account_store' );
 
@@ -553,21 +578,11 @@ function atlantis_create_or_get_conversation(){
       $sql_check_conversation = "SELECT * FROM wp_watergo_conversations WHERE from_user = $from_user AND to_user = $to_user LIMIT 1";
       $res_check_conversation = $wpdb->get_results($sql_check_conversation);
 
-      $pin_product            = isset($_POST['pin_product']) ? $_POST['pin_product'] : 0;
-
       if( !empty( $res_check_conversation ) ){
-         if( $pin_product != 0){
-
-            $wpdb->update('wp_watergo_conversations', [
-               'pin_product' => $pin_product,
-            ], ['conversation_id_hash' => $res_check_conversation[0]->conversation_id_hash]);
-         }
-
          wp_send_json_success(['message' => 'get_conversation_ok', 'data' => $res_check_conversation[0]->conversation_id_hash ]);
          wp_die();
       }
 
-      
       $conversation_id_hash   = bin2hex(random_bytes(32));
       $created_at             = atlantis_current_datetime();
 
@@ -576,10 +591,14 @@ function atlantis_create_or_get_conversation(){
          'from_user'             => $from_user,
          'to_user'               => $to_user,
          'created_at'            => $created_at,
-         'pin_product'           => $pin_product,
          'user_product_count'    => 0,
          'store_product_count'   => 0,
       ]);
+
+      // $pin_product_to_message = $wpdb->insert('wp_watergo_messages', [
+      //    'conversation_id_hash'  => $conversation_id_hash,
+      //    'timestamp'             => atlantis_current_datetime(),
+      // ]);
 
       if( $inserted ){
          wp_send_json_success(['message' => 'get_conversation_ok', 'data' => $conversation_id_hash ]);
@@ -628,7 +647,7 @@ function atlantis_get_conversation(){
             $user       = get_user_by('id', $vl->from_user);
             $user_name  = $user->data->display_name;
          }
-         $vl->user_name = $user_name;  
+         $vl->user_name = $user_name;
       }
 
       wp_send_json_success(['message' => 'conversation_found', 'data' => $res[0]]);
@@ -846,30 +865,6 @@ function atlantis_get_message_realtime_per_second(){
    }
 }
 
-add_action( 'wp_ajax_nopriv_atlantis_count_pin_product', 'atlantis_count_pin_product' );
-add_action( 'wp_ajax_atlantis_count_pin_product', 'atlantis_count_pin_product' );
-
-function atlantis_count_pin_product(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_pin_product' ){
-      $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
-      $where_app        = isset($_POST['where_app']) ? $_POST['where_app'] : '';
-
-      if( $where_app == '' ){
-         wp_send_json_error(['message' => 'message_not_found' ]);
-         wp_die();
-      }
-
-      if( $where_app == 'chat_to_user'){
-
-      }
-      if( $where_app == 'chat_to_store'){
-         
-      }
-
-
-   }
-}
-
 add_action( 'wp_ajax_nopriv_atlantis_get_last_time_message', 'atlantis_get_last_time_message' );
 add_action( 'wp_ajax_atlantis_get_last_time_message', 'atlantis_get_last_time_message' );
 
@@ -894,27 +889,46 @@ function atlantis_get_last_time_message(){
    }
 }
 
-add_action( 'wp_ajax_nopriv_atlantis_get_first_time_message', 'atlantis_get_first_time_message' );
-add_action( 'wp_ajax_atlantis_get_first_time_message', 'atlantis_get_first_time_message' );
 
-function atlantis_get_first_time_message(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_first_time_message'){
-      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
-      if( $conversation_id == '' ){
-         wp_send_json_error(['message' => 'message_time_not_found' ]);
+add_action( 'wp_ajax_nopriv_atlantis_get_product_and_check', 'atlantis_get_product_and_check' );
+add_action( 'wp_ajax_atlantis_get_product_and_check', 'atlantis_get_product_and_check' );
+
+function atlantis_get_product_and_check(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_product_and_check' ){
+      $product_id       = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+      
+      if($product_id == 0 ){
+         wp_send_json_error(['message' => 'product_not_found 1']);
          wp_die();
       }
+      $product = null;
 
       global $wpdb;
-      $sql = "SELECT timestamp FROM wp_watergo_messages WHERE conversation_id_hash = '$conversation_id' ORDER BY timestamp ASC LIMIT 1 ";
-      $res = $wpdb->get_results( $sql);
-      if( empty( $res )){
-         wp_send_json_error(['message' => 'message_time_not_found' ]);
+
+      $sql_check_product_already_in_message = "SELECT * FROM wp_watergo_messages WHERE product_id = $product_id";
+      $res = $wpdb->get_results( $sql_check_product_already_in_message );
+
+      // PRODUCT ALREADY INSERT IN MESSAGE -> SKIP 
+      if( ! empty( $res )){
+         wp_send_json_error(['message' => 'product_not_found 2']);
          wp_die();
       }
 
-      wp_send_json_error(['message' => 'message_time_found', 'data' => $res[0]->timestamp ]);
-      wp_die();
-   }
+      $product = func_atlantis_get_product_by([
+         'id'           => $product_id,
+         'get_by'       => 'product_id',
+         'limit_image'  => true,
+         'image_size'   => 'medium'
+      ]);
 
+      if( empty($product) ){
+         wp_send_json_error(['message' => 'product_not_found 3']);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $product[0] ]);
+      wp_die();
+
+      
+   }
 }

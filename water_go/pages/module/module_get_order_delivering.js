@@ -67,12 +67,16 @@ const module_get_order_delivering = {
       },
 
       title_compact( order ){
+         // console.log( this.$root.get_locale );
+
          var _order_number = window.addLeadingZeros( parseInt(order.order_number));
          if( this.$root.get_locale == 'vi'){
             return `<p>Đơn <span class='t-primary'>#${_order_number}</span> đang chờ cửa hàng xác nhận</p>`;
-         }else{
-            return `<p>Order <span class='t-primary'>#${_order_number}</span> is awaiting store confirmation</p>`;
          }
+         if( this.$root.get_locale == 'ko_KR'){
+            return `<p>고객님의 주문 <span class='t-primary'>#${_order_number}</span> 확인 중입니다</p>`;
+         }
+         return `<p>Order <span class='t-primary'>#${_order_number}</span> is awaiting store confirmation</p>`;
       },
 
       async get_order_ordered(){

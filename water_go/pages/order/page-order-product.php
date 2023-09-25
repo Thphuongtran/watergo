@@ -1118,12 +1118,12 @@ var app = Vue.createApp({
          var _final_price = null;
 
          if( gr_price.price != gr_price.price_discount){
-            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ';
+            _final_price = gr_price.price.toLocaleString() + global_currency;
          }
 
          return {
             price: _final_price,
-            price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
+            price_discount: gr_price.price_discount.toLocaleString() + global_currency
          };
       },
    },

@@ -2,7 +2,6 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
-
 function truncateUTF8String(inputString, maxLength) {
    if (inputString.length <= maxLength) {
       return inputString;

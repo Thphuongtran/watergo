@@ -48,7 +48,7 @@
          </div>
 
          <div class='form-group'>
-            <span>Email</span>
+            <span><?php echo __('Email', 'watergo'); ?></span>
             <div class='form-group-email'>
                <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter you email', 'watergo'); ?>'>
                <button class='btn-email-verify' @click='btn_verify_email_and_sendcode' class='btn-text' :class='isCodeSend == true ? "is-send": ""' ><?php echo __('Verify', 'watergo'); ?></button>
@@ -90,11 +90,9 @@
          </div>
 
          <div v-if='get_locate == "ko_KR"' class='form-check style01 mt15' style="display:flex; align-items: center;column-gap: 4px;">
-            <label class='justify-center'>
-               <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span class='text text-nowrap'>서비스 이용약관</span>
-            </label>
-            <button @click='gotoPageUserTermConditions' class='link-term-condition t-primary'>에 모두 동의합니다</button>
+            <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
+            <button @click='gotoPageUserTermConditions' class='link-term-condition t-primary'>서비스 이용약관</button>
+            <span @click='toggle_term_conditions' class='text text-nowrap'>에 모두 동의합니다</span>
          </div>
 
          <p class='t-red mt15'>{{ res_text_sendcode }}</p>
@@ -169,7 +167,7 @@ createApp({
          languages: [
            { id: 'en_US', name: '<?php echo __("English", 'watergo'); ?>'},
            { id: 'vi', name: '<?php echo __("Vietnamese", 'watergo'); ?>'},
-         //   { id: 'ko_KR', name: 'Korean'},
+           { id: 'ko_KR', name: '<?php echo __("Korean", 'watergo'); ?>'},
          ],
          selectedLanguage: {},
          currentLocale: '',
@@ -212,8 +210,10 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'change_language_successfully'){
+               this.loading = true;
                if( window.appBridge != undefined ){
                   window.appBridge.setLanguage(res.data);
+                  // window.appBridge.close('refresh');
                   window.appBridge.refresh();
                }else{
                   window.location.reload();

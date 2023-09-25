@@ -1,3 +1,109 @@
+<style>
+   .list-messenger{
+      padding-bottom: 0px;
+   }
+   .scaffold{
+      padding-bottom: 55px;
+   }
+
+   .btn_send_message.disabled{
+      pointer-events: none;
+   }
+   .appbar-top{
+      position: relative;
+   }
+
+   .leading-group{
+      width: 72%;
+      position: absolute;
+      text-align: center;
+      transform: translateX(-50%);
+      left: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+   }
+
+   .list-messenger li{
+      margin-bottom: 0;
+   }
+   
+   .list-messenger li .message-wrapper:last-child{
+      margin-bottom: 30px;
+   }
+
+   .list-messenger li .messages{
+      white-space: pre-wrap;
+      word-break: break-word;
+   }
+   .list-messenger li .gr-messenger{
+      max-width: 75%;
+   }
+   .t-center{
+      justify-content: center;
+   }
+   .list-messenger li.messenger-time{
+      margin-bottom: 0;
+   }
+   .list-messenger{
+      padding: 0;
+      overflow-y: scroll;
+   }
+   .appbar-top{
+      border-bottom: 1px solid #DADADA;
+   }
+   .message-wrapper{
+      padding: 0 16px;
+   }
+
+   .message-wrapper {
+      display: flex;
+      flex-flow: column nowrap;
+   }
+   .message-wrapper .message-context {
+      position: relative;
+      display: flex;
+      flex-flow: row wrap;
+      position: relative;
+      padding-left: 32px;
+   }
+   .message-wrapper .message-context .avatar {
+      position: absolute;
+      top: 0;
+      left: 0;
+   }
+   .message-wrapper .message-context .contens {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #F3F3F3;
+      border-radius: 5px;
+      padding: 4px 10px;
+      margin: 4px 0;
+   }
+   .is-host .message-wrapper {
+      justify-content: flex-end;
+   }
+   .is-host .message-context {
+      margin-left: auto;
+      padding-right: 32px;
+   }
+   .is-host .message-context .contens {
+      background: #616DFF;
+      color: white;
+      text-align: right;
+   }
+   .is-host .message-context .avatar {
+      left: initial;
+      right: 0;
+   }
+
+   .product-pin{
+      margin: 0 -16px;
+      margin-bottom: 16px;
+   }
+
+
+</style>
 <?php 
    $user_id = get_current_user_id();
 ?>
@@ -24,28 +130,6 @@
             </div>
          </div>
 
-         <div class='appbar-bottom'>
-            <div v-if='product != null' class='product-pin'>
-               <div class='leading'>
-                  <img :src="product.product_image.url">
-               </div>
-               <div class='contents'>
-                  <div v-if='product != null' class='tt01'>{{ product.name }}</div>
-                  <div v-if='product != null' class='tt02'>{{ product.name_second }}</div>
-                  <div v-if='product != null' class='tt03'>
-                     <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
-                        <span class='price'>
-                           {{ common_price_after_discount(product ) }}
-                        </span>
-                        <span v-if='has_discount(product) == true' class='price-sub'>
-                           {{ common_price_show_currency(product.price) }}
-                        </span>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-
       </div>
 
       <div class='scaffold'>
@@ -53,54 +137,70 @@
          <div class='scaffold-body'>
 
             <ul class='list-messenger'>
+               
+               <!-- PIN PRODUCT  -->
+               <li v-if='messages.length == 0 && product != null' class='product-pin'>
+                  <div class='leading'>
+                     <img :src="product.product_image.url">
+                  </div>
+                  <div class='contents'>
+                     <div v-if='product != null' class='tt01'>{{ product.name }}</div>
+                     <div v-if='product != null' class='tt02'>{{ product.name_second }}</div>
+                     <div v-if='product != null' class='tt03'>
+                        <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                           <span class='price'>
+                              {{ common_price_after_discount(product ) }}
+                           </span>
+                           <span v-if='has_discount(product) == true' class='price-sub'>
+                              {{ common_price_show_currency(product.price) }}
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+
+               </li>
+
                <li
                   v-if='filter_messengers.length > 0'
                   v-for='(messenger, messengerKey) in filter_messengers' :key='messengerKey'
                   :class='messenger.user_id == current_user_id ? "is-host" : "" '
                >
 
-                  <!-- <div class='message-time'>
-                     {{ getDateTime_first_message( timestamp ) }}
-                  </div> -->
+                  <div class='message-wrapper'
+                     v-for='(messages, messagesKey) in messenger.messages' :key='messagesKey'
+                  >
 
-                  <div class='message-wrapper'>
-                     <div class='avatar'>
-                        <img :src="get_avatar_user_chat(messenger)" >
-                     </div>
-
-                     <div class='gr-messenger'>
-                        <div class='messages'
-                           v-for='(messages, messagesKey) in messenger.messages' :key='messagesKey'
-                        >
-                           {{ messages.content }}
+                     <div v-if='messages.product != null' class='product-pin'>
+                        <div class='leading'>
+                           <img :src="messages.product.product_image">
+                        </div>
+                        <div class='contents'>
+                           <div class='tt01'>{{ messages.product.product_name }}</div>
+                           <div class='tt02'>{{ messages.product.product_name_second }}</div>
+                           <div class='tt03'>
+                              <div class='gr-price' :class=" messages.product.product_price_discount != null ? 'has_discount' : '' ">
+                                 <span class='price'>{{ get_price_discount_from_message(messages.product) }}</span>
+                                 <span v-if='messages.product.product_price_discount != null' class='price-sub'>
+                                    {{ common_price_show_currency(messages.product.product_price) }}
+                                 </span>
+                              </div>
+                           </div>
                         </div>
                      </div>
 
+                     <div v-if='messages.show_time == true' class='message-time'>{{ formatDateTime(messages.timestamp) }}</div>
+
+                     <div class='message-context'>
+                        <div v-if='messenger.message_id == messages.message_id' class='avatar'><img :src="get_avatar_user_chat(messenger)" ></div>
+                        <div class='contens'>{{ messages.content }}</div>
+                     </div>
                   </div>
 
                </li>
+
+
+
             </ul>
-
-            <div v-if='product_newest != null' class='product-pin'>
-               <div class='leading'>
-                  <img :src="product_newest.product_image.url">
-               </div>
-               <div class='contents'>
-                  <div v-if='product_newest != null' class='tt01'>{{ product_newest.name }}</div>
-                  <div v-if='product_newest != null' class='tt02'>{{ product_newest.name_second }}</div>
-                  <div v-if='product_newest != null' class='tt03'>
-                     <div v-if='product_newest != null' class='gr-price' :class="has_discount(product_newest) == true ? 'has_discount' : '' ">
-                        <span class='price' v-if='product_newest != null'>
-                           {{ common_price_show_currency(product_newest.price) }}
-                        </span>
-                        <span v-if='product_newest != null && has_discount(product_newest) == true' class='price-sub'>
-                           {{ common_price_after_discount(product_newest ) }}
-                        </span>
-                     </div>
-                  </div>
-               </div>
-            </div>
-
          </div>
 
       </div>
@@ -162,6 +262,8 @@ var app = Vue.createApp({
       
       return {
          loading: false,
+         loading_data: false,
+
          message_not_found: false,
          messages: [],
          product: null,
@@ -193,6 +295,9 @@ var app = Vue.createApp({
 
          database: null,
 
+         pin_product: null,
+         is_save_pin_product: false,
+
          is_send: false,
 
       }
@@ -205,12 +310,29 @@ var app = Vue.createApp({
          let sortedMessengers = this.messages.sort((a, b) => a.message_id - b.message_id );
          this.timestamp = this.messages[0].timestamp;
          var _groupMessages = this.groupMessagesByUser(sortedMessengers);
+
+         // console.log( _groupMessages );
+
          return _groupMessages;
       }
 
    },
 
    methods: {
+
+      get_price_discount_from_message( product ){
+         if( product.product_price_discount != null ){
+            return this.common_price_show_currency( product.product_price_discount );
+         }else{
+            return this.common_price_show_currency( product.product_price );
+         }
+      },
+
+      show_datetime_from_message( current, next ){
+         var _current = current.split(' ');
+         var _next    = next.split(' ');
+
+      },
 
       handleFocusIn(){
          if( window.appBridge != undefined ){
@@ -240,48 +362,87 @@ var app = Vue.createApp({
          }
       },
 
+      formatDateTime(inputDateTime) {
+         const months = [
+            "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+         ];
+
+         const dateTime = new Date(inputDateTime);
+         const month = months[dateTime.getMonth()];
+         const day = dateTime.getDate();
+         const year = dateTime.getFullYear();
+         const hours = dateTime.getHours();
+         const minutes = dateTime.getMinutes();
+         const ampm = hours >= 12 ? 'pm' : 'am';
+         const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+         const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+         return `${month} ${day}, ${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+      },
+
       groupMessagesByUser(messages) {
          var result = [];
          var currentGroup = [];
+         var show_time = null; // Initialize outside the loop
 
-         for (var i = 0; i < messages.length; i++) {
-            var message = messages[i];
-            var nextMessage = messages[i + 1]; // Get the next message, if available
+         if( messages.length > 0 ){
+            for (var i = 0; i < messages.length; i++) {
+               var message = messages[i];
+               var nextMessage = messages[i + 1]; // if possible
+               var product = null;
 
-            if ( currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_id != message.user_id ) {
-               currentGroup = [];
-               result.push({
-                  user_id:    parseInt( message.user_id ),
-                  messages:   currentGroup
-               });
-            }
+               if (i == 0 ) {
+                  show_time = true;
+               } else {
+                  if (nextMessage && nextMessage !== undefined) {
+                     const currentDay = message.timestamp.split(' ')[0];
+                     const nextDay = nextMessage.timestamp.split(' ')[0];
 
-            currentGroup.push({
-               user_id:    parseInt(message.user_id),
-               content:    message.content,
-               message_id: parseInt(message.message_id),
-               timestamp:  message.timestamp
-            });
+                     if (currentDay !== nextDay) {
+                        show_time = true;
+                     }else{
+                        show_time = false;
+                     }
+                  }
+               }
 
-            // Check if there's a next message and compare dates (year, month, and day)
-            if (nextMessage) {
-               var currentDate = new Date(message.timestamp);
-               var nextDate = new Date(nextMessage.timestamp);
+               // timestamp format 2023-09-25 13:08:59
+               // output NOV 26,2022  18:10 pm
 
-               if (
-                  currentDate.getFullYear() !== nextDate.getFullYear() ||
-                  currentDate.getMonth() !== nextDate.getMonth() ||
-                  currentDate.getDate() !== nextDate.getDate()
-               ) {
-                  // Show the timestamp when the date is different from the next message
-                  currentGroup.push({
-                     timestamp: message.timestamp
+               if (message.product_id != null) {
+                     product = {
+                        product_id: message.product_id,
+                        product_name: message.product_name,
+                        product_name_second: message.product_name_second,
+                        product_price: message.product_price,
+                        product_price_discount: message.product_price_discount,
+                        product_image: message.product_image
+                     };
+               }
+
+               if (currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_id != message.user_id) {
+                  currentGroup = [];
+                  result.push({
+                     user_id: parseInt(message.user_id),
+                     messages: currentGroup,
+                     message_id: parseInt(message.message_id), // FIRST MESSAGE_ID
                   });
                }
+
+               currentGroup.push({
+                  user_id: parseInt(message.user_id),
+                  content: message.content,
+                  message_id: parseInt(message.message_id),
+                  timestamp: message.timestamp,
+                  product: product,
+                  show_time: show_time
+               });
             }
-
-
          }
+
+         console.log(result);
+
          return result;
       },
 
@@ -343,32 +504,12 @@ var app = Vue.createApp({
             }
          }
          return '';
-      },
+      }, 
 
-      getDateTime_first_message( datetimeInput, nextDatetime ){
-
-         var unpack              = datetimeInput.split(' ');
-         var [year, month, day]  = unpack[0].split('-');
-
-         if (datetimeInput != undefined) {
-            var inputDate = new Date(datetimeInput);
-            var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-            var formattedDate =
-               months[inputDate.getMonth()] + " " +
-               inputDate.getDate() + ", " +
-               inputDate.getFullYear() + " " +
-               inputDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return formattedDate;
-         }
-         return '';
-      },
-      // 
-
-      async atlantis_find_product( product_id ){
+      async atlantis_get_product_and_check( product_id ){
          var form = new FormData();
-         form.append('action', 'atlantis_find_product');
+         form.append('action', 'atlantis_get_product_and_check');
          form.append('product_id', product_id);
-         form.append('random_product', 1);
          var r = await window.request(form);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
@@ -378,20 +519,8 @@ var app = Vue.createApp({
          }
       },
 
-      async atlantis_find_product_newest( store_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_find_product_newest');
-         form.append('store_id', store_id );
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               this.product_newest = res.data;
-            }
-         }
-      },
-
       async atlantis_get_conversation(){
+         
          var form = new FormData();
          form.append('action', 'atlantis_get_conversation');
          form.append('conversation_id', this.conversation_id);
@@ -406,7 +535,6 @@ var app = Vue.createApp({
                this.to_user.avatar   = res.data.store_avatar.url;
                this.to_user.name     = res.data.store_name;
             }
-
             if( res.message == 'conversation_not_found' ){
                this.loading = false;
                this.message_not_found = true;
@@ -422,7 +550,7 @@ var app = Vue.createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'message_found' ){
-               res.data.forEach( (item ) => {
+               res.data.forEach( (item, itemIndex ) => {
                   var _exists = this.messages.some( message => message.message_id == item.message_id );
                   if(!_exists){
                      this.messages.push( item );
@@ -433,6 +561,7 @@ var app = Vue.createApp({
       },
 
       async atlantis_send_message(){
+         // console.log(this.product);
          if( this.chat_content != '' && this.chat_content.length > 0){
             this.is_send = true;
             var form = new FormData();
@@ -440,16 +569,43 @@ var app = Vue.createApp({
             form.append('conversation_id', this.conversation_id);
             form.append('chat_content', this.chat_content);
             form.append('where_app', this.where_app);
+            // save product
+            if( this.is_save_pin_product == false && this.product != null  ){
+               form.append('product_id', parseInt( this.product.id) );
+               form.append('product_name', this.product.name);
+               form.append('product_name_second', this.product.name_second );
+               form.append('product_price', parseInt( this.product.price ) );
+               form.append('product_image', this.product.product_image.url );
+               if( this.has_discount( this.product) == true ){
+                  var _discount_percent      = this.product.discount_percent;
+                  var _price_after_discount  = this.product.price - ( this.product.price * ( this.product.discount_percent / 100 ) );
+                  form.append('product_price_discount', parseInt(_price_after_discount) );
+               }else{
+                  form.append('product_price_discount', 0);
+               }
+
+            }
+
             var r = await window.request(form);
+
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'messenge_send_ok' ){
                   this.chat_content = '';
                   this.messages.push( res.data );
                   this.is_send = false;
-                  if( window.appBridge != undefined ){
-                     window.appBridge.setEnableScroll(true);
-                  }
+                  this.is_save_pin_product = true;
+
+                  // if( window.appBridge != undefined ){
+                  //    window.appBridge.setEnableScroll(true);
+                  // }
+
+                  // jQuery(document).ready(function($){
+                  //    $('html, body').animate({
+                  //       scrollTop: $(document).height()
+                  //    }, 0);
+                  // });
+
                   // COUNT MESSAGES
 
                   // var chatCollection   = collection( this.database, 'chat');
@@ -530,32 +686,31 @@ var app = Vue.createApp({
          }
       },
 
-      async atlantis_get_first_time_message( conversation_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_first_time_message');
-         form.append('conversation_id', conversation_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'message_time_found' ){
-               this.timestamp = res.data;
-            }
-         }
+      scrollToBottom(){
+         // Calculate the height of the document
+         const documentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+         
+         // Set the scroll position to the document height, which is the bottom of the page
+         console.log(documentHeight);
+         window.scrollTo(0, documentHeight);
       },
-
 
    },
 
 
-   update(){ window.appbar_fixed(); },
+   update(){ 
+      window.appbar_fixed(); 
+   },
+
+   async mounted(){
+      setInterval( async () => {
+         await this.atlantis_get_message_realtime_per_second(0);
+      }, 1800);
+   },
 
    async created(){
       // const appFireBase = initializeApp(firebaseConfig);
       // this.database = getFirestore(appFireBase);
-
-      // window.addEventListener('popstate', this.handleBeforeUnload);
-      // window.addEventListener('beforeunload', this.handleBeforeUnload);
-      // window.addEventListener('onbeforeunload', this.handleBeforeUnload);
 
       // if( window.appBridge != undefined ){
       //    window.appBridge.setEnableScroll(false);
@@ -565,122 +720,44 @@ var app = Vue.createApp({
       const urlParams         = new URLSearchParams(window.location.search);
       this.conversation_id    = urlParams.get('conversation_id');
       this.where_app          = urlParams.get('where_app');
+      this.pin_product        = urlParams.get('pin_product');
 
-      await this.atlantis_read_all_messages();
       await this.atlantis_get_conversation();
-      if( this.conversation != null ){
-         await this.atlantis_find_product(this.conversation.pin_product);
-         // await this.atlantis_get_first_time_message(this.conversation_id);
-      }
-      await this.atlantis_get_messeges();
+      await this.atlantis_read_all_messages();
+      await this.atlantis_get_product_and_check( this.pin_product );
 
-      if( this.product != null ){
-         // await this.atlantis_find_product_newest(parseInt(this.product.store_id));
+      if( this.messages.length == 0 ){
+         await this.atlantis_get_messeges();
       }
 
-      setInterval( async () => {
-         await this.atlantis_get_message_realtime_per_second(0);
+      await setInterval( async () => {
+         await this.atlantis_get_messeges();
       }, 1800);
+
+      console.log(this.messages);
 
       setTimeout(() => {
          this.loading = false;
          window.appbar_fixed();
       }, 1000);
 
-      var arr = [
-         {
-            "message_id": "109",
-            "timestamp": "2023-09-21 11:15:59",
-         },
-         {
-            "message_id": "110",
-            "timestamp": "2023-09-21 11:16:03",
-         },
-         {
-            "message_id": "111",
-            "timestamp": "2023-09-21 11:16:06",
-         },
-         {
-            "message_id": "112",
-            "timestamp": "2023-09-22 11:51:00",
-         }
-      ];
+      jQuery(document).ready(function($){
+         // $('body').animate({
+         //    scrollTop: $(document).height()
+         // }, 0);
+         var documentHeight = $(document).height();
+         $(window).scrollTop(documentHeight);
+
+      });
+
+      
 
 
-      for (var i = 0; i < arr.length; i++) {
-         var currentMessage = arr[i];
-         var nextMessage = arr[i + 1];
-
-         if (nextMessage) {
-            var currentTimestamp = new Date(currentMessage.timestamp);
-            var nextTimestamp = new Date(nextMessage.timestamp);
-
-            // Compare year, month, and day of the timestamps
-            if (
-                  currentTimestamp.getFullYear() !== nextTimestamp.getFullYear() ||
-                  currentTimestamp.getMonth() !== nextTimestamp.getMonth() ||
-                  currentTimestamp.getDate() !== nextTimestamp.getDate()
-            ) {
-                  // Timestamps are different, so set show_time to true
-                  currentMessage.show_time = true;
-            } else {
-                  // Timestamps are the same, so set show_time to false
-                  currentMessage.show_time = false;
-            }
-         } else {
-            // Last message, no next message to compare
-            currentMessage.show_time = false;
-         }
-      }
-
-
-      console.log(this.messages );
+      
 
    }
 }).mount('#app');
 window.app = app;
 
-
 </script>
-
-<style>
-   .list-messenger{
-      padding-bottom: 0px;
-   }
-   .scaffold{
-      padding-bottom: 100px;
-   }
-
-   .btn_send_message.disabled{
-      pointer-events: none;
-   }
-   .appbar-top{
-      position: relative;
-   }
-
-   .leading-group{
-      width: 72%;
-      position: absolute;
-      text-align: center;
-      transform: translateX(-50%);
-      left: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-   }
-
-   .list-messenger li .messages{
-      white-space: pre-wrap;
-      word-break: break-word;
-   }
-   .list-messenger li .gr-messenger{
-      max-width: 75%;
-   }
-   .t-center{
-      justify-content: center;
-   }
-   .list-messenger li.messenger-time{
-      margin-bottom: 0;
-   }
-</style>
 

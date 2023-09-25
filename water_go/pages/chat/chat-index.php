@@ -21,7 +21,7 @@
                <button @click='goBack' class='btn-action'>
                   <svg width="11" height="16" viewBox="0 0 11 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/></svg>
                </button>
-               <p class='leading-title'>Chat</p>
+               <p class='leading-title'><?php echo __('Chat', 'watergo'); ?></p>
             </div>
          </div>
 
@@ -99,7 +99,8 @@ var app = Vue.createApp({
          database: null,
          user_id: <?php echo $user_id; ?>,
          where_app: '<?php echo $where_app; ?>',
-         window_width: $(window).width()
+         window_width: $(window).width(),
+         get_locale: '<?php echo get_locale(); ?>'
       }
       
    },
@@ -148,7 +149,72 @@ var app = Vue.createApp({
          window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&messenger_id=' + messenger_id + '&appt=N';
       },
 
-      getTimeDifference(datetime){ return window.getTimeDifference(datetime)},
+      getTimeDifference(datetimeInput) {
+
+         if (datetimeInput != undefined ) {
+         
+            var unpack = datetimeInput.split(' ');
+            var [year, month, day] = unpack[0].split('-');
+            var [hour, min, sec] = unpack[1].split(':');
+            var datetime = new Date(year, month - 1, day, hour, min, sec);
+
+            var currentTimestamp = Date.now();
+            var messageTimestamp = datetime.getTime();
+
+            var timeDifferenceInMs = currentTimestamp - messageTimestamp;
+            var timeDifferenceInSeconds = Math.floor(timeDifferenceInMs / 1000);
+
+            var seconds = timeDifferenceInSeconds;
+            var minutes = Math.floor(seconds / 60);
+            var hours = Math.floor(minutes / 60);
+            var days = Math.floor(hours / 24);
+
+            if (days > 0) {
+               if( days == 1 ){
+                  return days + "<?php 
+                     if( get_locale() == 'ko_KR' ){echo __('day ago', 'watergo'); 
+                     }else{echo __(' day ago', 'watergo'); }
+                  ?>";
+               }else{
+                  return days + "<?php 
+                     if( get_locale() == 'ko_KR' ){echo __('days ago', 'watergo'); 
+                     }else{echo __(' days ago', 'watergo'); }
+                  ?>";
+               }
+            } else if (hours > 0) {
+               if( hours == 1 ){
+                  return hours + "<?php 
+                     if( get_locale() == 'ko_KR' ){echo __('hour ago', 'watergo'); 
+                     }else{echo __(' hour ago', 'watergo'); }
+                  ?>";
+               }else{
+                  return hours + "<?php 
+                     if( get_locale() == 'ko_KR' ){echo __('hours ago', 'watergo'); 
+                     }else{echo __(' hours ago', 'watergo'); }
+                  ?>";
+               }
+            } else if (minutes > 0) {
+               if( minutes == 1 ){
+                  return minutes + "<?php 
+                     if( get_locale() == 'ko_KR' ){echo __('min ago', 'watergo'); 
+                     }else{echo __(' min ago', 'watergo'); }
+                  ?>";
+               }else{
+                  return minutes + "<?php 
+                     if( get_locale() == 'ko_KR' ){echo __('mins ago', 'watergo'); 
+                     }else{echo __(' mins ago', 'watergo'); }
+                  ?>";
+               }
+            } else {
+               return seconds + "<?php 
+                  if( get_locale() == 'ko_KR'){echo __('second ago', 'watergo'); 
+                  }else{echo __(' second ago', 'watergo'); }
+               ?>";
+            }
+
+         }
+         return '';
+      },
 
       shortString(str){ return window.shortString(str)},
 
@@ -166,14 +232,7 @@ var app = Vue.createApp({
       },
 
       async go_to_chat( conversation_id ){ 
-         var form = new FormData();
-         form.append('action', 'atlantis_count_pin_product');
-         form.append('conversation_id', conversation_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app='+ this.where_app +'&appt=N';
-         }
+         window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app='+ this.where_app +'&appt=N';
       },
 
       async atlantis_count_messeage_from_conversation_id(conversation_id){
@@ -235,6 +294,10 @@ var app = Vue.createApp({
       // if( window.appBridge != undefined ){
       //    window.appBridge.setEnableScroll(false);
       // }
+      
+      if( this.conversations.length == 0 ){
+         await this.atlantis_load_all_conversation();
+      }
 
       setInterval( async () => {
          await this.atlantis_load_all_conversation();

@@ -350,6 +350,7 @@ var app = Vue.createApp({
 
       gotoPageOrder(){
          if( this.count_product_select > 0 ){
+            this.cart_stream();
             this.gotoOrderProduct();
          }
       },

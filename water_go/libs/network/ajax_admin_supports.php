@@ -220,6 +220,7 @@ function atlantis_update_user_admin_support(){
 
       $id         = isset($_POST['id']) ? $_POST['id'] : 0;
       $answer     = isset($_POST['answer']) ? $_POST['answer'] : '';
+      $question     = isset($_POST['question']) ? $_POST['question'] : '';
 
       if( $id == 0 ){
          wp_send_json_error(['message' => 'admin_supports_not_found']);
@@ -228,9 +229,10 @@ function atlantis_update_user_admin_support(){
 
       global $wpdb;
       $wpdb->update('wp_watergo_supports',[
-         'answer' => $answer,
-         'time_answer' => time(),
-         'is_read' => "0",
+         'answer'       => $answer,
+         'question'     => $question,
+         'time_answer'  => time(),
+         'is_read'      => 0,
       ], ['id' => $id ]);
 
       wp_send_json_success(['message' => 'update_admin_supports_ok']);

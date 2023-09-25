@@ -144,7 +144,7 @@ createApp({
                this.loading = false;
             
             }else if( res.message == 'password_is_not_same'){
-               this.t_res = '<?php echo __("Password it not same.", 'watergo'); ?>';
+               this.t_res = '<?php echo __("Password is not same.", 'watergo'); ?>';
                this.loading = false;
             }else if( res.message == 'current_password_is_not_correct'){
                this.t_res = '<?php echo __("Current Password it not correct.", 'watergo'); ?>';

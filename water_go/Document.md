@@ -79,3 +79,6 @@ appBridge.navigateTo("Me")
 
 common_get_product_price
 common_get_price_order
+
+admin
+^^X$&cl*%Anz59^dts&@ANDn

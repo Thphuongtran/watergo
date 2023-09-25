@@ -69,7 +69,7 @@ if(!empty(get_user_meta($current_user_id,"user_login_social",true)) && empty(get
          </div>
 
          <div class='form-group'>
-            <div class='label-style02'>Email</div>
+            <div class='label-style02'><?php echo __('Email', 'watergo'); ?></div>
             <input <?php if($disable_email) echo "readonly disabled"; ?>  class='input-style02' v-model='email' type="email">
          </div>
 

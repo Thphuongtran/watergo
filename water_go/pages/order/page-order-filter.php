@@ -126,7 +126,14 @@ var app = Vue.createApp({
             if( title == 'Friday' ) return 'Thứ Sáu';
             if( title == 'Saturday' ) return 'Thứ Bảy';
             if( title == 'Sunday' ) return 'Chủ Nhật';
-
+         }else if( this.get_locale == 'ko_KR' ){
+            if( title == 'Monday' )    return '월요일';
+            if( title == 'Tuesday' )   return '화요일';
+            if( title == 'Wednesday' ) return '수요일';
+            if( title == 'Thursday' )  return '목요일';
+            if( title == 'Friday' )    return '금요일';
+            if( title == 'Saturday' )  return '토요일';
+            if( title == 'Sunday' )    return '일요일';
          }else{
             return title;
          }
@@ -188,7 +195,7 @@ var app = Vue.createApp({
                });
             }
          });
-         return _total.toLocaleString('vi-VN') + ' đ';
+         return _total.toLocaleString('vi-VN') + global_currency;
       },
 
       count_total_product_in_order(order_id){

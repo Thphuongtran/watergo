@@ -90,7 +90,7 @@
             
             <li 
                :class='"order-status-" + order_status_current'
-               v-for='( order, keyOrder ) in order_filter':key='keyOrder'>
+               v-for='( order, keyOrder ) in order_filter' :key='keyOrder'>
                <div class='order-head'>
                   <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check form-check-order'><input @click='select_item(order.order_id)' type='checkbox' :checked='order.select'></div>
                   <div @click='select_item(order.order_id)' class='text-order-number'>#{{ order.order_number }}</div>
@@ -344,15 +344,11 @@ var app = Vue.createApp({
          ],
 
          // Reason for cancellation: 
-         // Misplaced product Đặt nhầm sản phẩm
-         // Change delivery information Thay đổi thông tin giao hàng
-         // Change delivery time Thay đổi thời gian giao hàng
-         // The store requested cancellation  Cửa hàng yêu cầu hủy
          reason_cancel: [
-            {label: '<?php echo __('Misplaced product', 'watergo');?>', active: false},
+            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', active: false},
             {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
             {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('The store requested cancellation', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', active: false},
             {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 

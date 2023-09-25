@@ -214,10 +214,10 @@ var app = Vue.createApp({
          time_shipping: [],
          
          reason_cancel: [
-            {label: 'Reason 1', active: false},
-            {label: 'Reason 2', active: false},
-            {label: 'Reason 3', active: false},
-            {label: 'Reason 4', active: false},
+            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', active: false},
             {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 

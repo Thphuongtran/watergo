@@ -134,9 +134,7 @@ function template_admin_support_all(){
                form.append('id', this.id );
                form.append('question', this.question );
                form.append('answer', this.answer );
-
                var r = await this.request(form);
-               console.log(r);
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'update_admin_supports_ok' ){
@@ -182,7 +180,7 @@ function template_admin_support_all(){
                   var res = JSON.parse( JSON.stringify( r ));
                   if( res.message == 'admin_supports_ok' ){
                      this.question = res.data.question;
-                     this.answer = res.data.question;
+                     this.answer = res.data.answer;
                   }
                }
 

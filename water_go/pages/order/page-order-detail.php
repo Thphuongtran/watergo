@@ -239,10 +239,10 @@ createApp({
          time_shipping: [],
 
          reason_cancel: [
-            {label: 'Reason 1', active: false},
-            {label: 'Reason 2', active: false},
-            {label: 'Reason 3', active: false},
-            {label: 'Reason 4', active: false},
+            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', active: false},
             {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 
@@ -263,6 +263,15 @@ createApp({
             if( title == 'Friday' ) return 'Thứ Sáu';
             if( title == 'Saturday' ) return 'Thứ Bảy';
             if( title == 'Sunday' ) return 'Chủ Nhật';
+
+         }else if( this.get_locale == 'ko_KR' ){
+            if( title == 'Monday' )    return '월요일';
+            if( title == 'Tuesday' )   return '화요일';
+            if( title == 'Wednesday' ) return '수요일';
+            if( title == 'Thursday' )  return '목요일';
+            if( title == 'Friday' )    return '금요일';
+            if( title == 'Saturday' )  return '토요일';
+            if( title == 'Sunday' )    return '일요일';
 
          }else{
             return title;
@@ -407,7 +416,7 @@ createApp({
             if( status == 'confirmed') return '준비중';
             if( status == 'delivering') return '배송중';
             if( status == 'complete') return '완료';
-            if( status == 'cancel') return 'Cancel';
+            if( status == 'cancel') return '취소';
          }else {
             if( status == 'ordered') return 'Pending';
             if( status == 'confirmed') return 'Prepare';
@@ -482,7 +491,7 @@ createApp({
                product.order_group_product_discount_percent
             );
          });
-         return _total.toLocaleString('vi-VN') + ' đ';
+         return _total.toLocaleString() + global_currency;
       },
 
       get_delivery_time_activity(){

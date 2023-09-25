@@ -1,6 +1,12 @@
 <?php
 
    pv_update_user_token();
+
+   echo '<pre>';
+   print_r(getallheaders());
+   print_r($_COOKIE);
+   echo ' LOCALE ' . get_locale();
+   echo '</pre>';
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

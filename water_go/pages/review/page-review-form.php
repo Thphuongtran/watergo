@@ -177,7 +177,7 @@ createApp({
                }
             }
          }else{
-            this.res_text = 'All field must be not empty';
+            this.res_text = '<?php echo __('All field must be not empty', 'watergo'); ?>';
          }
          this.loading = false;
 
@@ -202,7 +202,7 @@ createApp({
                }
             }
          }else{
-            this.res_text = 'All field must be not empty';
+            this.res_text = '<?php echo __('All field must be not empty', 'watergo'); ?>';
             this.loading = false;
          }
          

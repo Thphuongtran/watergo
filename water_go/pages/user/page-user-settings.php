@@ -99,6 +99,12 @@ var app = Vue.createApp({
          if( this.get_locale == 'vi'){
             if( this.user_language == 'Vietnamese') return 'Tiếng Việt';
             if( this.user_language == 'English') return 'Tiếng Anh';
+            if( this.user_language == 'Korean') return 'Tiếng Hàn';
+         }
+         if( this.get_locale == 'ko_KR'){
+            if( this.user_language == 'Vietnamese') return '베트남어';
+            if( this.user_language == 'English') return '영어';
+            if( this.user_language == 'Korean') return '한국어';
          }
          return this.user_language;
       },

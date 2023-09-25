@@ -1,15 +1,12 @@
 <?php 
 
    atlantis_setup_language();
-
    
    $get_locale = get_locale();
 
    if( is_user_logged_in() ){
       $user_id = get_current_user_id();
-      $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
-         ? (int) get_user_meta($user_id , 'user_store', true) 
-         : null;
+      $is_user_store = get_user_meta($user_id , 'user_store', true);
 
       if( $is_user_store == 1 || $is_user_store == true  ){
          $get_locale = 'vi';
@@ -22,10 +19,7 @@
    $auth_page = isset($_GET['auth_page']) ? $_GET['auth_page'] : '';
 
    if( in_array($auth_page, ['auth-store-login', 'auth-store-register', 'auth-store-forget-password', 'auth-store-reset-password']) ){
-      $get_locale = 'vi';
-      if( isset($_COOKIE['site_lang']) && $_COOKIE['site_lang'] != 'vi'){
-         func_quick_app_change_language_callback( 'vi');
-      }
+      func_quick_app_change_language_callback( 'vi');
    }
 
 ?>

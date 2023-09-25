@@ -12,7 +12,12 @@
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
-               <p class='leading-title'><?php echo __('Order', 'watergo'); ?></p>
+               <p class='leading-title'><?php 
+                  if( get_locale() == 'ko_KR' ){echo '주문';
+                  }else{
+                     echo __('Order', 'watergo'); 
+                  }
+               ?></p>
                <div class='leading-filter'>
                   <button @click='gotoOrderFilter("weekly")' class='btn-action pr10'><?php echo __('Week', 'watergo'); ?></button> | <button @click='gotoOrderFilter("monthly")' class='btn-action pl10'><?php echo __('Month', 'watergo'); ?></button>
                </div>
@@ -208,11 +213,9 @@ var app = Vue.createApp({
             },
             { 
                label: `<?php 
-                  if( get_locale() == 'vi'){
-                     echo 'Đã Huỷ';
-                  }else{
-                     echo 'Cancel';
-                  }
+                  if( get_locale() == 'vi'){ echo 'Đã Huỷ';
+                  }else if( get_locale() == 'ko_KR'){ echo '취소';
+                  }else{ echo 'Cancel'; }
                ?>`, value: 'cancel', active: false,
                icon: `
                   <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -275,7 +278,7 @@ var app = Vue.createApp({
                }
             }
          });
-         return _total.toLocaleString('vi-VN') + ' đ';
+         return _total.toLocaleString() + global_currency;
       },
 
       count_total_product_in_order(order_id){
@@ -302,22 +305,19 @@ var app = Vue.createApp({
          }
 
          if(this.get_locale == 'vi' ){
-            if( _status == 'Prepare'){
-               _status = 'Chờ Giao';
-            }
-            if( _status == 'ordered'){
-               _status = 'Đã Đặt';
-            }
-            if( _status == 'delivering'){
-               _status = 'Đang Giao';
-            }
-            if( _status == 'complete'){
-               _status = 'Hoàn Thành';
-            }
-            if( _status == 'cancel'){
-               _status = 'Đã Huỷ';
-            }
+            if( _status == 'ordered'){ _status = 'Đã Đặt'; }
+            if( _status == 'Prepare'){ _status = 'Chờ Giao'; }
+            if( _status == 'delivering'){ _status = 'Đang Giao'; }
+            if( _status == 'complete'){ _status = 'Hoàn Thành';}
+            if( _status == 'cancel'){ _status = 'Đã Huỷ'; }
+         }
 
+         if(this.get_locale == 'ko_KR' ){
+            if( _status == 'ordered'){ _status = '주문 완료'; }
+            if( _status == 'Prepare'){ _status = '준비중'; }
+            if( _status == 'delivering'){ _status = '배송중'; }
+            if( _status == 'complete'){ _status = '완료';}
+            if( _status == 'cancel'){ _status = '취소'; }
          }
 
 

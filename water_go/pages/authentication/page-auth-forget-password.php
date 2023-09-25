@@ -32,7 +32,7 @@
             <p class='t-center'><?php echo __("Don’t worry when it happens <br> Reset your password", 'watergo'); ?></p>
 
             <div class='form-group'>
-               <span>Email</span>
+               <span><?php echo __('Email', 'watergo'); ?></span>
                <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
             </div>
 
