@@ -712,9 +712,9 @@ var app = Vue.createApp({
       // const appFireBase = initializeApp(firebaseConfig);
       // this.database = getFirestore(appFireBase);
 
-      // if( window.appBridge != undefined ){
-      //    window.appBridge.setEnableScroll(false);
-      // }
+      if( window.appBridge != undefined ){
+         window.appBridge.setEnableScroll(false);
+      }
 
       this.loading = true;
       const urlParams         = new URLSearchParams(window.location.search);
