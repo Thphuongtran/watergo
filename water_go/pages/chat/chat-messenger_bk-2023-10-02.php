@@ -4,16 +4,15 @@
    }
    .scaffold{
       height: 100%;
-      overflow-y: auto;
+      padding-bottom: 55px;
+      overflow: hidden;
    }
 
    .btn_send_message.disabled{
       pointer-events: none;
    }
-
    .appbar-top{
       position: relative;
-      box-shadow: 0px 1px 0px #EFEFF4;
    }
 
    .leading-group{
@@ -52,6 +51,9 @@
    .list-messenger{
       padding: 0;
       overflow: hidden;
+   }
+   .appbar-top{
+      border-bottom: 1px solid #DADADA;
    }
    .message-wrapper{
       padding: 0 16px;
@@ -105,23 +107,6 @@
    .product-pin.first-pin{
       margin: 0;
    }
-   .product-pin.not-first{
-      margin-top: 16px;
-   }
-
-   .box-form-chat{
-      position: initial;
-   }
-
-   .page-chat{
-	   display: grid;
-	   grid-template-rows: 56px 1fr 56px;
-	   height: 100vh;
-	}
-
-   .list-messenger .pin-new-product{
-      margin-top: -14px;
-   }
 
 
 </style>
@@ -158,21 +143,40 @@
          <div class='scaffold-body'>
 
             <ul class='list-messenger'>
+               
+               <!-- PIN PRODUCT  -->
+               <li v-if='messages.length == 0 && product != null' class='product-pin first-pin'>
+                  <div class='leading'>
+                     <img :src="product.product_image.url">
+                  </div>
+                  <div class='contents'>
+                     <div v-if='product != null' class='tt01'>{{ product.name }}</div>
+                     <div v-if='product != null' class='tt02'>{{ product.name_second }}</div>
+                     <div v-if='product != null' class='tt03'>
+                        <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
+                           <span class='price'>
+                              {{ common_price_after_discount(product ) }}
+                           </span>
+                           <span v-if='has_discount(product) == true' class='price-sub'>
+                              {{ common_price_show_currency(product.price) }}
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+
+               </li>
 
                <li
                   v-if='filter_messengers.length > 0'
                   v-for='(messenger, messengerKey) in filter_messengers' :key='messengerKey'
-                  :class='[
-                     messenger.user_id == current_user_id ? "is-host" : "",
-                     messenger.user_id == null && product != null ? "pin-new-product" : "" 
-                  ]'
+                  :class='messenger.user_id == current_user_id ? "is-host" : "" '
                >
 
                   <div class='message-wrapper'
                      v-for='(messages, messagesKey) in messenger.messages' :key='messagesKey'
                   >
 
-                     <div v-if='messages.product != null' class='product-pin' :class='messagesKey > 1 ? "not-first" : "" '>
+                     <div v-if='messages.product != null' class='product-pin'>
                         <div class='leading'>
                            <img :src="messages.product.product_image">
                         </div>
@@ -190,13 +194,12 @@
                         </div>
                      </div>
 
-                     <div v-if='can_show_time_chat(messages.message_id)' class='message-time'>{{ formatDateTime(get_show_time_chat(messages.message_id)) }}</div>
-                     
-                     <div v-if='messenger.user_id != null' class='message-context'>
+                     <div v-if='messages.show_time == true' class='message-time'>{{ formatDateTime(messages.timestamp) }}</div>
+
+                     <div class='message-context'>
                         <div v-if='messenger.message_id == messages.message_id' class='avatar'><img :src="get_avatar_user_chat(messenger)" ></div>
                         <div class='contens'>{{ messages.content }}</div>
                      </div>
-
                   </div>
 
                </li>
@@ -207,30 +210,29 @@
          </div>
 
       </div>
-
-      <div v-if='message_not_found == false' class='box-form-chat'>
-         <div class='box-chat'>
-            <div class='avatar'>
-               <img v-if='where_app == "chat_to_store"' :src='from_user.avatar'>
-               <img v-if='where_app == "chat_to_user"' :src='to_user.avatar'>
-            </div>
-            
-            <label class='input-chat'>
-               <input 
-                  @focusin='handleFocusIn' @focusout='handleFocusOut'
-                  v-model='chat_content' type='text' placeholder='<?php echo __('Message...', 'watergo'); ?>'>
-               <span @click='atlantis_send_message' class='icon btn_send_message' :class='{ "disabled": is_send == true }'>
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="14" cy="14" r="14" fill="#2790F9"/>
-                  <path d="M8.16226 20.93L22.649 14.7582C22.7988 14.6948 22.9265 14.5891 23.0162 14.4541C23.106 14.3191 23.1538 14.1609 23.1538 13.9991C23.1538 13.8374 23.106 13.6792 23.0162 13.5442C22.9265 13.4092 22.7988 13.3035 22.649 13.2401L8.16226 7.06833C8.03682 7.01395 7.89973 6.99147 7.76336 7.0029C7.627 7.01434 7.49564 7.05934 7.38114 7.13384C7.26664 7.20834 7.1726 7.30999 7.10751 7.42964C7.04242 7.54928 7.00833 7.68315 7.0083 7.81917L7 11.6229C7 12.0354 7.30717 12.3902 7.72226 12.4397L19.4528 13.9991L7.72226 15.5503C7.30717 15.6081 7 15.9629 7 16.3754L7.0083 20.1791C7.0083 20.7649 7.61434 21.1692 8.16226 20.93Z" fill="white"/>
-                  </svg>
-               </span>
-
-            </label>
-         </div>
-      </div>
    </div>
 
+   <div v-if='message_not_found == false' class='box-form-chat'>
+      <div class='box-chat'>
+         <div class='avatar'>
+            <img v-if='where_app == "chat_to_store"' :src='from_user.avatar'>
+            <img v-if='where_app == "chat_to_user"' :src='to_user.avatar'>
+         </div>
+         
+         <label class='input-chat'>
+            <input 
+               @focusin='handleFocusIn' @focusout='handleFocusOut'
+               v-model='chat_content' type='text' placeholder='<?php echo __('Message...', 'watergo'); ?>'>
+            <span @click='atlantis_send_message' class='icon btn_send_message' :class='{ "disabled": is_send == true }'>
+               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <circle cx="14" cy="14" r="14" fill="#2790F9"/>
+               <path d="M8.16226 20.93L22.649 14.7582C22.7988 14.6948 22.9265 14.5891 23.0162 14.4541C23.106 14.3191 23.1538 14.1609 23.1538 13.9991C23.1538 13.8374 23.106 13.6792 23.0162 13.5442C22.9265 13.4092 22.7988 13.3035 22.649 13.2401L8.16226 7.06833C8.03682 7.01395 7.89973 6.99147 7.76336 7.0029C7.627 7.01434 7.49564 7.05934 7.38114 7.13384C7.26664 7.20834 7.1726 7.30999 7.10751 7.42964C7.04242 7.54928 7.00833 7.68315 7.0083 7.81917L7 11.6229C7 12.0354 7.30717 12.3902 7.72226 12.4397L19.4528 13.9991L7.72226 15.5503C7.30717 15.6081 7 15.9629 7 16.3754L7.0083 20.1791C7.0083 20.7649 7.61434 21.1692 8.16226 20.93Z" fill="white"/>
+               </svg>
+            </span>
+
+         </label>
+      </div>
+   </div>
 
    <div v-if='loading == true && message_not_found == false'>
       <div class='progress-center'>
@@ -271,18 +273,156 @@ var app = Vue.createApp({
          loading_data: false,
 
          message_not_found: false,
-         messages: [],
+         messages: [
+            {
+               "message_id": "352",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "Hj",
+               "timestamp": "2023-10-02 09:29:53",
+               "is_read": "0",
+               "product_id": "100",
+               "product_name": "Brand 4",
+               "product_name_second": "1 Bình 500 ml",
+               "product_price": "8888",
+               "product_price_discount": "0",
+               "product_image": "http://watergo.net/wordpress/wp-content/uploads/2023/08/AQUAwater-voi-600x600-3-200x200.png"
+            },
+            {
+               "message_id": "353",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "Hj",
+               "timestamp": "2023-10-02 09:44:44",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "354",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "hj",
+               "timestamp": "2023-10-02 09:44:46",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "355",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "hj",
+               "timestamp": "2023-10-02 09:44:48",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "356",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "Hjjjj",
+               "timestamp": "2023-10-02 09:44:52",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "357",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "Helllo",
+               "timestamp": "2023-10-02 09:44:58",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "358",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "hhhj",
+               "timestamp": "2023-10-02 09:45:02",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "359",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "157",
+               "content": "Konnichiwa",
+               "timestamp": "2023-10-02 09:45:07",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "360",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "43",
+               "content": "Hey",
+               "timestamp": "2023-10-02 09:47:14",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            },
+            {
+               "message_id": "361",
+               "conversation_id_hash": "f3d96a2ba8da1771fe1d3dbd40d369d51cd2abe728439d71ff2b2f8b07bdb71f",
+               "user_id": "43",
+               "content": "I got your message",
+               "timestamp": "2023-10-02 09:47:27",
+               "is_read": "0",
+               "product_id": null,
+               "product_name": null,
+               "product_name_second": null,
+               "product_price": null,
+               "product_price_discount": null,
+               "product_image": null
+            }
+         ],
+
 
          product: null,
-         is_has_any_pin_product_yet: false,
          product_newest: null,
 
          where_app: '', // chat_to_user | chat_to_store
 
-         /**
-          * { message_id, timestamp }
-          */
-         time_chat: [],
+         timestamp: '',
 
          conversation_id: 0,
          conversation: null,
@@ -319,7 +459,11 @@ var app = Vue.createApp({
       filter_messengers(){
          if( this.messages.length == 0) return [];
          let sortedMessengers = this.messages.sort((a, b) => a.message_id - b.message_id );
+         this.timestamp = this.messages[0].timestamp;
          var _groupMessages = this.groupMessagesByUser(sortedMessengers);
+
+         // console.log( _groupMessages );
+
          return _groupMessages;
       }
 
@@ -335,15 +479,21 @@ var app = Vue.createApp({
          }
       },
 
+      show_datetime_from_message( current, next ){
+         var _current = current.split(' ');
+         var _next    = next.split(' ');
+
+      },
+
       handleFocusIn(){
-         // if( window.appBridge != undefined ){
-         //    window.appBridge.setEnableScroll(true);
-         // }
+         if( window.appBridge != undefined ){
+            window.appBridge.setEnableScroll(true);
+         }
       },
       handleFocusOut(){
-         // if( window.appBridge != undefined ){
-         //    window.appBridge.setEnableScroll(false);
-         // }
+         if( window.appBridge != undefined ){
+            window.appBridge.setEnableScroll(false);
+         }
       },
 
       truncateUTF8String(n){ return window.truncateUTF8String(n)},
@@ -382,32 +532,29 @@ var app = Vue.createApp({
          return `${month} ${day}, ${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
       },
 
-      can_show_time_chat( message_id){
-         return this.time_chat.some( item => item.message_id == message_id);
-      },
-
-      get_show_time_chat( message_id ){
-         var _time = this.time_chat.find( item => item.message_id == message_id);
-         return _time.timestamp;
-      },
-
       groupMessagesByUser(messages) {
          var result = [];
          var currentGroup = [];
+         var show_time = null; // Initialize outside the loop
 
          if( messages.length > 0 ){
             for (var i = 0; i < messages.length; i++) {
-               var message       = messages[i];
-               var nextMessage   = messages[i + 1]; // if possible
-               var product       = null;
+               var message = messages[i];
+               var nextMessage = messages[i + 1]; // if possible
+               var product = null;
 
-               if( message.timestamp != undefined ){
-                  var _exists_time_chat = this.time_chat.some( item => item.message_id == message.message_id );
-                  if( _exists_time_chat == false ){
-                     this.time_chat.push({
-                        message_id: message.message_id,
-                        timestamp: message.timestamp
-                     });
+               if (i == 0 ) {
+                  show_time = true;
+               } else {
+                  if (nextMessage && nextMessage !== undefined) {
+                     const currentDay = message.timestamp.split(' ')[0];
+                     const nextDay = nextMessage.timestamp.split(' ')[0];
+
+                     if (currentDay !== nextDay) {
+                        show_time = true;
+                     }else{
+                        show_time = false;
+                     }
                   }
                }
 
@@ -415,22 +562,22 @@ var app = Vue.createApp({
                // output NOV 26,2022  18:10 pm
 
                if (message.product_id != null) {
-                  product = {
-                     product_id: message.product_id,
-                     product_name: message.product_name,
-                     product_name_second: message.product_name_second,
-                     product_price: parseInt(message.product_price),
-                     product_price_discount:parseInt( message.product_price_discount),
-                     product_image: message.product_image
-                  };
+                     product = {
+                        product_id: message.product_id,
+                        product_name: message.product_name,
+                        product_name_second: message.product_name_second,
+                        product_price: parseInt(message.product_price),
+                        product_price_discount:parseInt( message.product_price_discount),
+                        product_image: message.product_image
+                     };
                }
 
                if (currentGroup.length === 0 || currentGroup[currentGroup.length - 1].user_id != message.user_id) {
                   currentGroup = [];
                   result.push({
-                     user_id: message.user_id != undefined ? parseInt(message.user_id) : null,
+                     user_id: parseInt(message.user_id),
                      messages: currentGroup,
-                     message_id: message.message_id != undefined ? parseInt(message.message_id) : null,
+                     message_id: parseInt(message.message_id), // FIRST MESSAGE_ID
                   });
                }
 
@@ -440,22 +587,10 @@ var app = Vue.createApp({
                   message_id: parseInt(message.message_id),
                   timestamp: message.timestamp,
                   product: product,
+                  show_time: show_time
                });
             }
          }
-
-         var uniqueDates = {}; // Object to store unique dates as keys
-         // Filter messages based on unique dates (yyyy-mm-dd format)
-         var filteredMessages = this.time_chat.filter(function (message) {
-            var date = message.timestamp.split(' ')[0]; // Extract date part
-            if (!uniqueDates[date]) {
-               uniqueDates[date] = true; // Add the date as a key in the object
-               return true; // Include the message in the filtered array
-            }
-            return false; // Exclude the message if the date already exists
-         });
-         uniqueDates = null;
-         this.time_chat = filteredMessages;
          return result;
       },
 
@@ -525,22 +660,11 @@ var app = Vue.createApp({
          form.append('product_id', product_id);
          form.append('conversation_id', conversation_id);
          var r = await window.request(form);
-
+         console.log(r);
          if( r != undefined ){
             let res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
                this.product = res.data;
-
-               this.messages.push({
-                  message_id: 9999999999,
-                  product_id: parseInt(res.data.id),
-                  product_name: res.data.name,
-                  product_name_second: res.data.name_second,
-                  product_price: parseInt(res.data.price),
-                  product_price_discount: this.has_discount(res.data) == true ? parseInt(res.data.discount_percent) : 0,
-                  product_image: res.data.product_image.url
-               });
-
             }
          }
       },
@@ -596,7 +720,7 @@ var app = Vue.createApp({
             form.append('chat_content', this.chat_content);
             form.append('where_app', this.where_app);
             // save product
-            if( this.product != null  ){
+            if( this.is_save_pin_product == false && this.product != null  ){
                form.append('product_id', parseInt( this.product.id) );
                form.append('product_name', this.product.name);
                form.append('product_name_second', this.product.name_second );
@@ -618,30 +742,19 @@ var app = Vue.createApp({
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'messenge_send_ok' ){
                   this.chat_content = '';
+                  this.messages.push( res.data );
                   this.is_send = false;
+                  this.is_save_pin_product = true;
 
-                  if( this.product != null ){
-                     this.messages.some( item => {
-                        if( item.product_id != undefined && item.product_id == parseInt(this.product.id) ){
-                           item.message_id = res.data.message_id;
-                           item.conversation_id = res.data.conversation_id;
-                           item.user_id = res.data.user_id;
-                           item.content = res.data.content;
-                           item.timestamp = res.data.timestamp;
-                           item.is_read = res.data.is_read;
-                        }
-                     });
-                  }else{
-                     this.messages.push( res.data );
-                  }
+                  // if( window.appBridge != undefined ){
+                  //    window.appBridge.setEnableScroll(true);
+                  // }
 
-                  this.product = null;
-
-                  console.log(this.messages);
-
-                  jQuery('.scaffold').animate({
-                     scrollTop: $(document).height()
-                  }, 0);
+                  // jQuery(document).ready(function($){
+                  //    $('html, body').animate({
+                  //       scrollTop: $(document).height()
+                  //    }, 0);
+                  // });
 
                   // COUNT MESSAGES
 
@@ -723,11 +836,20 @@ var app = Vue.createApp({
          }
       },
 
+      scrollToBottom(){
+         // Calculate the height of the document
+         const documentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+         
+         // Set the scroll position to the document height, which is the bottom of the page
+         console.log(documentHeight);
+         window.scrollTo(0, documentHeight);
+      },
+
    },
 
 
    update(){ 
-      // window.appbar_fixed(); 
+      window.appbar_fixed(); 
    },
 
    async mounted(){
@@ -751,31 +873,32 @@ var app = Vue.createApp({
       this.pin_product        = urlParams.get('pin_product');
 
       await this.atlantis_get_conversation();
-      await this.atlantis_read_all_messages();
+      // await this.atlantis_read_all_messages();
+      // await this.atlantis_get_product_and_check( this.pin_product, this.conversation_id );
 
-      if( this.messages.length == 0 ){
-         await this.atlantis_get_messeges();
-      }
+      // if( this.messages.length == 0 ){
+      //    await this.atlantis_get_messeges();
+      // }
 
-      await this.atlantis_get_product_and_check( this.pin_product, this.conversation_id );
-
-      await setInterval( async () => {
-         await this.atlantis_get_messeges();
-      }, 1800);
+      // await setInterval( async () => {
+      //    await this.atlantis_get_messeges();
+      // }, 1800);
 
       setTimeout(() => {
          this.loading = false;
-         // window.appbar_fixed();
+         window.appbar_fixed();
       }, 1000);
 
       jQuery(document).ready(function($){
-         jQuery('.scaffold').animate({
-            scrollTop: $(document).height()
-         }, 0);
+         // $('body').animate({
+         //    scrollTop: $(document).height()
+         // }, 0);
+         // var documentHeight = $(document).height();
+         // $(window).scrollTop(documentHeight);
+
       });
 
-      console.log(this.messages)
-
+      console.log(this.messages);
 
       
 

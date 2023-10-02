@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Water Go\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-22 08:43+0000\n"
+"POT-Creation-Date: 2023-09-25 03:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -15,6 +15,30 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.6.4; wp-6.2.2\n"
 "X-Domain: watergo"
+
+#: pages/chat/chat-index.php:176
+msgid " day ago"
+msgstr ""
+
+#: pages/chat/chat-index.php:181
+msgid " days ago"
+msgstr ""
+
+#: pages/chat/chat-index.php:188
+msgid " hour ago"
+msgstr ""
+
+#: pages/chat/chat-index.php:193
+msgid " hours ago"
+msgstr ""
+
+#: pages/chat/chat-index.php:200 pages/chat/chat-index.php:205
+msgid " mins ago"
+msgstr ""
+
+#: pages/chat/chat-index.php:211
+msgid " second ago"
+msgstr ""
 
 #: page-iframe.php:201 pages/product/page-product-store-view.php:213
 #: pages/review/page-review-form.php:52
@@ -249,7 +273,7 @@ msgstr ""
 msgid "Congratulations"
 msgstr ""
 
-#: pages/chat/chat-messenger.php:138 pages/product/page-product-detail.php:188
+#: pages/chat/chat-messenger.php:129 pages/product/page-product-detail.php:188
 #: pages/order/page-order-store-detail.php:198
 #: pages/order/page-order-detail.php:196 pages/store/page-store-detail.php:103
 msgid "Content Not Found"
@@ -275,11 +299,11 @@ msgstr ""
 msgid "Day"
 msgstr ""
 
-#: pages/chat/chat-index.php:172
+#: pages/chat/chat-index.php:175
 msgid "day ago"
 msgstr ""
 
-#: pages/chat/chat-index.php:172
+#: pages/chat/chat-index.php:180
 msgid "days ago"
 msgstr ""
 
@@ -511,7 +535,8 @@ msgstr ""
 msgid "Email or password is incorrect"
 msgstr ""
 
-#: pages/home/home.php:273 pages/authentication/page-auth-store-login.php:103
+#: pages/home.php:279 pages/home/home.php:273
+#: pages/authentication/page-auth-store-login.php:103
 #: pages/authentication/page-auth-login.php:142
 #: pages/authentication/page-auth-register.php:168
 #: pages/user/page-user-language.php:52
@@ -615,7 +640,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: pages/home/home.php:72
+#: pages/home.php:78 pages/home/home.php:72
 msgid "Find products or stores by name"
 msgstr ""
 
@@ -655,11 +680,11 @@ msgstr ""
 msgid "Hide Store"
 msgstr ""
 
-#: pages/chat/chat-index.php:174
+#: pages/chat/chat-index.php:187
 msgid "hour ago"
 msgstr ""
 
-#: pages/chat/chat-index.php:174
+#: pages/chat/chat-index.php:192
 msgid "hours ago"
 msgstr ""
 
@@ -682,7 +707,8 @@ msgstr ""
 msgid "I want to create another account"
 msgstr ""
 
-#: pages/home/home.php:129 pages/product/page-product-ice.php:12
+#: pages/home.php:135 pages/home/home.php:129
+#: pages/product/page-product-ice.php:12
 #: pages/product/page-product-store.php:156 pages/nearby/page-nearby.php:61
 #: pages/authentication/page-auth-store-register.php:57
 #: pages/store/page-store-detail.php:200 pages/store/page-store-detail.php:209
@@ -704,7 +730,8 @@ msgstr ""
 msgid "Invalid address, please select the address in the suggestion book"
 msgstr ""
 
-#: pages/home/home.php:275 pages/authentication/page-auth-store-login.php:105
+#: pages/home.php:281 pages/home/home.php:275
+#: pages/authentication/page-auth-store-login.php:105
 #: pages/authentication/page-auth-login.php:144
 #: pages/authentication/page-auth-register.php:170
 #: pages/user/page-user-language.php:54
@@ -775,15 +802,15 @@ msgstr ""
 msgid "Mark as out of stock"
 msgstr ""
 
-#: pages/chat/chat-messenger.php:117
+#: pages/chat/chat-messenger.php:108
 msgid "Message..."
 msgstr ""
 
-#: pages/chat/chat-index.php:176
+#: pages/chat/chat-index.php:199
 msgid "min ago"
 msgstr ""
 
-#: pages/chat/chat-index.php:176
+#: pages/chat/chat-index.php:204
 msgid "mins ago"
 msgstr ""
 
@@ -819,7 +846,7 @@ msgstr ""
 msgid "Nearby"
 msgstr ""
 
-#: pages/home/home.php:203
+#: pages/home.php:209 pages/home/home.php:203
 msgid "Nearby store"
 msgstr ""
 
@@ -1071,7 +1098,7 @@ msgstr ""
 msgid "Recommend"
 msgstr ""
 
-#: pages/home/home.php:137
+#: pages/home.php:143 pages/home/home.php:137
 msgid "Recommend product"
 msgstr ""
 
@@ -1153,20 +1180,16 @@ msgstr ""
 msgid "Search User Name"
 msgstr ""
 
-#: pages/chat/chat-index.php:178
+#: pages/chat/chat-index.php:210
 msgid "second ago"
-msgstr ""
-
-#: pages/chat/chat-index.php:178
-msgid "seconds ago"
 msgstr ""
 
 #: pages/product/page-product-detail.php:116
 msgid "See All"
 msgstr ""
 
-#: pages/home/home.php:138 pages/home/home.php:204
-#: pages/store/page-store-detail.php:36
+#: pages/home.php:144 pages/home.php:210 pages/home/home.php:138
+#: pages/home/home.php:204 pages/store/page-store-detail.php:36
 msgid "See all"
 msgstr ""
 
@@ -1435,7 +1458,8 @@ msgstr ""
 msgid "Verify your email"
 msgstr ""
 
-#: pages/home/home.php:274 pages/authentication/page-auth-store-login.php:104
+#: pages/home.php:280 pages/home/home.php:274
+#: pages/authentication/page-auth-store-login.php:104
 #: pages/authentication/page-auth-login.php:143
 #: pages/authentication/page-auth-register.php:169
 #: pages/user/page-user-language.php:53
@@ -1454,7 +1478,8 @@ msgstr ""
 msgid "Volume"
 msgstr ""
 
-#: pages/home/home.php:108 pages/product/page-product-store.php:155
+#: pages/home.php:114 pages/home/home.php:108
+#: pages/product/page-product-store.php:155
 #: pages/product/page-product-water.php:11 pages/nearby/page-nearby.php:60
 #: pages/authentication/page-auth-store-register.php:53
 #: pages/store/page-store-detail.php:199 pages/store/page-store-detail.php:207
