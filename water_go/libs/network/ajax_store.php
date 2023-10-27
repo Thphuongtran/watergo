@@ -43,6 +43,9 @@ function atlantis_get_store_nearby(){
       $lat     = isset($_POST['lat'])     ? $_POST['lat'] : 0;
       $lng     = isset($_POST['lng'])     ? $_POST['lng'] : 0;
       $how_far = isset($_POST['how_far']) ? $_POST['how_far'] : 10; // 5km default
+      $limit   = isset($_POST['limit'])   ? $_POST['limit'] : 10;
+      $offset  = isset($_POST['offset'])  ? $_POST['offset'] : 0;
+
 
       if($lat == 0 && $lng == 0){
          wp_send_json_error(['message' => 'store_location_not_found']);
@@ -60,6 +63,7 @@ function atlantis_get_store_nearby(){
          HAVING distance <= $how_far -- Adjust the distance value as desired (in kilometers)
          -- HAVING distance <= 1 -- testinng current store
          ORDER BY distance ASC
+         LIMIT $offset, $limit
       ";
       global $wpdb;
       $res = $wpdb->get_results($sql);
@@ -112,9 +116,13 @@ function atlantis_get_total_purchase_store(){
 function atlantis_load_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_store' ){
 
-      $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
-      $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
-      $paged = $paged * $limit;
+      $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 10;
+      $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+      // $paged = $paged * $limit;
+      if( $paged == 0 || $paged == null){
+         $paged = 1;
+      }
+      $offset = ($paged - 1) * $limit;
 
       global $wpdb;
       $sql = "SELECT 
@@ -122,7 +130,7 @@ function atlantis_load_store(){
          FROM wp_watergo_store
          WHERE store_hidden = 0
          ORDER BY id DESC 
-         LIMIT $paged, $limit";
+         LIMIT $offset, $limit";
       $get_results = $wpdb->get_results($sql);
       if( empty( $get_results ) ){
          wp_send_json_error([ 'message' => 'store_not_found' ]);

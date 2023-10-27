@@ -122,6 +122,10 @@
    .list-messenger .pin-new-product{
       margin-top: -14px;
    }
+   
+   .list-messenger .pin-new-product.pin-first-time{
+      margin-top: 0;
+   }
 
 
 </style>
@@ -164,7 +168,8 @@
                   v-for='(messenger, messengerKey) in filter_messengers' :key='messengerKey'
                   :class='[
                      messenger.user_id == current_user_id ? "is-host" : "",
-                     messenger.user_id == null && product != null ? "pin-new-product" : "" 
+                     messenger.user_id == null && product != null ? "pin-new-product" : "" ,
+                     message_in_first_time == true ? "pin-first-time" : ""
                   ]'
                >
 
@@ -271,11 +276,10 @@ var app = Vue.createApp({
          loading_data: false,
 
          message_not_found: false,
+         message_in_first_time: true,
          messages: [],
 
          product: null,
-         is_has_any_pin_product_yet: false,
-         product_newest: null,
 
          where_app: '', // chat_to_user | chat_to_store
 
@@ -307,7 +311,6 @@ var app = Vue.createApp({
          database: null,
 
          pin_product: null,
-         is_save_pin_product: false,
 
          is_send: false,
 
@@ -595,6 +598,7 @@ var app = Vue.createApp({
             form.append('conversation_id', this.conversation_id);
             form.append('chat_content', this.chat_content);
             form.append('where_app', this.where_app);
+
             // save product
             if( this.product != null  ){
                form.append('product_id', parseInt( this.product.id) );
@@ -755,6 +759,10 @@ var app = Vue.createApp({
 
       if( this.messages.length == 0 ){
          await this.atlantis_get_messeges();
+      }
+
+      if( this.messages.length > 0 ){
+         this.message_in_first_time = false;
       }
 
       await this.atlantis_get_product_and_check( this.pin_product, this.conversation_id );

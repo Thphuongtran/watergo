@@ -130,7 +130,6 @@
          // alert(data);
 
          if ( partial[0] == 'refresh') {
-            alert('refresh');
             if( window.appBridge != undefined ){
                window.appBridge.refresh();
             }
@@ -336,10 +335,10 @@
             };
             if (navigator.canShare) {
                navigator.share(shareData);
-               alert('ok');
+               // alert('ok');
             } else {
                // Handle the case where the function is not supported
-               alert("Web Share API not supported in this browser.");
+               // alert("Web Share API not supported in this browser.");
             }
             
          }

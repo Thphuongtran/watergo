@@ -908,31 +908,87 @@ function atlantis_get_product_and_check(){
       global $wpdb;
 
       $sql_check_product_already_in_message = "SELECT * FROM wp_watergo_messages 
-         WHERE product_id = $product_id AND user_id = $user_id AND conversation_id_hash = '$conversation_id' LIMIT 1
+         WHERE product_id = $product_id AND conversation_id_hash = '$conversation_id' LIMIT 1
       ";
+
       $res = $wpdb->get_results( $sql_check_product_already_in_message );
 
       // PRODUCT ALREADY INSERT IN MESSAGE -> SKIP 
-      if( ! empty( $res )){
-         wp_send_json_error(['message' => 'product_not_found 2']);
+      if( empty( $res )){
+
+         $product = func_atlantis_get_product_by([
+            'id'           => $product_id,
+            'get_by'       => 'product_id',
+            'limit_image'  => true,
+            'image_size'   => 'medium'
+         ]);
+
+         if( empty($product) ){
+            wp_send_json_error(['message' => 'product_not_found 2']);
+            wp_die();
+         }
+
+         wp_send_json_success(['message' => 'product_found', 'data' => $product[0] ]);
          wp_die();
       }
 
-      $product = func_atlantis_get_product_by([
-         'id'           => $product_id,
-         'get_by'       => 'product_id',
-         'limit_image'  => true,
-         'image_size'   => 'medium'
-      ]);
-
-      if( empty($product) ){
-         wp_send_json_error(['message' => 'product_not_found 3']);
-         wp_die();
-      }
-
-      wp_send_json_success(['message' => 'product_found', 'data' => $product[0] ]);
+      wp_send_json_error(['message' => 'product_not_found 3']);
       wp_die();
+
+
+      
 
       
    }
 }
+
+// function atlantis_get_product_and_check(){
+//    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_product_and_check' ){
+//       $product_id       = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+//       $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : 0;
+//       $user_id          = get_current_user_id();
+      
+//       if($product_id == 0 && $conversation_id == 0){
+//          wp_send_json_error(['message' => 'product_not_found_1']);
+//          wp_die();
+//       }
+
+
+//       $product = null;
+
+//       global $wpdb;
+
+//       $sql_check_product_already_in_message = "SELECT * FROM wp_watergo_messages 
+//          WHERE conversation_id_hash = '$conversation_id' AND product_id is not null
+//          LIMIT 1
+//       ";
+
+//       // $sql_check_product_already_in_message = "SELECT * FROM wp_watergo_messages 
+//       //    WHERE product_id = $product_id AND user_id = $user_id AND conversation_id_hash = '$conversation_id' 
+//       //    LIMIT 1
+//       // ";
+//       $res = $wpdb->get_results( $sql_check_product_already_in_message );
+
+//       // PRODUCT ALREADY INSERT IN MESSAGE -> SKIP 
+//       if( empty( $res )){
+//          $product = func_atlantis_get_product_by([
+//             'id'           => $product_id,
+//             'get_by'       => 'product_id',
+//             'limit_image'  => true,
+//             'image_size'   => 'medium'
+//          ]);
+//          wp_send_json_success(['message' => 'product_found', 'data' => $product[0]]);
+//          wp_die();
+//       }
+
+//       // if( empty($product) ){
+//       //    wp_send_json_error(['message' => 'product_not_found 3']);
+//       //    wp_die();
+//       // }
+
+//       wp_send_json_success(['message' => 'product_already_exists' ]);
+//       wp_die();
+
+      
+//    }
+// }

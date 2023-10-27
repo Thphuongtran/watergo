@@ -1,3 +1,13 @@
+<style>
+   .product-header .main{
+      text-align: center;
+   }
+   .product-header .main img{
+      max-width: 100%;
+      width: auto;
+      margin: 0 auto;
+   }
+</style>
 <div id='app'>
 
    <div v-show='loading == false && store != null' class="page-store-detail">

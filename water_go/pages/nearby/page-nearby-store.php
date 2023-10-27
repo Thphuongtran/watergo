@@ -81,22 +81,49 @@ var app = Vue.createApp({
 
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
       goBack(){ window.goBack(); },
+
+      async handleScroll() {
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+
+         if (scrollPosition + windowHeight >= documentHeight ) {
+            await this.atlantis_get_store_nearby(this.stores.length);
+         }
+      },
+
+      async atlantis_get_store_nearby( offset = 0){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_store_nearby');
+         form.append('lat', this.latitude);
+         form.append('lng', this.longitude);
+         form.append('offset', offset);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r ));
+            if( res.message == 'store_location_found' ){
+               console.log(res);
+               res.data.forEach( item => {
+                  var _exists = this.stores.some( s => s.id == item.id );
+                  if( !_exists ){
+                     this.stores.push( item );
+                  }
+               });
+            }
+         }
+      },
    },
+
+   mounted() { window.addEventListener('scroll', this.handleScroll); },
+   beforeDestroy() { window.removeEventListener('scroll', this.handleScroll); },
+
+
    
    async created() {
       await this.get_current_location();
       this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_get_store_nearby');
-      form.append('lat', this.latitude);
-      form.append('lng', this.longitude);
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify(r ));
-         if( res.message == 'store_location_found' ){
-            this.stores.push( ...res.data );
-         }
-      }
+      await this.atlantis_get_store_nearby(0);
       this.loading = false;
 
       $(function() {
