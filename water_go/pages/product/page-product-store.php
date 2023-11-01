@@ -3,7 +3,27 @@
  * @access THIS IS TAB PRODUCT STORE 
  */
 
+
+$tab = isset($_GET['tab']) ? $_GET['tab'] : '';
+
 ?>
+<style>
+   .product-image{
+      position: relative;
+   }
+   .product-image-badge{
+      position: absolute;
+      bottom: 7px; left: 0;
+      width: 46px;
+      height: 14px;
+      background: #FFC83A;
+      color: white;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0px;
+      text-align: center;
+   }
+</style>
 <div id='app'>
    <div v-show='loading == false' class='page-product-store'>
       <div class='appbar style01'>
@@ -88,45 +108,58 @@
       </div>
 
 
-      <ul v-if='filter_products.length > 0' class='list-type-product'>
-         <li 
-            v-for='( product, productIndex) in filter_products' :key='productIndex'
-            @click='gotoProductStoreEdit("edit", get_product_tab_value, product.id, store_id )'
-         >
-            <div class='product-l'>
-               <div class='product-image'><img :src='product.product_image.url'></div>
-            </div>
-            <div class='product-r'>
-               <div class='tt1'>{{ product.name }}</div>
-               <div class='tt2'>{{ product.name_second }}</div>
-               <div class='tt3'>
 
-                  <div 
-                     class='gr-price' 
-                     :class="has_discount(product) == true ? 'has_discount' : '' ">
-                     <span class='price'>
-                        {{ common_price_after_discount(product ) }}
-                     </span>
-                     <span v-if='has_discount(product) == true' class='price-sub'>
-                        {{ common_price_show_currency(product.price) }}
-                     </span>
+      <div class='scaffold'>
+         <div v-show='loading_data == false'>
+            <ul v-if='filter_products.length > 0' class='list-type-product'>
+               <li 
+                  v-for='( product, productIndex) in filter_products' :key='productIndex'
+                  @click='gotoProductStoreEdit(product.id)'
+               >
+                  <div class='product-l'>
+                     <div class='product-image'>
+                        <img :src='product.product_image[0].url'>
+                        <div class='product-image-badge' v-if='is_product_pending(product) != ""'><?php echo __('Pending', 'watergo'); ?></div>
+                     </div>
                   </div>
+                  <div class='product-r'>
+                     <div class='tt1'>{{ product.name }}</div>
+                     <div class='tt2'>{{ product.name_second }}</div>
 
-                  <!-- <button class="btn-action-view">View</button> -->
-               </div>
-               <div class='tt4'>
-                  <div class='product-analytics'>
-                     <div class='product-sold'><?php echo __('Sold', 'watergo'); ?>: <span class='t-primary'>{{ product.sold }}</span></div>
-                     <!-- <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div> -->
+                     <div class='tt3'>
+
+                        <div 
+                           class='gr-price' 
+                           :class="has_discount(product) == true ? 'has_discount' : '' ">
+                           <span class='price'>
+                              {{ common_price_after_discount(product ) }}
+                           </span>
+                           <span v-if='has_discount(product) == true' class='price-sub'>
+                              {{ common_price_show_currency(product.price) }}
+                           </span>
+                        </div>
+
+                        <!-- <button class="btn-action-view">View</button> -->
+                     </div>
+                     <div class='tt4'>
+                        <div class='product-analytics'>
+                           <div class='product-sold'><?php echo __('Sold', 'watergo'); ?>: <span class='t-primary'>{{ product.sold }}</span></div>
+                           <!-- <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div> -->
+                        </div>
+                        <div class='product-bagde'>
+                           <div v-if='product_is_availble(product) == "available" ' class='availble'><?php echo __('Available', 'watergo'); ?></div>
+                           <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'><?php echo __('Out of Stock', 'watergo'); ?></div>
+                        </div>
+                     </div>
                   </div>
-                  <div class='product-bagde'>
-                     <div v-if='product_is_availble(product) == "available" ' class='availble'><?php echo __('Available', 'watergo'); ?></div>
-                     <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'><?php echo __('Out of Stock', 'watergo'); ?></div>
-                  </div>
-               </div>
-            </div>
-         </li>
-      </ul>
+               </li>
+            </ul>
+         </div>
+
+         <div v-show='loading_data == true' class='progress-center'>
+            <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
+         </div>
+      </div>
 
 
    </div>
@@ -138,13 +171,15 @@
    </div>
 
 </div>
+
 <script type='module'>
 
 var app = Vue.createApp({
    data (){
       return {
          loading: false,
-         store_id: 0,
+         loading_data: false,
+         store_id: <?php echo func_get_store_id_from_current_user(); ?>,
          notification_count: 0,
          message_count: 0,
          productSearch: '',
@@ -163,15 +198,6 @@ var app = Vue.createApp({
    },
 
    watch: {
-      product_tab_value: async function( val ){
-         var find_product_tab_active = this.product_tab.find( item => item.active == true );
-         if( find_product_tab_active.value == val ){
-            this.loading = true;
-            this.products = [];
-            await this.get_product_from_type_product( val );
-            this.loading = false;
-         }
-      },
    },
 
    computed: {
@@ -191,14 +217,14 @@ var app = Vue.createApp({
       filter_products(){
          var _filter = this.products;
          if(this.product_tab_filter_select.value == 'available'){
-            return _filter.filter( p => p.is_availble == true );
+            _filter = _filter.filter( p => p.is_availble == true );
          }
          if(this.product_tab_filter_select.value == 'out_of_stock'){
-            return _filter.filter( p => p.is_availble == false );
+            _filter = _filter.filter( p => p.is_availble == false );
          }
          _filter.sort( (a, b) => b.id - a.id );
          if( this.productSearch != '' ){
-            return _filter.filter( p => p.name.toLowerCase().includes( this.productSearch.toLowerCase()) );
+            _filter = _filter.filter( p => p.name != null && p.name.toLowerCase().includes( this.productSearch.toLowerCase()) );
          }
          return _filter;
       },
@@ -206,47 +232,97 @@ var app = Vue.createApp({
    },
 
    methods: {
+
       async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 
-      gotoProductStoreAdd(store_id, product_type){ window.gotoProductStoreAdd(store_id, product_type)},
-      gotoProductStoreEdit(action, product_type, product_id, store_id){ window.gotoProductStoreEdit(action, product_type, product_id, store_id)},
+      gotoProductStoreAdd(store_id){ 
+         var url = window.watergo_domain;
+         if( this.product_tab_value == 'ice' ){
+            url += 'product/?product_page=product-ice-action&action=add&store_id=' + store_id;
+         } else if( this.product_tab_value == 'water' ){
+            url += 'product/?product_page=product-water-action&action=add&store_id=' + store_id;
+         }
+         window.location.href = url + '&appt=N';
+      },
 
-      async get_product_from_type_product( type ){
+      gotoProductStoreEdit( product_id){ 
+         var url = window.watergo_domain;
+         if( this.product_tab_value == 'ice' ){
+            url += 'product/?product_page=product-ice-action&action=edit&product_id=' + product_id;
+         } else if( this.product_tab_value == 'water' ){
+            url += 'product/?product_page=product-water-action&action=edit&product_id=' + product_id;
+         }
+         window.location.href = url + '&appt=N';
+      },
+
+      async atlantis_get_product_from_store( type ){
          var form = new FormData();
          form.append('action', 'atlantis_get_product_from_store');
-         form.append('type_product', type);
+         form.append('product_type', type);
+         form.append('offset', this.products.length);
+         form.append('store_id', this.store_id);
+         form.append('limit', 10);
          var r = await window.request(form);
          if( r != undefined){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found'){
                res.data.forEach( product => {
-
                   if( product.mark_out_of_stock == null ) product.mark_out_of_stock = 0;
-                  
                   if( product.mark_out_of_stock == 0 ) {
                      product.is_availble = true;
                   }else{
                      product.is_availble = false;
                   }
-                  this.products.push( product);
+                  var _existsProduct = this.products.some( item => item.id == product.id);
+                  if( !_existsProduct ){
+                     this.products.push( product);
+                  }
 
                });
             }
-
          }
       },
 
+      async handleScroll(){
+         const windowTop = window.pageYOffset || document.documentElement.scrollTop;
+         const scrollEndThreshold = 50; // Adjust this value as needed
+         const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+         const windowHeight = window.innerHeight;
+         const documentHeight = document.documentElement.scrollHeight;
+         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         var documentScroll   = documentHeight + scrollEndThreshold;
 
-      product_tab_select( val ){
-         this.product_tab.some( tab => {
-            if( tab.value == val ){ tab.active = true; this.product_tab_value = tab.value;
-            }else{ tab.active = false; }
+         if (scrollPosition + windowHeight >= documentHeight ) {
+            await this.atlantis_get_product_from_store( this.product_tab_value );
+         }
+      },
+
+      async product_tab_select( val ){
+         let _do_execute = false;
+         if( this.product_tab_value != val ){
+            _do_execute = true;
+         }
+         this.product_tab.some(tab => {
+            if( tab.value == val ){ 
+               tab.active = true; 
+               this.product_tab_value = tab.value;
+            }else{ 
+               tab.active = false; 
+            }
          });
+
+         if( _do_execute == true ){
+            this.loading_data = true;
+            this.products = [];
+            await this.atlantis_get_product_from_store( val );
+            this.loading_data = false;
+         }
       },
 
       async get_product_type(){
          var form = new FormData();
          form.append('action', 'atlantis_get_store_type_product');
+         form.append('store_id', this.store_id);
          var r = await window.request(form);
          if( r != undefined){
             var res = JSON.parse( JSON.stringify(r));
@@ -272,13 +348,18 @@ var app = Vue.createApp({
          }
       },
 
+      is_product_pending( product ){
+         if( product.status == "pending") return "pending";
+         return '';
+      },
 
       product_is_availble( product ){
-         if(product.mark_out_of_stock == null){
+         // GET STATUS PRODUCT FIRST
+         if( product.mark_out_of_stock == null || product.mark_out_of_stock == 0) {
             product.mark_out_of_stock = 0;
+            return 'available';
          }
-         if( product.mark_out_of_stock == 0 ) return 'available';
-         return 'out_of_stock';
+         if( product.mark_out_of_stock == 1 ) return 'out_of_stock';
       },
 
       has_discount( product ){ return window.has_discount( product ); },
@@ -315,43 +396,34 @@ var app = Vue.createApp({
          }
       },
 
-      async get_store_id(){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_store_id');
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'get_store_id_ok'){
-               this.store_id = res.data;
-            }
-         }
-         
-      }
-
    },
+
+   mounted() { window.addEventListener('scroll', this.handleScroll); },
+   beforeDestroy() { window.removeEventListener('scroll', this.handleScroll); },
 
    async created(){
 
       this.loading = true;
-      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+      // setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
       
       await this.get_product_type();
-      await this.get_store_id();
       await this.get_notification_count();
       
       var _findTabSelected = this.product_tab.find( item => item.active );
-      await this.get_product_from_type_product( _findTabSelected.value );
-      this.product_tab_value = _findTabSelected.value;
+      if( _findTabSelected ){
+         await this.atlantis_get_product_from_store( _findTabSelected.value );
+         this.product_tab_value = _findTabSelected.value;
+      }
 
       setTimeout( () => { 
          this.loading = false;
          window.appbar_fixed();
-      }, 200)
+      }, 200);
 
    },
 
 
 }).mount('#app');
-
 window.app = app;
+
 </script>

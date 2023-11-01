@@ -46,7 +46,6 @@
       }
    }
 
-
    async function atlantis_get_language(){
       var form = new FormData();
       form.append('action', 'atlantis_get_language');
@@ -65,7 +64,6 @@
       }
    }
 
-
    async function atlantis_user_profile_update(){
       var form = new FormData();
       form.append('action', 'atlantis_user_profile_update');
@@ -81,15 +79,15 @@
       var form = new FormData();
       form.append('action', 'atlantis_get_single_product_from_store');
       form.append('product_id', product_id);
+      form.append('get_product_pending', 1);
       var r = await window.request(form);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify(r ));
          if( res.message == 'product_found'){
             return res.data;
-         }else{
-            return null;
          }
       }
+
    }
 
    async function get_review(review_id ){
@@ -182,15 +180,18 @@
             var multi_part    = partial[1].split('=');
             var product_id    = multi_part[1];
 
+            alert(JSON.stringify(window.app.$emit));
+
             await get_notification_count().then( (data) => window.app.notification_count = data );
-            await atlantis_find_product(product_id).then( (res) => {
-               var _indexProduct = window.app.products.findIndex( item => item.id == product_id );
-               if( _indexProduct == -1 ){
-                  window.app.products.push( res);
-               }else{
-                  window.app.products[_indexProduct] = res;
-               }
-            });
+            // await atlantis_find_product(product_id).then( data => {
+            //    var _indexItem = window.app.products.findIndex( item => parseInt(item.id) == parseInt(product_id) );
+            //    if( _indexItem != -1){
+            //       window.app.products[_indexItem] = data;
+            //    }else{
+            //       window.app.products.push( data);
+            //    }
+            // });
+
          }
 
          if( partial[0] == 'product_store_delete' ){
@@ -318,7 +319,6 @@
       }
    }
 
-
    async function native_share_link( link ){
 
       var form = new FormData();
@@ -383,9 +383,6 @@
    function callbackLoginFail(message){
       console.log('Login Fail ' + message);
    }
-
-
-
 
 
    (function($){

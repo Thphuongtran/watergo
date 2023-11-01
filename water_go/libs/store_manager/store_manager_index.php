@@ -12,7 +12,7 @@
 
 function setup_atlantis_store_manager(){
 
-   add_menu_page(__('Store Manager', 'watergo'), __('Store Manager', 'watergo'), '', 'store_manager', '', '', 3 );
+   add_menu_page(__('Store Manager', 'watergo'), __('Store Manager', 'watergo'), '', 'store_manager', '', '', 4 );
 
    add_submenu_page('store_manager', __('Store Manager', 'watergo'), 'Store Manager', 'manage_options', 'store_manager_index', 'template_store_manager_index');
    add_submenu_page('store_manager', __('Store Manager', 'watergo'), 'Add Store', 'manage_options', 'store_manager_add', 'template_store_manager_add');

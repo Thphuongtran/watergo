@@ -356,11 +356,12 @@ add_action( 'wp_ajax_atlantis_get_current_store_profile', 'atlantis_get_current_
 function atlantis_get_current_store_profile(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_current_store_profile' ){
 
-      $store_id = func_get_store_id_from_current_user();
+      $store_id   = func_get_store_id_from_current_user();
       $sql = "SELECT * FROM wp_watergo_store WHERE id = $store_id LIMIT 1";
 
       global $wpdb;
       $store = $wpdb->get_results($sql);
+
       $store[0]->store_image = func_atlantis_get_images($store[0]->id, 'store', true);
 
       if( empty( $store )){

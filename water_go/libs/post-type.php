@@ -38,7 +38,7 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 		*/
 		private $taxonomy;
 
-		private $support;
+		private $supports;
 
 		/**
 		*	@access REGISTER POSTTYPE
@@ -52,7 +52,7 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 			// IF EMPTY -> GET ALL
 			$supportDefault = [ 'title', 'editor', 'author', 'thumbnail', 'excerpt','comments', 'custom-fields'];
 
-			if( empty( $this->support ) ) $this->support = $supportDefault;
+			if( empty( $this->supports ) ) $this->supports = $supportDefault;
 
 			$slugTaxonomies	= [];
 			// GET RELASHIP WITH TAXONOMIES
@@ -114,7 +114,7 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 				*	@access BREAK CHANGE FROM 1.0 
 			   */
 			   'taxonomies'         		=> $slugTaxonomies,
-			   'supports'           		=> $this->support,
+			   'supports'           		=> $this->supports,
 			   'cptp_permalink_structure'	=> '/%postname%/',
             'query_var'          		=> true,
 			   'rewrite'            		=> $this->rewrite,
@@ -258,6 +258,8 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 			$this->taxonomy 		= isset( $args['taxonomy'] ) ? $args['taxonomy'] : [];
 			// GET TAGS INPUT
 			$this->tags				= isset( $args['tags'] ) ? $args['tags'] : [];
+         // GET SUPPORTS
+			$this->supports	   = isset( $args['supports'] ) ? $args['supports'] : [];
 
 			$this->init();
 		}
@@ -301,43 +303,53 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 
 
 new PostTypeBuiler( [
-   'name' => 'Admin Support Admin',
-   'slug' => 'admin_support_admin',
-   'support'	=> [],
-   'rewrite'	=> [],
+   'name' => 'Products',
+   'slug' => 'products',
+   // 'rewrite'	=> [],
    // THIS IS OVERRIDE ARGS FOR SOME REASON
-   'args'		=> [],
+   // 'args'		=> [],
 
    // ADD CATEGORY
-   // 'taxonomy'	=> [
-   // 	[
-   // 		'name'	=> 'Category Project',
-   // 		'slug'	=> 'category-project',
-   // 	],
-   // ],
+   'taxonomy'	=> [
+      // WATER
+   	[
+   		'name'	=> 'Water Brand',
+   		'slug'	=> 'product_water_brand',
+   	],
+   	[
+   		'name'	=> 'Water Category',
+   		'slug'	=> 'product_water_category',
+   	],
+   	[
+   		'name'	=> 'Water Quantity',
+   		'slug'	=> 'product_water_quantity',
+   	],
+   	[
+   		'name'	=> 'Water Volume',
+   		'slug'	=> 'product_water_volume',
+   	],
+   	[
+   		'name'	=> 'Water Type',
+   		'slug'	=> 'product_water_type',
+   	],
+   	[
+   		'name'	=> '(Water) Household Appliances',
+   		'slug'	=> 'product_water_device',
+   	],
+   	[
+   		'name'	=> '(Water) Household Appliances Feature',
+   		'slug'	=> 'product_water_device_feature',
+   	],
+
+
+      // ICE
+      [
+   		'name'	=> 'Ice Category',
+   		'slug'	=> 'product_ice_category',
+   	],
+
+   ],
 
    // ADD TAGS
    // 'tags'	=> ['name'	=> 'Tag Project']
-
-])
-
-new PostTypeBuiler( [
-   'name' => 'Admin Support User',
-   'slug' => 'admin_support_user',
-   'support'	=> [],
-   'rewrite'	=> [],
-   // THIS IS OVERRIDE ARGS FOR SOME REASON
-   'args'		=> [],
-
-   // ADD CATEGORY
-   // 'taxonomy'	=> [
-   // 	[
-   // 		'name'	=> 'Category Project',
-   // 		'slug'	=> 'category-project',
-   // 	],
-   // ],
-
-   // ADD TAGS
-   // 'tags'	=> ['name'	=> 'Tag Project']
-
 ]);

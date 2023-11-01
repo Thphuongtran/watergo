@@ -86,42 +86,52 @@
       </div>
 
       <div class='inner mt30'>
+
+         <div class='scaffold'>
+            <div v-show='loading_data == false'>
          
-         <div class='box-profit'>
-            <div class='order-count'><?php echo __('SOLD', 'watergo')?>: <span class='highlight'>{{ get_data_report.sold }}</span> <?php if( get_locale() == 'vi'){ echo 'Đơn'; } else{ echo 'Orders'; } ?></div>
-            <div v-if='report_rank.rank != "today"' class='rank rank_sold' :class='get_data_report.rank_sold'>
+               <div class='box-profit'>
+                  <div class='order-count'><?php echo __('SOLD', 'watergo')?>: <span class='highlight'>{{ get_data_report.sold }}</span> <?php if( get_locale() == 'vi'){ echo 'Đơn'; } else{ echo 'Orders'; } ?></div>
+                  <div v-if='report_rank.rank != "today"' class='rank rank_sold' :class='get_data_report.rank_sold'>
 
-               <svg v-if='get_data_report.rank_sold == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
-               </svg>
+                     <svg v-if='get_data_report.rank_sold == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
+                     </svg>
 
-               <svg v-if='get_data_report.rank_sold == "down"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
-               </svg>
+                     <svg v-if='get_data_report.rank_sold == "down"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
+                     </svg>
 
-               <span v-if='get_data_report.sold_report > 0' class='rank-sum'>{{ get_data_report.sold_report }}</span>
+                     <span v-if='get_data_report.sold_report > 0' class='rank-sum'>{{ get_data_report.sold_report }}</span>
+                  </div>
+               </div>
+
+               <div class='box-profit'>
+                  <div class='order-count'><?php echo __('CANCELED', 'watergo'); ?>: <span class='highlight'>{{ get_data_report.cancel }}</span> <?php if( get_locale() == 'vi'){ echo 'Đơn'; } else{ echo 'Orders'; } ?></div>
+                  <div v-if='report_rank.rank != "today"' class='rank rank_cancel' :class='get_data_report.rank_cancel'>
+
+                     <svg v-if='get_data_report.rank_cancel == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
+                     </svg>
+
+                     <svg v-if='get_data_report.rank_cancel == "down"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
+                     </svg>
+
+                     <span v-if='get_data_report.cancel_report > 0' class='rank-sum'>{{ get_data_report.cancel_report }}</span>
+                  </div>
+               </div>
+
+               <div class='box-profit'>
+                  <div class='order-count'><?php echo __('TOTAL PROFIT', 'watergo'); ?>: <span class='highlight'>{{ get_price_convert(get_data_report.profit) }}</span></div>
+               </div>
+            </div>
+
+            <div v-show='loading_data == true' class='progress-center'>
+               <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
             </div>
          </div>
 
-         <div class='box-profit'>
-            <div class='order-count'><?php echo __('CANCELED', 'watergo'); ?>: <span class='highlight'>{{ get_data_report.cancel }}</span> <?php if( get_locale() == 'vi'){ echo 'Đơn'; } else{ echo 'Orders'; } ?></div>
-            <div v-if='report_rank.rank != "today"' class='rank rank_cancel' :class='get_data_report.rank_cancel'>
-
-               <svg v-if='get_data_report.rank_cancel == "up"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M8.77815 1.29289C8.38763 0.902369 7.75446 0.902369 7.36394 1.29289L0.999977 7.65685C0.609453 8.04738 0.609453 8.68054 0.999977 9.07107C1.3905 9.46159 2.02367 9.46159 2.41419 9.07107L8.07104 3.41421L13.7279 9.07107C14.1184 9.46159 14.7516 9.46159 15.1421 9.07107C15.5326 8.68054 15.5326 8.04738 15.1421 7.65685L8.77815 1.29289ZM9.07104 18V2H7.07104V18H9.07104Z" fill="#13E800"/>
-               </svg>
-
-               <svg v-if='get_data_report.rank_cancel == "down"' width="25" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M8.77815 18.7071C8.38763 19.0976 7.75446 19.0976 7.36394 18.7071L0.999977 12.3431C0.609453 11.9526 0.609453 11.3195 0.999977 10.9289C1.3905 10.5384 2.02367 10.5384 2.41419 10.9289L8.07104 16.5858L13.7279 10.9289C14.1184 10.5384 14.7516 10.5384 15.1421 10.9289C15.5326 11.3195 15.5326 11.9526 15.1421 12.3431L8.77815 18.7071ZM7.07104 18V2H9.07104V18H7.07104Z" fill="#FF5656"/>
-               </svg>
-
-               <span v-if='get_data_report.cancel_report > 0' class='rank-sum'>{{ get_data_report.cancel_report }}</span>
-            </div>
-         </div>
-
-         <div class='box-profit'>
-            <div class='order-count'><?php echo __('TOTAL PROFIT', 'watergo'); ?>: <span class='highlight'>{{ get_price_convert(get_data_report.profit) }}</span></div>
-         </div>
 
       </div>
    </div>
@@ -143,6 +153,8 @@ var app = Vue.createApp({
    data (){
       return {
          loading: false,
+         loading_data: false,
+
          message_count: 0,
          notification_count: 0,
          currentDate: new Date(),
@@ -198,7 +210,7 @@ var app = Vue.createApp({
             var _find = filter.find( item => item.active == true );
 
             if( _find.value == 'd' ){
-               this.loading = true;
+               this.loading_data = true;
                this.report_rank.rank = 'day';
                var year        = this.currentDate.getFullYear();
                var month       = String(this.currentDate.getMonth() + 1).padStart(2, '0');
@@ -207,20 +219,20 @@ var app = Vue.createApp({
                var date_to     = `${year}-${month}-${day}`;
                var current     = `${day}/${month}/${year}`;
                this.display_datetime = current;
-               await window.app.get_order_range_day_report(date_from, date_to);
-               this.loading = false;
+               await this.get_order_range_day_report(date_from, date_to);
+               this.loading_data = false;
             }
 
             if( _find.value == 'm' ){
-               this.loading = true;
+               this.loading_data = true;
                await this.select_datemonth( this.currentDate.getMonth() + 1);
-               this.loading = false;
+               this.loading_data = false;
             }
 
             if( _find.value == 'y' ){
-               this.loading = true;
+               this.loading_data = true;
                await this.select_dateyear(this.currentDate.getFullYear());
-               this.loading = false;
+               this.loading_data = false;
             }
 
          },
@@ -292,6 +304,9 @@ var app = Vue.createApp({
    methods: {
 
       datePicker(){
+
+         let instanceApp = this;
+
          (function($){
             $(document).ready(function(){
                // add wrapper for picker
@@ -341,17 +356,18 @@ var app = Vue.createApp({
                         if(dateText != undefined || dateText != '' || dateText != null){
                            $('#datepicker').attr('value', dateText); 
                            
-                           window.app.loading = true;
-                           window.app.display_datetime = dateText;
-                           window.app.report_rank.rank = 'day';
+                           instanceApp.loading_data = true;
+                           instanceApp.display_datetime = dateText;
+                           instanceApp.report_rank.rank = 'day';
                            var currentDate = new Date();
                            var year        = currentDate.getFullYear();
                            var month       = String(currentDate.getMonth() + 1).padStart(2, '0');
                            var day         = String(currentDate.getDate()).padStart(2, '0');
                            var date_from   = `${year}-${month}-${day}`;
                            var date_to     = window.reverse_date_to_system_datetime(dateText);
-                           await window.app.get_order_range_day_report(date_from, date_to);
-                           window.app.loading = false;
+                           await instanceApp.get_order_range_day_report(date_from, date_to);
+                           instanceApp.loading_data = false;
+
 
                         }
                      },
@@ -524,7 +540,7 @@ var app = Vue.createApp({
 
       // RANGE MONTH
       async get_order_range_month_report( range_month, range_month_current ){
-         this.loading = true;
+         this.loading_data = true;
          var form = new FormData();
          form.append('action', 'atlantis_get_range_month_order_report');
          form.append('start_day_month', range_month.startDay);
@@ -543,12 +559,12 @@ var app = Vue.createApp({
                this.report_today = res.data.report_today;
             }
          }
-         this.loading = false;
+         this.loading_data = false;
       },
 
       // RANGE YEAR
       async get_order_range_year_report( start_day, end_day ){
-         this.loading = true;
+         this.loading_data = true;
          var form = new FormData();
          form.append('action', 'atlantis_get_range_year_order_report');
          form.append('start_day', start_day );
@@ -573,7 +589,7 @@ var app = Vue.createApp({
                this.report_today = res.data.report_today;
             }
          }
-         this.loading = false;
+         this.loading_data = false;
       },
 
 

@@ -30,7 +30,7 @@ if( in_array($product_page, $allow_tab_product_user)  ){
 }
 
 
-$allow_tab_product_store = ['product-store', 'product-store-view'];
+$allow_tab_product_store = ['product-store', 'product-store-view', 'product-water-action', 'product-ice-action'];
 
 // TAB PRODUCT STORE
 if( in_array($product_page, $allow_tab_product_store) ){
@@ -41,6 +41,15 @@ if( in_array($product_page, $allow_tab_product_store) ){
       }
       if( $product_page == 'product-store-view'){
          get_template_part('pages/product/page-product-store-view');
+      }
+
+      // UPDATE
+      if( $product_page == 'product-water-action'){
+         get_template_part('pages/product/page-product-water-action');
+      }
+
+      if( $product_page == 'product-ice-action'){
+         get_template_part('pages/product/page-product-ice-action');
       }
 
    }else{

@@ -3,6 +3,23 @@
  * @access THIS IS TAB PRODUCT STORE 
  */
 
+   GLOBAL $wpdb;
+   $get_category = "SELECT * FROM wp_watergo_product_category WHERE category IN ('ice_category') AND name != 'Đá cây' ";
+   $category = $wpdb->get_results($get_category);
+   
+   // FOR PARENT
+   $get_category_parent = "SELECT * FROM wp_watergo_product_category WHERE category IN ('type_of_ice') ";
+   $category_parent = $wpdb->get_results($get_category_parent);
+
+   $action        = isset($_GET['action']) ? $_GET['action'] : '';
+   $allow_action = ['add', 'edit'];
+
+
+   if( $action == '' && !in_array( $action, $allow_action) ){
+      exit();
+      // @wp_redirect(get_bloginfo('url') . '/home', 302);
+   }
+
 ?>
 
 <link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
@@ -19,7 +36,7 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>{{ leading_title }}</p>
+               <p class='leading-title'><?php echo __("Add Ice Product", 'watergo'); ?></p>
             </div>
 
          </div>
@@ -30,12 +47,13 @@
          <div class='product-store-view-form'>
 
             <div class='form-title'><?php echo __('Category', 'watergo'); ?></div>
+
             <div class='form-control form-select'>
-               <select v-model='select_category'>
-                  <option :value="{ value: 0 }" disabled><?php echo __('Select Category', 'watergo'); ?></option>
+               <select v-model='product.category'>
+                  <option :value="null" disabled selected><?php echo __('Select Category', 'watergo'); ?></option>
                   <option 
-                     v-for='(cat, catIndex) in get_category' :key='catIndex'
-                     :value="{ value: cat.id }">{{ cat.name }}</option>
+                     v-for='(cat, catIndex) in category' :key='catIndex'
+                     :value="cat.name">{{ cat.name }}</option>
                </select>
                <span class='icon-select'>
                   <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,13 +62,15 @@
                </span>
             </div>
 
-            <div v-show='product_type == "water"' class='form-title'><?php echo __('Brand', 'watergo'); ?></div>
-            <div v-show='product_type == "water"' class='form-control form-select'>
-               <select v-model='water_brand'>
-                  <option :value="{ value: 0 }" disabled><?php echo __('Select Brand', 'watergo'); ?></option>
+            <!-- ICE CATEGORY PARENT -->
+            <div v-show='listen_product_type == "ice"' class='form-title'><?php echo __('Type of ice', 'watergo'); ?></div>
+            <div v-show='listen_product_type == "ice"' class='form-control form-select'>
+               <select v-model='product.category_parent'>
+                  <option :value="null" disabled selected><?php echo __('Type of ice', 'watergo'); ?></option>
                   <option 
-                     v-for='(brand, brandIndex) in get_brand' :key='brandIndex'
-                     :value="{ value: brand.id }">{{ brand.name }}</option>
+                     v-for='(cat_parent, cat_parent_key) in get_category_parent' :key='cat_parent_key'
+                     :value="cat_parent.name">{{ cat_parent.name }}
+                  </option>
                </select>
                <span class='icon-select'>
                   <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,28 +79,35 @@
                </span>
             </div>
 
+            <!-- NAME DEVICE -->
+            <div v-show='listen_product_type == "ice_device"' class='form-control form-select'>
+               <div class='form-title'><?php echo __('Tên thiết bị', 'watergo'); ?></div>
+               <input v-model='product.name_device' placeholder='<?php echo __('Nhập tên thiết bị', 'watergo'); ?>'>
+            </div>
+
+            <!-- CAPACITY DEVICE -->
+            <div v-show='listen_product_type == "ice_device"' class='form-control form-select'>
+               <div class='form-title'><?php echo __('Dung tích', 'watergo'); ?></div>
+               <input v-model='product.capacity_device' placeholder='<?php echo __('Nhập dung tích thiết bị', 'watergo'); ?>'>
+            </div>
+
+            <!-- PRICE -->
             <div class='form-control'>
                <div class='form-title'><?php echo __('Price', 'watergo'); ?></div>
                <input inputmode='numeric' v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ'>
             </div>
-               <!-- <div class='form-control'>
-                  <div class='form-title'>Stock</div>
-                  <input v-model='product.stock' type="text" pattern='[0-9]*' placeholder='0' :disabled='product.mark_out_of_stock == true ? true : false'>
-               </div> -->
 
+            <!-- DISCOUNT -->
             <div class='form-checkbox form-check check-discount'>
                <label>
                   <input @click='discount_toggle' :checked='product.has_discount == 1 ? true : false' type='checkbox'>
                   <span class='text'><?php echo __('Discount', 'watergo'); ?></span>
                </label>
             </div>
-
             <div v-show='product.has_discount == 1' class='form-title'><?php echo __('Percentage Discount', 'watergo'); ?></div>
             <div v-show='product.has_discount == 1' class='form-control'>
-               <input 
-                  inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='<?php echo __('Enter Percentage', 'watergo'); ?>'>
+               <input inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='<?php echo __('Enter Percentage', 'watergo'); ?>'>
             </div>
-
             <div v-show='product.has_discount == 1' class='group-form-control'>
                <div class='form-control'>
                   <div class='form-title'><?php echo __('From', 'watergo'); ?></div>
@@ -94,27 +121,17 @@
                </div>
             </div>
 
+            <div v-show='listen_product_type == "ice"' class='form-title'><?php echo __('Size Description', 'watergo'); ?></div>
 
-            <div class='form-title'><?php echo __('Size Description', 'watergo'); ?></div>
-
-            <!-- SIZE ICE -->
-            <div v-show='product_type == "ice"' class='form-title small-size'><?php echo __('Weight', 'watergo'); ?></div>
-            <div v-show='product_type == "ice"' class='form-control form-select'>
-               <select v-model='ice_weight'>
-                  <option :value="{ value: 0 }" disabled><?php echo __('Select Weight', 'watergo') ?></option>
-                  <option 
-                     v-for='( ice_weight_item, ice_weightIndex) in get_ice_weight' :key='ice_weightIndex'
-                     :value="{ value: ice_weight_item.id }">{{  ice_weight_item.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
+            <!-- WEIGHT -->
+            <div v-show='listen_product_type == "ice"' class='form-control'>
+               <div class='form-title small-size'><?php echo __('Weight', 'watergo'); ?></div>
+               <input v-model='product.weight' ref='product_weight' inputmode='numeric' class='input-trailing' data-trailing='kg' type="text" placeholder='<?php echo __('Input Weight', 'watergo'); ?>'>
             </div>
 
-            <div v-show='product_type == "ice"' class='form-title'><?php echo __('Length * Width', 'watergo'); ?></div>
-            <div v-show='product_type == "ice"' class='form-control'>
+            <!-- LENGTH WIDTH -->
+            <div v-show='listen_product_type == "ice"' class='form-title small-size'><?php echo __('Length * Width', 'watergo'); ?></div>
+            <div v-show='listen_product_type == "ice"' class='form-control'>
                <div class='form-type-length-width'>
                   <div class='form-type-length-width-wrapper'>
                   <input inputmode='numeric' v-model='size_length' class='type-length' pattern='[0-9]*' maxlength='4' type='text' placeholder='____'>
@@ -124,44 +141,11 @@
                   </div>
                </div>
             </div>
-            <!-- END SIZE ICE -->
 
-            <!-- SIZE WATER -->
-            <div v-show='product_type == "water"' class='form-title small-size'><?php echo __('Quantity', 'watergo'); ?></div>
-            <div v-show='product_type == "water"' class='form-control form-select'>
-               <select v-model='water_quantity'>
-                  <option :value="{ value: 0 }" disabled><?php echo __('Select Quantity', 'watergo'); ?></option>
-                  <option 
-                     v-for='(water_quantity, water_quantityIndex) in get_water_quantity' :key='water_quantityIndex'
-                     :value="{ value: water_quantity.id }">{{ water_quantity.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-            <div v-show='product_type == "water"' class='form-title small-size'><?php echo __('Water Volume', 'watergo'); ?></div>
-            <div v-show='product_type == "water"' class='form-control form-select'>
-               <select v-model='water_volume'>
-                  <option :value="{ value: 0 }" disabled><?php echo __('Select Volume', 'watergo'); ?></option>
-                  <option 
-                     v-for='(water_volume, water_volumeIndex) in get_water_volume' :key='water_volumeIndex'
-                     :value="{ value: water_volume.id }">{{ water_volume.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-            <!-- END SIZE WATER -->
-
+            <!-- PRODUCT DESCRIPTION -->
             <div class='form-title'><?php echo __('Product Description', 'watergo'); ?></div>
             <div class='form-control form-select'>
-               <textarea @input='autoResize' ref='textarea' v-model='product.description' placeholder='<?php echo __('Enter Product Description', 'watergo'); ?>'></textarea>
+               <textarea @input='autoResize("textarea1")' ref='textarea1' v-model='product.description' placeholder='<?php echo __('Enter Product Description', 'watergo'); ?>'></textarea>
             </div>
 
             <div class='form-title'><?php echo __('Photo', 'watergo'); ?></div>
@@ -244,14 +228,17 @@ var app = Vue.createApp({
       return {
          popup_delete_product: false,
          loading: false,
-         store_id: null,
+
+         // LISTENER PRODUCT TYPE 
+         listen_product_type: 'ice',
+
          product: {
             id: null,
-            product_type: '',
+            category: null,
+            product_type: null,
             description: '',
             brand: null,
             price: null,
-            stock: null,
             quantity: null,
             volume: null,
             weight: null,
@@ -259,39 +246,41 @@ var app = Vue.createApp({
             has_discount: 0,
             discount_percent: null,
             mark_out_of_stock: 0,
+
+            // THIET BI
+            category_parent: null,
+            capacity_device: null,
+            feature_device: null,
+            name_device: null,
             // product_image in visible
          },
 
-         is_can_action: false,
+         store_id: null,
 
+         is_can_action: false,
          size_length: null,
          size_width: null,
 
          category: [],
+         category_parent: [],
+
          uploadImages: [],
          productImages: [],
          list_attachment_id_delete: [],
 
-         select_category: { value: 0 },
-         water_brand: { value: 0 },
-         water_quantity: { value: 0 },
-         water_volume: { value: 0 },
-
-         ice_weight: { value: 0 },
+         ice_weight_no_trailing: null,
 
          action: '',
-         product_type: '',
-         leading_title: '',
          text_error: '',
 
          check_error: {
+            listen_product_type: 'ice',
+
             select_category:  false,
+            select_category_parent: false,
             price:            false,
             description:      false,
-            // water
-            water_brand:      false,
-            water_quantity:   false,
-            water_volume:     false,
+            
             // ice
             ice_weight:       false,
             size_length:      false,
@@ -303,6 +292,9 @@ var app = Vue.createApp({
             discount_from:    false,
             discount_to:      false,
 
+            name_device:      false,
+            capacity_device:  false,
+
             // image upload
             uploadImages:     false,
             productImages:    false,
@@ -312,38 +304,39 @@ var app = Vue.createApp({
 
    watch: {
       
-
       'product.category': function( val ){
-         if( val.value != 0){ this.check_error.select_category = true; }
+         if( val != undefined && val != null && val != ''){ this.check_error.select_category = true; }else{
+            // this.product.category_parent = null;
+            this.check_error.select_category = false;
+         }
+         if( val == "Thiết bị đá" ){
+            this.listen_product_type               = 'ice_device';
+            // RE-BUILD CHECK ERROR 
+            this.check_error.listen_product_type   = 'ice_device';
+         }else{
+            this.listen_product_type = 'ice';
+            // RE-BUILD CHECK ERROR 
+            this.check_error.listen_product_type   = 'ice';
+         }
       },
-      select_category: function(val){
-         if( val.value != 0){ this.check_error.select_category = true; }
+
+      'product.category_parent': function( val ){
+         if( val != undefined && val != null && val != ''){ this.check_error.select_category_parent = true; }else{
+             this.check_error.select_category_parent = true;
+         }
       },
-      // water
-      'product.brand': function( val ){
-         if( val != null && val != 0){ this.check_error.water_brand = true; }
+      'product.name_device': function( val){
+         if( val != null && val.length > 0 && val != ''){ this.check_error.name_device = true; }
+         else{ this.check_error.name_device = false;}
       },
-      water_brand: function( val ){
-         if( val.value != null && val.value != 0 ){ this.check_error.water_brand = true; }
+      'product.capacity_device': function( val){
+         if( val != null && val.length > 0 && val != ''){ this.check_error.capacity_device = true; }
+         else{ this.check_error.capacity_device = false;}
       },
-      'product.quantity': function( val ){
-         if( val != null && val != 0){ this.check_error.water_quantity = true; }
-      },
-      water_quantity: function( val ){
-         if( val.value != 0){ this.check_error.water_quantity = true; }
-      },
-      'product.volume': function ( val ){
-         if( val != null && val != 0){ this.check_error.water_volume = true; }
-      },
-      water_volume: function( val ){
-         if( val.value != 0){ this.check_error.water_volume = true; }
-      },
-      // ice
+
       'product.weight': function( val ){
-         if( val != null && val != 0 ){ this.check_error.ice_weight = true; }
-      },
-      ice_weight: function( val ){
-         if( val.value != 0 ){ this.check_error.ice_weight = true; }
+         if( val != null && val != 0 && val != '' ){ this.check_error.ice_weight = true; }
+         else{this.check_error.ice_weight = false;}
       },
 
       length_width: function( val ){
@@ -434,9 +427,13 @@ var app = Vue.createApp({
 
       check_error: {
          handler( val ){
-            if( this.product_type == 'ice'){
+
+            // CHECK FOR ICE
+            if( this.listen_product_type == 'ice' ){
+
                if(
                   val.select_category == true &&
+                  val.select_category_parent == true &&
                   val.price == true &&
                   val.description == true &&
                   val.ice_weight == true &&
@@ -464,15 +461,14 @@ var app = Vue.createApp({
                }
             }
 
-            if( this.product_type == 'water'){
+            // CHECK FOR ICE-DEVICE
+            if( this.listen_product_type == 'ice_device' ){
                if(
                   val.select_category == true &&
+                  val.name_device == true &&
+                  val.capacity_device == true &&
                   val.price == true &&
-                  val.description == true &&
-                  ( val.uploadImages == true || val.productImages == true) &&
-                  val.water_brand == true &&
-                  val.water_quantity == true &&
-                  val.water_volume == true
+                  val.description == true
                ){
                   this.is_can_action = true;
                   // OPTION DISCOUNT
@@ -500,56 +496,28 @@ var app = Vue.createApp({
       },
 
 
-
    },
 
    computed: {
 
-      get_category(){
-         return this.category.filter( cat => {
-            if( cat.category == 'water_category' && this.product_type == 'water' ){
-               return cat.category == 'water_category';
-            }
-            else if( cat.category == 'ice_category' && this.product_type == 'ice' ){
-               return cat.category == 'ice_category';
-            }
-         });
+      get_category_parent(){
+         var _findCat = this.category.find(item => item.name == this.product.category);
+         if( _findCat ){
+            return this.category_parent.filter( cat => cat.parent == _findCat.id );
+         }
       },
-
-      get_brand(){
-         return this.category.filter( cat => {
-            if( cat.category == 'water_brand' ) return cat.category == 'water_brand';
-         });
-      },
-
-      get_water_quantity(){
-         return this.category.filter( cat => {
-            if( cat.category == 'water_quantity' ) return cat.category == 'water_quantity';
-         });
-      },
-
-      get_water_volume(){
-         return this.category.filter( cat => {
-            if( cat.category == 'water_volume' ) return cat.category == 'water_volume';
-         });
-      },
-
-      get_ice_weight(){
-         return this.category.filter( cat => {
-            if( cat.category == 'ice_weight') return cat.category == 'ice_weight';
-         });
-      },
-      
 
    },
 
    methods: {
-      autoResize() {
-         const scrollHeight = this.$refs.textarea.scrollHeight;
+
+      autoResize( refName) {
          const maxHeight = 125;
+         const textarea = this.$refs[refName];
+         scrollHeight = textarea.scrollHeight;
          if (scrollHeight > maxHeight) {
-            this.$refs.textarea.style.height = 'auto';
-            this.$refs.textarea.style.height = this.$refs.textarea.scrollHeight + 'px';
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
          }
       },
 
@@ -560,9 +528,8 @@ var app = Vue.createApp({
          this.popup_delete_product = false;
          this.loading = true;
          var form = new FormData();
-         form.append('action', 'atlantis_action_product_store');
+         form.append('action', 'atlantis_action_product_ice');
          form.append('event', 'delete');
-         form.append('product_type', this.product_type);
          form.append('product_id', this.product_id);
 
          if( this.productImages.length > 0 ){
@@ -582,6 +549,9 @@ var app = Vue.createApp({
 
       },
 
+      /**
+       * @access DO ALL EVENT
+       */
       async btn_action_product( event ){
 
          var _discount_from   = 0;
@@ -590,19 +560,15 @@ var app = Vue.createApp({
          if( this.product.discount_from != null && this.product.discount_from != 0){
             _discount_from = window.reverse_date_to_system_datetime(this.product.discount_from);
          }
-
          if( this.$refs.discount_from.value != undefined && this.$refs.discount_from.value != '' ) {
             _discount_from = window.reverse_date_to_system_datetime(this.$refs.discount_from.value);
          }
-
          if( this.product.discount_to != null && this.product.discount_to != 0){
             _discount_to = window.reverse_date_to_system_datetime(this.product.discount_to) ;
          }
-
          if( this.$refs.discount_to.value != undefined && this.$refs.discount_to.value != '' ){            
             _discount_to =  window.reverse_date_to_system_datetime( this.$refs.discount_to.value );
          }
-
          if(_discount_from == undefined || _discount_from == null ){
             _discount_from = null;
          }
@@ -611,11 +577,14 @@ var app = Vue.createApp({
          }
 
          var form = new FormData();
-         form.append('action', 'atlantis_action_product_store');
+         form.append('action', 'atlantis_action_product_ice');
          form.append('event', event);
-         form.append('product_type', this.product_type);
-         form.append('store_id', this.store_id);
-         form.append('product_id', this.product_id);
+         form.append('product_type', this.listen_product_type);
+         form.append('store_id', this.store_id );
+
+         if( this.product_id != null ){
+            form.append('product_id', this.product_id);
+         }
          form.append('mark_out_of_stock', this.product.mark_out_of_stock);
 
          if( this.uploadImages.length > 0 ){
@@ -638,22 +607,25 @@ var app = Vue.createApp({
          form.append('discount_from',     _discount_from);
          form.append('discount_to',       _discount_to);
 
-         // console.log(this.check_error);
+         form.append('category', this.product.category );
+         form.append('price', this.product.price );
+         form.append('description', this.product.description);
 
-         /**
-         *  @access PRODUCT TYPE {ICE}
-         */
-         if( this.product_type == 'ice' && this.is_can_action == true ){
-
+         if(this.listen_product_type == 'ice'){
+            form.append('category_parent', this.product.category_parent);
+            form.append('weight', parseInt( this.ice_weight_no_trailing ) );
+            form.append('length_width', this.size_length + '*' + this.size_width);
+         }
+         if(this.listen_product_type == 'ice_device'){
+            form.append('capacity_device', this.product.capacity_device);
+            form.append('name_device', this.product.name_device);
+         }
+         if( this.is_can_action == true ){
+            
             this.loading = true;
-            form.append('category_id', this.select_category.value );
-            form.append('price', this.product.price );
-            form.append('ice_weight', this.ice_weight.value);
-            this.product.length_width = this.size_length + '*' + this.size_width;
-            form.append('length_width', this.product.length_width);
-            form.append('product_description', this.product.description);
 
             var r = await window.request(form);
+            console.log(r);
 
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
@@ -667,38 +639,8 @@ var app = Vue.createApp({
                this.loading = false;
             }
          }
-         
-         /**
-         *  @access PRODUCT TYPE {WATER}
-         */
-
-         if( this.product_type == 'water' && this.is_can_action == true ){
-            this.loading = true;
-            form.append('category_id',          this.select_category.value );
-            form.append('water_brand',          this.water_brand.value );
-            form.append('price',                this.product.price );
-            form.append('water_quantity',       this.water_quantity.value);
-            form.append('water_volume',         this.water_volume.value);
-            form.append('product_description',  this.product.description);
-
-            var r = await window.request(form);
-
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify( r ));
-               if( res.message == 'action_product_ok'){
-                  var _product_id = res.data;
-                  this.goBackUpdate(_product_id);
-               }else{
-                  this.loading = false;
-               }
-            }else{
-               this.loading = true;
-            }
-
-         }
 
       },
-
 
       btn_delete_upload_image( indexImage ){ this.uploadImages.splice(indexImage, 1) },
       btn_delete_product_image( indexImage ){ 
@@ -727,17 +669,12 @@ var app = Vue.createApp({
          form.append('product_id', product_id);
          form.append('limit_image', 0);
          var r = await window.request(form);
-         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'product_found' ){
                this.product = res.data;
-
-               this.select_category.value    = this.product.category;
-               this.water_brand.value        = this.product.brand;
-               this.water_quantity.value     = this.product.quantity;
-               this.water_volume.value       = this.product.volume;
-               this.ice_weight.value         = this.product.weight;
+               let _char   = jQuery('.input-trailing').data('trailing');
+               $('.input-trailing').val(this.product.weight + ' ' + _char);
 
                if( this.product.discount_percent == 0 ){
                   this.product.discount_percent = null;
@@ -769,19 +706,6 @@ var app = Vue.createApp({
          }
       },
 
-      async get_product_category(){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_product_category');
-         var r = await window.request(form);
-
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'product_category_found' ){
-               this.category.push(...res.data);
-            }
-         }
-      },
-
       handleFileUpload(event) {
          var files = event.target.files;
          if (files) {
@@ -805,10 +729,6 @@ var app = Vue.createApp({
          }
 
       },
-      get_leading_title( product_type ){
-         if( product_type == 'water'){ this.leading_title = '<?php echo __("Add Water Product", 'watergo'); ?>'; }
-         if( product_type == 'ice'){ this.leading_title = '<?php echo __("Add Ice Product", 'watergo'); ?>'; }
-      },
 
       goBack(){ 
          window.location.href = '?appt=X&data=notification_count'; 
@@ -824,143 +744,188 @@ var app = Vue.createApp({
 
    },
 
+
    async created(){
+      this.category        = JSON.parse('<?php echo json_encode($category) ?>');
+      this.category_parent = JSON.parse('<?php echo json_encode($category_parent) ?>');
+      
       this.loading = true;
       var urlParams = new URLSearchParams(window.location.search);
-      var product_id     = urlParams.get('product_id');
-      var product_type   = urlParams.get('product_type');
-      var store_id       = urlParams.get('store_id');
-      var action         = urlParams.get('action');
+      this.product_id     = urlParams.get('product_id');
+      this.store_id       = urlParams.get('store_id');
+      this.action         = urlParams.get('action');
 
-      this.action       = action;
-      this.product_type = product_type;
-      this.store_id     = store_id;
-      this.product_id   = product_id;
+      if( this.action == 'edit' ){
 
-      if( action == 'add' ){
-         this.get_leading_title(product_type);
-      }
+         await this.get_product(this.product_id);
+         this.listen_product_type = this.product.product_type;
 
-      if( action == 'edit' ){
-
-         await this.get_product(product_id);
-         this.leading_title = this.product.name;
          if( this.product.mark_out_of_stock == null ){
             this.product.mark_out_of_stock = 0;
          }
 
-         if( product_type == 'ice' && this.product.length_width != null && this.product.length_width.length != '' ){
+         if( this.product.product_type == 'ice' && this.product.length_width != null && this.product.length_width.length != '' ){
             var [_length, _width]   = this.product.length_width.split('*');
             this.size_length        = _length;
             this.size_width         = _width;
          }
-
+         // override weight
+         if( this.product.product_type == 'ice' ){
+            var _trailing = $('.input-trailing').data('trailing');
+            this.product.weight = this.product.weight + ' ' + _trailing;
+            this.ice_weight_no_trailing = parseInt(this.product.weight);
+         }
       }
 
-      await this.get_product_category();
-
       window.appbar_fixed();
+      
+      jQuery(document).ready(function($){
 
-      (function($){
-         $(document).ready(function(){
-
-            // Define an object that holds the month and day names for different locales
-            var localeData = {
-               'en_US': {
-                  monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                  monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                  dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                  dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                  dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-               },
-               'vi': {
-                  monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
-                  monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
-                  dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
-                  dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-                  dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
-               }
-            };
-
-            // Get the locale-specific month and day names based on this.locale
-            var locale = 'en_US'; // Default to English
-            var get_locale = '<?php echo get_locale(); ?>';
-            if ( get_locale != undefined && localeData[get_locale] != undefined) {
-               locale = get_locale;
+         // Define an object that holds the month and day names for different locales
+         var localeData = {
+            'en_US': {
+               monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+               monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+               dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+               dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+               dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+            },
+            'vi': {
+               monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+               monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+               dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+               dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+               dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
             }
+         };
 
-            $('#discount_from').click(function(){
-               $('.ui-date-picker-wrapper').addClass('active');
-            });
-            $('#discount_to').click(function(){
-               $('.ui-date-picker-wrapper').addClass('active');
-            });
+         // Get the locale-specific month and day names based on this.locale
+         var locale = 'en_US'; // Default to English
+         var get_locale = '<?php echo get_locale(); ?>';
+         if ( get_locale != undefined && localeData[get_locale] != undefined) {
+            locale = get_locale;
+         }
 
-            $('#discount_from').datepicker({
-               // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-               minDate: 0,
-               dateFormat: "dd/mm/yy",
-               firstDay: 1,
+         $('#discount_from').click(function(){
+            $('.ui-date-picker-wrapper').addClass('active');
+         });
+         $('#discount_to').click(function(){
+            $('.ui-date-picker-wrapper').addClass('active');
+         });
 
-               monthNames:       localeData[locale].monthNames,
-               monthNamesShort:  localeData[locale].monthNamesShort,
-               dayNames:         localeData[locale].dayNames,
-               dayNamesShort:    localeData[locale].dayNamesShort,
-               dayNamesMin:      localeData[locale].dayNamesMin,
-               
-               onSelect: function(dateText, inst){
-                  if(dateText != undefined || dateText != '' || dateText != null){
-                     $('#discount_from').attr('value', dateText); 
+         $('#discount_from').datepicker({
+            // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+            minDate: 0,
+            dateFormat: "dd/mm/yy",
+            firstDay: 1,
 
-                     window.app.product.discount_from = dateText;
+            monthNames:       localeData[locale].monthNames,
+            monthNamesShort:  localeData[locale].monthNamesShort,
+            dayNames:         localeData[locale].dayNames,
+            dayNamesShort:    localeData[locale].dayNamesShort,
+            dayNamesMin:      localeData[locale].dayNamesMin,
+            
+            onSelect: function(dateText, inst){
+               if(dateText != undefined || dateText != '' || dateText != null){
+                  $('#discount_from').attr('value', dateText); 
 
-                     var discount_from = $('#discount_from').datepicker('getDate');
-                     // Calculate the next day
-                     var nextDay = new Date(discount_from);
-                     nextDay.setDate(nextDay.getDate() + 1);
-                     var day = nextDay.getDate().toString().padStart(2, '0');
-                     var month = (nextDay.getMonth() + 1).toString().padStart(2, '0');
-                     var year = nextDay.getFullYear();
-                     var fullday = day + '/' + month + '/' + year;
-                     if (fullday) {
-                        $('#discount_to').datepicker('option', 'minDate', fullday);
-                     }
+                  window.app.product.discount_from = dateText;
+
+                  var discount_from = $('#discount_from').datepicker('getDate');
+                  // Calculate the next day
+                  var nextDay = new Date(discount_from);
+                  nextDay.setDate(nextDay.getDate() + 1);
+                  var day = nextDay.getDate().toString().padStart(2, '0');
+                  var month = (nextDay.getMonth() + 1).toString().padStart(2, '0');
+                  var year = nextDay.getFullYear();
+                  var fullday = day + '/' + month + '/' + year;
+                  if (fullday) {
+                     $('#discount_to').datepicker('option', 'minDate', fullday);
                   }
-               },
-               onClose: function(dateText, inst){
-                  $('.ui-date-picker-wrapper').removeClass('active');
                }
-            });
-            $('#discount_to').datepicker({
-               // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-               minDate: 0,
-               dateFormat: "dd/mm/yy",
-               firstDay: 1,
-
-               monthNames:       localeData[locale].monthNames,
-               monthNamesShort:  localeData[locale].monthNamesShort,
-               dayNames:         localeData[locale].dayNames,
-               dayNamesShort:    localeData[locale].dayNamesShort,
-               dayNamesMin:      localeData[locale].dayNamesMin,
-
-               onSelect: function(dateText, inst){
-                  if(dateText != undefined || dateText != '' || dateText != null){
-                     $('#discount_to').attr('value', dateText); 
-                     window.app.product.discount_to = dateText;
-                  }
-               },
-               onClose: function(dateText, inst){
-                  $('.ui-date-picker-wrapper').removeClass('active');
-               }
-            });
-            // add wrapper for picker
-            if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
-               $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+            },
+            onClose: function(dateText, inst){
+               $('.ui-date-picker-wrapper').removeClass('active');
             }
          });
-      })(jQuery);
-      setTimeout( () => {this.autoResize();}, 0);
+         $('#discount_to').datepicker({
+            // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+            minDate: 0,
+            dateFormat: "dd/mm/yy",
+            firstDay: 1,
+
+            monthNames:       localeData[locale].monthNames,
+            monthNamesShort:  localeData[locale].monthNamesShort,
+            dayNames:         localeData[locale].dayNames,
+            dayNamesShort:    localeData[locale].dayNamesShort,
+            dayNamesMin:      localeData[locale].dayNamesMin,
+
+            onSelect: function(dateText, inst){
+               if(dateText != undefined || dateText != '' || dateText != null){
+                  $('#discount_to').attr('value', dateText); 
+                  window.app.product.discount_to = dateText;
+               }
+            },
+            onClose: function(dateText, inst){
+               $('.ui-date-picker-wrapper').removeClass('active');
+            }
+         });
+         // add wrapper for picker
+         if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+            $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+         }
+
+      });
+      
+      setTimeout( () => {this.autoResize("textarea1");}, 0);
       this.loading = false;
+
+      // LISTENER EVENT
+      let appInstance = this;
+      jQuery(document).ready(function($){
+         // $(document).on('input', '.input-trailing', function() {
+         $('.input-trailing').on('input', function() {
+            let inputValue = $(this).val();
+            let char = $(this).data('trailing');
+            let numericValue = inputValue.replace(/\D/g, '');
+            if (numericValue.length > 0) {
+               inputValue = numericValue + ' ' + char;
+            } else {
+               inputValue = '';
+            }
+            $(this).val(inputValue);
+            this.setSelectionRange(inputValue.length, inputValue.length);
+            appInstance.ice_weight_no_trailing = inputValue;
+         });
+
+         // $(document).on('keydown', '.input-trailing', function(e) {
+         $('.input-trailing').on('keydown', function(e) {
+            if (e.key === 'Backspace') {
+               let inputValue = $(this).val();
+               
+               let char = $(this).data('trailing');
+               let numericValue = inputValue.replace(/\D/g, '');
+               // Check if there are numbers to delete
+               if (numericValue.length > 0) {
+                  e.preventDefault();
+                  numericValue = numericValue.slice(0, -1);
+                  inputValue = numericValue + ' ' + char;
+                  $(this).val(inputValue);
+
+                  // Set cursor position to the last digit
+                  let cursorPosition = numericValue.length;
+                  this.setSelectionRange(cursorPosition, cursorPosition);
+                  if( numericValue.length == 0 ){
+                     $(this).val('');
+                  }
+               } else if (inputValue.endsWith(' ' + char)) {
+                  $(this).val('');
+               }
+               appInstance.ice_weight_no_trailing = inputValue;
+            }
+         });
+      });
+
    },
 
 }).mount('#app');

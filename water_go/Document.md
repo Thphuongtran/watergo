@@ -82,3 +82,27 @@ common_get_price_order
 
 admin
 ^^X$&cl*%Anz59^dts&@ANDn
+
+
+
+
+[UPDATE] 2023-10-28 20:10
+
+*LINK WATER [http://localhost:8888/product/?product_page=product-water-action&action=add]
+*LINK ICE [http://localhost:8888/product/?product_page=product-ice-action&action=add]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

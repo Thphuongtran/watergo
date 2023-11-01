@@ -114,7 +114,6 @@ function atlantis_load_products(){
             wp_watergo_products.category,
             wp_watergo_products.brand,
             wp_watergo_products.price,
-            wp_watergo_products.stock,
             wp_watergo_products.quantity,
             wp_watergo_products.volume,
             wp_watergo_products.weight,
@@ -167,8 +166,6 @@ function atlantis_load_product_recommend(){
       $paged   = isset($_POST['paged'] )   ? (int) $_POST['paged']   : 0;
       $perPage = isset($_POST['perPage'] ) ? (int) $_POST['perPage'] : 10;
 
-      $paged   = $paged * $perPage;
-
       $filter  = isset($_POST['filter']) ? $_POST['filter'] : '';
       
       global $wpdb;
@@ -218,25 +215,23 @@ function atlantis_load_product_recommend(){
 
          if( ! empty( $res ) ){
             foreach( $res as $k => $vl ){
-               $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
-               $category = func_atlantis_get_product_category([
-                  'category'     => $vl->category,
-                  'brand'        => $vl->brand,
-                  'quantity'     => $vl->quantity,
-                  'volume'       => $vl->volume,
-                  'weight'       => $vl->weight,
-                  'product_type' => $vl->product_type,
-                  'product_id'   => $vl->id
-               ]);
+               $vl->product_image = func_atlantis_get_images($vl->id, 'product');
+               $vl->description   = stripcslashes($vl->description);
 
-               $res[$k]->category_name = $category['category_name'];
-               $res[$k]->brand_name = $category['brand_name'];
-               $res[$k]->quantity_name = $category['quantity_name'];
-               $res[$k]->volume_name = $category['volume_name'];
-               $res[$k]->weight_name = $category['weight_name'];
-
-               $res[$k]->name = $category['name'];
-               $res[$k]->name_second = $category['name_second'];
+               if( $vl->product_type == 'water'){
+                  $vl->name                     = $vl->brand;
+                  $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+               }else if( $vl->product_type == 'ice'){
+                  $vl->name                     = $vl->category;
+                  $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+               }else if( $vl->product_type == 'water_device'){
+                  $vl->name                     = $vl->name_device;
+                  $vl->name_second              = $vl->feature_device;
+               }else if( $vl->product_type == 'ice_device'){
+                  $vl->name                     = $vl->name_device;
+                  $vl->name_second              = $vl->capacity_device;
+               }
+               
             }
          }else{
             wp_send_json_error(['message' => 'product_not_found']);
@@ -269,8 +264,6 @@ function atlantis_load_product_recommend_discount(){
 
       $lat     = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
       $lng     = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
-
-      $paged   = $paged * $perPage;
 
       $current_time = atlantis_current_date_only();
 
@@ -308,25 +301,23 @@ function atlantis_load_product_recommend_discount(){
 
       if( !empty( $res ) ){
          foreach( $res as $k => $vl ){
-            $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
-            $category = func_atlantis_get_product_category([
-               'category'     => $vl->category,
-               'brand'        => $vl->brand,
-               'quantity'     => $vl->quantity,
-               'volume'       => $vl->volume,
-               'weight'       => $vl->weight,
-               'product_type' => $vl->product_type,
-               'product_id'   => $vl->id
-            ]);
+            $vl->product_image = func_atlantis_get_images($vl->id, 'product' );
+            $vl->description   = stripcslashes($vl->description);
 
-            $res[$k]->category_name = $category['category_name'];
-            $res[$k]->brand_name = $category['brand_name'];
-            $res[$k]->quantity_name = $category['quantity_name'];
-            $res[$k]->volume_name = $category['volume_name'];
-            $res[$k]->weight_name = $category['weight_name'];
-
-            $res[$k]->name = $category['name'];
-            $res[$k]->name_second = $category['name_second'];
+            if( $vl->product_type == 'water'){
+               $vl->name                     = $vl->brand;
+               $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+            }else if( $vl->product_type == 'ice'){
+               $vl->name                     = $vl->category;
+               $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+            }else if( $vl->product_type == 'water_device'){
+               $vl->name                     = $vl->name_device;
+               $vl->name_second              = $vl->feature_device;
+            }else if( $vl->product_type == 'ice_device'){
+               $vl->name                     = $vl->name_device;
+               $vl->name_second              = $vl->capacity_device;
+            }
+            
          }
 
          wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
@@ -349,8 +340,6 @@ function atlantis_load_product_recommend_random(){
 
       $lat     = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
       $lng     = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
-
-      $paged   = $paged * $perPage;
 
       $sql = "SELECT 
          wp_watergo_products.*,
@@ -383,25 +372,23 @@ function atlantis_load_product_recommend_random(){
 
       if( !empty( $res ) ){
          foreach( $res as $k => $vl ){
-            $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
-            $category = func_atlantis_get_product_category([
-               'category'     => $vl->category,
-               'brand'        => $vl->brand,
-               'quantity'     => $vl->quantity,
-               'volume'       => $vl->volume,
-               'weight'       => $vl->weight,
-               'product_type' => $vl->product_type,
-               'product_id'   => $vl->id
-            ]);
 
-            $res[$k]->category_name = $category['category_name'];
-            $res[$k]->brand_name = $category['brand_name'];
-            $res[$k]->quantity_name = $category['quantity_name'];
-            $res[$k]->volume_name = $category['volume_name'];
-            $res[$k]->weight_name = $category['weight_name'];
+            $vl->product_image = func_atlantis_get_images($vl->id, 'product');
+            $vl->description   = stripcslashes($vl->description);
 
-            $res[$k]->name = $category['name'];
-            $res[$k]->name_second = $category['name_second'];
+            if( $vl->product_type == 'water'){
+               $vl->name                     = $vl->brand;
+               $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+            }else if( $vl->product_type == 'ice'){
+               $vl->name                     = $vl->category;
+               $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+            }else if( $vl->product_type == 'water_device'){
+               $vl->name                     = $vl->name_device;
+               $vl->name_second              = $vl->feature_device;
+            }else if( $vl->product_type == 'ice_device'){
+               $vl->name                     = $vl->name_device;
+               $vl->name_second              = $vl->capacity_device;
+            }
          }
 
          wp_send_json_success(['message' => 'product_found', 'data' => $res ]);
@@ -417,23 +404,21 @@ function atlantis_load_product_recommend_random(){
 
 function atlantis_find_product(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_find_product' ){
-      $product_id       = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
-      $limit_image      = isset($_POST['limit_image']) ? $_POST['limit_image'] : true;
-      // $paged         = isset($_POST['paged']) ? $_POST['paged'] : 0;
-      $image_size       = isset($_POST['image_size']) ? $_POST['image_size'] : 'medium';
-
+      $product_id       = isset($_POST['product_id'])     ? $_POST['product_id'] : 0;
+      $limit_image      = isset($_POST['limit_image'])    ? $_POST['limit_image'] : true;
+      $image_size       = isset($_POST['image_size'])     ? $_POST['image_size'] : 'medium';
       $random_product   = isset($_POST['random_product']) ? $_POST['random_product'] : 0;
 
+      $is_get_product_pending = isset($_POST['get_product_pending']) ? (int) $_POST['get_product_pending'] : 0;
       
       if($product_id == 0 ){
          wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
       }
-      $product = null;
 
       $product = func_atlantis_get_product_by([
          'id'           => $product_id,
-         'get_by'       => 'product_id',
+         'get_by'       => $is_get_product_pending == 1 ? 'product_id_pending' : 'product_id',
          'limit_image'  => $limit_image == 1 ? true : false,
          'image_size'   => $image_size
          // 'paged'        => $paged
@@ -443,6 +428,7 @@ function atlantis_find_product(){
          wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
       }else if( empty($product) && $random_product == 1 ){
+
          global $wpdb;
          // GET RANDOM PRODUCT
          $sql_find_store = "SELECT store_id FROM wp_watergo_products WHERE id = $product_id";
@@ -459,32 +445,28 @@ function atlantis_find_product(){
 
          if( !empty($res_random_product ) ){
             foreach($res_random_product as $k => $vl){
+               $vl->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
+               $vl->description    = stripcslashes($vl->description);
 
-               $res_random_product[$k]->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
-               $category = func_atlantis_get_product_category([
-                  'category'     => $vl->category,
-                  'brand'        => $vl->brand,
-                  'quantity'     => $vl->quantity,
-                  'volume'       => $vl->volume,
-                  'weight'       => $vl->weight,
-                  'product_type' => $vl->product_type,
-                  'product_id'   => $vl->id,
-               ]);
-
-               $res_random_product[$k]->category_name  = $category['category_name'];
-               $res_random_product[$k]->brand_name     = $category['brand_name'];
-               $res_random_product[$k]->quantity_name  = $category['quantity_name'];
-               $res_random_product[$k]->volume_name    = $category['volume_name'];
-               $res_random_product[$k]->weight_name    = $category['weight_name'];
-               $res_random_product[$k]->name           = $category['name'];
-               $res_random_product[$k]->name_second    = $category['name_second'];
+               if( $vl->product_type == 'water'){
+                  $vl->name                     = $vl->brand;
+                  $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+               }else if( $vl->product_type == 'ice'){
+                  $vl->name                     = $vl->category;
+                  $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+               }else if( $vl->product_type == 'water_device'){
+                  $vl->name                     = $vl->name_device;
+                  $vl->name_second              = $vl->feature_device;
+               }else if( $vl->product_type == 'ice_device'){
+                  $vl->name                     = $vl->name_device;
+                  $vl->name_second              = $vl->capacity_device;
+               }
 
             }
          }
 
          wp_send_json_success(['message' => 'product_found', 'data' => $res_random_product[0] ]);
          wp_die();
-
       }
 
       wp_send_json_success(['message' => 'product_found', 'data' => $product[0], 'limit_image' => $limit_image ]);
@@ -582,28 +564,23 @@ function atlantis_get_product_sort(){
       $res = $wpdb->get_results($sql);
 
       foreach( $res as $k => $vl ){
-         $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
-         $category = func_atlantis_get_product_category([
-            'category'     => $vl->category,
-            'brand'        => $vl->brand,
-            'quantity'     => $vl->quantity,
-            'volume'       => $vl->volume,
-            'weight'       => $vl->weight,
-            'product_type' => $vl->product_type,
-            'product_id'   => $vl->id
-         ]);
+         
+         $vl->product_image = func_atlantis_get_images($vl->id, 'product');
+         $vl->description   = stripcslashes($vl->description);
 
-         $res[$k]->category_name = $category['category_name'];
-         $res[$k]->brand_name = $category['brand_name'];
-         $res[$k]->quantity_name = $category['quantity_name'];
-         $res[$k]->volume_name = $category['volume_name'];
-         $res[$k]->weight_name = $category['weight_name'];
-
-         $res[$k]->description    = stripcslashes($res[$k]->description);
-
-         $res[$k]->name = $category['name'];
-         $res[$k]->name_second = $category['name_second'];
-
+         if( $vl->product_type == 'water'){
+            $vl->name                     = $vl->brand;
+            $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+         }else if( $vl->product_type == 'ice'){
+            $vl->name                     = $vl->category;
+            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+         }else if( $vl->product_type == 'water_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->feature_device;
+         }else if( $vl->product_type == 'ice_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->capacity_device;
+         }
 
       }
 
@@ -618,119 +595,6 @@ function atlantis_get_product_sort(){
 
    }
 }
-
-// function atlantis_get_product_sort(){
-//    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_product_sort' ){
-
-//       // nearest | cheapest | top_rated
-//       $filter        = isset($_POST['filter'])        ? $_POST['filter'] : 'nearest';
-//       $paged         = isset($_POST['paged'] )        ? (int) $_POST['paged'] : 0;
-//       $perPage       = isset($_POST['perPage'] )      ? $_POST['perPage'] : 10;
-
-//       $paged = $paged * $perPage;
-
-//       $product_type  = isset($_POST['product_type'] ) ? $_POST['product_type'] : '';
-
-//       $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
-//       $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
-
-
-//       // ADD COLUMN CHECK
-//       if( $filter == 'top_rated' ){
-//          $column_option = "
-//             , avg_rating
-//          ";
-//       }
-//       if( $filter == 'nearest'){
-//          $column_option = "
-//             ,(6371 * acos(
-//                cos(
-//                   radians($lat)) * cos(radians(wp_watergo_store.latitude)) * 
-//                   cos(radians(wp_watergo_store.longitude) - radians($lng)
-//                ) + sin(radians($lat)) * sin(radians(wp_watergo_store.latitude))
-//             )) AS distance
-//          ";
-//       }
-//       // END ADD COLUMM CHECK
-
-//       global $wpdb;
-
-//       $sql = "SELECT wp_watergo_products.* 
-//                $column_option
-//             FROM wp_watergo_products 
-//       ";
-
-//       if( $filter == 'cheapest' ){
-//          $sql .= " 
-//             WHERE wp_watergo_products.product_type = '$product_type'
-//             AND wp_watergo_products.mark_out_of_stock != 1
-//             -- AND wp_watergo_products.product_hidden != 1
-//             ORDER BY wp_watergo_products.price ASC ";
-//       }
-
-//       if( $filter == 'nearest' ){
-//          $sql .= "
-//             LEFT JOIN wp_watergo_store
-//             ON wp_watergo_store.id = wp_watergo_products.store_id
-//             WHERE wp_watergo_products.product_type = '$product_type'
-//             AND wp_watergo_products.mark_out_of_stock != 1
-//             -- AND wp_watergo_products.product_hidden != 1
-//             ORDER BY distance ASC ";
-//       }
-//       if( $filter == 'top_rated' ){
-//          $sql .= " 
-//             LEFT JOIN (
-//                SELECT store_id, AVG(rating) AS avg_rating
-//                FROM wp_watergo_reviews
-//                GROUP BY store_id
-//             ) AS reviews_avg ON reviews_avg.store_id = wp_watergo_products.store_id
-
-//             WHERE wp_watergo_products.product_type = '$product_type'
-//             AND wp_watergo_products.mark_out_of_stock != 1
-//             -- AND wp_watergo_products.product_hidden != 1
-//             ORDER BY avg_rating DESC ";
-//       }
-
-//       $sql .= " LIMIT $paged, 10 ";
-
-//       $res = $wpdb->get_results($sql);
-
-//       foreach( $res as $k => $vl ){
-//          $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
-//          $category = func_atlantis_get_product_category([
-//             'category'     => $vl->category,
-//             'brand'        => $vl->brand,
-//             'quantity'     => $vl->quantity,
-//             'volume'       => $vl->volume,
-//             'weight'       => $vl->weight,
-//             'product_type' => $vl->product_type,
-//             'product_id'   => $vl->id
-//          ]);
-
-//          $res[$k]->category_name = $category['category_name'];
-//          $res[$k]->brand_name = $category['brand_name'];
-//          $res[$k]->quantity_name = $category['quantity_name'];
-//          $res[$k]->volume_name = $category['volume_name'];
-//          $res[$k]->weight_name = $category['weight_name'];
-
-//          $res[$k]->description    = stripcslashes($res[$k]->description);
-
-//          $res[$k]->name = $category['name'];
-//          $res[$k]->name_second = $category['name_second'];
-
-
-//       }
-
-//       if( empty( $res ) ){
-//          wp_send_json_error(['message' => 'product_not_found', 'sql' => $sql ]);
-//          wp_die();
-//       }
-
-//       wp_send_json_success(['message' => 'product_found', 'data' => $res, 'sql' => $sql, 'filter' => $filter ]);
-//       wp_die();
-
-//    }
-// }
 
 
 /**
@@ -819,19 +683,18 @@ add_action( 'wp_ajax_nopriv_atlantis_get_product_sort_version2', 'atlantis_get_p
 add_action( 'wp_ajax_atlantis_get_product_sort_version2', 'atlantis_get_product_sort_version2' );
 function atlantis_get_product_sort_version2(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_product_sort_version2' ){
-      $paged         = isset($_POST['paged'] )        ? (int) $_POST['paged'] : 0;
+      $paged         = isset($_POST['paged'] )        ? $_POST['paged'] : 0;
       $perPage       = isset($_POST['perPage'] )      ? $_POST['perPage'] : 20;
-
-      $paged = $paged * $perPage;
-
+      
       $product_type  = isset($_POST['product_type'] ) ? $_POST['product_type'] : '';
 
-      $category = isset($_POST['category']) ? $_POST['category'] : 0;
-      // for water 
-      $brand    = isset($_POST['brand']) ? $_POST['brand'] : 0;
+      $category         = isset($_POST['category']) ? $_POST['category'] : 0;
+      // $category_parent  = isset($_POST['category_parent']) ? $_POST['category_parent'] : 0;
+      $brand            = isset($_POST['brand']) ? $_POST['brand'] : 0;
 
-      $lat = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
-      $lng = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+      $lat           = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
+      $lng           = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
+
 
       global $wpdb;
 
@@ -842,8 +705,8 @@ function atlantis_get_product_sort_version2(){
          wp_watergo_products.product_type,
          wp_watergo_products.description,
          wp_watergo_products.price,
-         wp_watergo_products.stock,
          wp_watergo_products.category,
+         wp_watergo_products.category_parent,
          wp_watergo_products.brand,
          wp_watergo_products.quantity,
          wp_watergo_products.volume,
@@ -856,6 +719,10 @@ function atlantis_get_product_sort_version2(){
          wp_watergo_products.created_at,
          wp_watergo_products.mark_out_of_stock,
          wp_watergo_products.product_hidden,
+         wp_watergo_products.name_device,
+         wp_watergo_products.feature_device,
+         wp_watergo_products.capacity_device,
+
          -- 
          (6371 * acos(
             cos(
@@ -881,13 +748,18 @@ function atlantis_get_product_sort_version2(){
          AND wp_watergo_products.product_hidden != 1 
          
       ";
-
-      // FILTER CAT + BRAND
+      
+      /**
+       * @access FILTER
+       */
       if( $category != 0 ){
-         $sql .= " AND wp_watergo_products.category = $category ";
+         $sql .= " AND wp_watergo_products.category = '$category' ";
       }
+      // if( $category_parent != 0 ){
+      //    $sql .= " AND wp_watergo_products.category_parent = $category_parent ";
+      // }
       if( $brand != 0 ){
-         $sql .= " AND wp_watergo_products.brand = $brand ";
+         $sql .= " AND wp_watergo_products.brand = '$brand' ";
       }
 
       $sql .= "
@@ -896,33 +768,25 @@ function atlantis_get_product_sort_version2(){
          LIMIT $paged, $perPage
       ";
 
-
       $res = $wpdb->get_results($sql);
 
       foreach( $res as $k => $vl ){
-         $res[$k]->product_image = func_atlantis_get_images($vl->id, 'product');
-         $category = func_atlantis_get_product_category([
-            'category'     => $vl->category,
-            'brand'        => $vl->brand,
-            'quantity'     => $vl->quantity,
-            'volume'       => $vl->volume,
-            'weight'       => $vl->weight,
-            'product_type' => $vl->product_type,
-            'product_id'   => $vl->id
-         ]);
+         $vl->product_image = func_atlantis_get_images($vl->id, 'product');
+         $vl->description   = stripcslashes($vl->description);
 
-         $res[$k]->category_name = $category['category_name'];
-         $res[$k]->brand_name = $category['brand_name'];
-         $res[$k]->quantity_name = $category['quantity_name'];
-         $res[$k]->volume_name = $category['volume_name'];
-         $res[$k]->weight_name = $category['weight_name'];
-
-         $res[$k]->description    = stripcslashes($res[$k]->description);
-
-         $res[$k]->name = $category['name'];
-         $res[$k]->name_second = $category['name_second'];
-
-
+         if( $vl->product_type == 'water'){
+            $vl->name                     = $vl->brand;
+            $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+         }else if( $vl->product_type == 'ice'){
+            $vl->name                     = $vl->category;
+            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+         }else if( $vl->product_type == 'water_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->feature_device;
+         }else if( $vl->product_type == 'ice_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->capacity_device;
+         }
       }
 
       if( empty( $res ) ){

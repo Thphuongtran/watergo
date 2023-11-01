@@ -78,7 +78,6 @@ var app = Vue.createApp({
          sortFeatureCurrentValue: -1,
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
-         paged: 0,
 
          list_id_products: [],
 
@@ -141,25 +140,27 @@ var app = Vue.createApp({
             this.sortFeatureCurrentValue = -1;
 
             if( this.which_query == 'recommend' ){
-               await this.get_product_recommend( this.paged++);
+               await this.get_product_recommend();
             }
             if( this.which_query == 'discount' ){
-               await this.get_product_discount( this.paged++);
+               await this.get_product_discount();
             }
             if( this.which_query == 'random' ){
-               await this.get_product_random( this.paged++);
+               await this.get_product_random();
             }
+
+            console.log('PRODUCT LENGTH : ' + this.products.length)
          }
       },
 
-      async get_product_recommend( paged ){
+      async get_product_recommend(){
          
          if( this.which_query == 'recommend' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', paged );            
+            form.append('paged', this.products.length );            
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r));
@@ -170,20 +171,6 @@ var app = Vue.createApp({
                         this.products.push(item);
                      }
                   });
-
-                  if( this.products.length < 4 && this.products.length < 6 ){
-                     this.which_query = 'discount';
-                     var _rest_of = 10 - this.products.length;
-                     if( _rest_of <= 6 ){ rest_of = 4; }
-                     if( _rest_of <= 4 ){ _rest_of = 6; }
-                     await this.get_product_discount(0, _rest_of);
-
-                     if( this.products.length < 10 ){
-                        this.which_query = 'random';
-                        _rest_of = 10 - this.products.length;
-                        await this.get_product_random(0, 6);
-                     }
-                  }
 
                }else{
                   this.which_query = 'discount';
@@ -197,15 +184,14 @@ var app = Vue.createApp({
       /**
        * @access PRODUCT DISCOUNT
        */
-      async get_product_discount( paged, perPage = null ){
-         if( perPage == null ) perPage = 10;
+      async get_product_discount(){
          if( this.which_query == 'discount' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend_discount');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', paged );
-            form.append('perPage', perPage );
+            form.append('paged', this.products.length );
+            form.append('perPage', 10 );
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -215,13 +201,7 @@ var app = Vue.createApp({
                         this.products.push(item);
                      }
                   });
-                  if( this.products.length < 10 ){
-                     var res_of = 10 - this.products.length;
-                     this.which_query = 'random';   
-                     this.get_product_random(0, res_of);
-                  }
                }else{
-                  this.paged = 0;
                   this.which_query = 'random';
                }
             }
@@ -234,16 +214,14 @@ var app = Vue.createApp({
        * @access PRODUCT RANDOM
        */
 
-      async get_product_random( paged, perPage = null ){
-         if( perPage == null ) perPage = 10;
-
+      async get_product_random(){
          if( this.which_query == 'random' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend_random');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', paged );
-            form.append('perPage', perPage );
+            form.append('paged', this.products.length );
+            form.append('perPage', 10 );
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -298,13 +276,13 @@ var app = Vue.createApp({
       this.loading = true;
       // await this.get_product_recommend('nearest', [0]);
       if( this.which_query == 'recommend' ){
-         await this.get_product_recommend( 0 );
+         await this.get_product_recommend();
       }
       if( this.which_query == 'discount' ){
-         await this.get_product_discount( 0 );
+         await this.get_product_discount();
       }
       if( this.which_query == 'random' ){
-         await this.get_product_random( 0 );
+         await this.get_product_random();
       }
       
       this.loading = false;

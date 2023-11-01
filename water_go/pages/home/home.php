@@ -388,8 +388,10 @@
                                  <img :src="product.product_image.url">
                                  <span v-if="has_discount(product) == true" class="badge-discount">-{{ product.discount_percent }}%</span>
                               </div>
+                              
                               <p class="tt01">{{ product.name }} </p>
                               <p class="tt02">{{ product.name_second }}</p>
+
                               <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
                                  <span class="price">
                                     {{ common_price_after_discount(product) }}

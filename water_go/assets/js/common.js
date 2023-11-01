@@ -1227,18 +1227,6 @@ function gotoProductStoreEdit(action, product_type, product_id, store_id){
    window.location.href = url + '&appt=N';
 }
 
-function gotoProductStoreAdd( store_id, product_type){
-   var url = window.watergo_domain + 'product/?product_page=product-store-view&appt=N';
-   if( product_type != undefined ){
-      url += '&product_type=' + product_type;
-   }
-   if( store_id != undefined ){
-      url += '&store_id=' + store_id;
-   }
-   window.location.href = url + '&action=add&appt=N';
-}
-
-
 /**
  * @access TAB STORE
  */

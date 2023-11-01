@@ -60,44 +60,55 @@
             </div>
          </div>
 
-         <div
-            class='order-item-container'
-            v-for='(order, index) in filter_order'
-            :key='index'
-            @click='gotoScheduleOrderDetail(order.order_id)'
-         >
+         <div class='scaffold'>
+            <div v-show='loading_data == false'>
+               <div
+                  class='order-item-container'
+                  v-for='(order, index) in filter_order'
+                  :key='index'
+                  @click='gotoScheduleOrderDetail(order.order_id)'
+               >
 
-            <div class='order-item-title-container'>
-               <div class='order-item-title-container-tile01'>
-                  <h3 class='order-title'><?php echo __('Order', 'watergo'); ?> #{{ order.order_number}}</h3>
-                  <h3 class='order-type text-order-type' :class="get_type_order(order.order_delivery_type)">
-                     {{print_type_order_text(order.order_delivery_type)}}
-                  </h3>
+                  <div class='order-item-title-container'>
+                     <div class='order-item-title-container-tile01'>
+                        <h3 class='order-title'><?php echo __('Order', 'watergo'); ?> #{{ order.order_number}}</h3>
+                        <h3 class='order-type text-order-type' :class="get_type_order(order.order_delivery_type)">
+                           {{print_type_order_text(order.order_delivery_type)}}
+                        </h3>
+                     </div>
+
+                     <div class='order-item-title-container-tile02'>
+                        <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>
+                           <?php echo __('Delivery Immediately', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_time }}
+                        </p>
+                        <p 
+                           v-if="order.order_delivery_type == 'once_date_time'"
+                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                        <p 
+                           v-if="order.order_delivery_type == 'weekly'"
+                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ get_title_weekly_compact(order.order_time_shipping.order_time_shipping_day) }} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                        <p 
+                           v-if="order.order_delivery_type == 'monthly'"
+                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                     </div>
+
+
+                  </div>
+                  <div class='order-item-discount text-sm'>
+                     <p>{{ total_product_in_order( order )}} <?php echo __('products', 'watergo'); ?></p>
+                     <p><?php echo __('Total', 'watergo'); ?>: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
+                     <!-- <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p> -->
+                  </div>
                </div>
-
-               <div class='order-item-title-container-tile02'>
-                  <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>
-                     <?php echo __('Delivery Immediately', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_time }}
-                  </p>
-                  <p 
-                     v-if="order.order_delivery_type == 'once_date_time'"
-                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
-                  <p 
-                     v-if="order.order_delivery_type == 'weekly'"
-                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ get_title_weekly_compact(order.order_time_shipping.order_time_shipping_day) }} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
-                  <p 
-                     v-if="order.order_delivery_type == 'monthly'"
-                     class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
-               </div>
-
-
             </div>
-            <div class='order-item-discount text-sm'>
-               <p>{{ total_product_in_order( order )}} <?php echo __('products', 'watergo'); ?></p>
-               <p><?php echo __('Total', 'watergo'); ?>: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
-               <!-- <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p> -->
+
+            <div v-show='loading_data == true' class='progress-center'>
+               <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
             </div>
+
          </div>
+
+
       </div>
 
    </div>
@@ -116,6 +127,8 @@ var app = Vue.createApp({
       return {
 
          loading: false,
+         loading_data: false,
+
          message_count: 0,
          notification_count: 0,
          currentDate: new Date(),
@@ -249,35 +262,38 @@ var app = Vue.createApp({
          if( filter_selected == 'all' ){
             this.save_datetime_from_datepicker();
             this.orders = [];
-            this.loading = true;
-            await this.schedule_load_product('all', this.datePickerValue, [0]);
-            this.loading = false;
+            this.loading_data = true;
+            await this.schedule_load_product('all', this.datePickerValue);
+            this.loading_data = false;
          }
          if( filter_selected == 'once' ){
             this.orders = [];
             this.save_datetime_from_datepicker();
-            this.loading = true;
-            await this.schedule_load_product('once', this.datePickerValue, [0]);
-            this.loading = false;
+            this.loading_data = true;
+            await this.schedule_load_product('once', this.datePickerValue);
+            this.loading_data = false;
          }
          if( filter_selected == 'weekly' ){
             this.orders = [];
             this.save_datetime_from_datepicker();
-            this.loading = true;
-            await this.schedule_load_product('weekly', this.datePickerValue, [0]);
-            this.loading = false;
+            this.loading_data = true;
+            await this.schedule_load_product('weekly', this.datePickerValue);
+            this.loading_data = false;
          }
          if( filter_selected == 'monthly' ){
             this.orders = [];
             this.save_datetime_from_datepicker();
-            this.loading = true;
-            await this.schedule_load_product('monthly', this.datePickerValue, [0]);
-            this.loading = false;
+            this.loading_data = true;
+            await this.schedule_load_product('monthly', this.datePickerValue);
+            this.loading_data = false;
          }
 
       },
 
       datePicker(isPicker){
+
+         let instanceApp = this;
+
          $(function(){
 
             $(document).ready(function(){
@@ -297,7 +313,7 @@ var app = Vue.createApp({
                      dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
                      dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
                      dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
-                  },
+                  }
                };
 
                // Get the locale-specific month and day names based on this.locale
@@ -324,12 +340,12 @@ var app = Vue.createApp({
                   
                   onSelect: async function(dateText, inst){
                      if(dateText != undefined || dateText != '' || dateText != null){
-                        window.app.loading = true;
-                        window.app.orders = [];
+                        instanceApp.loading_data = true;
+                        instanceApp.orders = [];
                         $('#datepicker').attr('value', dateText); 
-                        window.app.datePickerValue = dateText;
-                        await window.app.schedule_load_product( window.app.schedule_status_value, dateText, [0] );
-                        window.app.loading = false;
+                        instanceApp.datePickerValue = dateText;
+                        await instanceApp.schedule_load_product( instanceApp.schedule_status_value, dateText );
+                        instanceApp.loading_data = false;
 
                      }
                   },
@@ -351,40 +367,13 @@ var app = Vue.createApp({
 
          });
 
-         // this.save_datetime_from_datepicker();
-
-         // if( isPicker == true ){
-         //    var query = document.querySelectorAll('#ui-datepicker-div a.ui-state-default');
-
-         //    for (let i = 0; i < query.length; i++) {
-         //       query[i].addEventListener("mousedown", () => {
-         //          var _getDatePicker = $('#datepicker').val();
-         //          setTimeout(() => {
-         //             var _getDatePicker = $('#datepicker').val();
-         //             this.orders = [];
-         //             this.loading = true;
-         //             this.schedule_load_product(this.schedule_status_value, _getDatePicker, [0])
-         //                .then(() => {
-         //                   this.loading = false;
-         //                })
-         //                .catch((error) => {
-         //                   console.error(error);
-         //                   this.loading = false;
-         //                });
-         //          }, 0);
-         //       });
-         //    }
-         // }
-
-         
-
       },
 
-      async schedule_load_product(filter, datetime, paged){
+      async schedule_load_product(filter, datetime){
          var form = new FormData();
          form.append('action', 'atlantis_get_order_schedule');
          form.append('filter', filter);
-         form.append('paged', paged );
+         form.append('paged', this.orders.length );
          form.append('datetime', String( datetime) );
          var r = await window.request(form);
          console.log(r)
@@ -394,15 +383,6 @@ var app = Vue.createApp({
 
                res.data.forEach(item => {
                   if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
-                     // var _store_lat = item.store_latitude;
-                     // var _store_lng = item.store_longitude;
-                     // var _user_lat  = item.order_delivery_address.latitude;
-                     // var _user_lng  = item.order_delivery_address.longitude;
-                     
-                     // item.address_kilometer = window.calculateDistance(_store_lat, _store_lng, _user_lat, _user_lng);
-                     // if(item.address_kilometer > 0 ){
-                     //    item.address_kilometer = parseFloat( item.address_kilometer ).toPrecision(2);
-                     // }
                      this.orders.push(item);
                   }
                });
@@ -425,16 +405,14 @@ var app = Vue.createApp({
 
          // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
          if (scrollPosition + windowHeight >= documentHeight ) {
-
-            await this.schedule_load_product(
-               this.schedule_status_value, 
-               this.datePickerValue, 
-               this.paged++ );
+            await this.schedule_load_product(this.schedule_status_value, this.datePickerValue);
          }
       },
 
    },
-   
+
+   mounted() { window.addEventListener('scroll', this.handleScroll); },
+   beforeDestroy() {window.removeEventListener('scroll', this.handleScroll); },
 
    async created(){
 
@@ -443,13 +421,8 @@ var app = Vue.createApp({
       
       await this.get_notification_count();
       var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
-      await this.schedule_load_product('all', _currentDate, 0);
+      await this.schedule_load_product('all', _currentDate);
 
-      // $.datepicker.setDefaults({
-      //    minDate: 0,
-      //    dateFormat: "dd/mm/yy",
-      //    firstDay: 1,
-      // });
 
       await this.datePicker();
       window.appbar_fixed();
@@ -457,9 +430,6 @@ var app = Vue.createApp({
       this.loading = false;
 
    },
-
-   mounted() { window.addEventListener('scroll', this.handleScroll); },
-   beforeDestroy() {window.removeEventListener('scroll', this.handleScroll); },
 
    computed: {
       filter_order(){

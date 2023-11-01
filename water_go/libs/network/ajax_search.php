@@ -46,28 +46,23 @@ function word_by_word_match( $search, $product_name){
 function func_get_product_category($res_product){
    if( !empty( $res_product) ){
       foreach( $res_product as $k => $product ){
-         $res_product[$k]->product_image = func_atlantis_get_images($product->id, 'product', true, 'medium');
 
-         $category = func_atlantis_get_product_category([
-            'category'     => $product->category,
-            'brand'        => $product->brand,
-            'quantity'     => $product->quantity,
-            'volume'       => $product->volume,
-            'weight'       => $product->weight,
-            'product_type' => $product->product_type,
-            'product_id'   => $product->id,
-         ]);
+         $vl->product_image = func_atlantis_get_images($vl->id, 'product', true, 'medium');
+         $vl->description   = stripcslashes($vl->description);
 
-         // $description = $res_product[$k]->description;
-
-         $res_product[$k]->category_name  = $category['category_name'];
-         $res_product[$k]->brand_name     = $category['brand_name'];
-         $res_product[$k]->quantity_name  = $category['quantity_name'];
-         $res_product[$k]->volume_name    = $category['volume_name'];
-         $res_product[$k]->weight_name    = $category['weight_name'];
-         // $res_product[$k]->description    = stripcslashes($description);
-         $res_product[$k]->name           = $category['name'];
-         $res_product[$k]->name_second    = $category['name_second'];
+         if( $vl->product_type == 'water'){
+            $vl->name                     = $vl->brand;
+            $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+         }else if( $vl->product_type == 'ice'){
+            $vl->name                     = $vl->category;
+            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+         }else if( $vl->product_type == 'water_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->feature_device;
+         }else if( $vl->product_type == 'ice_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->capacity_device;
+         }
       }
       return $res_product;
    }else{

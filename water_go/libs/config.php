@@ -24,3 +24,4 @@ require_once THEME_DIR . '/libs/master_route.php';
 require_once THEME_DIR . '/libs/ajax_center.php';
 require_once THEME_DIR . '/libs/post_type_support.php';
 require_once THEME_DIR . '/libs/store_manager/store_manager_index.php';
+require_once THEME_DIR . '/libs/product_category/product_category_index.php';

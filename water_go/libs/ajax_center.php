@@ -40,7 +40,7 @@ function func_atlantis_get_order_fullpack( $args ){
 
    $limit      = isset( $args['limit'] ) ? $args['limit'] : 10;
    $paged      = isset( $args['paged'] ) ? $args['paged'] : 0;
-   $paged      = $paged * $limit;
+   $offset      = isset( $args['offset'] ) ? $args['offset'] : 0;
    
    
    // GET ALL 
@@ -203,15 +203,13 @@ function func_atlantis_get_product_by( $args ){
    // get_by_product_type [ ice | water ]
    $get_by_product_type    = isset( $args['get_by_product_type'] ) ? $args['get_by_product_type'] : null;
    // exclude id
-   $exclude_id             = isset($args['exclude_id']) ? $args['exclude_id'] : 0;
-
+   $exclude_id             = isset( $args['exclude_id']) ? $args['exclude_id'] : 0;
    $image_size             = isset( $args['image_size']) ? $args['image_size'] : 'medium';
    
    // limit
    $limit = isset($args['limit']) ? $args['limit'] : 10;
    // paged
    $paged = isset($args['paged']) ? $args['paged'] : 0;
-   $paged = $paged * $limit;
 
    global $wpdb;
 
@@ -226,6 +224,7 @@ function func_atlantis_get_product_by( $args ){
       }else if ( $exclude_id != null && $exclude_id != 0 ) {
          $sql .= " AND wp_watergo_products.id NOT IN ($exclude_id)";
       }
+
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
 
@@ -234,8 +233,13 @@ function func_atlantis_get_product_by( $args ){
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
 
+   if( $get_by == 'product_id_pending'){
+      $sql .= " WHERE wp_watergo_products.id = $id ";
+      $sql .= " AND ( wp_watergo_products.product_hidden != 1 OR ( wp_watergo_products.product_hidden = 1 AND wp_watergo_products.status = 'pending' ) ) ";
+   }
+
    if( $get_by == 'category_id' ){
-      $sql .= " WHERE wp_watergo_products.category = $id ";
+      $sql .= " WHERE wp_watergo_products.category = '$id' ";
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
    }
 
@@ -253,35 +257,28 @@ function func_atlantis_get_product_by( $args ){
       ";
    }
 
-
    $products = $wpdb->get_results($sql);
 
    if( !empty($products ) ){
       foreach($products as $k => $vl){
 
-         $products[$k]->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
-         $category = func_atlantis_get_product_category([
-            'category'     => $vl->category,
-            'brand'        => $vl->brand,
-            'quantity'     => $vl->quantity,
-            'volume'       => $vl->volume,
-            'weight'       => $vl->weight,
-            'product_type' => $vl->product_type,
-            'product_id'   => $vl->id,
-         ]);
+         $vl->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
+         $vl->description    = stripcslashes($vl->description);
 
-         $description = $products[$k]->description;
-
-         $products[$k]->category_name  = $category['category_name'];
-         $products[$k]->brand_name     = $category['brand_name'];
-         $products[$k]->quantity_name  = $category['quantity_name'];
-         $products[$k]->volume_name    = $category['volume_name'];
-         $products[$k]->weight_name    = $category['weight_name'];
-
-         $products[$k]->description    = stripcslashes($description);
-
-         $products[$k]->name           = $category['name'];
-         $products[$k]->name_second    = $category['name_second'];
+         if( $vl->product_type == 'water'){
+            $vl->name                     = $vl->brand;
+            $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+         }else if( $vl->product_type == 'ice'){
+            $vl->name                     = $vl->category;
+            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+         }else if( $vl->product_type == 'water_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->feature_device;
+         }else if( $vl->product_type == 'ice_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = $vl->capacity_device;
+         }
+         
       }
       return $products;
    }
@@ -299,47 +296,6 @@ function func_atlantis_caculator_distance( $args ){
    
 }
 
-/**
- * @access GET product_category by product
- */
-
-function func_atlantis_get_product_category( $args ){
-   global $wpdb;
-   $category   = $args['category'];
-   $brand      = $args['brand'];
-   $quantity   = $args['quantity'];
-   $volume     = $args['volume'];
-   $weight     = $args['weight'];
-   $product_type     = $args['product_type'];
-   $product_id = $args['product_id'];
-
-   $res = [];
-   $sql_category = $wpdb->prepare("SELECT name as category_name FROM wp_watergo_product_category WHERE id = %d ", $category);
-   $res['category_name'] = $wpdb->get_var($sql_category);
-   $sql_brand = $wpdb->prepare("SELECT name as brand_name FROM wp_watergo_product_category WHERE id = %d", $brand);
-   $res['brand_name'] = $wpdb->get_var($sql_brand);
-   $sql_quantity = $wpdb->prepare("SELECT name as quantity_name FROM wp_watergo_product_category WHERE id = %d", $quantity);
-   $res['quantity_name'] = $wpdb->get_var($sql_quantity);
-   $sql_volume = $wpdb->prepare("SELECT name as volume_name FROM wp_watergo_product_category WHERE id = %d", $volume);
-   $res['volume_name'] = $wpdb->get_var($sql_volume);
-   $sql_weight = $wpdb->prepare("SELECT name as weight_name FROM wp_watergo_product_category WHERE id = %d", $weight);
-   $res['weight_name'] = $wpdb->get_var($sql_weight);
-
-   $sql_length_width = $wpdb->prepare("SELECT length_width FROM wp_watergo_products WHERE id = %d", $product_id);
-   $res['length_width'] = $wpdb->get_var($sql_length_width);
-
-   // BUILD MAME - AND NAME SECOND
-   if( $product_type == 'ice' ){
-      $res['name']        = $res['category_name'];
-      $weight_name_remove_space  = str_replace(' ', '', $res['weight_name']);
-      $res['name_second'] = $weight_name_remove_space . ' ' . $res['length_width'] . 'mm';
-   }
-   if( $product_type == 'water' ){
-      $res['name']        = $res['brand_name'];
-      $res['name_second'] = $res['quantity_name'] . ' ' . $res['volume_name'];
-   }
-   return $res;
-}
 
 /**
  * @access GET IMAGE PRODUCT -> LIMIT == FALSE -> get all image by product_id
