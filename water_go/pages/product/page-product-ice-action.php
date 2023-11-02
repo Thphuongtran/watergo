@@ -31,7 +31,7 @@
       <div class='appbar'>
          <div class='appbar-top'>
             <div class='leading'>
-               <button @click='goBack' class='btn-action'>
+               <button v-show='disable_goback == false' @click='goBack' class='btn-action'>
                   <svg width="11" height="16" viewBox="0 0 11 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
@@ -228,6 +228,8 @@ var app = Vue.createApp({
       return {
          popup_delete_product: false,
          loading: false,
+
+         disable_goback: false,
 
          // LISTENER PRODUCT TYPE 
          listen_product_type: 'ice',
@@ -631,7 +633,11 @@ var app = Vue.createApp({
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'action_product_ok'){
                   var _product_id = res.data;
-                  this.goBackUpdate(_product_id);
+                  if(window.parent.app != undefined ){
+                     window.parent.app.btn_close_popup(_product_id);
+                  }else{
+                     this.goBackUpdate(_product_id);
+                  }
                }else{
                   this.loading = false;
                }
@@ -754,6 +760,11 @@ var app = Vue.createApp({
       this.product_id     = urlParams.get('product_id');
       this.store_id       = urlParams.get('store_id');
       this.action         = urlParams.get('action');
+
+      const disable       = urlParams.get('disable');
+      if( disable == 'goback' ){
+         this.disable_goback = true;
+      }
 
       if( this.action == 'edit' ){
 

@@ -773,7 +773,7 @@ function atlantis_hidden_account(){
          if( ! empty( $res_store )){
             $store_id = $res_store[0]->id;
             $wpdb->update('wp_watergo_store', [ 'store_hidden' => 1], ['id' => $store_id]);
-            $wpdb->update('wp_watergo_products', [ 'product_hidden' => 1], ['store_id' => $store_id]);
+            $wpdb->update('wp_watergo_products', [ 'product_hidden' => 1, 'status' => 'delete'], ['store_id' => $store_id]);
             $wpdb->update('wp_watergo_order', [ 'order_hidden' => 1], ['order_store_id' => $store_id]);
             $wpdb->update('wp_watergo_notification', [ 'notfication_hidden' => 1], ['store_id' => $store_id]);
          }

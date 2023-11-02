@@ -16,6 +16,8 @@ function setup_atlantis_store_manager(){
 
    add_submenu_page('store_manager', __('Store Manager', 'watergo'), 'Store Manager', 'manage_options', 'store_manager_index', 'template_store_manager_index');
    add_submenu_page('store_manager', __('Store Manager', 'watergo'), 'Add Store', 'manage_options', 'store_manager_add', 'template_store_manager_add');
+   add_submenu_page('store_manager', __('Store Manager', 'watergo'), 'Product Pending', 'manage_options', 'store_manager_product_pending', 'template_store_manager_product_pending');
+
 
    // ADD PRODUCT
    // add_submenu_page('store_manager', __('Store Manager', 'watergo'), 'Add Product', 'manage_options', 'store_manager_add_product', 'template_store_manager_add_product');
@@ -27,4 +29,5 @@ add_action('admin_menu', 'setup_atlantis_store_manager');
 
 require_once THEME_DIR. '/libs/store_manager/template_store_manager_index.php';
 require_once THEME_DIR. '/libs/store_manager/template_store_manager_add.php';
+require_once THEME_DIR. '/libs/store_manager/template_store_manager_product_pending.php';
 // require_once THEME_DIR. '/libs/store_manager/template_store_manager_add_product.php';

@@ -608,12 +608,21 @@ function atlantis_get_all_product_by_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_all_product_by_store' ){
       $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+      $limit      = isset($_POST['limit']) ? $_POST['limit'] : 0;
 
-      $res = func_atlantis_get_product_by([
+      $args = [
          'id'           => $store_id,
          'get_by'       => 'store_id',
-         'exclude_id'   => $product_id
-      ]);
+         'exclude_id'   => $product_id,
+      ];
+
+      if( $limit == -1){
+         $args['limit'] = -1;
+      }else if( $limit > 0 && $limit != -1){
+         $args['limit'] = $limit;
+      }
+
+      $res = func_atlantis_get_product_by($args);
 
       if( empty($res ) ){
          wp_send_json_error(['message' => 'product_not_found 2']);
@@ -655,7 +664,6 @@ add_action( 'wp_ajax_nopriv_atlantis_product_hidden', 'atlantis_product_hidden' 
 add_action( 'wp_ajax_atlantis_product_hidden', 'atlantis_product_hidden' );
 
 function atlantis_product_hidden(){
-
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_product_hidden' ){
       $product_id = isset( $_POST['product_id']) ? $_POST['product_id'] : 0;
 
@@ -664,7 +672,7 @@ function atlantis_product_hidden(){
          wp_die();
       }
       global $wpdb;
-      $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 1], [ 'id' => $product_id ]);
+      $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 1, 'status' => 'delete'], [ 'id' => $product_id ]);
       if($updated ){
          wp_send_json_success(['message' => 'product_found' ]);
          wp_die();

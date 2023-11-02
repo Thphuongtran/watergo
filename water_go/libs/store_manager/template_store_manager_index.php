@@ -10,9 +10,14 @@ function template_store_manager_index(){
       $total_store = $res_get_total_store[0]->total_store;
    }
 
+   $currency = ' đ';
+   if( get_locale() == 'ko_KR' ){
+      $currency = '동';
+   }
 ?>
 <script type="text/javascript">
-   var get_ajaxadmin = "<?php echo admin_url('admin-ajax.php'); ?>";;
+   var get_ajaxadmin = "<?php echo admin_url('admin-ajax.php'); ?>";
+   var global_currency = "<?php echo $currency; ?>";
 </script>
 
 
@@ -36,14 +41,14 @@ function template_store_manager_index(){
 
    /* Popup content */
    .popup-content {
-      width: 360px;
+      width: 375px;
       height: 80%;
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       background: #fff;
-      padding: 20px;
+      /* padding: 20px; */
       border-radius: 5px;
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
       z-index: 1000;
@@ -110,7 +115,7 @@ function template_store_manager_index(){
       width: 100%;
       border-radius: 0;
    }
-   .ui-datepicker{
+   /* .ui-datepicker{
       font-family: "Be Vietnam Pro",sans-serif;
       line-height: 1.7;
       -webkit-font-smoothing: antialiased;
@@ -348,7 +353,7 @@ function template_store_manager_index(){
       top: -2px;
       transform: translateX(-50%);
       border-radius: 25px;
-   }
+   } */
 
    .product-store-view-form select,
    .product-store-view-form input,
@@ -676,13 +681,48 @@ function template_store_manager_index(){
       transform: none!important;
    }
 
+   .popup-product-status .popup-content {
+      height: 150px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+   }
+   .popup-product-status .popup-content p {
+      font-size: 18px;
+   }
+   .popup-product-status .popup-content button {
+      min-width: 100px;
+      margin: 0 5px;
+   }
+   .popup-action {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      align-items: center;
+   }
+
+
+   .fixed .column-price{
+      width: 4%;
+   }
+   .fixed .column-type-of-product{
+      width: 5%;
+   }
+   .fixed .column-product-pending{
+      width: 5%;
+   }
 
    #wpfooter{display: none;}
+
+   .button-primary.disabled{
+      pointer-events: none !important;
+   }
+
    </style>
 
 <link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.min.js" integrity="sha512-Wbf9QOX8TxnLykSrNGmAc5mDntbpyXjOw9zgnKql3DgQ7Iyr5TCSPWpvpwDuo+jikYoSNMD9tRRH854VfPpL9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script>
@@ -904,49 +944,42 @@ function template_store_manager_index(){
       <button v-show='action == "add" ' class='button button-primary' @click='add_store_submit'><?php echo __('Add', 'watergo'); ?></button>
    </p>
 
-
    <h1 class="wp-heading-inline"><?php echo __('Products', 'watergo'); ?></h1>
    <p class="submit btn-product">
       <button @click='btn_open_add_water_product' class='button button-primary'><?php echo __('Add Water Product', 'watergo'); ?></button>
       <button @click='btn_open_add_ice_product' class='button button-primary'><?php echo __('Add Ice Product', 'watergo'); ?></button>
    </p>
 
+   <!-- TABLE FOR WATER -->
+   <h3 class="wp-heading-inline"><?php echo __('Sản Phẩm Nước', 'watergo'); ?></h3>
    <table class='wp-list-table widefat fixed striped table-view-list posts'>
       <tr>
-         <th class="manage-column column-date"><span><?php echo __('Product Name', 'watergo'); ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Brand', 'watergo'); ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Product Type', 'watergo') ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Price', 'watergo'); ?></span></th>
-
-         <th class="manage-column column-date"><span><?php echo __('Discount', 'watergo'); ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Discount From', 'watergo'); ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Discount To', 'watergo'); ?></span></th>
-
-         <th class="manage-column column-date"><span><?php echo __('Quantity', 'watergo'); ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Volume', 'watergo'); ?></span></th>
-
-         <th class="manage-column column-date"><span><?php echo __('Length * Width', 'watergo'); ?></span></th>
-         <th class="manage-column column-date"><span><?php echo __('Weight', 'watergo') ;?></span></th>
-
+         <th class="column-date"><span><?php echo __('Product Name', 'watergo'); ?></span></th>
+         <th class="column-price "><span><?php echo __('Brand', 'watergo'); ?></span></th>
+         <th class="column-type-of-product "><span><?php echo __('Type of water', 'watergo'); ?></span></th>
+         <th class="column-price "><span><?php echo __('Price', 'watergo'); ?></span></th>
+         <th class="column-rating column-title"><span><?php echo __('Discount', 'watergo'); ?></span></th>
+         <th class="column-rating "><span><?php echo __('Quantity', 'watergo'); ?></span></th>
+         <th class="column-rating "><span><?php echo __('Volume', 'watergo'); ?></span></th>
+         <th class="column-product-pending "><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
       </tr>
 
       <tr
-         v-if='products.length > 0'
-         v-for='(product, productKey ) in products_computed' :key='productKey'
-      >
-         <td class='title column-title column-primary page-title row-title'>
-            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.category_name }}</strong>
+         v-if='filter_product_water.length > 0'
+         v-for='(product, productKey ) in filter_product_water' :key='productKey'
+         >
+         <td class='row-title'>
+            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.category }}</strong>
          </td>
-         <td class='title column-title column-primary page-title'>{{ product.brand_name}}</td>
-         <td class='title column-title column-primary page-title'>{{ product.product_type }}</td>
-         <td class='title column-title column-primary page-title'>{{ product.price }}</td>
-         <td class='title column-title column-primary page-title'>{{ check_has_discount(product ) }}</td>
-         <td class='title column-title column-primary page-title'>{{ check_discount_date(product.discount_from) }}</td>
-         <td class='title column-title column-primary page-title'>{{ check_discount_date(product.discount_to) }}</td>
-         <td class='title column-title column-primary page-title'>{{ product.quantity_name }}</td>
-         <td class='title column-title column-primary page-title'>{{ product.volume_name }}</td>
-         <td class='title column-title column-primary page-title'>{{ product.length_width }} </td>
-         <td class='title column-title column-primary page-title'>{{ product.weight_name }}</td>
+         <td>{{ product.brand}}</td>
+         <td>{{ product.category_parent}}</td>
+         <td>{{ common_price_show_currency(product.price) }}</td>
+         <td v-html='get_date_discount(product)'></td>
+         <td>{{ product.quantity }}</td>
+         <td>{{ product.volume }}</td>
+         <td>
+            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
+         </td>
       </tr>
       <tr v-else>
          <td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td>
@@ -954,10 +987,96 @@ function template_store_manager_index(){
 
    </table> 
 
+   <!-- TABLE WATER DEVICE -->
+   <h3 class="wp-heading-inline"><?php echo __('Sản Phẩm Thiết Bị Nước', 'watergo'); ?></h3>
+   <table class='wp-list-table widefat striped table-view-list'>
+      <tr>
+         <th><span><?php echo __('Product Name', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Chức năng', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Price', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
+         <th style='width: 120px;'><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
+      </tr>
+      <tr
+         v-if='filter_product_water_device.length > 0'
+         v-for='(product, productKey ) in filter_product_water_device' :key='productKey'
+      >
+         <td class=' row-title'>
+            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.name }}</strong>
+         </td>
+         <td>{{ product.feature_device }}</td>
+         <td>{{ common_price_show_currency(product.price) }}</td>
+         <td v-html='get_date_discount(product)'></td>
+         <td>
+            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
+         </td>
+
+      </tr>
+      <tr v-else><td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td></tr>
+   </table>
+
+   <!-- TABLE ICE -->
+   <h3 class="wp-heading-inline"><?php echo __('Sản Phẩm Đá', 'watergo'); ?></h3>
+   <table class='wp-list-table widefat fixed striped table-view-list posts'>
+      <tr>
+         <th><span><?php echo __('Product Name', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Type of ice', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Price', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Length*Width', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Weight', 'watergo'); ?></span></th>
+         <th style='width: 120px;'><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
+      </tr>
+      <tr
+         v-if='filter_product_ice.length > 0'
+         v-for='(product, productKey ) in filter_product_ice' :key='productKey'
+      >
+         <td class='row-title'>
+            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.name }}</strong>
+         </td>
+         <td>{{ product.category_parent }}</td>
+         <td>{{ common_price_show_currency(product.price) }}</td>
+         <td v-html='get_date_discount(product)'></td>
+         <td>{{ product.length_width }} mm</td>
+         <td>{{ product.weight }} kg</td>
+         <td>
+            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
+         </td>
+      </tr>
+      <tr v-else><td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td></tr>
+   </table>
+
+   <!-- TABLE ICE DEVICE -->
+   <h3 class="wp-heading-inline"><?php echo __('Sản Phẩm Thiết Bị Đá', 'watergo'); ?></h3>
+   <table class='wp-list-table widefat fixed striped table-view-list posts'>
+      <tr>
+         <th><span><?php echo __('Product Name', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Chức năng', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Price', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
+         <th style='width: 120px;'><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
+      </tr>
+      <tr
+         v-if='filter_product_ice_device.length > 0'
+         v-for='(product, productKey ) in filter_product_ice_device' :key='productKey'
+      >
+         <td class='row-title'>
+            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.name }}</strong>
+         </td>
+         <td>{{ product.capacity_device }}</td>
+         <td>{{ common_price_show_currency(product.price) }}</td>
+         <td v-html='get_date_discount(product)'></td>
+         <td>
+            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
+         </td>
+      </tr>
+      <tr v-else><td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td></tr>
+   </table>
+
+
    <?php } ?>
 
    <!-- POPUP ADD PRODUCT  -->
-
    <div :class='popup_add_ice_product == true || popup_add_water_product == true ? "open" : "" ' class='popup-overlay'>
       <div class="popup-content">
          <span @click='btn_close_popup(undefined)' class="popup-close">&times;</span>
@@ -969,6 +1088,19 @@ function template_store_manager_index(){
          </div>
       </div>
    </div>
+
+   <!-- POPUP UP CHANGE PRODUCT STATUS -->
+   <div :class='popup_open_change_product_status == true || popup_open_change_product_status == true ? "open" : "" ' class='popup-overlay popup-product-status'>
+      <div class="popup-content">
+         <span @click='btn_close_popup(undefined)' class="popup-close">&times;</span>
+         <p>Bạn đồng ý muốn duyệt sản phẩm này?</p>
+         <div class='popup-action'>
+            <button class='button button-secondary' @click='btn_close_popup(undefined)'>Huỷ</button>
+            <button class='button button-primary' @click='btn_change_product_status'>Đồng Ý</button>
+         </div>
+      </div>
+   </div>
+
 
 
 </div>
@@ -1026,7 +1158,17 @@ var app = Vue.createApp({
          currentPage: 1,
 
          stores: [],
+
+         popup_open_change_product_status: false,
+
          products: [],
+
+         product_status_memory: null,
+
+         // product_water: [],
+         // product_water_device: [],
+         // product_ice: [],
+         // product_ice_device: [],
 
          is_select_all: false,
          action: null,
@@ -1041,6 +1183,48 @@ var app = Vue.createApp({
       }
    },
 
+   watch: {
+      // products: {
+      //    handler( data ){
+      //       data.forEach( item => {
+      //          if( item.product_type == 'water' ){
+      //             var _itemIndex = this.product_water.findIndex(p => p.id == item.id);
+      //             if( _itemIndex == -1){
+      //                this.product_water.push(item);
+      //             }else{
+      //                this.product_water[_itemIndex] = item;
+      //             }
+      //          }
+      //          if( item.product_type == 'water_device' ){
+      //             var _itemIndex = this.product_water_device.findIndex(p => p.id == item.id);
+      //             if( _itemIndex == -1){
+      //                this.product_water_device.push(item);
+      //             }else{
+      //                this.product_water_device[_itemIndex] = item;
+      //             }
+      //          }
+      //          if( item.product_type == 'ice' ){
+      //             var _itemIndex = this.product_ice.findIndex(p => p.id == item.id);
+      //             if( _itemIndex == -1){
+      //                this.product_ice.push(item);
+      //             }else{
+      //                this.product_ice[_itemIndex] = item;
+      //             }
+      //          }
+      //          if( item.product_type == 'ice_device' ){
+      //             var _itemIndex = this.product_ice_device.findIndex(p => p.id == item.id);
+      //             if( _itemIndex == -1){
+      //                this.product_ice_device.push(item);
+      //             }else{
+      //                this.product_ice_device[_itemIndex] = item;
+      //             }
+      //          }
+      //       })
+      //    },
+      //    deep: true
+      // },
+   },
+
    computed: {
       
       stores_computed(){
@@ -1053,12 +1237,60 @@ var app = Vue.createApp({
 
       pages: function() {
          return Math.ceil(this.total_store / this.limit);
+      },
+
+      filter_product_water: function(){
+         return this.products.filter( item => item.product_type == 'water' );
+      },
+
+      filter_product_water_device: function(){
+         return this.products.filter( item => item.product_type == 'water_device' );
+      },
+
+      filter_product_ice: function(){
+         return this.products.filter( item => item.product_type == 'ice' );
+      },
+
+      filter_product_ice_device: function(){
+         return this.products.filter( item => item.product_type == 'ice_device' );
       }
     
 
    },
 
    methods: {
+      
+      add_store_submit(){
+
+      },
+
+      open_modal_product_status( product_id){
+         this.popup_open_change_product_status = true;
+         this.product_status_memory = product_id;
+      },
+
+      async btn_change_product_status(){
+         this.popup_open_change_product_status = false;
+         if( this.product_status_memory != null ){
+            var form = new FormData();
+            form.append('action', 'atlantis_change_product_status');
+            form.append('product_id', this.product_status_memory);
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify( r));
+               if( res.message == 'product_found' ){
+                  var _findIndex = this.products.findIndex( item => item.id == this.product_status_memory );
+                  this.products[_findIndex].product_hidden  = 0;
+                  this.products[_findIndex].status          = 'publish';
+
+               }
+               this.product_status_memory = null;
+            }
+
+         }
+      },
+
+      common_price_show_currency(p){ return window.common_price_show_currency(p); },
 
       pagination_first_page() {
          this.currentPage = 1;
@@ -1154,22 +1386,25 @@ var app = Vue.createApp({
 
       btn_open_add_water_product(){ 
          this.popup_add_water_product = true;
-         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=add&store_id=${this.store_id}&product_type=water`;
-
+         // this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=add&store_id=${this.store_id}`;
+         this.link_iframe = `http://localhost:8888/product/?product_page=product-water-action&action=add&store_id=${this.store_id}&appt=N` + '&disable=goback';
       },
 
       btn_open_add_ice_product(){ 
          this.popup_add_ice_product = true; 
-         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=add&store_id=${this.store_id}&product_type=ice`;
+         // this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=add&store_id=${this.store_id}&product_type=ice`;
+         this.link_iframe = `http://localhost:8888/product/?product_page=product-ice-action&action=add&store_id=${this.store_id}&appt=N` + '&disable=goback';
       },
 
       async btn_close_popup( id_product_callback ){ 
          this.popup_add_water_product = false;
          this.popup_add_ice_product = false;
+         this.popup_open_change_product_status = false;
+         this.product_status_memory = null;
          this.link_iframe = '';
 
          if( id_product_callback != undefined ){
-            await this.get_product(id_product_callback)
+            await this.get_product(id_product_callback);
          }
 
       },
@@ -1187,23 +1422,23 @@ var app = Vue.createApp({
       btn_edit_product( product ){
          var _product_id   = product.id;
          var _product_type = product.product_type;
-         var _store_id     = product.store_id;
 
          if(_product_type == 'ice'){
             this.popup_add_ice_product = true;
+            this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=edit&product_id=${_product_id}&appt=N` + '&disable=goback';
          }
          if(_product_type == 'water'){
             this.popup_add_water_product = true;
+            this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=edit&product_id=${_product_id}&appt=N` + '&disable=goback';
          }
-         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=edit&store_id=${_store_id}&product_id=${_product_id}&product_type=${_product_type}`;
       },
 
       check_has_discount( product ){
          var is_has_discount = window.has_discount(product);
          if( is_has_discount == true ){
-            return 'Yes';
+            return 'Còn hạn';
          }else{
-            return 'No';
+            return 'Hết hạn';
          }
          
       },
@@ -1211,6 +1446,28 @@ var app = Vue.createApp({
       check_discount_date( date ){
          if( date != 0 ) return date;
          return '';
+      },
+
+      get_date_discount( product ){
+         var _from   = this.check_discount_date(product.discount_from);
+         var _to     = this.check_discount_date(product.discount_to);
+         if( _from == '' || _to == '' ) return '<?php echo __('Hết hạn', 'watergo'); ?>';
+         var _discount = `  `;
+         return `<?php echo __('Từ ngày', 'watergo'); ?> ${_from} <br><?php echo __('Đến ngày', 'watergo'); ?> ${_to}`;
+      },
+
+      get_product_status( product ){
+         if( product.status == 'publish' ){
+            return '<?php echo __("Đã Duyệt", "watergo"); ?>';
+         }
+         if( product.status == 'pending' ){
+            return '<?php echo __("Chưa Duyệt", "watergo"); ?>';
+         }
+      },
+
+      get_product_status_class( product ){
+         if( product.status == 'publish' )return 'disabled';
+         if( product.status == 'pending' )return '';
       },
 
       async edit_store_submit(){
@@ -1250,7 +1507,6 @@ var app = Vue.createApp({
             }
 
             var r = await window.request(form);
-            console.log(r);
             
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -1268,7 +1524,6 @@ var app = Vue.createApp({
                   window.location.href = '<?php echo get_bloginfo('url'); ?>' + '/wordpress/wp-admin/admin.php?page=store_manager_index';
                }
             }
-
             this.loading = false;
          }else if( this.address == "" || this.lat == "" || this.lng == ""){
             // Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất
@@ -1276,8 +1531,6 @@ var app = Vue.createApp({
          } else{
             this.text_err = '<?php echo __("All field must be not empty.", 'watergo'); ?>';
          }
-
-         // window.location();
       },
 
       toggle_show_password(){ this.show_password = !this.show_password; },
@@ -1389,7 +1642,6 @@ var app = Vue.createApp({
       async get_store( page ){
          var form = new FormData();
          form.append('action', 'atlantis_load_store');
-
          form.append('paged', page );
          form.append('limit', this.limit );
          var r = await window.request(form);
@@ -1421,21 +1673,15 @@ var app = Vue.createApp({
          }
       },
 
-      async get_all_product_from_store( store_id ){
+      async atlantis_get_all_product_by_store_to_admin_page( store_id ){
          var form = new FormData();
-         form.append('action', 'atlantis_get_all_product_by_store');
+         form.append('action', 'atlantis_get_all_product_by_store_to_admin_page');
          form.append('store_id', store_id);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'product_found' ){
-               res.data.forEach( product => {
-                  var _index = this.products.findIndex( item => item.id == product.id );
-                  if( _index == -1 ){
-                     this.products.push( product );
-                  }
-               });
-
+               this.products.push(...res.data);
             }
          }
       },
@@ -1461,7 +1707,7 @@ var app = Vue.createApp({
       if( this.action == 'edit' ){
          // setTimeout( () => {this.autoResize();}, 0);
          await this.get_store_profile( this.store_id );
-         await this.get_all_product_from_store( this.store_id );
+         await this.atlantis_get_all_product_by_store_to_admin_page( this.store_id );
 
       }
 

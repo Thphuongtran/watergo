@@ -431,7 +431,7 @@ function atlantis_store_hidden(){
          $wpdb->get_results($prepare);
 
          // PRODUCT
-         $sql_products     = "UPDATE wp_watergo_products SET product_hidden = 1 WHERE store_id IN( $placeholders ) ";
+         $sql_products     = "UPDATE wp_watergo_products SET product_hidden = 1, status = 'delete' WHERE store_id IN( $placeholders ) ";
          $prepare_products = $wpdb->prepare($sql_products, $wheres);
          $wpdb->get_results($prepare_products);
 

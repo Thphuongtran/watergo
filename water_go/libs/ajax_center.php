@@ -249,7 +249,7 @@ function func_atlantis_get_product_by( $args ){
    }
 
    if( $limit == -1 ){
-      $sql .= " ORDER BY wp_watergo_products.id DESC LIMIT 1";
+      $sql .= " ORDER BY wp_watergo_products.id DESC";
    }else{
       $sql .= " 
          ORDER BY wp_watergo_products.id DESC 

@@ -111,17 +111,19 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
 
       <div class='scaffold'>
          <div v-show='loading_data == false'>
-            <ul v-if='filter_products.length > 0' class='list-type-product'>
+
+            <ul class='list-type-product'>
                <li 
                   v-for='( product, productIndex) in filter_products' :key='productIndex'
                   @click='gotoProductStoreEdit(product.id)'
                >
                   <div class='product-l'>
                      <div class='product-image'>
-                        <img :src='product.product_image[0].url'>
+                        <img :src='product.product_image.url'>
                         <div class='product-image-badge' v-if='is_product_pending(product) != ""'><?php echo __('Pending', 'watergo'); ?></div>
                      </div>
                   </div>
+
                   <div class='product-r'>
                      <div class='tt1'>{{ product.name }}</div>
                      <div class='tt2'>{{ product.name_second }}</div>
@@ -131,10 +133,8 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
                         <div 
                            class='gr-price' 
                            :class="has_discount(product) == true ? 'has_discount' : '' ">
-                           <span class='price'>
-                              {{ common_price_after_discount(product ) }}
-                           </span>
-                           <span v-if='has_discount(product) == true' class='price-sub'>
+                           <span class='price'>{{ common_price_after_discount(product ) }}</span>
+                           <span v-show='has_discount(product) == true' class='price-sub'>
                               {{ common_price_show_currency(product.price) }}
                            </span>
                         </div>
@@ -147,11 +147,12 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
                            <!-- <div class='product-stock'>Stock: <span class='t-primary'>{{ product.stock }}</span></div> -->
                         </div>
                         <div class='product-bagde'>
-                           <div v-if='product_is_availble(product) == "available" ' class='availble'><?php echo __('Available', 'watergo'); ?></div>
-                           <div v-if='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'><?php echo __('Out of Stock', 'watergo'); ?></div>
+                           <div v-show='product_is_availble(product) == "available" ' class='availble'><?php echo __('Available', 'watergo'); ?></div>
+                           <div v-show='product_is_availble(product) == "out_of_stock" ' class='out-of-stock'><?php echo __('Out of Stock', 'watergo'); ?></div>
                         </div>
                      </div>
                   </div>
+
                </li>
             </ul>
          </div>
@@ -172,7 +173,7 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
 
 </div>
 
-<script type='module'>
+<script>
 
 var app = Vue.createApp({
    data (){
@@ -192,12 +193,11 @@ var app = Vue.createApp({
          ],
          product_tab_value: '',
 
-         products: []
+         products: [],
+
+         test: [],
 
       }
-   },
-
-   watch: {
    },
 
    computed: {
@@ -280,6 +280,21 @@ var app = Vue.createApp({
 
                });
             }
+         }
+      },
+
+      update_data_from_callback(product_id, data ){
+         var _indexItem = this.products.findIndex( item => item.id == product_id );
+         if( _indexItem != -1){
+            this.products[_indexItem] = data;
+         }else{
+            this.products.push( data);
+         }
+      },
+      update_delete_data_from_callback(product_id ){
+         var _indexItem = this.products.findIndex( item => item.id == product_id );
+         if( _indexItem != -1){
+            this.products.splice(_indexItem, 1);
          }
       },
 
@@ -366,11 +381,9 @@ var app = Vue.createApp({
       common_price_show_currency(p){ return common_price_show_currency(p) },
       common_price_after_discount(p){ return common_price_after_discount(p) },
 
-
-      gotoChat(){ window.gotoChat()},
-      gotoProductAdd(){ window.gotoProductAdd(this.product_tab_value) },
       gotoNotificationIndex(){ window.gotoNotificationIndex()},
       goBack(){ window.goBack()},
+      gotoChat(){ window.gotoChat()},
 
       async get_messages_count(){
          var form_message_count = new FormData();
@@ -404,7 +417,7 @@ var app = Vue.createApp({
    async created(){
 
       this.loading = true;
-      // setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
       
       await this.get_product_type();
       await this.get_notification_count();
@@ -420,10 +433,10 @@ var app = Vue.createApp({
          window.appbar_fixed();
       }, 200);
 
+
    },
 
 
 }).mount('#app');
 window.app = app;
-
 </script>

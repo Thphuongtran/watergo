@@ -84,10 +84,14 @@
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify(r ));
          if( res.message == 'product_found'){
-            return res.data;
+            window.app.update_data_from_callback(product_id, res.data);
          }
       }
 
+   }
+
+   function atlantis_product_hidden( product_id){
+      window.app.update_delete_data_from_callback(product_id);
    }
 
    async function get_review(review_id ){
@@ -180,17 +184,8 @@
             var multi_part    = partial[1].split('=');
             var product_id    = multi_part[1];
 
-            alert(JSON.stringify(window.app.$emit));
-
             await get_notification_count().then( (data) => window.app.notification_count = data );
-            // await atlantis_find_product(product_id).then( data => {
-            //    var _indexItem = window.app.products.findIndex( item => parseInt(item.id) == parseInt(product_id) );
-            //    if( _indexItem != -1){
-            //       window.app.products[_indexItem] = data;
-            //    }else{
-            //       window.app.products.push( data);
-            //    }
-            // });
+            await atlantis_find_product(product_id);
 
          }
 
@@ -199,11 +194,7 @@
             var product_id   = multi_part[1];
 
             await get_notification_count().then( (data) => window.app.notification_count = data );
-            window.app.products.forEach( (item, indexProduct) => {
-               if( item.id == product_id){
-                  window.app.products.splice(indexProduct, 1);
-               }
-            });
+            atlantis_product_hidden(product_id);
 
          }
 
