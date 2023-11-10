@@ -3,6 +3,50 @@
 function template_store_manager_add(){
 
 ?>
+<style>
+   .t-red{ color: red; }
+   .wp-pwd{
+      margin-top: 0;
+   }
+   .pac-logo:after{display: none}
+   .form-group input{font-size: 16px;}
+   .form-group .btn{line-height: 38px;}
+   .form-group input:disabled{  opacity: 0.6;}
+
+   .mr15{
+      margin-right: 15px;
+   }
+   .avatar-header {
+	   text-align: center;
+   }
+   .avatar-header img {
+      width: 70px;
+      height: 70px;
+      border-radius: 100%;
+   }
+   .avatar-header input {
+      display: none;
+   }
+   .avatar-header.style02 svg {
+      width: 100%;
+   }
+   .avatar-header .upload-avatar.style02.has-preview {
+      width: 100%;
+      display: block;
+   }
+   .avatar-header .upload-avatar.style02.has-preview svg {
+      display: none;
+   }
+   .avatar-header .upload-avatar.style02.has-preview img {
+      height: auto;
+      width: 100%;
+      border-radius: 0;
+   }
+   .button-primary.disabled{
+      pointer-events: none;
+   }
+
+</style>
 <script type="text/javascript">
    var get_ajaxadmin = "<?php echo admin_url('admin-ajax.php'); ?>";;
 </script>
@@ -10,7 +54,6 @@ function template_store_manager_add(){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.min.js" integrity="sha512-Wbf9QOX8TxnLykSrNGmAc5mDntbpyXjOw9zgnKql3DgQ7Iyr5TCSPWpvpwDuo+jikYoSNMD9tRRH854VfPpL9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src='<?php echo THEME_URI . '/assets/js/common.js'; ?>'></script>
-
 <div id='app' class='wrap'>
 
    <h1 class="wp-heading-inline">Add Store</h1>
@@ -80,6 +123,7 @@ function template_store_manager_add(){
 
       <tr>
          <th><label for='search-address'><?php echo __('Address', 'watergo'); ?></label></th>
+         <!-- <td><input id='search-address' type="text" class="regular-text" placeholder='' value=''></td> -->
          <td><input id='search-address' type="text" class="regular-text" placeholder=''></td>
       </tr>
 
@@ -134,7 +178,7 @@ function template_store_manager_add(){
    <span class='d-block t-red mt20'>{{text_err}}</span>
 
    <p class="submit">
-      <button class='button button-primary' @click='add_store_submit'>Add</button>
+      <button class='button button-primary' :class='is_submit_add_store == false ? "disabled" : ""' @click='add_store_submit'>Add</button>
    </p>
 
    <!--  -->
@@ -148,6 +192,7 @@ function template_store_manager_add(){
    var app = Vue.createApp({
       data(){
          return {
+            is_submit_add_store: false,
 
             select_type_product: {
                water: false,
@@ -160,6 +205,7 @@ function template_store_manager_add(){
              * @access EDIT STORE
              */
             store_id: 0,
+
             owner: '',
             name: '',
             description: '',
@@ -181,6 +227,18 @@ function template_store_manager_add(){
          }
       },
 
+      watch: {
+         owner: function(val){ this.force_check_all_field(); },
+         name: function(val){ this.force_check_all_field(); },
+         description: function(val){ this.force_check_all_field(); },
+         phone: function(val){ this.force_check_all_field(); },
+         password: function(val){ this.force_check_all_field(); },
+         email: function(val){ this.force_check_all_field(); },
+         selectedImage: function(val){ this.force_check_all_field(); },
+         address: function(val){ this.force_check_all_field(); },
+         select_type_product_text: function(val){ this.force_check_all_field(); },
+      },
+
       computed: {
          stores_computed(){
             return this.stores.sort( ( a, b ) => b.id - a.id );
@@ -189,18 +247,29 @@ function template_store_manager_add(){
 
       methods: {
 
-         async add_store_submit(){
-            this.text_err = '';
-            
-            if( 
+         force_check_all_field(){
+
+            if(
                this.owner != '' &&
                this.name != '' &&
                this.phone != '' &&
                this.email != '' && 
+               this.description != '' && 
+               this.password != '' &&
                this.address != '' &&
                this.selectedImage != null &&
                this.select_type_product_text != ''
             ){
+               this.is_submit_add_store = true;
+            }else{
+               this.is_submit_add_store = false;
+            }
+         },
+
+         async add_store_submit(){
+            this.text_err = '';
+            
+            if( this.is_submit_add_store == true){
                
                var form = new FormData();
                form.append('action', 'atlantis_store_register_from_admin');
@@ -217,8 +286,6 @@ function template_store_manager_add(){
                form.append('imageUpload[]', this.selectedImage);
 
                var r = await window.request(form);
-
-               console.log(r);
 
                if( r != undefined ){
                   var res = JSON.parse( JSON.stringify( r ));
@@ -314,10 +381,12 @@ function template_store_manager_add(){
 
 
 
+
       },
 
       async created() {
          setTimeout( () => {this.autoResize();}, 0);
+
       }
 
    }).mount('#app');
@@ -325,75 +394,40 @@ function template_store_manager_add(){
    window.app = app;
 
 
-   function initialize() {
-      var input = document.getElementById('search-address');
-      var options = {
-         componentRestrictions: { country: "vn" },
-      };
-      var autocomplete = new google.maps.places.Autocomplete(input, options);
+   // function initialize() {
+   //    var input = document.getElementById('search-address');
+   //    var options = {
+   //       componentRestrictions: { country: "vn" },
+   //    };
 
-      google.maps.event.addListener(autocomplete, 'place_changed', function () {
-         var selectedPlace = autocomplete.getPlace();
-         if (selectedPlace && selectedPlace.geometry && selectedPlace.geometry.location) {
-            window.app.lat = selectedPlace.geometry.location.lat();
-            window.app.lng = selectedPlace.geometry.location.lng();
-            window.app.address = selectedPlace.formatted_address;
-         }
-      });
+   //    try {
+   //       var autocomplete = new google.maps.places.Autocomplete(input, options);
 
-      input.addEventListener('keydown', function (event) {
-         window.app.address = '';
-         window.app.lat = '';
-         window.app.lng = '';
-      });
+   //       google.maps.event.addListener(autocomplete, 'place_changed', function () {
+   //          var selectedPlace = autocomplete.getPlace();
+   //          if (selectedPlace && selectedPlace.geometry && selectedPlace.geometry.location) {
+   //             window.app.lat = selectedPlace.geometry.location.lat();
+   //             window.app.lng = selectedPlace.geometry.location.lng();
+   //             window.app.address = selectedPlace.formatted_address;
+   //          }
+   //       });
 
-   }
+   //       input.addEventListener('keydown', function (event) {
+   //          window.app.address = '';
+   //          window.app.lat = '';
+   //          window.app.lng = '';
+   //       });
+   //    } catch (error) {
+   //       console.error('Error initializing Google Places Autocomplete:', error);
+   //       return false;
+   //    }
+   // }
 
-   google.maps.event.addDomListener(window, 'load', initialize);
+   // google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>
 
-<style>
-   .t-red{ color: red; }
-   .wp-pwd{
-      margin-top: 0;
-   }
-   .pac-logo:after{display: none}
-   .form-group input{font-size: 16px;}
-   .form-group .btn{line-height: 38px;}
-   .form-group input:disabled{  opacity: 0.6;}
 
-   .mr15{
-      margin-right: 15px;
-   }
-   .avatar-header {
-	   text-align: center;
-   }
-   .avatar-header img {
-      width: 70px;
-      height: 70px;
-      border-radius: 100%;
-   }
-   .avatar-header input {
-      display: none;
-   }
-   .avatar-header.style02 svg {
-      width: 100%;
-   }
-   .avatar-header .upload-avatar.style02.has-preview {
-      width: 100%;
-      display: block;
-   }
-   .avatar-header .upload-avatar.style02.has-preview svg {
-      display: none;
-   }
-   .avatar-header .upload-avatar.style02.has-preview img {
-      height: auto;
-      width: 100%;
-      border-radius: 0;
-   }
-
-</style>
 
 <?php
 }

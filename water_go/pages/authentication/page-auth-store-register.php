@@ -2,12 +2,27 @@
    .pac-logo:after{display: none}
    .form-group input{font-size: 16px;}
    .form-group .btn{line-height: 38px;}
+   #authentication{padding-top: 56px;}
+   .page-auth-register{
+      overflow-y: scroll;
+      height: calc( 100vh - 56px);
+   }
+   .form-group input{
+      overflow: hidden;
+      box-shadow: none;
+      outline: none;
+      touch-action: auto;
+   }
+   .form-group input:focus{
+      box-shadow: none;
+      outline: none;
+   }
 </style>
 <div id='authentication'>
 
    <div v-show='loading == false' class='page-auth-register'>
 
-      <div class='appbar'>
+      <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBackForce' class='btn-action'>
@@ -160,6 +175,11 @@
 <script>
 var address = lat = lng = "";
 var { createApp } = Vue;
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
+
 createApp({
    data (){
       return {

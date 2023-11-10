@@ -3304,3 +3304,22 @@
 		}
 	}
 }
+
+.btn-chat {
+	width: auto;
+	background: none;
+	outline: none;
+	box-shadow: none;
+	border: none;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: space-between;
+}
+.btn-chat .text {
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 20px;
+	margin-left: 11px;
+	color: #2790F9;
+}

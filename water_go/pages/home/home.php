@@ -1,10 +1,27 @@
 <?php
 
    pv_update_user_token();
+
+   $home_sliders = get_fields(713, 'home_sliders');
+   // echo '<pre>';
+   // print_r($home_sliders['home_sliders'][0]);
+   // echo '</pre>';
+   $list_slide = [];
+   if( ! empty($home_sliders['home_sliders'])){
+      foreach( $home_sliders['home_sliders'] as $k => $vl ){ 
+         $list_slide[$k]['img'] = wp_get_attachment_url($vl['item']);
+      }
+   }
+
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js'; ?>'></script>
 <style>
 
    .box-language .dropdown-language{
@@ -213,7 +230,23 @@
 		font-size: 9px;
 		text-decoration: line-through;
    }
-
+   .gr-price{
+      padding: 0 16px;
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .product-block .price{
+      padding-left: 0;
+   }
+   .product-block .price-sub{
+      position: relative;
+      top: -2px;
+   }
+   .product-block .tt01{
+      overflow: hidden;
+      text-overflow: ellipsis;
+   }
 </style>
 <div id='app'>
 
@@ -288,15 +321,18 @@
             </div>
          </div>
 
+         <?php if( ! empty($list_slide ) ){ ?>
          <div class='inner'>
             <div class='slider-container'>
                <ul class='sliders'>
-                  <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/home-slider-demo.png' ?>"></li>
-                  <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/home-slider-demo.png' ?>"></li>
-                  <li class='slide'><img src="<?php echo THEME_URI . '/assets/images/home-slider-demo.png' ?>"></li>
+                  <?php foreach( $list_slide as $k => $vl ){ 
+                  ?>
+                  <li class='slide'><img src="<?php echo $vl['img']; ?>"></li>
+                  <?php } ?>
                </ul>
             </div>
          </div>
+         <?php } ?>
 
          <div class='inner'>
             <div class='gr-btn'>
@@ -360,7 +396,7 @@
                                  <span v-if="has_discount(product) == true" class="badge-discount">-{{ product.discount_percent }}%</span>
                               </div>
                               <p class="tt01">{{ product.name }} </p>
-                              <p class="tt02">{{ product.name_second }}</p>
+                              <p class="tt02">{{ product_name_compact(product) }}</p>
                               <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
                                  <span class="price">
                                     {{ common_price_after_discount(product) }}
@@ -390,7 +426,7 @@
                               </div>
                               
                               <p class="tt01">{{ product.name }} </p>
-                              <p class="tt02">{{ product.name_second }}</p>
+                              <p class="tt02">{{ product_name_compact(product) }}</p>
 
                               <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
                                  <span class="price">
@@ -456,11 +492,6 @@
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
-<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js'; ?>'></script>
 <script>
 
 var app = Vue.createApp({
@@ -496,6 +527,16 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
 
       // 
       splitArray(arr, size) {
@@ -746,23 +787,22 @@ var app = Vue.createApp({
          await this.get_product_random(_get_rest_of_data_random);
       }
    
-      (function($){
-         $(document).ready(function(){
+      
+      jQuery(document).ready(function($){
 
-            $('.slider-container .sliders').slick({
-               dots: true,
-               arrows: false,
-               infinite: true,
-               speed: 400,
-               slidesToShow: 1,
-               slidesToScroll: 1,
-               autoplay: true,
-               autoplaySpeed: 4000,
-            });
+         jQuery('.slider-container .sliders').slick({
+            dots: true,
+            arrows: false,
+            infinite: true,
+            speed: 400,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 4000,
          });
-      })(jQuery);
+      });
 
-      setTimeout(() => {},400);
+      setTimeout(() => {},600);
       window.appbar_fixed();
       this.loading = false;
 

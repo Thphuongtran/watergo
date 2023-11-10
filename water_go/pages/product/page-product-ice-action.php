@@ -66,7 +66,7 @@
             <div v-show='listen_product_type == "ice"' class='form-title'><?php echo __('Type of ice', 'watergo'); ?></div>
             <div v-show='listen_product_type == "ice"' class='form-control form-select'>
                <select v-model='product.category_parent'>
-                  <option :value="null" disabled selected><?php echo __('Type of ice', 'watergo'); ?></option>
+                  <option :value="null" disabled selected><?php echo __('Select type of ice', 'watergo'); ?></option>
                   <option 
                      v-for='(cat_parent, cat_parent_key) in get_category_parent' :key='cat_parent_key'
                      :value="cat_parent.name">{{ cat_parent.name }}
@@ -228,6 +228,8 @@ var app = Vue.createApp({
       return {
          popup_delete_product: false,
          loading: false,
+
+         skipforce: '',
 
          disable_goback: false,
 
@@ -545,7 +547,13 @@ var app = Vue.createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'action_product_ok' ){
                var _product_id = res.data;
-               this.goBackDelete(_product_id);
+
+               if( this.disable_goback == true ){
+                  window.parent.app.btn_close_popup(_product_id);
+               }else{
+                  this.goBackDelete(_product_id);
+               }
+               
             }
          }
 
@@ -583,6 +591,10 @@ var app = Vue.createApp({
          form.append('event', event);
          form.append('product_type', this.listen_product_type);
          form.append('store_id', this.store_id );
+
+         if( event == 'add' ){
+            form.append('skipforce', this.skipforce );
+         }
 
          if( this.product_id != null ){
             form.append('product_id', this.product_id);
@@ -627,13 +639,12 @@ var app = Vue.createApp({
             this.loading = true;
 
             var r = await window.request(form);
-            console.log(r);
 
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));
                if( res.message == 'action_product_ok'){
                   var _product_id = res.data;
-                  if(window.parent.app != undefined ){
+                  if( this.disable_goback == true ){
                      window.parent.app.btn_close_popup(_product_id);
                   }else{
                      this.goBackUpdate(_product_id);
@@ -760,6 +771,7 @@ var app = Vue.createApp({
       this.product_id     = urlParams.get('product_id');
       this.store_id       = urlParams.get('store_id');
       this.action         = urlParams.get('action');
+      this.skipforce      = urlParams.get('skipforce');
 
       const disable       = urlParams.get('disable');
       if( disable == 'goback' ){

@@ -37,7 +37,37 @@
       outline: none;
       box-shadow: none;
    }
+
+   .product-design .img{
+      padding: 0;
+      height: 160px;
+   }
+   .product-design .img img{
+      position: initial;
+      left: initial; top: initial;
+   }
+
+   .list-horizontal .product-design .tt01{
+      text-overflow: ellipsis;
+      overflow: hidden;
+      line-height: 27px;
+      width: 100%;
+   }
+   .space-top-product .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .space-top-product .product-design .price{
+      padding-right: 5px;
+   }
+   .space-top-product .product-design .price-sub{
+      margin-left: 0;
+      position: relative;
+      top: -2px;
+   }
 </style>
+
 <div id='app'>
 
    <div v-if='loading == false && product != null' class='page-product-detail'>
@@ -92,9 +122,9 @@
                      {{ product.category_parent }}</span>
                </p>
                {{ product.category_parent }}
-               <p class='tt02'>{{ product.name_second }}</p>
+               <p class='tt02'>{{ product_name_compact(product) }}</p>
 
-               <p class='tt03' > {{ product.description }}</p>
+               <p v-if='product.description != ""' class='tt03' v-html='formatDescription(product.description)'></p>
                <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                   <span class='price'>
                      {{ common_price_after_discount(product ) }}
@@ -172,7 +202,7 @@
                            class='badge-discount badge-out-of-stock size-large'><?php echo __('Out of Stock', 'watergo'); ?></span>
                      </div>
                      <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ product.name_second }}</p>
+                     <p class='tt02'>{{ product_name_compact(product) }}</p>
                      
 
                      <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
@@ -292,10 +322,36 @@ var app = Vue.createApp({
 
          database: null,
 
+         // memory
+         carts: [],
+
+      }
+   },
+
+   watch: {
+      carts: {
+         handler(data){
+            if( data.length > 0 ){
+               localStorage.setItem('watergo_carts', JSON.stringify(data));
+            }
+         }, deep: true
       }
    },
 
    methods: {
+
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
+
+      formatDescription(description) {return description.replace(/\n/g, '<br>');},
+
       async btn_share(){
          var _url = window.location.href;
          // alert(_url);
@@ -312,76 +368,63 @@ var app = Vue.createApp({
       common_price_after_discount(p){ return common_price_after_discount(p) },
       common_price_show_currency(p){ return common_price_show_currency(p) },
 
-      addToCart( isJustShowModal ){
+      addToCart( show_modal_success ){
+         
+         if( show_modal_success == true ){
+            this.show_add_cart = true;
 
-         if(isJustShowModal == true ){
+            var timeoutId = setTimeout(() => {this.show_add_cart = false;}, 1500);
 
-            // if( this.product_quantity_count > 0 && this.product.stock ){
-            if( this.canOrder == true && this.product_quantity_count > 0 ){
-
-               if( timeoutId ){ 
-                  this.show_add_cart = true; 
-                  clearTimeout( timeoutId); 
-               }else{ 
-                  this.show_add_cart = true; 
-               }
-               
-               // setTimeout(() => { }, 1500);
-               var delayedAddToCart = () => {
-                  // console.log('delay function')
-                  this.show_add_cart = false;
-               }
-
-               // delayedAddToCart = delayedAddToCart.bind(this);
-               var timeoutId = setTimeout( delayedAddToCart, 1500);
-               
+            if (timeoutId) {
+               clearTimeout(timeoutId);
+               this.show_add_cart = true;
+               timeoutId = setTimeout(() => {this.show_add_cart = false;}, 1500);
             }
          }
-         
-         if( this.canOrder == true ){
-            var _res = window.add_quantity_to_cart( this.product.id, this.product_quantity_count );
-            if( _res == false ){
-               window.add_item_to_cart( {
-                  store_id: parseInt( this.store.id ),
-                  store_name: this.store.name,
-                  store_select: false,
+
+         var _storeIndex = this.carts.findIndex( store => store.store_id == this.store.id );
+         if( _storeIndex == -1 ){
+            this.carts.push({
+               store_id: parseInt( this.store.id ),
+               store_select: true,
+               store_name: this.store.name,
+               products: [
+                  {
+                     product_id: parseInt(this.product.id ),
+                     product_quantity_count: this.product_quantity_count,
+                     product_select: true
+                  }
+               ]
+            });
+         }else{
+            this.carts.some( store => store.store_select = false);
+            this.carts[_storeIndex].store_select = true;
+            var _productIndex = this.carts[_storeIndex].products.findIndex( product => product.product_id == this.product.id );
+            if( _productIndex == -1 ){
+               this.carts[_storeIndex].products.push({
                   product_id: parseInt(this.product.id ),
                   product_quantity_count: this.product_quantity_count,
-                  product_select: false
+                  product_select: true
                });
+            }else{
+               this.carts[_storeIndex].products.some( product => product.product_select = false);
+               this.carts[_storeIndex].products[_productIndex].product_select = true;
+               this.carts[_storeIndex].products[_productIndex].product_quantity_count = this.carts[_storeIndex].products[_productIndex].product_quantity_count + this.product_quantity_count;
             }
          }
 
       },
-      
 
       // GO TO PAGE ORDER
       gotoPageOrder(){
-
          if( this.check_can_order == true ){
             this.addToCart(false);
-            // MAKE CURRENT PRODUCT IS SELECT IN THIS CASE
-            window.reset_cart_to_select_false();
-            var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-            _cartItems.some(item => {
-               if( item.store_id == this.product.store_id ){
-                  item.products.some( product => {
-                     if( product.product_id == this.product.id && product.product_select == false){
-                        product.product_select = true;
-                        product.product_quantity_count = this.product_quantity_count; // update override quantity
-                        // Save the updated cart items back to Local Storage
-                        localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-                     }
-                  });
-               }
-            });
             this.gotoOrderProduct();
          }
       },
 
       timestamp_to_date(timestamp) { return window.timestamp_to_date(timestamp); },
       check_time_validate(_startTime, _closeTime){ return window.check_time_validate_timestamp(_startTime, _closeTime); },
-
 
       async findProduct( product_id ){
          
@@ -436,7 +479,6 @@ var app = Vue.createApp({
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
                this.store = res.data;
-               
             }
          }
       },
@@ -485,7 +527,6 @@ var app = Vue.createApp({
          }
       },
 
-
       async get_purchase_store( store_id ){
          var form = new FormData();
          form.append('action', 'atlantis_get_total_purchase_store');
@@ -499,13 +540,11 @@ var app = Vue.createApp({
          }
       },
 
-
       shortenNumber(n){return window.shortenNumber(n)},
       gotoProductDetail(product_id){window.gotoProductDetail(product_id)},
       gotoProductTop( category_id){ window.gotoProductTop(category_id) },
       gotoStoreDetail(store_id){window.gotoStoreDetail(store_id)},
       gotoOrderProduct(){window.gotoOrderProduct()},
-
 
       goBack(){
          // window.location.href = '?appt=X&data=cart_count|notification_callback=notification_count';
@@ -537,7 +576,8 @@ var app = Vue.createApp({
             if( res.message == 'get_conversation_ok' ){
                var conversation_id   = res.data;
 
-               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_store&pin_product=' + _pin_product + '&appt=N';
+               
+               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app='+ this.where_app +'&appt=N';
             }
          }
       },
@@ -571,36 +611,24 @@ var app = Vue.createApp({
       if( this.product != null ){
 
          // GET QUANTITY 
-         var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
-         // 
-         if (_cartItems && _cartItems.length > 0) {
-            _cartItems.some( store => {
-               store.products.some( product => product.product_select = false );
-               store.products.some( product => {
-                  if( product.product_id == this.product.id ){
-                     this.product_quantity_count = product.product_quantity_count;
-                  }
-               });
-            });
-            localStorage.setItem('watergo_carts', JSON.stringify(_cartItems));
-         }
+         window.reset_cart_to_select_false();
+         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+         this.carts = _carts;
 
          window.appbar_fixed();
 
-         (function($){
-            $(document).ready(function(){
-               $('.product-slider ul').slick({
-                  dots: false,
-                  arrows: false,
-                  infinite: false,
-                  autoplay: true,
-                  duration: 1000,
-                  speed: 300,
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-               })
-            });
-         })(jQuery);
+         jQuery(document).ready(function($){
+            $('.product-slider ul').slick({
+               dots: false,
+               arrows: false,
+               infinite: false,
+               autoplay: true,
+               duration: 1000,
+               speed: 300,
+               slidesToShow: 1,
+               slidesToScroll: 1,
+            })
+         });
       }
 
       this.loading = false;

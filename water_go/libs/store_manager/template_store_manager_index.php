@@ -940,8 +940,8 @@ function template_store_manager_index(){
    <span class='d-block t-red mt20'>{{text_err}}</span>
 
    <p class="submit">
-      <button v-show='action == "edit" ' class='button button-primary' @click='edit_store_submit'><?php echo __('Save', 'watergo'); ?></button>
-      <button v-show='action == "add" ' class='button button-primary' @click='add_store_submit'><?php echo __('Add', 'watergo'); ?></button>
+      <button v-show='action == "edit"' class='button button-primary' @click='edit_store_submit'><?php echo __('Save', 'watergo'); ?></button>
+      <button v-show='action == "add"' class='button button-primary' :class='is_submit_add_store == false ? "disabled" : ""' @click='add_store_submit'><?php echo __('Add', 'watergo'); ?></button>
    </p>
 
    <h1 class="wp-heading-inline"><?php echo __('Products', 'watergo'); ?></h1>
@@ -961,7 +961,7 @@ function template_store_manager_index(){
          <th class="column-rating column-title"><span><?php echo __('Discount', 'watergo'); ?></span></th>
          <th class="column-rating "><span><?php echo __('Quantity', 'watergo'); ?></span></th>
          <th class="column-rating "><span><?php echo __('Volume', 'watergo'); ?></span></th>
-         <th class="column-product-pending "><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
+
       </tr>
 
       <tr
@@ -977,9 +977,6 @@ function template_store_manager_index(){
          <td v-html='get_date_discount(product)'></td>
          <td>{{ product.quantity }}</td>
          <td>{{ product.volume }}</td>
-         <td>
-            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
-         </td>
       </tr>
       <tr v-else>
          <td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td>
@@ -995,7 +992,6 @@ function template_store_manager_index(){
          <th><span><?php echo __('Chức năng', 'watergo'); ?></span></th>
          <th><span><?php echo __('Price', 'watergo'); ?></span></th>
          <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
-         <th style='width: 120px;'><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
       </tr>
       <tr
          v-if='filter_product_water_device.length > 0'
@@ -1007,10 +1003,6 @@ function template_store_manager_index(){
          <td>{{ product.feature_device }}</td>
          <td>{{ common_price_show_currency(product.price) }}</td>
          <td v-html='get_date_discount(product)'></td>
-         <td>
-            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
-         </td>
-
       </tr>
       <tr v-else><td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td></tr>
    </table>
@@ -1025,7 +1017,6 @@ function template_store_manager_index(){
          <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
          <th><span><?php echo __('Length*Width', 'watergo'); ?></span></th>
          <th><span><?php echo __('Weight', 'watergo'); ?></span></th>
-         <th style='width: 120px;'><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
       </tr>
       <tr
          v-if='filter_product_ice.length > 0'
@@ -1039,9 +1030,6 @@ function template_store_manager_index(){
          <td v-html='get_date_discount(product)'></td>
          <td>{{ product.length_width }} mm</td>
          <td>{{ product.weight }} kg</td>
-         <td>
-            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
-         </td>
       </tr>
       <tr v-else><td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td></tr>
    </table>
@@ -1051,10 +1039,9 @@ function template_store_manager_index(){
    <table class='wp-list-table widefat fixed striped table-view-list posts'>
       <tr>
          <th><span><?php echo __('Product Name', 'watergo'); ?></span></th>
-         <th><span><?php echo __('Chức năng', 'watergo'); ?></span></th>
+         <th><span><?php echo __('Dung Tích', 'watergo'); ?></span></th>
          <th><span><?php echo __('Price', 'watergo'); ?></span></th>
          <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
-         <th style='width: 120px;'><span><?php echo __('Duyệt Sản Phẩm', 'watergo'); ?></span></th>
       </tr>
       <tr
          v-if='filter_product_ice_device.length > 0'
@@ -1066,9 +1053,6 @@ function template_store_manager_index(){
          <td>{{ product.capacity_device }}</td>
          <td>{{ common_price_show_currency(product.price) }}</td>
          <td v-html='get_date_discount(product)'></td>
-         <td>
-            <button class='button button-primary' :class='get_product_status_class(product)' @click='open_modal_product_status(product.id)'>{{ get_product_status(product) }}</button>
-         </td>
       </tr>
       <tr v-else><td colspan='4'> <?php echo __('No products found.', 'watergo');?> </td></tr>
    </table>
@@ -1080,7 +1064,6 @@ function template_store_manager_index(){
    <div :class='popup_add_ice_product == true || popup_add_water_product == true ? "open" : "" ' class='popup-overlay'>
       <div class="popup-content">
          <span @click='btn_close_popup(undefined)' class="popup-close">&times;</span>
-
          <div v-show='popup_add_ice_product == true || popup_add_water_product == true' style='height: 100%'>
             <!--  -->
             <iframe width='100%' height='100%' :src='link_iframe'></iframe>
@@ -1118,6 +1101,8 @@ var app = Vue.createApp({
          get_template_directory_uri: '<?php echo THEME_URI; ?>',
          get_locale: '<?php echo get_locale(); ?>',
          link_iframe: '',
+
+         is_submit_add_store: false,
 
          select_type_product: {
             water: false,
@@ -1183,47 +1168,6 @@ var app = Vue.createApp({
       }
    },
 
-   watch: {
-      // products: {
-      //    handler( data ){
-      //       data.forEach( item => {
-      //          if( item.product_type == 'water' ){
-      //             var _itemIndex = this.product_water.findIndex(p => p.id == item.id);
-      //             if( _itemIndex == -1){
-      //                this.product_water.push(item);
-      //             }else{
-      //                this.product_water[_itemIndex] = item;
-      //             }
-      //          }
-      //          if( item.product_type == 'water_device' ){
-      //             var _itemIndex = this.product_water_device.findIndex(p => p.id == item.id);
-      //             if( _itemIndex == -1){
-      //                this.product_water_device.push(item);
-      //             }else{
-      //                this.product_water_device[_itemIndex] = item;
-      //             }
-      //          }
-      //          if( item.product_type == 'ice' ){
-      //             var _itemIndex = this.product_ice.findIndex(p => p.id == item.id);
-      //             if( _itemIndex == -1){
-      //                this.product_ice.push(item);
-      //             }else{
-      //                this.product_ice[_itemIndex] = item;
-      //             }
-      //          }
-      //          if( item.product_type == 'ice_device' ){
-      //             var _itemIndex = this.product_ice_device.findIndex(p => p.id == item.id);
-      //             if( _itemIndex == -1){
-      //                this.product_ice_device.push(item);
-      //             }else{
-      //                this.product_ice_device[_itemIndex] = item;
-      //             }
-      //          }
-      //       })
-      //    },
-      //    deep: true
-      // },
-   },
 
    computed: {
       
@@ -1262,32 +1206,6 @@ var app = Vue.createApp({
       
       add_store_submit(){
 
-      },
-
-      open_modal_product_status( product_id){
-         this.popup_open_change_product_status = true;
-         this.product_status_memory = product_id;
-      },
-
-      async btn_change_product_status(){
-         this.popup_open_change_product_status = false;
-         if( this.product_status_memory != null ){
-            var form = new FormData();
-            form.append('action', 'atlantis_change_product_status');
-            form.append('product_id', this.product_status_memory);
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify( r));
-               if( res.message == 'product_found' ){
-                  var _findIndex = this.products.findIndex( item => item.id == this.product_status_memory );
-                  this.products[_findIndex].product_hidden  = 0;
-                  this.products[_findIndex].status          = 'publish';
-
-               }
-               this.product_status_memory = null;
-            }
-
-         }
       },
 
       common_price_show_currency(p){ return window.common_price_show_currency(p); },
@@ -1386,14 +1304,12 @@ var app = Vue.createApp({
 
       btn_open_add_water_product(){ 
          this.popup_add_water_product = true;
-         // this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=add&store_id=${this.store_id}`;
-         this.link_iframe = `http://localhost:8888/product/?product_page=product-water-action&action=add&store_id=${this.store_id}&appt=N` + '&disable=goback';
+         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=add&store_id=${this.store_id}&appt=N&skipforce=pending` + '&disable=goback';
       },
 
       btn_open_add_ice_product(){ 
          this.popup_add_ice_product = true; 
-         // this.link_iframe = `<?php echo get_bloginfo('url'); ?>/iframe?action=add&store_id=${this.store_id}&product_type=ice`;
-         this.link_iframe = `http://localhost:8888/product/?product_page=product-ice-action&action=add&store_id=${this.store_id}&appt=N` + '&disable=goback';
+         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=add&store_id=${this.store_id}&appt=Nskipforce=pending` + '&disable=goback';
       },
 
       async btn_close_popup( id_product_callback ){ 
@@ -1423,11 +1339,11 @@ var app = Vue.createApp({
          var _product_id   = product.id;
          var _product_type = product.product_type;
 
-         if(_product_type == 'ice'){
+         if(_product_type == 'ice' || _product_type == 'ice_device' ){
             this.popup_add_ice_product = true;
             this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=edit&product_id=${_product_id}&appt=N` + '&disable=goback';
          }
-         if(_product_type == 'water'){
+         if(_product_type == 'water' || _product_type == 'water_device' ){
             this.popup_add_water_product = true;
             this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=edit&product_id=${_product_id}&appt=N` + '&disable=goback';
          }
@@ -1440,7 +1356,6 @@ var app = Vue.createApp({
          }else{
             return 'Hết hạn';
          }
-         
       },
 
       check_discount_date( date ){
@@ -1677,6 +1592,7 @@ var app = Vue.createApp({
          var form = new FormData();
          form.append('action', 'atlantis_get_all_product_by_store_to_admin_page');
          form.append('store_id', store_id);
+         form.append('status', 'publish');
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));

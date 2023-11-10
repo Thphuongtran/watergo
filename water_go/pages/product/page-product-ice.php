@@ -33,6 +33,7 @@
             </defs>
             </svg>
          ';
+         $vl->extraClass = 'ice-1';
       }
       if( $vl->name == 'Đá cục'){
          $vl->icon = '<svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -532,6 +533,7 @@
             </radialGradient>
             </defs>
             </svg>';
+         $vl->extraClass = 'ice-2';
       }
       if( $vl->name == 'Đá nghiền'){
          $vl->icon = '<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -543,6 +545,7 @@
             </linearGradient>
             </defs>
             </svg>';
+         $vl->extraClass = 'ice-3';
       }
       if( $vl->name == 'Đá công nghiệp'){
          $vl->icon = '<svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -554,7 +557,7 @@
             </linearGradient>
             </defs>
             </svg>';
-         $vl->width = '130';
+         $vl->extraClass = 'ice-4';
       }
       if( $vl->name == 'Thiết bị đá'){
          $vl->icon = '<svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -576,56 +579,95 @@
             </clipPath>
             </defs>
             </svg>';
-         $vl->width = '100';
+         $vl->extraClass = 'ice-5';
       }
    }
 
 
 ?>
 <style>
+   .grid-masonry{
+      padding-bottom: 30px;
+   }
+   .navbar{
+      padding-left: 8px;
+   }
    .navbar .text{ white-space: nowrap; }
    .navbar li{
       cursor: pointer;
+      padding-left: 0px;
+      padding-right: 0px;
+      margin-left: 8px;
+      margin-right: 8px;
+      min-width: auto;
    }
-   .navbar.navbar-icon li{ width: auto; }
+   .navbar.navbar-icon li{
+      min-width: auto;
+   }
+   .navbar li.ice-1{width: 42px;}
+   .navbar li.ice-2{width: 56px;}
+   .navbar li.ice-3{width: 79px;}
+   .navbar li.ice-4{width: 124px;}
+   .navbar li.ice-5{width: 85px;}
+
    .navbar.navbar-icon li.active{ width: auto; border: none; }
    .navbar li:after{
       height: 2px; bottom: 0;
    }
+   @media screen and (max-width: 375px){
+      .navbar.auto-resize-375 li {
+         padding-left: 0px;
+         padding-right: 0px;
+         padding-top: 0;
+      }
+   }
    .navbar.navbar-icon li.large-size{ min-width: 110px;}
-   .filter-type-water {
+
+   .filter-type-box {
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
       margin-right: 8px;
+      position: relative;
    }
-   .filter-type-water .icon{
-      height: 25px;
+   .filter-type-box .icon{
+      height: 18px;
    }
-   .filter_type_water_placeholder{
+   .filter-type-box .filter-type-placeholder{
       font-size: 13px;
       font-weight: 500;
       color: #2790F9;
       margin-left: 4px;
+      position: relative;
+      z-index: 8;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+   }
+   .filter-type-box .filter-type-placeholder .text{
+      margin-left: 3px;
    }
 
-   .filter_type_water_box {
-      position: relative;
-   }
-   .filter_type_water_modal {
+   .filter-type-box .filter-modal-wrapper{
       position: absolute;
       z-index: 8;
       width: 152px;
-      right: 0;
-      top: 30px;
+      right: 0; top: 30px;
+      display: none;
+   }
+
+   .filter-modal-wrapper.active{
+      display: block;
+   }
+
+   .filter-type-box .filter-modal {
+      width: 100%;
       background: white;
       box-shadow: 0 8px 24px 0 #0000001F;
-      display: none;
-      &.active{
-         display: block;
-      }
+      display: block;
    }
-   .filter_type_water_modal .item {
+   .filter-type-box .filter-modal .item {
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
@@ -635,10 +677,25 @@
       font-size: 12px;
       font-weight: 400;
    }
-   .filter_type_water_modal .item.active {
+   .filter-type-box .filter-modal .item.active {
       background: #2790F9;
       color: white;
    }
+
+   .product-design{
+      overflow: hidden;
+   }
+
+   .product-design .tt01{
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 100%;
+      white-space: nowrap;
+   }
+
+
+
+   
 </style>
 <div id='app'>
    
@@ -656,32 +713,29 @@
             </div>
             <div class='action'>
 
-               <div v-show='is_ice_device_selected == false' class='filter-type-water'>
-                  <span class='icon'>
-                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <g clip-path="url(#clip0_3436_257)">
-                     <path fill-rule="evenodd" clip-rule="evenodd" d="M1.75 2.625C1.75 2.39294 1.84219 2.17038 2.00628 2.00628C2.17038 1.84219 2.39294 1.75 2.625 1.75H11.375C11.6071 1.75 11.8296 1.84219 11.9937 2.00628C12.1578 2.17038 12.25 2.39294 12.25 2.625V3.84183C12.2499 4.15123 12.127 4.44793 11.9082 4.66667L8.75 7.82483V12.1555C8.75002 12.2649 8.72207 12.3725 8.66881 12.468C8.61555 12.5636 8.53875 12.6439 8.4457 12.7014C8.35265 12.7589 8.24644 12.7917 8.13717 12.7966C8.02789 12.8015 7.91917 12.7784 7.82133 12.7295L5.65308 11.6457C5.53197 11.5851 5.4301 11.492 5.35891 11.3768C5.28772 11.2616 5.25 11.1289 5.25 10.9935V7.82483L2.09183 4.66667C1.87303 4.44793 1.75007 4.15123 1.75 3.84183V2.625Z" fill="#2790F9"/>
-                     </g>
-                     <defs>
-                     <clipPath id="clip0_3436_257">
-                     <rect width="14" height="14" fill="white"/>
-                     </clipPath>
-                     </defs>
-                     </svg>
-                  </span>
+               <div v-show='is_ice_device_selected == false' class='filter-type-box'>
+                  <div @click='open_filter_type_box' class='filter-type-placeholder'>
+                     <span class='icon' >
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_3436_257)">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M1.75 2.625C1.75 2.39294 1.84219 2.17038 2.00628 2.00628C2.17038 1.84219 2.39294 1.75 2.625 1.75H11.375C11.6071 1.75 11.8296 1.84219 11.9937 2.00628C12.1578 2.17038 12.25 2.39294 12.25 2.625V3.84183C12.2499 4.15123 12.127 4.44793 11.9082 4.66667L8.75 7.82483V12.1555C8.75002 12.2649 8.72207 12.3725 8.66881 12.468C8.61555 12.5636 8.53875 12.6439 8.4457 12.7014C8.35265 12.7589 8.24644 12.7917 8.13717 12.7966C8.02789 12.8015 7.91917 12.7784 7.82133 12.7295L5.65308 11.6457C5.53197 11.5851 5.4301 11.492 5.35891 11.3768C5.28772 11.2616 5.25 11.1289 5.25 10.9935V7.82483L2.09183 4.66667C1.87303 4.44793 1.75007 4.15123 1.75 3.84183V2.625Z" fill="#2790F9"/>
+                        </g>
+                        <defs>
+                        <clipPath id="clip0_3436_257">
+                        <rect width="14" height="14" fill="white"/>
+                        </clipPath>
+                        </defs>
+                        </svg>
+                     </span>
+                     <span class='text _outside_handler_clicked'><?php echo __('Type of ice', 'watergo'); ?></span>
+                  </div>
 
-                  <div class='filter_type_water_box'>
-                     <div @click='open_filter_type_ice' class='filter_type_water_placeholder'>
-                        <?php echo __('Type of ice', 'watergo'); ?>
-                     </div>
-                     <div 
-                        class='filter_type_water_modal'
-                        :class='filter_type_ice_open == true ? "active" : ""'
-                     >
+                  <div class='filter-modal-wrapper' :class='filter_type_box_open == true ? "active" : ""'>
+                     <div class='filter-modal'>
                         <div 
                            @click='select_category_parent(type_ice.name)'
                            v-for='(type_ice, type_ice_index) in get_category_parent' :key='type_ice_index'
-                           class='item' :class='type_ice.active ? "active" : ""'
+                           class='item _outside_handler_clicked' :class='type_ice.active ? "active" : ""'
                         >
                            {{ type_ice.name }}
                         </div>
@@ -694,16 +748,16 @@
                   <path d="M6 16C6 16.2652 6.10536 16.5196 6.29289 16.7071C6.48043 16.8946 6.73478 17 7 17H17C17.2652 17 17.5196 16.8946 17.7071 16.7071C17.8946 16.5196 18 16.2652 18 16C18 15.7348 17.8946 15.4804 17.7071 15.2929C17.5196 15.1054 17.2652 15 17 15H7C6.73478 15 6.48043 15.1054 6.29289 15.2929C6.10536 15.4804 6 15.7348 6 16ZM8 12C8 12.2652 8.10536 12.5196 8.29289 12.7071C8.48043 12.8946 8.73478 13 9 13H15C15.2652 13 15.5196 12.8946 15.7071 12.7071C15.8946 12.5196 16 12.2652 16 12C16 11.7348 15.8946 11.4804 15.7071 11.2929C15.5196 11.1054 15.2652 11 15 11H9C8.73478 11 8.48043 11.1054 8.29289 11.2929C8.10536 11.4804 8 11.7348 8 12ZM11 9C10.7348 9 10.4804 8.89464 10.2929 8.70711C10.1054 8.51957 10 8.26522 10 8C10 7.73478 10.1054 7.48043 10.2929 7.29289C10.4804 7.10536 10.7348 7 11 7H13C13.2652 7 13.5196 7.10536 13.7071 7.29289C13.8946 7.48043 14 7.73478 14 8C14 8.26522 13.8946 8.51957 13.7071 8.70711C13.5196 8.89464 13.2652 9 13 9H11Z" fill="#2790F9"/>
                   </svg>
 
-                  <span class='text filter_sort_placeholder'><?php echo __('Sort', 'watergo'); ?></span>
+                  <span class='text _outside_handler_clicked'><?php echo __('Sort', 'watergo'); ?></span>
                </div>
             </div>
          </div>
          <div class='appbar-bottom'>
             <div v-if='sortFeatureOpen == true' class='box-sort' :class='sortFeatureOpen == true ? "active" : ""'>
                <ul>
-                  <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""'><?php echo __('Nearest', 'watergo'); ?></li>
-                  <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""'><?php echo __('Cheapest', 'watergo'); ?></li>
-                  <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""'><?php echo __('Top Rated', 'watergo'); ?></li>
+                  <li @click='buttonSortFeatureSelected(0)' :class='sortFeatureCurrentValue == 0 ? "active" : ""' class='_outside_handler_clicked'><?php echo __('Nearest', 'watergo'); ?></li>
+                  <li @click='buttonSortFeatureSelected(1)' :class='sortFeatureCurrentValue == 1 ? "active" : ""' class='_outside_handler_clicked'><?php echo __('Cheapest', 'watergo'); ?></li>
+                  <li @click='buttonSortFeatureSelected(2)' :class='sortFeatureCurrentValue == 2 ? "active" : ""' class='_outside_handler_clicked'><?php echo __('Top Rated', 'watergo'); ?></li>
                </ul>
             </div>
 
@@ -715,6 +769,7 @@
                      v-for='(cat, index) in category' :key='index' 
                      :class='[
                         cat.active == true ? "active" : "",
+                        cat.extraClass
                      ]'>
                      <span class='icon' v-html='cat.icon'></span>
                      <span class='text'>{{ cat.name }}</span>
@@ -744,7 +799,7 @@
                      </div>
                      <div class='box-wrapper'>
                         <p class='tt01'>{{ product.name }} </p>
-                        <p class='tt02'>{{ product.name_second }}</p>
+                        <p class='tt02'>{{ product_name_compact(product) }}</p>
                         
                         <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                            <span class='price'>
@@ -801,7 +856,7 @@ createApp({
          category_id_selected: null,
          category_parent_id_selected: null,
 
-         filter_type_ice_open: false,
+         filter_type_box_open: false,
 
       }
    },
@@ -821,15 +876,15 @@ createApp({
       filter_products(){
          var _products = this.products;
          if(this.sortFeatureCurrentValue == 2 ){
-            // console.log('Top Rated Filter');
+            // 'Top Rated Filter'
             _products.sort((a, b) => b.avg_rating - a.avg_rating);
          }
          else if(this.sortFeatureCurrentValue == 1 ){
-            // console.log('Top Cheapest');
+            // 'Top Cheapest'
             _products.sort((a, b) => a.price - b.price);
          }
          else if(this.sortFeatureCurrentValue == 0 ){
-            // console.log('Nearest');
+            // 'Nearest'
             _products.sort((a, b) => a.distance - b.distance);
          }
 
@@ -841,34 +896,20 @@ createApp({
       },
    },
 
-   // STREAM 
-   watch: {
-
-      sortFeatureCurrentValue: async function( val ){
-
-         // if(val == 2 ){
-         //    // console.log('Top Rated Filter');
-         //    this.products.sort((a, b) => b.avg_rating - a.avg_rating);
-         // }
-         // else if(val == 1 ){
-         //    // console.log('Top Cheapest');
-         //    this.products.sort((a, b) => a.price - b.price);
-         // }
-         // else if(val == 0 ){
-         //    // console.log('Nearest');
-         //    this.products.sort((a, b) => a.distance - b.distance);
-         // }
-
-
-      }
-
-   },
-
-
    methods: {
 
-      open_filter_type_ice(){
-         this.filter_type_ice_open = !this.filter_type_ice_open;
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
+
+      open_filter_type_box(){
+         this.filter_type_box_open = !this.filter_type_box_open;
       },
 
       get_current_location(){
@@ -932,6 +973,7 @@ createApp({
       },
 
       select_category_parent(cat_id){
+         this.open_filter_type_box();
          this.category_parent_id_selected = cat_id;
          this.category_parent.some(cat => {
             if (cat.name === cat_id) {cat.active = !cat.active;
@@ -951,9 +993,7 @@ createApp({
          form.append('lat', this.latitude);
          form.append('lng', this.longitude);
          form.append('paged', this.products.length );
-
          var _category  = this.category.find(item => item.name == this.category_id_selected );
-
          if( this.is_ice_device_selected == false ){
             form.append('product_type', 'ice');
          }else{
@@ -962,10 +1002,7 @@ createApp({
          if(this.category_id_selected != null ){
             form.append('category', _category.name);
          }
-         
          var r = await window.request(form);
-         // console.log(r);
-
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -998,11 +1035,8 @@ createApp({
       // HANDLE CLICK OUTSIDE
       handleClickOutside(e){
          var el            = jQuery(e.target);
-         var _check_class  = ['filter_type_water_placeholder', 'filter_sort_placeholder'];
-         var _exists       = _check_class.some( _class => el.hasClass(_class) );
-
-         if( _exists == false ){
-            this.filter_type_ice_open = false;
+         if( el.hasClass('_outside_handler_clicked') == false ){
+            this.filter_type_box_open = false;
             this.sortFeatureOpen = false;
          }
       },

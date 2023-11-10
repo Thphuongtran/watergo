@@ -1,6 +1,9 @@
+<script src="<?php echo THEME_URI . '/pages/module/module_weekly_select.js'; ?>"></script>
+<link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
+<script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 <div id='app'>
 
-   <div v-if='loading == false && delivery_address_primary != null && carts.length > 0' class='page-product-order'>
+   <div v-if='loading == false && carts.length > 0' class='page-product-order'>
       
       <div class='appbar style01 fixed'>
          <div class='appbar-top'>
@@ -11,17 +14,17 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title'>Order</p>
+               <p class='leading-title'><?php echo __('Order', 'watergo'); ?></p>
             </div>
          </div>
          <div class='break-line'></div>
       </div>
       
-      <div v-if='loading == false && carts.length > 0 && delivery_address_primary != null' class='inner'>
+      <div v-if='loading == false && carts.length > 0' class='inner'>
          <div id='delivery_address_primary' @click='gotoDeliveryAddress' class='list-tile delivery-address' :class='delivery_address_primary != null ? "has-primary" : ""' >
             <div class='content'>
-               <p class='tt01'>Delivery address</p>
-               <p v-if='delivery_address_primary == null' class='tt02'>There is no address</p>
+               <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
+               <p v-if='delivery_address_primary == null' class='tt02'><?php echo __('There is no address', 'watergo'); ?></p>
                <p class='tt03' v-if='delivery_address_primary != null'>{{ delivery_address_primary.address }}</p>
                <p class='tt02' v-if='delivery_address_primary != null'>{{ delivery_address_primary.name }} {{ hasMoreThanTwoZeroes(delivery_address_primary.phone) == true ? ' | (+84) ' + removeZeroLeading( delivery_address_primary.phone ) : "" }}</p>
             </div>
@@ -75,34 +78,34 @@
       </ul>
       
       <div class='select_delivery_time' ref='select_delivery_time'>
-         <p class='heading-02'>Select delivery time</p>
+         <p class='heading-02'><?php echo __('Select delivery time', 'watergo'); ?></p>
 
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("once")' :checked='delivery_type.once' id='select_type01' type="radio" class='form-input'>
-               <label for='select_type01' >Delivery once</label>
+               <label for='select_type01' ><?php echo __('Delivery once', 'watergo'); ?></label>
             </div>
 
             <div v-show='delivery_type.once' class='group-time-delivery-once'>
                <div class='form-group-select'>
                   <div class='form-check'>
                      <input id='select_delivery_time_Immediately' type='checkbox' @click='btn_select_type("once_immediately")' :checked='delivery_type.once_immediately' :disabled='delivery_type.once_immediately'>
-                     <label for='select_delivery_time_Immediately'>Immediately (within 1 hour)</label>
+                     <label for='select_delivery_time_Immediately'><?php echo __('Immediately (within 1 hour)', 'watergo'); ?></label>
                   </div>
                   <div class='form-check'>
                      <input id='select_delivery_time_Date-Time' type='checkbox' @click='btn_select_type("once_date_time")' :checked='delivery_type.once_date_time' :disabled='delivery_type.once_date_time'>
-                     <label for='select_delivery_time_Date-Time' class='custom-checkbox'>Select Date & Time</label>
+                     <label for='select_delivery_time_Date-Time' class='custom-checkbox'><?php echo __('Select Date & Time', 'watergo'); ?></label>
                   </div>
                </div>
             </div>
 
             <div v-show='delivery_type.once_date_time == true' class='group-select-delivery-time'>
                <div class='btn-wrapper-order'>
-                  <input data-id='0' type='text' value='' class='btn_select_date_once btn-dropdown' placeholder='Select date' readonly>
+                  <input data-id='0' type='text' value='' class='btn_select_date_once btn-dropdown' placeholder='<?php echo __('Select date', 'watergo'); ?>' readonly>
                </div>
                <div class='btn-wrapper-order'>
                   <select data-id='0' class='btn_select_time_once btn-dropdown'>
-                     <option value="--">Select time</option>
+                     <option value="--"><?php echo __('Select time', 'watergo'); ?></option>
                   </select>
                </div>
             </div>
@@ -113,65 +116,30 @@
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("weekly")' :checked='delivery_type.weekly' id='select_type02' type="radio" class='form-input'>
-               <label for='select_type02'>Delivery weekly</label>
+               <label for='select_type02'><?php echo __('Delivery weekly', 'watergo'); ?></label>
             </div>
             <div v-show='delivery_type.weekly == true' class='deliverySelect_weekly'>
-
-               <div class='group-select-delivery-time'>
-                  <div class='btn-wrapper-order'>
-                     <select data-id='0' class='btn_select_weekly_day btn_select_weekly_day_0 btn-dropdown'>
-                        <option value='' selected disabled>Select day</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                     </select>
-                  </div>
-                  <div class='btn-wrapper-order'>
-                     <select data-id='0' class='btn_select_weekly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
-                        <option value='7:00-8:00'>7:00  -  8:00</option>
-                        <option value='8:00-9:00'>8:00  -  9:00</option>
-                        <option value='9:00-10:00'>9:00  -   10:00</option>
-                        <option value='10:00-11:00'>10:00  -  11:00</option>
-                        <option value='11:00-12:00'>11:00  -  12:00</option>
-                        <option value='12:00-13:00'>12:00  -  13:00</option>
-                        <option value='13:00-14:00'>13:00  -  14:00</option>
-                        <option value='14:00-15:00'>14:00  -  15:00</option>
-                        <option value='15:00-16:00'>15:00  -  16:00</option>
-                        <option value='16:00-17:00'>16:00  -  17:00</option>
-                        <option value='17:00-18:00'>17:00  -  18:00</option>
-                        <option value='18:00-19:00'>18:00  -  19:00</option>
-                        <option value='19:00-20:00'>19:00  -  20:00</option>
-                        <option value='20:00-21:00'>20:00  -  21:00</option>
-                     </select>
-                  </div>
-
-               </div>
-
+               <components_weekly_select ref='components_weekly_select'></components_weekly_select>
             </div>
 
-            <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'>Add Day</button>
+            <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly'><?php echo __('Add Day', 'watergo'); ?></button>
          </div>
 
          <!-- monthly -->
          <div class='group-tile'>
             <div class='form-check'>
                <input @click='btn_select_type("monthly")' :checked='delivery_type.monthly' id='select_type03' type="radio" class='form-input'>
-               <label for='select_type03'>Delivery mothly</label>
+               <label for='select_type03'><?php echo __('Delivery monthly', 'watergo'); ?></label>
             </div>
 
             <div v-show='delivery_type.monthly == true' class='deliverySelect_monthly'>
                <div class='group-select-delivery-time'>
                   <div class='btn-wrapper-order'>
-                     <input data-id='0' type='text' value='' class='btn_select_monthly btn-dropdown' placeholder='Select date' readonly>
+                     <input data-id='0' type='text' value='' class='btn_select_monthly_primary btn_select_monthly btn-dropdown' placeholder='<?php echo __('Select date', 'watergo'); ?>' readonly>
                   </div>
                   <div class='btn-wrapper-order'>
                      <select data-id='0' class='btn_select_monthly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
+                        <option value='' selected disabled><?php echo __('Select time', 'watergo'); ?></option>
                         <option value='7:00-8:00'>7:00  -  8:00</option>
                         <option value='8:00-9:00'>8:00  -  9:00</option>
                         <option value='9:00-10:00'>9:00  -  10:00</option>
@@ -191,18 +159,16 @@
                </div>
             </div>
 
-            <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly'>Add Date</button>
-
-         </div> 
-
+            <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly'><?php echo __('Add Date', 'watergo'); ?></button>
+         </div>
       </div>
 
       <div class='break-line'></div>
-      <div class='inner'><p class='heading-02'>Payment method </p><p>By Cash</p></div>
+      <div class='inner'><p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p><p><?php echo __('By Cash', 'watergo'); ?></p></div>
 
       <div class='product-detail-bottomsheet cell-placeorder'>
-         <p class='price-total'>Total: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }}</span></p>
-         <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary' :class='canPlaceOrder == false ? "disable" : "" '>Place Order</button>
+         <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }} </span></p>
+         <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary btn-order' :class='canPlaceOrder == false ? "disable" : "" '><?php echo __('Place Order', 'watergo'); ?></button>
       </div>
 
    </div>
@@ -210,7 +176,7 @@
    <div v-if='modal_store_out_of_stock == true && canPlaceOrder == false' class='modal-popup' :class='modal_store_out_of_stock == true && canPlaceOrder == false ? "open" : ""'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'>This Product is <span class='t-primary'>Out of Stock</span></p>
+         <p class='heading'><?php echo __("This Product is <span class='t-primary'>Out of Stock</span", 'watergo'); ?>></p>
       </div>
    </div>
 
@@ -226,19 +192,15 @@
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.7917 24.8288L42.103 22.1401L27.8578 36.3854L22.2522 30.7798L19.5635 33.4685L27.9506 41.8557L30.6393 39.167L30.5465 39.0741L44.7917 24.8288Z" fill="white"/>
          </svg>
-         <h3>Order Successfully</h3>
+         <h3><?php echo __('Order Successfully', 'watergo'); ?></h3>
       </div>
       <div class='banner-footer'>
-         <button @click='goBackRefresh' class='btn btn-outline'>Exit</button>
+         <button @click='goBackRefresh' class='btn btn-outline'><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 
 
 </div>
-
-
-<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
-<script src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 
 <script>
 
@@ -246,6 +208,8 @@ var app = Vue.createApp({
 
    data(){
       return {
+
+         get_locale: '<?php echo get_locale(); ?>',
 
          loading:       true,
          banner_open:   false,
@@ -264,8 +228,15 @@ var app = Vue.createApp({
             monthly:    [],
          },
 
-         dayOfWeeks: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ],
-         dayOfWeeks_ban: [],
+         dayOfWeeks: [ 
+            'Monday', 
+            'Tuesday', 
+            'Wednesday', 
+            'Thursday', 
+            'Friday', 
+            'Saturday', 
+            'Sunday'
+         ],
 
          delivery_address_primary: null,
          carts: [],
@@ -277,7 +248,6 @@ var app = Vue.createApp({
          modal_store_out_of_stock: false,
 
          dom_monthly: 0,
-         dom_weekly: 0,
 
          canPlaceOrder: false,
 
@@ -289,30 +259,28 @@ var app = Vue.createApp({
    },
 
    watch: {
-
-      dayOfWeeks_ban: {
+      delivery_address_primary: {
          handler( val ){
-
-            // $(document).on('input change click', '.btn_select_weekly_day', function(){
-
-               // val.forEach( item => {
-                  
-                  // $('.btn_select_weekly_day option[value=""]').attr('disabled', true);
-                  // $('.btn_select_weekly_day option').attr('disable', false);
-
-                  // var _find = $('.btn_select_weekly_day option').val();
-
-                  // if( _find ){
-                  //    $('.btn_select_weekly_day option[value="'+ item.day +'"]').attr('disabled', true);
-                  // }
-                  // $(document).on('change ', '.btn_select_weekly_day' ,function(){
-
-                  // });  
-
-            //    });
-            // });
-         }, 
-         deep: true,
+            if( val != undefined || val != null ){
+               if( this.delivery_type.once_immediately == true ){
+                  this.canPlaceOrder = true;
+               }else{
+                  this.canPlaceOrder = false;
+               }
+               if( this.delivery_type.once_date_time == true ){
+                  if( 
+                     this.delivery_data.once_date.length > 0 &&
+                     ( this.delivery_data.once_date[0].day && this.delivery_data.once_date[0].day !== '' ) &&
+                     ( this.delivery_data.once_date[0].time && this.delivery_data.once_date[0].time !== '' )
+                  ){
+                     this.canPlaceOrder = true;
+                  }else{
+                     this.canPlaceOrder = false;
+                  }
+               }
+            }
+         },
+         deep: true
       },
 
       delivery_data: {
@@ -332,6 +300,7 @@ var app = Vue.createApp({
                      ( val.once_date[0].day && val.once_date[0].day !== '' ) &&
                      ( val.once_date[0].time && val.once_date[0].time !== '' )
                   ){
+                     console.log('Can Order Once date time');
                      this.canPlaceOrder = true;
                   }else{
                      this.canPlaceOrder = false;
@@ -373,10 +342,54 @@ var app = Vue.createApp({
 
       },
 
-
+      // UPDATE FIX CHECK CAN ORDER FOR once_date_time
+      delivery_type: {
+         handler( type ){
+            if( type.once_date_time == true  ){
+               if( 
+                  this.delivery_data.once_date.length > 0 &&
+                  ( this.delivery_data.once_date[0].day && this.delivery_data.once_date[0].day !== '' ) &&
+                  ( this.delivery_data.once_date[0].time && this.delivery_data.once_date[0].time !== '' )
+               ){
+                  this.canPlaceOrder = true;
+               }else{
+                  this.canPlaceOrder = false;
+               }
+            }
+         },
+         deep: true
+      }      
    },
 
    methods: { 
+      
+      title_select_time_compact( title ){
+         if( this.get_locale == 'vi' ){
+            return 'Chọn thời gian';
+         }
+         return title;
+      },
+      
+
+      isTimeRange(startTime, endTime) {
+         // startTime 00:00 endTime 00:00
+         var currentDate = new Date();
+         var currentHours = currentDate.getHours();
+         // var currentMinutes = currentDate.getMinutes();
+         var currentMinutes = 1;
+
+         var [startHours, startMinutes] = startTime.split(':').map(Number);
+         var [endHours, endMinutes] = endTime.split(':').map(Number);
+
+         if (
+            (currentHours > startHours || (currentHours === startHours && currentMinutes >= startMinutes)) &&
+            (currentHours < endHours || (currentHours === endHours && currentMinutes <= endMinutes))
+         ) {
+            return true;
+         } else {
+            return false;
+         }
+      },
 
       automatic_count_date_week(){
          function formatDate(date) {
@@ -431,7 +444,8 @@ var app = Vue.createApp({
          localStorage.setItem( 'watergo_order_delivery_address', '[]' );
          window.reset_cart_to_select_false();
          // window.goBack(true);
-         appBridge.navigateTo("Order");
+         // appBridge.navigateTo("Order");
+         appBridge.navigateTo("Home", "data");
       },
 
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id)},
@@ -443,7 +457,6 @@ var app = Vue.createApp({
       common_price_after_discount_and_quantity(p){ return window.common_price_after_discount_and_quantity(p)},
       common_price_after_quantity(p){ return window.common_price_after_quantity(p)},
       
-
       /**
        * @access DATE ONE
        */
@@ -459,88 +472,137 @@ var app = Vue.createApp({
 
       btn_select_date_once(){
 
-         // (function($){
-            // $(document).ready(function(){
+         
 
-               // if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
-               //    $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
-               // }
+         $(function(){
 
-               $(document).on('click', '.btn_select_date_once', function(e){
-                  $('.ui-date-picker-wrapper').addClass('active');
-                  $('.ui-date-picker-wrapper').addClass('order-product');
+            function date_once( targetElement ){
+               $('.ui-date-picker-wrapper').addClass('active');
+               $('.ui-date-picker-wrapper').addClass('datepicker-order-product');
 
-                  var targetElement = $(this);
-                  var id   = $(this).data('id');
-
-                  targetElement.datepicker({
-                     dateFormat: "dd/mm/yy",
-                     minDate: 0,
-                     firstDay: 1,
-                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-                     onSelect: function(dateText, inst){
-                        if(dateText != undefined || dateText != '' || dateText != null){
-
-                           targetElement.attr('value', dateText);
-
-                           app.func_add_date_once_data(id, { id: id, day: dateText, datetime: dateText } );
-
-                           var [day, month, year] = dateText.split('/');
-                           var convertToDateEn = month + '/' + day + '/' + year;
-
-                           var _currentSelectDate = new Date( convertToDateEn );
-                           var _currentDay  = new Date();
-
-                           var getHourSelected = _currentDay.getHours().toString().padStart(2, '0');
-                           getHourSelected = parseInt( getHourSelected ) + 2;
-
-                           var _selectOption = [
-                              { label: '7:00  -  8:00', value: '7:00-8:00', time: 7 },
-                              { label: '8:00  -  9:00', value: '8:00-9:00', time: 8 },
-                              { label: '9:00  -  10:00', value: '9:00-10:00', time: 9 },
-                              { label: '10:00  -  11:00', value: '10:00-11:00', time: 10},
-                              { label: '11:00  -  12:00', value: '11:00-12:00', time: 11},
-                              { label: '12:00  -  13:00', value: '12:00-13:00', time: 12},
-                              { label: '13:00  -  14:00', value: '13:00-14:00', time: 13},
-                              { label: '14:00  -  15:00', value: '14:00-15:00', time: 14},
-                              { label: '15:00  -  16:00', value: '15:00-16:00', time: 15},
-                              { label: '16:00  -  17:00', value: '16:00-17:00', time: 16},
-                              { label: '17:00  -  18:00', value: '17:00-18:00', time: 17},
-                              { label: '18:00  -  19:00', value: '18:00-19:00', time: 18},
-                              { label: '19:00  -  20:00', value: '19:00-20:00', time: 19},
-                              { label: '20:00  -  21:00', value: '20:00-21:00', time: 20}
-                           ];
-                           var _selectDom = `<option value=''>Select time</option>`;
-
-                           _currentSelectDate.setHours(0, 0, 0, 0);
-                           _currentDay.setHours(0, 0, 0, 0);
-
-                           $('.btn_select_time_once').empty('option');
-
-                           if(_currentSelectDate.getTime() === _currentDay.getTime() ){
-                              _selectOption = _selectOption.filter( item => item.time >= getHourSelected );
-                           }
-
-                           _selectOption.forEach( item => {
-                              _selectDom += `
-                                 <option value='${item.value}'>${item.label}</option>
-                              `;
-                           });
-
-                           $('.btn_select_time_once').append(_selectDom);
-                        }
-                     },
-                     onClose: function(dateText, inst){
-                        $('.ui-date-picker-wrapper').removeClass('active');
-                        $('.ui-date-picker-wrapper').removeClass('order-product');
-                     }
-                  });
-
-                  targetElement.datepicker('show');
-               });
+               var id   = targetElement.data('id');
                
+               // Define an object that holds the month and day names for different locales
+               var localeData = {
+                  'en_US': {
+                     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                     monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                     dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                     dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                     dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+                  },
+                  'vi': {
+                     monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                     monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+                     dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+                     dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                     dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+                  },
+                  'ko_KR': {
+                     monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                     monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                     dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                     dayNamesShort: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                     dayNamesMin: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
+                  }
+               };
+
+               // Get the locale-specific month and day names based on this.locale
+               var locale = 'en_US'; // Default to English
+               var get_locale = '<?php echo get_locale(); ?>';
+               if ( get_locale != undefined && localeData[get_locale] != undefined) {
+                  locale = get_locale;
+               }
+
+               targetElement.datepicker({
+                  dateFormat: "dd/mm/yy",
+                  minDate: 0,
+                  firstDay: 1,
+
+                  monthNames:       localeData[locale].monthNames,
+                  monthNamesShort:  localeData[locale].monthNamesShort,
+                  dayNames:         localeData[locale].dayNames,
+                  dayNamesShort:    localeData[locale].dayNamesShort,
+                  dayNamesMin:      localeData[locale].dayNamesMin,
+
+                  // dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+
+                  onSelect: function(dateText, inst){
+                     if(dateText != undefined || dateText != '' || dateText != null){
+
+                        targetElement.attr('value', dateText);
+
+                        window.app.func_add_date_once_data(id, { id: id, day: dateText, datetime: dateText } );
+
+                        var [day, month, year] = dateText.split('/');
+                        var convertToDateEn = month + '/' + day + '/' + year;
+
+                        var _currentSelectDate = new Date( convertToDateEn );
+                        var _currentDay  = new Date();
+
+                        var getHourSelected = _currentDay.getHours().toString().padStart(2, '0');
+                        getHourSelected = parseInt( getHourSelected ) + 2;
+
+                        var _selectOption = [
+                           { label: '7:00  -  8:00',   value: '7:00-8:00',   time: 7 },
+                           { label: '8:00  -  9:00',   value: '8:00-9:00',   time: 8 },
+                           { label: '9:00  -  10:00',  value: '9:00-10:00',  time: 9 },
+                           { label: '10:00  -  11:00', value: '10:00-11:00', time: 10},
+                           { label: '11:00  -  12:00', value: '11:00-12:00', time: 11},
+                           { label: '12:00  -  13:00', value: '12:00-13:00', time: 12},
+                           { label: '13:00  -  14:00', value: '13:00-14:00', time: 13},
+                           { label: '14:00  -  15:00', value: '14:00-15:00', time: 14},
+                           { label: '15:00  -  16:00', value: '15:00-16:00', time: 15},
+                           { label: '16:00  -  17:00', value: '16:00-17:00', time: 16},
+                           { label: '17:00  -  18:00', value: '17:00-18:00', time: 17},
+                           { label: '18:00  -  19:00', value: '18:00-19:00', time: 18},
+                           { label: '19:00  -  20:00', value: '19:00-20:00', time: 19},
+                           { label: '20:00  -  21:00', value: '20:00-21:00', time: 20}
+                        ];
+                        var _selectDom = `<option value=''><?php echo __('Select time', 'watergo'); ?></option>`;
+
+                        _currentSelectDate.setHours(0, 0, 0, 0);
+                        _currentDay.setHours(0, 0, 0, 0);
+
+                        $('.btn_select_time_once').empty('option');
+
+                        if(_currentSelectDate.getTime() === _currentDay.getTime() ){
+                           _selectOption = _selectOption.filter( item => item.time >= getHourSelected );
+                        }
+
+                        _selectOption.forEach( item => {
+                           _selectDom += `
+                              <option value='${item.value}'>${item.label}</option>
+                           `;
+                        });
+
+                        $('.btn_select_time_once').append(_selectDom);
+                     }
+                  },
+                  onClose: function(dateText, inst){
+                     $('.ui-date-picker-wrapper').removeClass('active');
+                     $('.ui-date-picker-wrapper').removeClass('datepicker-order-product');
+                  }
+
+               });
+
+               if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+                  $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+               }
+
+               targetElement.datepicker('show');
+
+               
+            }
+
+            $('.btn_select_date_once').on('click', function(){
+               date_once( $(this));
+            });
+            // $(document).ready(function(){
+            //    date_once( $('.btn_select_date_once'));
             // });
-         // })(jQuery);
+            
+         });
 
       },
 
@@ -565,14 +627,12 @@ var app = Vue.createApp({
       },
 
       btn_select_monthly(){
-      
-         function month( el ){
 
+         function month( el ){
             $('.ui-datepicker .ui-datepicker-title').empty();
-            $('.ui-widget-header a').remove();
-            $('.ui-datepicker-calendar thead').remove();
             $('.ui-date-picker-wrapper').addClass('active');
             $('.ui-date-picker-wrapper').addClass('datepicker-monthly');
+            $('.ui-datepicker .ui-datepicker-title').html('<?php echo __("Everymonth", 'watergo'); ?>');
 
             var id     = el.data('id');
             var date   = el.val();
@@ -606,6 +666,7 @@ var app = Vue.createApp({
                },
 
                onSelect: function(dateText, inst){
+
                   if(dateText != undefined || dateText != '' || dateText != null){
                      el.attr('value', dateText);
 
@@ -631,25 +692,36 @@ var app = Vue.createApp({
                   $('.ui-date-picker-wrapper').removeClass('datepicker-monthly');
                }
             });
+
             
             if( el.hasClass('btn_select_monthly_parent') ){
                el.datepicker('show');
             }
-            $('.ui-datepicker .ui-datepicker-title').html('Everymonth');
+
+            $('.ui-datepicker .ui-datepicker-title').html('<?php echo __("Everymonth", 'watergo'); ?>');
+            $('.ui-datepicker-calendar thead').remove();
+            $('.ui-widget-header a').remove();
+
+            if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+               $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+            }
          }
 
-         (function($){
-            $(document).ready(function(){
-               month( $('.btn_select_monthly') );
-               $(document).on('input change click', '.btn_select_monthly', function(){
-                  $('.ui-datepicker .ui-datepicker-title').empty();
-                  $('.ui-widget-header a').remove();
-                  $('.ui-datepicker-calendar thead').remove();
-                  month($(this));
-               });
+         $(function(){
 
+            $(document).on('input change click', '.btn_select_monthly, .btn_select_monthly_parent', function(){
+               $('.ui-datepicker .ui-datepicker-title').empty();
+               $('.ui-widget-header a').remove();
+               $('.ui-datepicker-calendar thead').remove();
+               month($(this));
             });
-         })(jQuery);
+            month( $('.btn_select_monthly') );
+
+
+            
+         });
+
+            
       },
 
       btn_select_monthly_time(){
@@ -662,130 +734,18 @@ var app = Vue.createApp({
 
       },
 
-      /**
-       * @access WEEKLY
-       */
-      func_add_weekly_data( id, data ){
-         var _find = app.$data.delivery_data.weekly.find( item => item.id == id );
-         if( _find ){
-            Object.assign( _find, data);
-         }else{
-            app.$data.delivery_data.weekly.push( data );
-         }
-      },
-
-      btn_select_weekly(){
-        
-         $(document).on('click change', '.btn_select_weekly_day', function(e){
-            // $('.btn_select_weekly_day').find('option').prop('disabled', false);
-
-            var id  = $(this).data('id');
-            var day = $(this).find('option:selected').val();
-            app.func_add_weekly_data(id, { id: id, day: day, datetime: window.get_fullday_form_dayOfWeek(day) } );
-
-            $(this).find('option').each( ( index, item ) => {
-
-               var optionValue = $(item).val();
-                // Get the selected option
-               var selectedOption = $(this).find('option:selected').val();
-
-               // Get the value and id of the selected option
-               var id      = $(this).data('id');
-
-               if( optionValue != '' ){
-                  var _find = app.dayOfWeeks_ban.find( i => i.day == optionValue );
-                  if( _find != undefined && _find ){
-                     $(item).prop('disabled', true);
-                  }else{
-                     $(item).prop('disabled', false);
-                  }
-               }
-
-               var exists = app.dayOfWeeks_ban.some( item => item.id == id );
-               if( exists ) {
-                  app.dayOfWeeks_ban[id].day = selectedOption;
-               } else {
-                  app.dayOfWeeks_ban.push({ day: selectedOption, id: id });
-               }
-
-            });
-
-         });
-
-
-      },
-
-      btn_select_weekly_time(){
-         $(document).on('change', '.btn_select_weekly_time', function(e){
-            var id   = $(this).data('id');
-            var time = $(this).find('option:selected').val();
-            app.func_add_weekly_data(id, { id: id, time: time } );
-         });
-      },
-
-      btn_add_dom_delivery_weekly(){
-         if(this.dom_weekly < 7 ){
-            this.dom_weekly = this.dom_weekly + 1;
-            var _dom = `
-               <div class='group-select-delivery-time group-select-delivery-time_parent'>
-                  <div class='btn-wrapper-order'>
-                     <select data-id='${this.dom_weekly}' class='btn_select_weekly_day btn_select_weekly_day_${this.dom_weekly} btn_select_weekly_day_parent btn-dropdown'>
-                        <option value='' selected disabled>Select day</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                     </select>
-                  </div>
-                  <div class='btn-wrapper-order'>
-                     <select data-id='${this.dom_weekly}' class='btn_select_weekly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
-                        <option value='7:00-8:00'>7:00  -  8:00</option>
-                        <option value='8:00-9:00'>8:00  -  9:00</option>
-                        <option value='9:00-10:00'>9:00 -   10:00</option>
-                        <option value='10:00-11:00'>10:00  -  11:00</option>
-                        <option value='11:00-12:00'>11:00  -  12:00</option>
-                        <option value='12:00-13:00'>12:00  -  13:00</option>
-                        <option value='13:00-14:00'>13:00  -  14:00</option>
-                        <option value='14:00-15:00'>14:00  -  15:00</option>
-                        <option value='15:00-16:00'>15:00  -  16:00</option>
-                        <option value='16:00-17:00'>16:00  -  17:00</option>
-                        <option value='17:00-18:00'>17:00  -  18:00</option>
-                        <option value='18:00-19:00'>18:00  -  19:00</option>
-                        <option value='19:00-20:00'>19:00  -  20:00</option>
-                        <option value='20:00-21:00'>20:00  -  21:00</option>
-                     </select>
-                  </div>
-
-               </div>
-            `;
-            (function($){
-               $(document).ready(function(){
-                  if( $('.deliverySelect_weekly .group-select-delivery-time').length < 7 ){
-                     $('.deliverySelect_weekly').append(_dom);
-                  }
-
-               })
-            })(jQuery);
-         }
-
-
-      },
-
+      btn_add_dom_delivery_weekly(){this.$refs.components_weekly_select.createWeekly();},
       btn_add_dom_delivery_monthly(){
          if(this.dom_monthly <= 28 ){
             this.dom_monthly = this.dom_monthly + 1;
             var _dom = `
                <div class='group-select-delivery-time group-select-delivery-time_parent'>
                   <div class='btn-wrapper-order'>
-                     <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly btn_select_monthly_parent btn-dropdown' placeholder='Select date' readonly>
+                     <input data-id='${this.dom_monthly}' type='text' value='' class='btn_select_monthly_parent btn-dropdown' placeholder='<?php echo __("Select date", 'watergo'); ?>' readonly>
                   </div>
                   <div class='btn-wrapper-order'>
                      <select data-id='${this.dom_monthly}' class='btn_select_monthly_time btn-dropdown'>
-                        <option value='' selected disabled>Select time</option>
+                        <option value='' selected disabled><?php echo __("Select time", 'watergo'); ?></option>
                         <option value='7:00-8:00'>7:00  -  8:00</option>
                         <option value='8:00-9:00'>8:00  -  9:00</option>
                         <option value='9:00-10:00'>9:00  -  10:00</option>
@@ -814,6 +774,7 @@ var app = Vue.createApp({
          }
       },
 
+
       btn_select_type( type ){ 
 
          // force all
@@ -822,72 +783,47 @@ var app = Vue.createApp({
                this.delivery_type[prop] = false;
             }
          }
-
-         // this.delivery_data.once_date  = []; 
-         // this.delivery_data.weekly     = [];
-         // this.delivery_data.monthly    = [];
-         // $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
-         // $('.deliverySelect_weekly .group-select-delivery-time_parent').remove();
-
-         // $('.btn_select_date_once').val('');
-         // if ($('.btn_select_time_once option[value="--"]').length === 0) {
-         //    $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
-         // }
-
-         // $('.btn_select_monthly').val('');
-         // $('.btn_select_monthly_time').val('');
-         // $('.btn_select_weekly').val('');
-         // $('.btn_select_weekly_time').val('');
          
          switch( type ){
             case 'once': 
                this.delivery_type.once = true;
+               this.$refs.components_weekly_select.createWeekly(true);
 
-               this.dayOfWeeks_ban           = [];
-
-               this.delivery_data.weekly     = [];
                this.delivery_data.monthly    = [];
                $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
-               $('.deliverySelect_weekly .group-select-delivery-time_parent').remove();
 
                $('.btn_select_monthly').val('');
                $('.btn_select_monthly_time').val('');
-               $('.btn_select_weekly_day').val('');
-               $('.btn_select_weekly_time').val('');
 
             break;
             case 'once_date_time': 
                this.delivery_type.once             = true;
-               // this.delivery_type.once_immediately = false;
                this.delivery_type.once_date_time   = true;
+
                
             break;
             case 'once_immediately': 
                this.delivery_type.once             = true;
-               // this.delivery_type.once_date        = false;
                this.delivery_type.once_immediately = true;
-
                this.delivery_data.once_date  = [];
+
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
-                  $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
+                  $('.btn_select_time_once').empty().append('<option value="--"><?php echo __('Select time', 'watergo'); ?></option>');
                }
 
             break;
             case 'weekly': 
-               // this.delivery_type.once    = false;
-               // this.delivery_type.once_immediately = false;
-               // this.delivery_type.once_date        = false;
 
                this.delivery_type.weekly  = true;
-               $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
-               this.delivery_data.monthly    = [];
-               this.delivery_data.once_date  = [];
 
+               this.delivery_data.once_date  = [];
+               this.delivery_data.monthly    = [];
+               $('.deliverySelect_monthly .group-select-delivery-time_parent').remove();
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
-                  $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
+                  $('.btn_select_time_once').empty().append('<option value="--"><?php echo __('Select time', 'watergo'); ?></option>');
                }
 
                $('.btn_select_monthly').val('');
@@ -895,24 +831,16 @@ var app = Vue.createApp({
 
             break;
             case 'monthly': 
-               // this.delivery_type.once    = false;
-               // this.delivery_type.once_immediately = false;
-               // this.delivery_type.once_date        = false;
 
-               this.dayOfWeeks_ban           = [];
                this.delivery_type.monthly    = true;
-               this.delivery_data.weekly     = [];
                this.delivery_data.once_date  = [];
 
-               $('.deliverySelect_weekly .group-select-delivery-time_parent').remove();
+               this.$refs.components_weekly_select.createWeekly(true);
 
                $('.btn_select_date_once').val('');
                if ($('.btn_select_time_once option[value="--"]').length === 0) {
-                  $('.btn_select_time_once').empty().append('<option value="--">Select time</option>');
+                  $('.btn_select_time_once').empty().append('<option value="--"><?php echo __('Select time', 'watergo'); ?></option>');
                }
-               
-               $('.btn_select_weekly_day').val('');
-               $('.btn_select_weekly_time').val('');
 
             break;
             default: 
@@ -933,6 +861,8 @@ var app = Vue.createApp({
          var _productSelected = this.carts.filter( store => {
             return store.products.find( product => product.product_select == true );
          });
+
+         console.log(_productSelected);
 
          if ( this.canPlaceOrder == true && this.delivery_address_primary != null ) {
             this.loading = true;
@@ -955,11 +885,76 @@ var app = Vue.createApp({
             // GET DATA
             if( this.delivery_type.weekly == true ){
                delivery_type = 'weekly';
-               delivery_data = this.delivery_data.weekly;
+               delivery_data = this.$refs.components_weekly_select.slots;
+
+               var currentDate      = new Date();
+               var currentHour      = currentDate.getHours();
+               var currentHourFixed = currentDate.getHours();
+               var currentMinute    = currentDate.getMinutes();
+               var currentDay       = currentDate.toLocaleString('en-us', { weekday: 'long' });
+
+               for (let i = 0; i < delivery_data.length; i++) {
+                  var delivery = delivery_data[i];
+                  if (delivery.day === currentDay) {
+                     var [hStart, hEnd] = delivery.time.split('-');
+                     var [h1, h2]   = hStart.split(':').map(Number);
+                     var [e1, e2]   = hEnd.split(':').map(Number);
+
+                     var _nextDay = false;
+
+                     if( currentHour > h1 ){
+                        _nextDay = true;
+                     }
+                     if(currentHour == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+                     if(currentHour + 1 == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+
+                     if(_nextDay == true ){
+                        delivery.datetime = this.addWeekForDatetime(delivery.datetime);
+                     }
+                  }
+               }
             }
+
             if( this.delivery_type.monthly == true ){
                delivery_type = 'monthly';
                delivery_data = this.delivery_data.monthly;
+
+               var currentDate      = new Date();
+               var currentHour      = currentDate.getHours();
+               var currentHourFixed = currentDate.getHours();
+               var currentMinute    = currentDate.getMinutes();
+               var currentDay       = currentDate.getDate().toString().padStart(2, '0');
+               
+               for (let i = 0; i < delivery_data.length; i++) {
+                  var delivery = delivery_data[i];
+
+                  if (delivery.day === currentDay) {
+                     var [hStart, hEnd]   = delivery.time.split('-');
+                     var [h1, h2]   = hStart.split(':').map(Number);
+                     var [e1, e2]   = hEnd.split(':').map(Number);
+                     var _nextDay = false;
+
+                     if( currentHour > h1 ){
+                        _nextDay = true;
+                     }
+                     if(currentHour == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+                     if(currentHour + 1 == h1 && currentMinute > 0){
+                        _nextDay = true;
+                     }
+
+                     if(_nextDay == true ){
+                        delivery.datetime = this.addWeekForDatetime(delivery.datetime);
+                        var [d,m,y]       = delivery.datetime.split('/');
+                        delivery.day      = d;
+                     }
+                  }
+               }
             }
 
             var form = new FormData();
@@ -969,7 +964,7 @@ var app = Vue.createApp({
             form.append('delivery_type',     delivery_type );
             form.append('productSelected',   JSON.stringify( _productSelected ) );
 
-            var r = await window.request(form);
+            // var r = await window.request(form);
             // console.log(r)
             // var r = null;
 
@@ -1001,8 +996,6 @@ var app = Vue.createApp({
          }else{
             this.canPlaceOrder = false;
          }
-
-         // console.log(_productSelected)         
 
       },
 
@@ -1067,10 +1060,33 @@ var app = Vue.createApp({
          }
       },
 
+      dateFormatToDDMMYY(date){
+         var day = date.getDate().toString().padStart(2, '0');
+         var month = (date.getMonth() + 1).toString().padStart(2, '0');
+         var year = date.getFullYear().toString();
+         return day + '/' + month + '/' + year;
+      },
+
+      addWeekForDatetime(inputDateStr) {
+         // Parse the input date
+         var parts = inputDateStr.split('/');
+         var day = parseInt(parts[0], 10);
+         var month = parseInt(parts[1], 10) - 1; // Note: Months are 0-based
+         var year = parseInt(parts[2], 10);
+
+         // Create a Date object from the parsed values
+         var inputDate = new Date(year, month, day);
+
+         // Add 7 days to the date
+         inputDate.setDate(inputDate.getDate() + 7);
+
+         // Format the new date as "dd/mm/yyyy"
+         return `${inputDate.getDate().toString().padStart(2, '0')}/${(inputDate.getMonth() + 1).toString().padStart(2, '0')}/${inputDate.getFullYear()}`;
+      }
+
    },
    
    computed: {
-
       count_product_total_price(){
          var gr_price = { price: 0, price_discount: 0 };
 
@@ -1102,30 +1118,28 @@ var app = Vue.createApp({
          var _final_price = null;
 
          if( gr_price.price != gr_price.price_discount){
-            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ'
+            _final_price = gr_price.price.toLocaleString() + global_currency;
          }
 
          return {
             price: _final_price,
-            price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
+            price_discount: gr_price.price_discount.toLocaleString() + global_currency
          };
       },
-
-
-
-      
    },
 
    update(){
       window.appbar_fixed();
-      // console.log('update')
+      if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
+         $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
+      }
    },
 
    async created(){
 
       this.loading = true;
       this.automatic_count_date_week();
-      console.log(this.dateWeekAuto);
+      // console.log(this.dateWeekAuto);
 
       // IF PASS ORDER_ID => this is re-order product
       const urlParams = new URLSearchParams(window.location.search);
@@ -1271,27 +1285,26 @@ var app = Vue.createApp({
 
       }
 
-      this.btn_select_date_once();
-      this.btn_select_time_once();
-      this.btn_select_monthly();
-      this.btn_select_monthly_time();
-      this.btn_select_weekly();
-      this.btn_select_weekly_time();
-
-
       setTimeout( () => {
-         window.appbar_fixed();
+         this.btn_select_date_once();
+         this.btn_select_time_once();
+
+         this.btn_select_monthly();
+         this.btn_select_monthly_time();
+      }, 300);
+      $(function(){
          if( $('.ui-date-picker-wrapper #ui-datepicker-div').length == 0 ){
             $('#ui-datepicker-div').wrap('<div class="ui-date-picker-wrapper"></div>');
          }
-         this.loading = false;
-      }, 300);
-
-      
+      });
+      window.appbar_fixed();
+      this.loading = false;
    },
    
 
-}).mount('#app');
+})
+.component('components_weekly_select', components_weekly_select)
+.mount('#app');
 
 window.app = app;
 </script>

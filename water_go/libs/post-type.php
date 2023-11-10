@@ -52,7 +52,9 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 			// IF EMPTY -> GET ALL
 			$supportDefault = [ 'title', 'editor', 'author', 'thumbnail', 'excerpt','comments', 'custom-fields'];
 
-			if( empty( $this->supports ) ) $this->supports = $supportDefault;
+			if( empty( $this->supports ) ) {
+            $this->supports = $supportDefault;
+         }
 
 			$slugTaxonomies	= [];
 			// GET RELASHIP WITH TAXONOMIES
@@ -253,7 +255,7 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 			// AUTO GET TAG WHEN SLUG MISSING
 			$this->tag 				= 'tag-' . strtolower( $this->posttypeName );
 			// AUTO GET ICON WHEN SLUG MISSING
-			$this->icon 			= isset($args['icon']) ? $args['icon'] : 'dashicons-id-alt';
+			$this->icon 			= isset($args['icon']) ? $args['icon'] : 'dashicons-admin-page';
 			// GET TAXONOMY INPUT
 			$this->taxonomy 		= isset( $args['taxonomy'] ) ? $args['taxonomy'] : [];
 			// GET TAGS INPUT
@@ -302,53 +304,74 @@ if( !class_exists( 'PostTypeBuiler' ) ){
 */
 
 
+// new PostTypeBuiler( [
+//    'name' => 'Products',
+//    'slug' => 'products',
+//    // 'rewrite'	=> [],
+//    // THIS IS OVERRIDE ARGS FOR SOME REASON
+//    // 'args'		=> [],
+
+//    // ADD CATEGORY
+//    'taxonomy'	=> [
+//       // WATER
+//    	[
+//    		'name'	=> 'Water Brand',
+//    		'slug'	=> 'product_water_brand',
+//    	],
+//    	[
+//    		'name'	=> 'Water Category',
+//    		'slug'	=> 'product_water_category',
+//    	],
+//    	[
+//    		'name'	=> 'Water Quantity',
+//    		'slug'	=> 'product_water_quantity',
+//    	],
+//    	[
+//    		'name'	=> 'Water Volume',
+//    		'slug'	=> 'product_water_volume',
+//    	],
+//    	[
+//    		'name'	=> 'Water Type',
+//    		'slug'	=> 'product_water_type',
+//    	],
+//    	[
+//    		'name'	=> '(Water) Household Appliances',
+//    		'slug'	=> 'product_water_device',
+//    	],
+//    	[
+//    		'name'	=> '(Water) Household Appliances Feature',
+//    		'slug'	=> 'product_water_device_feature',
+//    	],
+
+
+//       // ICE
+//       [
+//    		'name'	=> 'Ice Category',
+//    		'slug'	=> 'product_ice_category',
+//    	],
+
+//    ],
+
+//    // ADD TAGS
+//    // 'tags'	=> ['name'	=> 'Tag Project']
+// ]);
+
 new PostTypeBuiler( [
-   'name' => 'Products',
-   'slug' => 'products',
+   'name' => 'Home Slider',
+   'slug' => 'home_slider',
+   'supports' => ['title']
    // 'rewrite'	=> [],
    // THIS IS OVERRIDE ARGS FOR SOME REASON
    // 'args'		=> [],
 
    // ADD CATEGORY
-   'taxonomy'	=> [
-      // WATER
-   	[
-   		'name'	=> 'Water Brand',
-   		'slug'	=> 'product_water_brand',
-   	],
-   	[
-   		'name'	=> 'Water Category',
-   		'slug'	=> 'product_water_category',
-   	],
-   	[
-   		'name'	=> 'Water Quantity',
-   		'slug'	=> 'product_water_quantity',
-   	],
-   	[
-   		'name'	=> 'Water Volume',
-   		'slug'	=> 'product_water_volume',
-   	],
-   	[
-   		'name'	=> 'Water Type',
-   		'slug'	=> 'product_water_type',
-   	],
-   	[
-   		'name'	=> '(Water) Household Appliances',
-   		'slug'	=> 'product_water_device',
-   	],
-   	[
-   		'name'	=> '(Water) Household Appliances Feature',
-   		'slug'	=> 'product_water_device_feature',
-   	],
-
-
-      // ICE
-      [
-   		'name'	=> 'Ice Category',
-   		'slug'	=> 'product_ice_category',
-   	],
-
-   ],
+   // 'taxonomy'	=> [
+   //    // WATER
+   // 	[
+   // 		'name'	=> '',
+   // 		'slug'	=> '',
+   // 	],
+   // ],
 
    // ADD TAGS
    // 'tags'	=> ['name'	=> 'Tag Project']

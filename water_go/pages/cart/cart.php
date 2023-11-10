@@ -4,9 +4,35 @@
       $currency = '동';
    }
 ?>
+<style>
+   .cart-wrapper .list-tile.item-cart .cart-container .content{
+      width: calc( 100% - 80px);
+   }
+   .cart-wrapper .list-tile.item-cart .cart-container .leading{
+      align-self: flex-start;
+   }
+   .product-grip{
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+   }
+   .cart-wrapper .list-tile.item-cart .cart-container .action{
+      margin-top: initial;
+      align-items: flex-start;
+   }
+
+   @media screen and (max-width: 320px){
+      /* .product-grip{flex-flow: row wrap; } */
+      .product-price{
+         margin-bottom: 4px;
+         flex-flow: column nowrap;
+         align-items: flex-start;
+      }
+   }
+</style>
 <div id='app'>
 
-   <div v-show='loading == false' class='page-cart'>
+   <div v-if='loading == false' class='page-cart'>
       <div class='appbar style01'>
          <div class='appbar-top'>
          
@@ -95,23 +121,28 @@
                      </div>
                      <div class='content'>
                         <div class='product-name'>{{ product.name }}</div>
-                        <div class='product-price product-in-cart'>
-                           <span class='price'>
-                              {{ common_price_after_discount( product ) }}
-                           </span>
-                           <span v-show='has_discount(product) == true' class='sub-price'>
-                              {{ common_price_show_currency( product.price ) }}
-                           </span>
+                        <div class='product-grip'>
+
+                           <div class='product-price product-in-cart'>
+                              <span class='price'>
+                                 {{ common_price_after_discount( product ) }}
+                              </span>
+                              <span v-if='has_discount(product) == true' class='sub-price'>
+                                 {{ common_price_show_currency( product.price ) }}
+                              </span>
+                           </div>
+
+                           <div class='action'>
+                              <button @click="min_quantity(product.product_id)" class='btn-action'>
+                                 <svg width="16" height="3" viewBox="0 0 16 3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 2.28571H1.14286C0.839753 2.28571 0.549063 2.16531 0.334735 1.95098C0.120408 1.73665 0 1.44596 0 1.14286C0 0.839752 0.120408 0.549063 0.334735 0.334735C0.549063 0.120408 0.839753 0 1.14286 0H14.8571C15.1602 0 15.4509 0.120408 15.6653 0.334735C15.8796 0.549063 16 0.839752 16 1.14286C16 1.44596 15.8796 1.73665 15.6653 1.95098C15.4509 2.16531 15.1602 2.28571 14.8571 2.28571Z" fill="#2790F9"/></svg>
+                              </button>
+                              <input class='input_quantity' type="text" inputmode='numeric' pattern='[1-9]*' v-model="product.product_quantity_count">
+                              <button @click="plus_quantity(product.product_id)" class='btn-action'>
+                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 9.14286H9.14286V14.8571C9.14286 15.1602 9.02245 15.4509 8.80812 15.6653C8.59379 15.8796 8.30311 16 8 16C7.6969 16 7.40621 15.8796 7.19188 15.6653C6.97755 15.4509 6.85714 15.1602 6.85714 14.8571V9.14286H1.14286C0.839753 9.14286 0.549063 9.02245 0.334735 8.80812C0.120408 8.59379 0 8.30311 0 8C0 7.6969 0.120408 7.40621 0.334735 7.19188C0.549063 6.97755 0.839753 6.85714 1.14286 6.85714H6.85714V1.14286C6.85714 0.839753 6.97755 0.549062 7.19188 0.334735C7.40621 0.120407 7.6969 0 8 0C8.30311 0 8.59379 0.120407 8.80812 0.334735C9.02245 0.549062 9.14286 0.839753 9.14286 1.14286V6.85714H14.8571C15.1602 6.85714 15.4509 6.97755 15.6653 7.19188C15.8796 7.40621 16 7.6969 16 8C16 8.30311 15.8796 8.59379 15.6653 8.80812C15.4509 9.02245 15.1602 9.14286 14.8571 9.14286Z" fill="#2790F9"/></svg>
+                              </button>
+                           </div>
+
                         </div>
-                     </div>
-                     <div class='action'>
-                        <button @click="minQuantityCount(product.product_id)" class='btn-action'>
-                           <svg width="16" height="3" viewBox="0 0 16 3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 2.28571H1.14286C0.839753 2.28571 0.549063 2.16531 0.334735 1.95098C0.120408 1.73665 0 1.44596 0 1.14286C0 0.839752 0.120408 0.549063 0.334735 0.334735C0.549063 0.120408 0.839753 0 1.14286 0H14.8571C15.1602 0 15.4509 0.120408 15.6653 0.334735C15.8796 0.549063 16 0.839752 16 1.14286C16 1.44596 15.8796 1.73665 15.6653 1.95098C15.4509 2.16531 15.1602 2.28571 14.8571 2.28571Z" fill="#2790F9"/></svg>
-                        </button>
-                        <input @change='input_quantity' :id='product.product_id' ref='input_quantity' class='input_quantity' type="number" pattern='[0-9]*' :value="product.product_quantity_count">
-                        <button @click="plusQuantityCount(product.product_id)" class='btn-action'>
-                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8571 9.14286H9.14286V14.8571C9.14286 15.1602 9.02245 15.4509 8.80812 15.6653C8.59379 15.8796 8.30311 16 8 16C7.6969 16 7.40621 15.8796 7.19188 15.6653C6.97755 15.4509 6.85714 15.1602 6.85714 14.8571V9.14286H1.14286C0.839753 9.14286 0.549063 9.02245 0.334735 8.80812C0.120408 8.59379 0 8.30311 0 8C0 7.6969 0.120408 7.40621 0.334735 7.19188C0.549063 6.97755 0.839753 6.85714 1.14286 6.85714H6.85714V1.14286C6.85714 0.839753 6.97755 0.549062 7.19188 0.334735C7.40621 0.120407 7.6969 0 8 0C8.30311 0 8.59379 0.120407 8.80812 0.334735C9.02245 0.549062 9.14286 0.839753 9.14286 1.14286V6.85714H14.8571C15.1602 6.85714 15.4509 6.97755 15.6653 7.19188C15.8796 7.40621 16 7.6969 16 8C16 8.30311 15.8796 8.59379 15.6653 8.80812C15.4509 9.02245 15.1602 9.14286 14.8571 9.14286Z" fill="#2790F9"/></svg>
-                        </button>
                      </div>
                   </div>
 
@@ -129,7 +160,7 @@
                {{ count_product_total_price.price }}
             </div>
          </div>
-         <button @click="gotoPageOrder" :class='count_product_select == 0 ? "disabled": ""' class='btn-primary'><?php echo __('Check Out', 'watergo'); ?> ({{count_product_select}})</button>
+         <button @click="gotoPageOrder" :class='total_product_select == 0 ? "disabled": ""' class='btn-primary'><?php echo __('Check Out', 'watergo'); ?> ({{total_product_select}})</button>
       </div>
 
       <div class='modal-popup' :class='popup_delete_item == true ? "open" : ""'>
@@ -145,7 +176,7 @@
       </div>
    </div>
 
-   <div v-show='loading == true'>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -158,46 +189,49 @@
 var app = Vue.createApp({
    data (){
       return {
-
          loading: false,
          select_all_value: false,
          popup_delete_item: false,
          trigger_btn_delete: false,
-         carts: []
+         carts: [],
 
+         total_product_select: 0,
       }
    },
+   
+   watch: {
+      carts: {
+         handler( data ){
+            data.forEach( ( store, storeIndex ) => {
+               if( store.products.length == 0 ){
+                  data.splice(storeIndex, 1);
+               }else{
+                  var _count_product_select = 0;
+                  store.products.forEach( ( product, productIndex ) => {
+                     if( product.product_quantity_count == 0 ){
+                        data[storeIndex].products.splice(productIndex, 1);
+                     }
+                     if( product.product_select == true ){
+                        _count_product_select += parseInt(product.product_quantity_count);
+                     }
+                  });
+                  this.total_product_select = _count_product_select;
+               }
+            });
+            localStorage.setItem('watergo_carts', JSON.stringify(data));
+         }, deep: true
+      }
+   },
+
    methods: {
 
       goBackHome(){ 
          window.appBridge.navigateTo('Home', 'data=cart_count');
-
       },
 
       has_discount( product ){ return window.has_discount( product ); },      
-      common_price_show_currency(p){ common_price_show_currency(p) },
+      common_price_show_currency(p){ return common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
-
-      input_quantity( e ){
-         var el = e.target;
-         var product_id             = el.getAttribute('id');
-         var product_quantity_count = el.value;
-
-         if( product_quantity_count > 0 ){
-            for (let storeIndex = this.carts.length - 1; storeIndex >= 0; storeIndex--) {
-               var store = this.carts[storeIndex];
-               if (store.products.length !== 0) {
-                  for( var productIndex = 0; productIndex < store.products.length; productIndex++ ){
-
-                     if( this.carts[storeIndex].products[productIndex].product_id == product_id ){
-                        this.carts[storeIndex].products[productIndex].product_quantity_count = parseInt(product_quantity_count);
-                     }
-                  }
-               }
-            }
-         }
-
-      },
 
       select_all_item(){
          this.select_all_value = !this.select_all_value;
@@ -205,31 +239,27 @@ var app = Vue.createApp({
             store.store_select = this.select_all_value;
             store.products.forEach( product => product.product_select = this.select_all_value);
          });
-         this.cart_stream();
+         // this.cart_stream();
          if(this.select_all_value == false ){
             this.trigger_btn_delete = false;
          }
       },
 
       btn_delete_item(){
-         if( this.trigger_btn_delete == true ){
-            this.popup_delete_item = true;
-         }
+         if( this.total_product_select > 0 ){ this.popup_delete_item = true; }
       },
-
       buttonCloseModal_btn_delete_item(){ this.popup_delete_item = false; },
       buttonCloseModal_delete_confirm(){
 
-         if( this.trigger_btn_delete == true ){
+         if( this.total_product_select > 0 ){
             this.popup_delete_item = false;
             
+            // DELETE ALL ITEM
             if( this.select_all_value == true ){
                this.carts = [];
                localStorage.setItem('watergo_carts', '[]');
             }else{
-
-               var _carts = JSON.parse( localStorage.getItem('watergo_carts') );
-
+               
                for (let storeIndex = this.carts.length - 1; storeIndex >= 0; storeIndex--) {
                   const store = this.carts[storeIndex];
 
@@ -239,10 +269,9 @@ var app = Vue.createApp({
                   } else {
                      // Condition 2: Delete selected products
                      store.products = store.products.filter((product) => !product.product_select);
-
                      // Check if the store has any products left
                      if (store.products.length === 0) {
-                           this.carts.splice(storeIndex, 1);
+                        this.carts.splice(storeIndex, 1);
                      }
                   }
                }
@@ -258,35 +287,7 @@ var app = Vue.createApp({
 
       },
 
-      
-
-      cart_stream(){
-         var _isAllSelected = this.carts.every(store => store.store_select === true);
-         if( _isAllSelected == true ){
-            this.select_all_value = true;
-         }else{
-            this.select_all_value = false;
-         }
-
-         this.carts.some( ( store, storeIndex ) => {
-            store.products.forEach( ( product, productIndex )  => {
-               if( product.product_quantity_count == 0 ){
-                  store.products.splice(productIndex, 1);
-               }
-            });
-            if( store.products.length == 0 ){
-               this.carts.splice(storeIndex, 1);
-            }
-         });
-         if( this.carts.length > 0){
-            localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
-         }else{
-            localStorage.setItem('watergo_carts', '[]');
-         }
-
-      },
-
-      plusQuantityCount( product_id ){
+      plus_quantity( product_id ){
          this.carts.some(( store ) => {
             store.products.find(product => {
                if( product.product_id == product_id ){
@@ -294,10 +295,9 @@ var app = Vue.createApp({
                }
             });
          });
-         this.cart_stream();
       },
 
-      minQuantityCount( product_id ){
+      min_quantity( product_id ){
          this.carts.some(( store ) => {
             store.products.find(product => { 
                if( product.product_id == product_id ){
@@ -309,7 +309,6 @@ var app = Vue.createApp({
                }
             });
          });
-         this.cart_stream();
       },
 
       btn_product_select( product_id ){
@@ -328,7 +327,6 @@ var app = Vue.createApp({
                }
             });
          }
-         this.cart_stream();
       },
 
       btn_store_select(store_id){
@@ -345,12 +343,11 @@ var app = Vue.createApp({
                }
             });
          }
-         this.cart_stream();
       },
 
       gotoPageOrder(){
-         if( this.count_product_select > 0 ){
-            this.cart_stream();
+         if( this.total_product_select > 0 ){
+
             this.gotoOrderProduct();
          }
       },
@@ -367,15 +364,13 @@ var app = Vue.createApp({
    computed: {
 
       count_product_total_price(){ 
-         this.cart_stream();
-         var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
 
          var gr_price = {
             price: 0,
             price_discount: 0
          };
 
-         _cartItems.forEach( store => {
+         this.carts.forEach( store => {
             store.products.forEach(product => {
                if( product.product_select == true ){
                   if( this.has_discount(product) == true ){
@@ -401,74 +396,58 @@ var app = Vue.createApp({
          };
       },
 
-      count_product_select() {
-         var _checkout = 0; // Initialize checkout count to 0
-         this.carts.forEach(store => {
-            store.products.forEach(product => {
-               if (product.product_select) {
-                  _checkout += product.product_quantity_count;
-               }
-            });
-         });
-         // TRIGGER BUTTON DELETE
-         if( _checkout > 0 ){
-            this.trigger_btn_delete = true;
-         }else{
-            this.trigger_btn_delete = false;
-         }
-
-         this.cart_stream();
-         return _checkout;
-      }
    },
 
    async created(){
       this.loading = true;
+      window.check_cart_is_exists();
+      window.reset_cart_to_select_false();
+      this.carts = JSON.parse(localStorage.getItem('watergo_carts'));
+      if( this.carts.length > 0 ){
+         for( var i = 0; i < this.carts.length; i++ ){
+            var _store     = this.carts[i];
+            var _products  = this.carts[i].products;
+            var get_store = new FormData();
+            get_store.append('action', 'atlantis_get_cart_store');
+            get_store.append('store_id', _store.store_id);
+            var _s = await window.request(get_store);
+            if( _s != undefined ){
+               var _res_store = JSON.parse(JSON.stringify( _s));
+               if( _res_store.message == 'get_store_ok' ){
+                  _store.store_name = _res_store.data;
+               }
 
-      var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-      if( _carts != undefined && _carts.length > 0 ){ 
-         // force all false no select from begin
-         _carts.forEach(item => {
-            item.store_select = false;
-            item.products.forEach( product => product.product_select = false);
-         });
-         for( var i = 0; i < _carts.length; i++ ){
-            for( var x = 0; x < _carts[i].products.length; x++ ){
-               var _product_id = _carts[i].products[x].product_id;
-               var form = new FormData();
-               form.append('action', 'atlantis_find_product');
-               form.append('product_id', _product_id);
-               var r = await window.request(form);
-               if( r != undefined ){
-                  var res = JSON.parse( JSON.stringify(r));
-                  if( res.message == 'product_found' ){
-                     _carts[i].products[x].product_image    = res.data.product_image;
-                     _carts[i].products[x].discount_from    = res.data.discount_from;
-                     _carts[i].products[x].discount_to      = res.data.discount_to;
-                     _carts[i].products[x].discount_percent = res.data.discount_percent;
-                     _carts[i].products[x].has_discount     = res.data.has_discount;
-                     _carts[i].products[x].name             = res.data.name;
-                     _carts[i].products[x].price            = res.data.price;
+               for( let a = 0; a < _products.length; a++){
+                  var get_product = new FormData();
+                  get_product.append('action', 'atlantis_get_cart_product');
+                  get_product.append('product_id', _products[a].product_id);
 
-                     // _carts[i].products[x].stock            = res.data.stock;
-                     // Check if stock is 0 and remove the product from _carts
-                     // if (_carts[i].products[x].stock == 0) {
-                     //    _carts[i].products.splice(x, 1);
-                        // x--; // Decrement x to handle the next product correctly after the removal
-                     // }
+                  var _x = await window.request(get_product);
+                  if( _x != undefined ){
+                     var _res_product = JSON.parse(JSON.stringify( _x));
+                     if( _res_product.message == 'get_product_ok' ){
+                        // _products.store_name = _res_product.data;
 
+                        _products[a].product_image       = _res_product.data.product_image;
+                        _products[a].discount_from       = _res_product.data.discount_from;
+                        _products[a].discount_to         = _res_product.data.discount_to;
+                        _products[a].discount_percent    = parseInt(_res_product.data.discount_percent);
+                        _products[a].has_discount        = parseInt(_res_product.data.has_discount);
+                        _products[a].name                = _res_product.data.name;
+                        _products[a].name_second         = _res_product.data.name_second;
+                        _products[a].price               = parseInt(_res_product.data.price);
+                        _products[a].product_type        = _res_product.data.product_type;
+                     }
                   }
                   
                }
+
             }
          }
-         this.carts.push( ..._carts); 
       }
 
       this.loading = false;
       window.appbar_fixed();
-
-      // console.log(this.carts)
 
    },
 

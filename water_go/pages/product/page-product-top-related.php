@@ -1,3 +1,19 @@
+<style>
+.gr-price{
+   display: flex;
+   flex-flow: row wrap;
+   align-items: flex-end;
+}
+.product-design .price{
+   padding-right: 5px;
+}
+.product-design .price-sub{
+   margin-left: 0;
+   position: relative;
+   top: -2px;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id='app'>
 
    <div v-if='loading == false' class='page-recommend' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
@@ -47,7 +63,7 @@
                </div>
                <div class='box-wrapper'>
                   <p class='tt01'>{{ product.name }} </p>
-                  <p class='tt02'>{{ product.name_second }}</p>
+                  <p class='tt02'>{{ product_name_compact(product) }}</p>
 
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
@@ -70,7 +86,7 @@
       </div>
    </div>
 </div>
-<script type='module'>
+<script>
 
 var { createApp } = Vue;
 
@@ -89,7 +105,27 @@ createApp({
       }
    },
 
+   watch: {
+      products: {
+         handler(data){
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+         }, deep: true
+      }
+   },
+
    methods: {
+
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
 
       get_current_location(){
 
@@ -194,6 +230,7 @@ createApp({
          return _filter;
       }
    },
+
 
    mounted() {
       window.addEventListener('scroll', this.handleScroll);

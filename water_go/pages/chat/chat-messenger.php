@@ -1,3 +1,17 @@
+<?php 
+
+   /**
+      CHAT CONSTRUCTION
+      {  
+         chat/?chat_page=chat-messenger (url)
+         conversation_id ( conversation_id_hash )
+         where_app= ( chat_to_store | chat_to_user ) => host
+
+         &appt=N 
+      }
+   */
+?>
+
 <style>
    .list-messenger{
       padding-bottom: 0px;
@@ -278,6 +292,8 @@ var app = Vue.createApp({
          message_not_found: false,
          message_in_first_time: true,
          messages: [],
+
+         order_id: null,
 
          product: null,
 
@@ -751,6 +767,7 @@ var app = Vue.createApp({
       this.loading = true;
       const urlParams         = new URLSearchParams(window.location.search);
       this.conversation_id    = urlParams.get('conversation_id');
+      this.order_id           = urlParams.get('order_id');
       this.where_app          = urlParams.get('where_app');
       this.pin_product        = urlParams.get('pin_product');
 

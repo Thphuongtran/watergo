@@ -216,7 +216,7 @@ function atlantis_load_product_recommend(){
          if( ! empty( $res ) ){
             foreach( $res as $k => $vl ){
                $vl->product_image = func_atlantis_get_images($vl->id, 'product');
-               $vl->description   = stripcslashes($vl->description);
+               // $vl->description   = stripcslashes($vl->description);
 
                if( $vl->product_type == 'water'){
                   $vl->name                     = $vl->brand;

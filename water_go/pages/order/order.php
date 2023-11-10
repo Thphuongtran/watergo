@@ -6,7 +6,7 @@
 
 $order_page = isset($_GET['order_page']) ? $_GET['order_page'] : '';
 
-$order_user    = [ 'order-product', 'order-detail', 'order-filter', 'order-index' ];
+$order_user    = [ 'order-product' , 'order-detail', 'order-filter', 'order-index' ];
 $order_store   = [ 'order-index-store', 'order-store-detail' ];
 
 if( in_array( $order_page, $order_user )){
@@ -15,6 +15,9 @@ if( in_array( $order_page, $order_user )){
 
       if( $order_page == 'order-product'){  
          get_template_part('pages/order/page-order-product');
+      }
+      if( $order_page == 'order-product-test'){  
+         get_template_part('pages/order/page-order-product-test');
       }
 
       if( $order_page == 'order-detail'){  

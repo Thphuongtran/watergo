@@ -19,7 +19,7 @@ define( 'SHORTCODE_CATEGORY',sprintf(__('by %s',TEXTDOMAIN),THEME_NAME) );
 // require_once THEME_DIR . '/classes/class-insight-core-breadcrumbs.php';
 require_once THEME_DIR . '/libs/class-setup-theme.php';
 require_once THEME_DIR . '/libs/secure.php';
-// require_once THEME_DIR . '/libs/post-type.php';
+require_once THEME_DIR . '/libs/post-type.php';
 require_once THEME_DIR . '/libs/master_route.php';
 require_once THEME_DIR . '/libs/ajax_center.php';
 require_once THEME_DIR . '/libs/post_type_support.php';

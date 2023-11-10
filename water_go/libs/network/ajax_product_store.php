@@ -235,7 +235,7 @@ function atlantis_action_product_store(){
       $args = [
          'store_id'           => $store_id,
          'product_type'       => $product_type,
-         'description'        => (String) $product_description,
+         'description'        => $product_description,
          'price'              => $price,
          'mark_out_of_stock'  => $mark_out_of_stock,
          'created_at'         => atlantis_current_date_only('Y-m-d H:m:s')
@@ -380,6 +380,8 @@ function atlantis_action_product_ice(){
       $product_type  = isset($_POST['product_type']) ? $_POST['product_type'] : null;
       $event         = isset($_POST['event']) ? $_POST['event'] : null;
 
+      $$skipforce    = isset($_POST['$skipforce']) ? $_POST['$skipforce'] : null;
+
       $allow_event = ['add', 'edit', 'delete'];
 
       if( !in_array($event, $allow_event ) && !is_user_logged_in()){
@@ -454,7 +456,12 @@ function atlantis_action_product_ice(){
          $args['product_type']   = $product_type;
          $args['created_at']     = atlantis_current_date_only('Y-m-d H:m:s');
          $args['product_hidden'] = 1;
-         $args['status']         = 'pending';
+
+         if( $skipforce != 'pending' ){
+            $args['status']         = 'pending';
+         }else{
+            $args['status']         = 'publish';
+         }
 
          $wpdb->insert('wp_watergo_products', $args);
          $product_id = $wpdb->insert_id;
@@ -540,6 +547,8 @@ function atlantis_action_product_water(){
       $product_type  = isset($_POST['product_type']) ? $_POST['product_type'] : null;
       $event         = isset($_POST['event']) ? $_POST['event'] : null;
 
+      $skipforce     = isset($_POST['skipforce']) ? $_POST['skipforce'] : null;
+
       $allow_event = ['add', 'edit', 'delete'];
 
       if(!in_array($event, $allow_event )){
@@ -617,7 +626,13 @@ function atlantis_action_product_water(){
          $args['product_type']   = $product_type;
          $args['created_at']     = atlantis_current_date_only('Y-m-d H:m:s');
          $args['product_hidden'] = 1;
-         $args['status']         = 'pending';
+
+         
+         if( $skipforce != 'pending' ){
+            $args['status']         = 'pending';
+         }else{
+            $args['status']         = 'publish';
+         }
 
          $wpdb->insert('wp_watergo_products', $args);
          $product_id = $wpdb->insert_id;
@@ -699,7 +714,7 @@ function atlantis_action_product_water(){
 
 
 /**
- * @access BETA FUNCTION
+ * @access ADMIN FUNCTION
  */
 
 add_action( 'wp_ajax_nopriv_atlantis_get_all_product_by_store_to_admin_page', 'atlantis_get_all_product_by_store_to_admin_page' );
@@ -710,12 +725,13 @@ function atlantis_get_all_product_by_store_to_admin_page(){
       $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
       $limit      = isset($_POST['limit']) ? $_POST['limit'] : 0;
+      $status     = isset($_POST['status']) ? $_POST['status'] : 'publish';
 
       global $wpdb;
 
       $sql = "SELECT * FROM wp_watergo_products 
          WHERE store_id = $store_id  
-         AND ( product_hidden != 1 OR ( product_hidden = 1 AND status = 'pending' ) )
+         AND product_hidden != 1 AND status = '$status'
          ORDER BY id DESC
       ";
 
@@ -755,6 +771,53 @@ function atlantis_get_all_product_by_store_to_admin_page(){
    
 }
 
+add_action( 'wp_ajax_nopriv_atlantis_get_all_product_pending_to_admin_page', 'atlantis_get_all_product_pending_to_admin_page' );
+add_action( 'wp_ajax_atlantis_get_all_product_pending_to_admin_page', 'atlantis_get_all_product_pending_to_admin_page' );
+
+function atlantis_get_all_product_pending_to_admin_page(){
+   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_all_product_pending_to_admin_page' ){
+
+      global $wpdb;
+
+      $sql = "SELECT * FROM wp_watergo_products 
+         WHERE status = 'pending'
+         ORDER BY id DESC
+      ";
+
+      $products = $wpdb->get_results($sql);;
+
+      if( !empty($products ) ){
+         foreach($products as $k => $vl){
+            // IMAGE PRODUCT
+            $products[$k]->product_image  = func_atlantis_get_images($vl->id, 'product', true, 'medium');
+            $products[$k]->description    = stripcslashes($description);
+
+            if( $vl->product_type == 'water'){
+               $vl->name                     = $vl->brand;
+               $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+            }else if( $vl->product_type == 'ice'){
+               $vl->name                     = $vl->category;
+               $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+            }else if( $vl->product_type == 'water_device'){
+               $vl->name                     = $vl->name_device;
+               $vl->name_second              = $vl->feature_device;
+            }else if( $vl->product_type == 'ice_device'){
+               $vl->name                     = $vl->name_device;
+               $vl->name_second              = $vl->capacity_device;
+            }
+         }
+      }
+
+      if( empty($products ) ){
+         wp_send_json_error(['message' => 'product_not_found']);
+         wp_die();
+      }
+
+      wp_send_json_success(['message' => 'product_found', 'data' => $products ]);
+      wp_die();
+
+   }
+}
 
 /**
  * @access CHANGE STATUS PRODUCT
@@ -766,12 +829,22 @@ add_action( 'wp_ajax_atlantis_change_product_status', 'atlantis_change_product_s
 function atlantis_change_product_status(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_change_product_status' ){
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : null;
-      if( $product_id == null){
+      $event = isset($_POST['event']) ? $_POST['event'] : null;
+
+
+      if( $product_id == null && $event == null ){
          wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
       }
+
       global $wpdb;
-      $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 0, 'status' => 'publish' ], [ 'id' => $product_id ]);
+      if( $event == 'allow' ){
+         $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 0, 'status' => 'publish' ], [ 'id' => $product_id ]);
+      }
+      if( $event == 'deny' ){
+         $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 1, 'status' => 'delete' ], [ 'id' => $product_id ]);
+      }
+
       if($updated){
          wp_send_json_success(['message' => 'product_found']);
          wp_die();

@@ -12,7 +12,7 @@ function admin_stylesheets(){
 // add_action('admin_enqueue_scripts', 'admin_stylesheets');
 
 function setup_atlantis_admin(){
-   add_menu_page('Admin Support', 'Admin Support', '', 'admin_support', '', '', 3 );
+   add_menu_page('Admin Support', 'Admin Support', '', 'admin_support', '', 'dashicons-admin-page', 3 );
    add_menu_page( 'Admin Support', 'Admin Support', 'manage_options', 'admin_support_users', 'template_admin_support_user','',27 ); 
 
    // add_submenu_page('admin_support', 'Admin Support All', 'Admin Support All', 'manage_options', 'admin_support_all', 'template_admin_support_all', 1 );

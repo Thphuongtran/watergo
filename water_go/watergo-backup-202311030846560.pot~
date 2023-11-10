@@ -1682,6 +1682,11 @@ msgstr ""
 msgid "There is no weekly order"
 msgstr ""
 
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:179
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product_bk01-2023-11-03.php:179
+msgid "This Product is <span class='t-primary'>Out of Stock</span"
+msgstr ""
+
 #: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product-test.php:179
 #: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:182
 #: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:242

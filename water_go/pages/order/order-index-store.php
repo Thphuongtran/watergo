@@ -1,3 +1,32 @@
+<style>
+   .navbar.navbar-icon li .icon,
+   .navbar.navbar-icon li .icon-svg{
+      height: 36px;
+   }
+   @media screen and (max-width: 375px){
+      .navbar.navbar-icon li .count-order-badge{
+         right: -20%;
+      }
+      .navbar.navbar-icon li .icon{
+         margin-bottom: 17px !important;
+      }
+      .navbar.navbar-icon li .icon, 
+      .navbar.navbar-icon li .icon-svg,
+      .navbar.navbar-icon li .icon-svg svg{
+         height: 26px;
+         width: 26px;
+      }
+      .navbar.navbar-icon li .text-small{
+         font-size: 10px;
+      }
+      .navbar.navbar-icon li{
+         /* min-width: 64px; */
+         /* min-width: 72px; */
+         /* min-width: 20%; */
+         min-width: 67px;
+      }
+   }
+</style>
 <div id='app'>
    <div v-show='loading == false' class='page-order'>
 
@@ -40,7 +69,7 @@
                   :key='index' 
                   :class='filter.active == true ? "active" : ""'>
                   <span class='icon mb10'>
-                     <span v-html='filter.icon'></span>
+                     <span class='icon-svg' v-html='filter.icon'></span>
                      <span v-show='filter.count > 0' class='count-order-badge'>{{ filter.count }}</span>
                   </span>
                   <span class='text text-small'>{{ filter.label }}</span>
@@ -119,7 +148,7 @@
                      <img :src="product.order_group_product_image.url">
                   </div>
                   <div class='prod-detail'>
-                     <span class='prod-name'>{{ product.order_group_product_metadata.product_name }}</span>
+                     <span class='prod-name'>{{ product.order_group_product_name }}</span>
                      <span class='prod-quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   </div>
                   <div class='prod-price' :class='product.order_group_product_discount_percent != 0 ? "has-discount" : ""'>

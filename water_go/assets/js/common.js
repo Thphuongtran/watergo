@@ -2,6 +2,42 @@
  * @access GLOBAL FUNCTION JS COMMON
  */
 
+function get_translate_datepicker(){
+   return {
+      'en_US': {
+         monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+         monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+         dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+         dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+         dayNamesMin: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+      },
+      'vi': {
+         monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+         monthNamesShort: ['Th.1', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7', 'Th.8', 'Th.9', 'Th.10', 'Th.11', 'Th.12'],
+         dayNames: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+         dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+         dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+      },
+      'ko_KR': {
+         monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+         monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+         dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+         dayNamesShort: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+         dayNamesMin: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
+      }
+   };
+}
+
+
+function hasMoreThanTwoZeroes(number){
+   const numStr = number.toString();
+   if( !/00{2,}/.test(numStr) ){
+      return true;
+   }else{
+      return false;
+   }
+}
+
 function truncateUTF8String(inputString, maxLength) {
    if (inputString.length <= maxLength) {
       return inputString;
@@ -321,28 +357,7 @@ function explode_product_metadata( product_metadata ){
  * @access CART
  */
 
-function add_quantity_to_cart( product_id, quantity ) {
-   if( product_id != undefined && quantity > 0 ){
-      var _findProduct = get_product_from_cart(product_id);
-      if( _findProduct != null ){
-         var _quantity_product = _findProduct.product_quantity_count; 
-         var new_quantity = _quantity_product + quantity;
-         
-         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-         _carts.forEach( store => {
-            store.products.forEach( product => {
-               if( product.product_id == product_id ){
-                  product.product_quantity_count = new_quantity;
-               }
-            });
-         });
-         localStorage.setItem('watergo_carts', JSON.stringify(_carts));
-         return true;
-      }
-      return false;
-   }
-   return false;
-}
+
 
 function add_quantity_to_cart_with_stock( product_id, quantity, maxStock ) {
    if( product_id != undefined && quantity > 0 && maxStock > 0 ){
@@ -396,10 +411,8 @@ function check_product_exists_in_cart( product_id ){
 }
 
 function add_item_to_cart( item ){
-
    var _cartItems = JSON.parse(localStorage.getItem('watergo_carts'));
    if( _cartItems && _cartItems.length == 0 ){
-      console.log('store no exists');
       _cartItems.push({
          store_id: item.store_id,
          store_name: item.store_name,

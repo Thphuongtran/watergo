@@ -1,3 +1,15 @@
+<style>
+   .form-group input{
+      overflow: hidden;
+      box-shadow: none;
+      outline: none;
+      touch-action: auto;
+   }
+   .form-group input:focus{
+      box-shadow: none;
+      outline: none;
+   }
+</style>
 <div id='authentication'>
 
    <div v-show='loading == false' class='page-authentication'>

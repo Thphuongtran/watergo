@@ -307,7 +307,6 @@ function atlantis_add_order(){
             "products": [
                {
                   "product_id": 35,
-                  "product_max_stock": 8,
                   "product_metadata": {
                      "product_name": "LaVie",
                      "product_name_second": "Thùng 24 chai 500 ml",
@@ -533,11 +532,11 @@ function atlantis_add_order(){
 
                foreach( $cart->products as $k => $product ){
 
-                  $product_id                = (int) $product->product_id;
-                  $product_quantity_count    = (int) $product->product_quantity_count;
-                  $product_price             = (int) $product->price;
-                  $product_discount_percent  = (int) $product->discount_percent;
-                  $product_has_discount      = (int) $product->has_discount;
+                  $product_id                = $product->product_id;
+                  $product_quantity_count    = $product->product_quantity_count;
+                  $product_price             = $product->price;
+                  $product_discount_percent  = $product->discount_percent;
+                  $product_has_discount      = $product->has_discount;
 
                   // ALREADY CHECK DISCOUNT FROM FRONT END
                   if( $product_has_discount == 0 ){
@@ -545,6 +544,11 @@ function atlantis_add_order(){
                   }
 
                   $product_metadata          = $product->product_metadata;
+                  $product_name              = $product->name;
+                  $product_name_second       = $product->name_second;
+                  $product_type              = $product->product_type;
+                  $discount_from             = $product->discount_from;
+                  $discount_to               = $product->discount_to;
 
                   // wp_send_json_success(['message' => 'bug', 'product' => $product ]);
                   // wp_die();
@@ -557,8 +561,16 @@ function atlantis_add_order(){
                      'order_group_product_discount_percent' => $product_discount_percent,
                      'order_group_store_id'                 => $store_id,
                      'hash_id'                              => (String) $hash_id,
-                     'order_group_product_metadata'         => json_encode($product_metadata, JSON_UNESCAPED_UNICODE)
+                     // 'order_group_product_metadata'         => json_encode($product_metadata, JSON_UNESCAPED_UNICODE)
+                     'order_group_product_discount_from'    => $discount_from,
+                     'order_group_product_discount_to'      => $discount_to,
+                     'order_group_product_name'             => $product_name,
+                     'order_group_product_name_second'      => $product_name_second,
+                     'order_group_product_type'             => $product_type
                   ]);
+
+
+
 
                   // REDUCE STOCK PER ITEM ORDER
                   // $sql_get_stock    = "SELECT stock FROM wp_watergo_products WHERE id = $product->product_id";

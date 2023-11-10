@@ -55,7 +55,7 @@
                   <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   <div class='order-gr'>
                      <span class='product-title'>{{ product.order_group_product_metadata.product_name }}</span>
-                     <span class='product-subtitle'>{{ product.order_group_product_metadata.product_name_second }}</span>
+                     <span class='product-subtitle'>{{ product_name_compact(product) }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -230,7 +230,19 @@ var app = Vue.createApp({
    },
 
    methods: {
+      product_name_compact( product ){
+         console.log(this.order);
+         if( product.order_group_product_metadata.product_name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         // }else if( product.product_type == "ice_device"){
+         //    return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.order_group_product_metadata.product_name_second;
+         }
 
+         
+      },
+      
       // PERFORM CANCEL ORDER
       btn_cancel_order(){this.popup_confirm_cancel = true;},
       btn_select_reason( key ){

@@ -3,7 +3,7 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.73');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.75');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 
@@ -11,7 +11,7 @@ function stylesheet(){
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
    wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.64');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.73');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.75');
 
 }
 

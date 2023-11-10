@@ -1,3 +1,19 @@
+<style>
+   .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .product-design .price{
+      padding-right: 5px;
+   }
+   .product-design .price-sub{
+      margin-left: 0;
+      position: relative;
+      top: -2px;
+   }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id='app'>
 
    <div v-if='loading == false' class='page-recommend' :class='sortFeatureOpen == true ? "add-overlay" : ""'>
@@ -45,7 +61,7 @@
                </div>
                <div class='box-wrapper'>
                   <p class='tt01'>{{ product.name }} </p>
-                  <p class='tt02'>{{ product.name_second }}</p>
+                  <p class='tt02'>{{ product_name_compact(product) }}</p>
                   
                   <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                      <span class='price'>
@@ -88,6 +104,16 @@ var app = Vue.createApp({
 
    methods: {
 
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
+
       get_current_location(){
 
          if( window.appBridge !== undefined ){
@@ -127,7 +153,7 @@ var app = Vue.createApp({
 
       async handleScroll() {
          const windowTop            = window.pageYOffset || document.documentElement.scrollTop;
-         const scrollEndThreshold   = 50; // Adjust this value as needed
+         const scrollEndThreshold   = 30; // Adjust this value as needed
          const scrollPosition       = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight         = window.innerHeight;
          const documentHeight       = document.documentElement.scrollHeight;
@@ -140,16 +166,14 @@ var app = Vue.createApp({
             this.sortFeatureCurrentValue = -1;
 
             if( this.which_query == 'recommend' ){
-               await this.get_product_recommend();
+               await this.get_product_recommend(this.products.length);
             }
             if( this.which_query == 'discount' ){
-               await this.get_product_discount();
+               await this.get_product_discount(this.products.length);
             }
             if( this.which_query == 'random' ){
-               await this.get_product_random();
+               await this.get_product_random(this.products.length);
             }
-
-            console.log('PRODUCT LENGTH : ' + this.products.length)
          }
       },
 
@@ -160,7 +184,8 @@ var app = Vue.createApp({
             form.append('action', 'atlantis_load_product_recommend');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', this.products.length );            
+            form.append('paged', this.products.length );
+            form.append('perPage', 10 );
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r));
@@ -171,6 +196,12 @@ var app = Vue.createApp({
                         this.products.push(item);
                      }
                   });
+
+                  if( this.products.length < 10){
+                     this.which_query = 'discount';
+                     var _get_product_discount_length = 10 - this.products.length;
+                     await this.get_product_discount(0, _get_product_discount_length);
+                  }
 
                }else{
                   this.which_query = 'discount';
@@ -184,23 +215,31 @@ var app = Vue.createApp({
       /**
        * @access PRODUCT DISCOUNT
        */
-      async get_product_discount(){
+      async get_product_discount( limit, perPage  ){
+         if(perPage == null ) perPage = 10;
          if( this.which_query == 'discount' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend_discount');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', this.products.length );
-            form.append('perPage', 10 );
+            form.append('paged', limit );
+            form.append('perPage', perPage );
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'product_found' ){
+
                   res.data.forEach(item => {
                      if (! this.products.some(existingItem => existingItem.id === item.id)) {
                         this.products.push(item);
                      }
                   });
+
+                  if( this.products.length < 10){
+                     this.which_query = 'random';
+                     var _get_product_random_length = 10 - this.products.length;
+                     await this.get_product_random(0, _get_product_random_length);
+                  }
                }else{
                   this.which_query = 'random';
                }
@@ -214,14 +253,15 @@ var app = Vue.createApp({
        * @access PRODUCT RANDOM
        */
 
-      async get_product_random(){
+      async get_product_random( limit, perPage ){
+         if(perPage == null ) perPage = 10;
          if( this.which_query == 'random' ){
             var form = new FormData();
             form.append('action', 'atlantis_load_product_recommend_random');
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', this.products.length );
-            form.append('perPage', 10 );
+            form.append('paged', limit );
+            form.append('perPage', perPage );
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -246,8 +286,6 @@ var app = Vue.createApp({
    watch: {
 
       sortFeatureCurrentValue: async function( val ){
-
-
          if(val == 2 ){
             // console.log('Top Rated Filter');
             this.products.sort((a, b) => b.avg_rating - a.avg_rating);
@@ -261,7 +299,16 @@ var app = Vue.createApp({
             this.products.sort((a, b) => a.distance - b.distance);
          }
 
+      },
+
+      products: {
+         handler(data){
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+         }, deep: true
       }
+
    },
 
    mounted() {
@@ -279,11 +326,12 @@ var app = Vue.createApp({
          await this.get_product_recommend();
       }
       if( this.which_query == 'discount' ){
-         await this.get_product_discount();
+         await this.get_product_discount(this.products.length);
       }
       if( this.which_query == 'random' ){
-         await this.get_product_random();
+         await this.get_product_random(this.products.length);
       }
+
       
       this.loading = false;
       window.appbar_fixed();

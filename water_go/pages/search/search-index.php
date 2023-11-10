@@ -1,3 +1,19 @@
+<style>
+   .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .product-design .price{
+      padding-right: 5px;
+   }
+   .product-design .price-sub{
+      margin-left: 0;
+      position: relative;
+      top: -2px;
+   }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id='app'>
 
    <div class='page-search'>
@@ -43,8 +59,8 @@
             <div class='grid-masonry'>
                <div 
                   @click='findPlace(searchItem)' 
-               class='product-design' 
-               v-for='(searchItem, index) in get_search_data' :key='index'>
+                  class='product-design' 
+                  v-for='(searchItem, index) in get_search_data' :key='index'>
                   
                   <!-- PRODUCT -->
                   <div v-if='searchItem.search_type == "product"' class='img'>
@@ -53,7 +69,7 @@
                   </div>
                   <div v-if='searchItem.search_type == "product"'  class='box-wrapper'>
                      <p class='tt01'>{{ searchItem.name }} </p>
-                     <p class='tt02'>{{ searchItem.name_second }}</p>
+                     <p class='tt02'>{{ product_name_compact(searchItem) }}</p>
                      <div class='gr-price' :class="has_discount(searchItem) == true ? 'has_discount' : '' ">
                         <span class='price'>
                            {{ common_price_after_discount(searchItem ) }}
@@ -99,6 +115,9 @@ createApp({
          latitude: 10.780900239854994,
          longitude: 106.7226271387539,
 
+         product_length: 0,
+         store_length: 0,
+
          paged: 0,
       }
    },
@@ -110,7 +129,24 @@ createApp({
          this.searchs = [];
          if (this.timeoutId) { clearTimeout(this.timeoutId); }
          this.timeoutId = setTimeout( await this.futuredDelayed, 600);
-      }
+      },
+
+      searchs: {
+         handler(data){
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+
+            var _filter_product = this.searchs.filter( item => item.search_type == 'product' );
+            this.product_length = _filter_product.length;
+
+            var _filter_store = this.searchs.filter( item => item.search_type == 'store' );
+            this.store_length = _filter_store.length;
+
+         }, deep: true
+      },
+
+
    },
 
    computed: {
@@ -122,6 +158,16 @@ createApp({
    },
 
    methods: {
+
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
       
       gotoProductDetail(id){ window.gotoProductDetail(id)},
       gotoStoreDetail(store_id){ window.gotoStoreDetail( store_id ) },
@@ -148,11 +194,11 @@ createApp({
 
          // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
          if (scrollPosition + windowHeight >= documentHeight ) {
-            await this.futuredDelayed( this.paged++);
+            await this.futuredDelayed();
          }
       },
 
-      async futuredDelayed( paged = 0 ){
+      async futuredDelayed(){
 
          if( this.inputSearch != undefined && this.inputSearch != '' && this.inputSearch != ' '){
             
@@ -162,10 +208,9 @@ createApp({
             form.append('search', this.inputSearch );
             form.append('lat', this.latitude);
             form.append('lng', this.longitude);
-            form.append('paged', paged);
+            form.append('paged', this.product_length);
 
             var r = await window.request(form);
-            console.log(r)
             if( r != undefined){
                var res = JSON.parse( JSON.stringify( r));
                if(res.message == 'search_found'){
@@ -178,15 +223,13 @@ createApp({
                }
             }
 
-
             var formStore = new FormData();
             formStore.append('action', 'atlantis_search_store');
             formStore.append('search', this.inputSearch );
             formStore.append('lat', this.latitude);
             formStore.append('lng', this.longitude);
-            formStore.append('paged', paged);
+            formStore.append('paged', this.store_length);
             var rStore = await window.request(formStore);
-            console.log(rStore)
             if( rStore != undefined){
                var resStore = JSON.parse( JSON.stringify( rStore));
                if(resStore.message == 'search_found'){
@@ -249,13 +292,12 @@ createApp({
    async created(){
       this.get_current_location();
 
-      (function($){
-         $(document).ready(function(){
-            var _appbar = $('.page-appbar-support');
-            _appbar.addClass('fixed');
-            $('#app').css('padding-top', _appbar.height());
-         });
-      })(jQuery);
+      jQuery(document).ready(function($){
+         var _appbar = $('.page-appbar-support');
+         _appbar.addClass('fixed');
+         $('#app').css('padding-top', _appbar.height());
+      });
+
    }
 }).mount('#app');
 </script>

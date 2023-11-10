@@ -2,11 +2,11 @@
 
    pv_update_user_token();
 
-   echo '<pre>';
-   print_r(getallheaders());
-   print_r($_COOKIE);
-   echo ' LOCALE ' . get_locale();
-   echo '</pre>';
+   // echo '<pre>';
+   // print_r(getallheaders());
+   // print_r($_COOKIE);
+   // echo ' LOCALE ' . get_locale();
+   // echo '</pre>';
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -157,7 +157,7 @@
                                  <span v-if="has_discount(product) == true" class="badge-discount">-{{ product.discount_percent }}%</span>
                               </div>
                               <p class="tt01">{{ product.name }} </p>
-                              <p class="tt02">{{ product.name_second }}</p>
+                              <p class="tt02">{{ product_name_compact(product) }}</p>
                               <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
                                  <span class="price">
                                     {{ common_price_after_discount(product) }}
@@ -291,6 +291,16 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
 
       // 
       splitArray(arr, size) {

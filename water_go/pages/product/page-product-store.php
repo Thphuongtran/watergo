@@ -126,7 +126,7 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
 
                   <div class='product-r'>
                      <div class='tt1'>{{ product.name }}</div>
-                     <div class='tt2'>{{ product.name_second }}</div>
+                     <div class='tt2'>{{ product_name_compact(product) }}</div>
 
                      <div class='tt3'>
 
@@ -232,6 +232,16 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      product_name_compact( product ){
+         if( product.name_second == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else if( product.product_type == "ice_device"){
+            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+         }else{
+            return product.name_second;
+         }
+      },
 
       async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 

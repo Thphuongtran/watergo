@@ -608,6 +608,7 @@ require_once THEME_DIR . '/libs/network/ajax_location.php';
 require_once THEME_DIR . '/libs/network/ajax_product_store.php';
 require_once THEME_DIR . '/libs/network/ajax_report.php';
 require_once THEME_DIR . '/libs/network/ajax_share.php';
+require_once THEME_DIR . '/libs/network/ajax_cart.php';
 
 
 

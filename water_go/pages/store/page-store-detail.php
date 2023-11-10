@@ -7,6 +7,13 @@
       width: auto;
       margin: 0 auto;
    }
+   .list-product-by-store .product-design .tt01{
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+   }
 </style>
 <div id='app'>
 
@@ -72,7 +79,7 @@
             </div>
 
 
-            <div v-if='products.length > 0' class='grid-masonry'>
+            <div v-if='products.length > 0' class='grid-masonry list-product-by-store'>
 
                <div 
                   @click='gotoProductDetail(product.id)' 
@@ -250,6 +257,7 @@ var app = Vue.createApp({
          form.append('store_id', store_id);
          form.append('limit', -1);
          var r = await window.request(form);
+         console.log()
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -364,9 +372,9 @@ var app = Vue.createApp({
             var _findType = this.store_type.find( type => type.active == true );
 
             if(_findType.value == 'water'){
-               return product.product_type == 'water';
+               return product.product_type == 'water' || product.product_type == 'water_device';
             }else if(_findType.value == 'ice'){
-               return product.product_type == 'ice';
+               return product.product_type == 'ice' || product.product_type == 'ice_device';
             }else{
                return product;
             }

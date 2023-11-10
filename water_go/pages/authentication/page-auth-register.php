@@ -1,8 +1,29 @@
+<style>
+.form-group input{
+   outline: none;
+   box-shadow: none;
+   touch-action: auto;
+}
+
+#authentication{
+}
+
+.page-auth-register{
+   overflow-y: scroll;
+   height: 100vh;
+}
+
+.inner.style01{
+   padding-top: 56px;
+   padding-bottom: 56px;
+}
+
+</style>
 <div id='authentication'>
 
    <div v-show='loading == false' class='page-auth-register'>
 
-      <div class='appbar'>
+      <div class='appbar fixed'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBack' class='btn-action'>
@@ -138,6 +159,10 @@
 </div>
 
 <script>
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
 
 var { createApp } = Vue;
 createApp({
