@@ -713,7 +713,7 @@
             </div>
             <div class='action'>
 
-               <div v-show='is_ice_device_selected == false' class='filter-type-box'>
+               <!-- <div v-show='is_ice_device_selected == false' class='filter-type-box'>
                   <div @click='open_filter_type_box' class='filter-type-placeholder'>
                      <span class='icon' >
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -741,7 +741,7 @@
                         </div>
                      </div>
                   </div>
-               </div>
+               </div> -->
 
                <div id='btn-filter-sort' @click='buttonSortFeature' class='btn-text'>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -888,9 +888,9 @@ createApp({
             _products.sort((a, b) => a.distance - b.distance);
          }
 
-         if( this.category_parent_id_selected != null ){
-            _products = _products.filter( item => item.category_parent == this.category_parent_id_selected );
-         }
+         // if( this.category_parent_id_selected != null ){
+         //    _products = _products.filter( item => item.category_parent == this.category_parent_id_selected );
+         // }
 
          return _products;
       },
@@ -944,46 +944,48 @@ createApp({
       },
 
       async select_category(cat_id){
-         
-         this.category_parent_id_selected = null;
-         this.category_parent.some(item => item.active = false);
 
-         this.category_id_selected = cat_id;
+         // toggle active
          this.category.some( cat => { 
-            if (cat.name === cat_id) {cat.active = !cat.active;
-            } else {cat.active = false;}
+            if (cat.name == cat_id) {cat.active = !cat.active;}else{
+               cat.active = false;
+            }
          });
-         var _itemCategory = this.category.find( item => item.name == cat_id );
-         if( _itemCategory && _itemCategory.name == "Thiết bị đá"){
-            this.is_ice_device_selected      = true;
-            
-         }else{
-            this.is_ice_device_selected = false;
-         }
-         var _anyCategoryNoActive = this.category.some(item => item.active == true );
-         if( _anyCategoryNoActive == false ){
-            this.category_id_selected = null;
-         }
 
+         var cat_active = this.category.find( cat => cat.active == true );
+         if( cat_active == undefined ){
+            this.category_id_selected = null;
+            this.is_ice_device_selected = false;
+         }else{
+            if( cat_active.name == "Thiết bị đá"){
+               this.is_ice_device_selected = true;
+               this.category_id_selected = null;
+            }else{
+               this.is_ice_device_selected = false;
+               this.category_id_selected = cat_active.name;
+            }
+         }
+         
          this.loading_data = true;
          this.products = [];
+
          await this.atlantis_get_product_sort_version2();
          this.loading_data = false;
 
       },
 
-      select_category_parent(cat_id){
-         this.open_filter_type_box();
-         this.category_parent_id_selected = cat_id;
-         this.category_parent.some(cat => {
-            if (cat.name === cat_id) {cat.active = !cat.active;
-            } else {cat.active = false;}
-         });
-         var _anyCategoryNoActive = this.category_parent.some(item => item.active == true );
-         if( _anyCategoryNoActive == false ){
-            this.category_parent_id_selected = null;
-         }
-      },
+      // select_category_parent(cat_id){
+      //    this.open_filter_type_box();
+      //    this.category_parent_id_selected = cat_id;
+      //    this.category_parent.some(cat => {
+      //       if (cat.name === cat_id) {cat.active = !cat.active;
+      //       } else {cat.active = false;}
+      //    });
+      //    var _anyCategoryNoActive = this.category_parent.some(item => item.active == true );
+      //    if( _anyCategoryNoActive == false ){
+      //       this.category_parent_id_selected = null;
+      //    }
+      // },
 
       // INIT
       async atlantis_get_product_sort_version2(){
@@ -994,6 +996,7 @@ createApp({
          form.append('lng', this.longitude);
          form.append('paged', this.products.length );
          var _category  = this.category.find(item => item.name == this.category_id_selected );
+
          if( this.is_ice_device_selected == false ){
             form.append('product_type', 'ice');
          }else{

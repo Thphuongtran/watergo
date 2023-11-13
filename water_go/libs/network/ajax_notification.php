@@ -161,7 +161,6 @@ function atlantis_notification_load_all(){
 
       $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
       $paged = isset($_POST['paged']) ? $_POST['paged'] : 0;
-      $paged = $paged * $limit;
 
       $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
          ? (int) get_user_meta($user_id , 'user_store', true) 

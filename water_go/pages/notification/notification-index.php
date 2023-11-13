@@ -17,12 +17,14 @@
       </div>
 
       <div v-if='notifications.length > 0 ' class='list-notification'>
-         <div class='notification-item '
+         <div 
+            class='notification-item '
             v-for='(item, keyItem) in notifications' :key='keyItem'
             :class='item.is_read == 0 ? "is_not_read" : "" '
-            @click='gotoOrderDetail(item)'
+            @click='gotoPage(item)'
          >
-            <div class='leading'>
+
+            <div v-if='item.attachment_url != null' class='leading'>
                <img :src='item.attachment_url'>
             </div>
             <div class='contents'>
@@ -30,6 +32,7 @@
                <div class='tt02'>{{ formatDate(item.time_created) }}</div>
             </div>
          </div>
+
       </div>
 
       <!-- <div v-if='notifications.length == 0' class='modal-popup open'>
@@ -59,7 +62,6 @@ createApp({
       return {
          loading: false,
          notifications: [],
-         paged: 0,
          get_locale: '<?php echo get_locale(); ?>',
       }
    },
@@ -68,11 +70,23 @@ createApp({
    beforeDestroy() { window.removeEventListener('scroll', this.handleScroll); },
    
    methods: {
+      
+      gotoProductDetail(product_id){ window.gotoProductDetail(product_id)},
+      gotoOrderDetail(order_id){ window.gotoOrderDetail(order_id)},
 
-      async gotoOrderDetail( item ){ 
+      // GO TO ORDER OR PRODUCT DETAIL
+      async gotoPage( item ){ 
          await this.mark_user_read_notification(item.id);
          item.is_read = 1;
-         window.location.href = item.link;
+         // GO TO ORDER DETAIL
+         if( item.notification_type == "order"){
+            window.location.href = item.link;
+            // this.gotoOrderDetail( item.order_id);
+         }
+         // GO TO PRODUCT DETAI
+         else if( item.notification_type == "product_pending"){
+            this.gotoProductDetail(item.product_id);
+         }
       },
 
       async mark_user_read_notification(id_notification){
@@ -111,73 +125,82 @@ createApp({
 
       title_compact( item ){
 
+         // NOTIFICATION TYPE {product-pending}
+         if( item.notification_type == 'product_pending' && item.send_to == 'store' ){
+            if( item.order_status == 'allow' ){
+               return '<?php echo __('Admin đã duyệt 1 sản phẩm của bạn', 'watergo'); ?>';
+            }else if( item.order_status == 'deny' ){
+               return '<?php echo __('Admin đã từ chối duyệt 1 sản phẩm của bạn', 'watergo'); ?>';
+            }
+         }
+
          if( this.get_locale == 'en_US'){
-            if( item.order_status == 'ordered' && item.send_to == 'store' ){
+            if( item.notification_type == 'order' && item.order_status == 'ordered' && item.send_to == 'store' ){
                return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
             }
-            if( item.order_status == 'cancel' && item.send_to == 'store' ){
+            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'store' ){
                return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> was canceled`;
             }
 
-            if( item.order_status == 'delivering' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'delivering' && item.send_to == 'user' ){
                return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is delivering`;
             }
-            if( item.order_status == 'completed' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'completed' && item.send_to == 'user' ){
                return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is completed`;
             }
 
-            if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'confirmed' && item.send_to == 'user' ){
                return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is confirmed`;
             }
 
-            if( item.order_status == 'cancel' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'user' ){
                return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
             }
          }
 
          if( this.get_locale == 'ko_KR'){
-            if( item.order_status == 'ordered' && item.send_to == 'store' ){
+            if( item.notification_type == 'order' && item.order_status == 'ordered' && item.send_to == 'store' ){
                return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
             }
-            if( item.order_status == 'cancel' && item.send_to == 'store' ){
+            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'store' ){
                return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> was canceled`;
             }
 
-            if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'confirmed' && item.send_to == 'user' ){
                return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 확인되었습니다`;
             }
-            if( item.order_status == 'delivering' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'delivering' && item.send_to == 'user' ){
                return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 배송중입니다`;
             }
-            if( item.order_status == 'completed' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'completed' && item.send_to == 'user' ){
                return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 배송완료되었습니다`;
             }
-            if( item.order_status == 'cancel' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'user' ){
                return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
             }
 
          }
 
          if( this.get_locale == 'vi' ){
-            if( item.order_status == 'ordered' && item.send_to == 'store' ){
+            if( item.notification_type == 'order' && item.order_status == 'ordered' && item.send_to == 'store' ){
                return `Bạn có đơn mới <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đang chờ xác nhận`;
             }
-            if( item.order_status == 'cancel' && item.send_to == 'store' ){
+            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'store' ){
                return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã bị huỷ`;
             }
 
-            if( item.order_status == 'delivering' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'delivering' && item.send_to == 'user' ){
                return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đang trên đường giao tới bạn`;
             }
-            if( item.order_status == 'completed' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'completed' && item.send_to == 'user' ){
                return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được giao thành công`;
             }
 
-            if( item.order_status == 'confirmed' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'confirmed' && item.send_to == 'user' ){
                return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được xác nhận`;
             }
 
-            if( item.order_status == 'cancel' && item.send_to == 'user' ){
+            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'user' ){
                return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được huỷ`;
             }
          }
@@ -188,11 +211,13 @@ createApp({
          window.location.href = '?appt=X&data=notification_count';
       },
 
-      async load_all_notification( paged ){
+      async load_all_notification(){
          var form = new FormData();
          form.append('action', 'atlantis_notification_load_all');
-         form.append('paged', paged);
+         form.append('paged', this.notifications.length);
          var r = await window.request(form);
+
+         console.log(r)
          
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -219,7 +244,7 @@ createApp({
 
          // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
          if (scrollPosition + windowHeight >= documentHeight ) {
-            await this.load_all_notification( this.paged++);
+            await this.load_all_notification();
          }
       }
       
@@ -229,12 +254,10 @@ createApp({
 
    async created(){
       this.loading = true;
-      await this.load_all_notification(0);
+      await this.load_all_notification();
 
       this.loading = false;
-
       window.appbar_fixed();
-      
    }
 
 }).mount('#app');

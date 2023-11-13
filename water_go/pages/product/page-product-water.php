@@ -11,10 +11,14 @@
       ORDER BY wp_watergo_product_category.order ASC";
    $sql_brand      = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_brand' AND ( category_hidden != 1 || category_hidden IS NULL)";
 
+   $sql_volume = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_volume' AND ( category_hidden != 1 || category_hidden IS NULL)";
+
 
    $category         = $wpdb->get_results($sql_category);
    $category_parent  = $wpdb->get_results($sql_category_parent);
    $brand            = $wpdb->get_results($sql_brand);
+   $volume           = $wpdb->get_results($sql_volume);
+
    
    foreach($category as $k => $vl ){
       $vl->active = false;
@@ -161,6 +165,41 @@
    .navbar li.water-4{width: 59px;}
    .navbar li.water-5{width: 103px;}
 
+
+   /*  */
+
+   .navbar.select-item select {
+      margin-right: 10px;
+      background: #E8E8E8;
+      border-radius: 5px;
+      padding: 7px 0 7px 10px;
+      color: #252831;
+      font-weight: 500;
+      font-size: 14px;
+      border: none;
+      box-shadow: none;
+      outline: none;
+      appearance: none;
+      width: 100%;
+   }
+
+   .select-box {
+      border-radius: 5px;
+      margin: 0 5px;
+      position: relative;
+      min-width: 100px;
+      padding-right: 20px;
+      background: #E8E8E8;
+   }
+   .select-box .icon-select {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+   }
+
+
+
    @media screen and (max-width: 375px){
       .navbar.auto-resize-375 li {
          padding-left: 0px;
@@ -187,7 +226,7 @@
             </div>
             <div class='action'>
 
-               <div v-show='is_water_device_selected == false' class='filter-type-box'>
+               <!-- <div v-show='is_water_device_selected == false' class='filter-type-box'>
 
                   <div @click='open_filter_type_box' class='filter-type-placeholder'>
                      <span class='icon'>
@@ -217,7 +256,7 @@
                      </div>
                   </div>
 
-               </div>
+               </div> -->
 
                <div @click='buttonSortFeature' class='btn-text'>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -261,6 +300,63 @@
                   :class='brand.active == true ? "active" : ""'>
                   {{ brand.name }}
                </li>
+            </ul>
+
+            <ul class='navbar style01 select-item'>
+               <div class='select-box'>
+                  <select>
+                     <option value="" selected disabled><?php echo __('Brand', 'watergo'); ?></option>
+                     <option 
+                        @click=''
+                        v-for='(brand_item, brand_index) in brand' :key='brand_index'
+                        class='item' :selected='brand_item.active'
+                     >
+                        {{ brand_item.name }}
+                     </option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="9" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
+               <div class='select-box'>
+                  <select>
+                     <option value="" selected disabled><?php echo __('Volume', 'watergo'); ?></option>
+                     <option 
+                        @click=''
+                        v-for='(volume_item, volume_index) in volume' :key='volume_index'
+                        class='item' :selected='volume_item.active'
+                     >
+                        {{ volume_item.name }}
+                     </option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="9" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
+               <div class='select-box'>
+                  <select>
+                     <option value="" selected disabled><?php echo __('Type', 'watergo'); ?></option>
+                     <option 
+                           @click='select_category_parent(type_water.name)'
+                           v-for='(type_water, type_water_index) in category_parent' :key='type_water_index'
+                           class='item' :selected='type_water.active'
+                        >
+                           {{ type_water.name }}
+                     </option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="9" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
             </ul>
 
          </div>
@@ -334,10 +430,14 @@ createApp({
          category: [],
          category_parent: [],
          brand: [],
+         volume: [],
 
-         category_id_selected: null,
-         category_parent_id_selected: null,
-         brand_id_selected: null,
+         filter_category_parent_id: null,
+
+         category_selected: {
+            category_id: null,
+            brand_id: null
+         },
 
          filter_type_box_open: false,
 
@@ -345,6 +445,20 @@ createApp({
          loading_data: false,
          
       }
+   },
+
+   watch: {
+      category_selected: {
+         async handler(data) {
+            window.appbar_fixed();
+
+            this.loading_data = true;
+            this.products = [];
+            await this.atlantis_get_product_sort_version2();
+            this.loading_data = false;
+
+         }, deep: true
+      },
    },
 
    computed: {
@@ -363,9 +477,9 @@ createApp({
             // Nearest
             _products.sort((a, b) => a.distance - b.distance);
          }
-
-         if( this.is_water_device_selected == false ){
-            _products = _products.filter( item => item.category_parent == this.category_parent_id_selected );
+         
+         if( this.filter_category_parent_id != null ){
+            _products = _products.filter( item => item.category_parent == this.filter_category_parent_id );
          }
 
          return _products;
@@ -417,69 +531,62 @@ createApp({
          window.bodyScrollToggle();
       },
 
-      async select_category(cat_name){
-         this.category_id_selected = cat_name;
+      select_category(cat_name){
          this.category.some( cat => { 
-            if (cat.name === cat_name) {cat.active = !cat.active;
-            } else {cat.active = false;}
-         });
-
-         var _itemCategory = this.category.find( item => item.name == cat_name );
-
-         if( _itemCategory && _itemCategory.name == "Thiết bị nước"){
-            this.category_parent_id_selected = null;
-            this.category_parent.some(item => item.active = false);
-            this.brand_id_selected = null;
-            this.brand.some(item => item.active = false);
-            window.appbar_fixed();
-            this.is_water_device_selected    = true;
-         }else{
-            this.is_water_device_selected = false;
-            window.appbar_fixed();
-         }
-         var _anyCategoryNoActive = this.category.some(item => item.active == true );
-         if( _anyCategoryNoActive == false ){
-            this.category_id_selected = null;
-         }
-
-         this.loading_data = true;
-         this.products = [];
-         await this.atlantis_get_product_sort_version2();
-         this.loading_data = false;
-
-      },
-      async select_brand(brand_id){
-         this.brand_id_selected = brand_id;
-         this.brand.some( brand => { 
-            if (brand.name === brand_id) {
-               brand.active = !brand.active;
-            } else {
-               brand.active = false; 
+            if (cat.name === cat_name ) {
+               cat.active = !cat.active; 
+            }else{
+               cat.active = false;
             }
          });
-         var _anyExists = this.brand.some(item => item.active == true );
-         if(_anyExists == false ){
-            this.brand_id_selected = null;
+         var noActiveCategories = this.category.some(cat => cat.active == true);
+         if(noActiveCategories){
+            this.category_selected.category_id = cat_name;
+            this.is_water_device_selected      = false;
+            if( cat_name == 'Thiết bị nước'){
+               this.category_selected.category_parent = null;
+               this.category_selected.brand_id        = null;
+               this.filter_category_parent_id         = null;
+               this.brand.some( item => item.active = false);
+               this.category_parent.some( item => item.active = false);
+               this.is_water_device_selected          = true;
+            }
+         }else{
+            this.category_selected.category_id = null;
+            this.is_water_device_selected      = false;
          }
-         this.loading_data = true;
-         this.products = [];
-         await this.atlantis_get_product_sort_version2();
-         this.loading_data = false;
       },
+
+      select_brand(brand_id){
+         this.brand.some( cat => { 
+            if (cat.name === brand_id) {
+               cat.active = !cat.active;
+            }else{
+               cat.active = false;
+            }
+         });
+         var noActiveCategories = this.brand.some(cat => cat.active == true);
+         if(noActiveCategories){
+            this.category_selected.brand_id = brand_id;
+         }else{
+            this.category_selected.brand_id = null;
+         }
+      },
+
       select_category_parent( type_of_water_id ){
          this.open_filter_type_box();
-         this.category_parent_id_selected = type_of_water_id;
          this.category_parent.some( cat => { 
-            if (cat.name === type_of_water_id) {
-               cat.active = !cat.active;
-            } else {
+            if (cat.name === type_of_water_id) {cat.active = !cat.active;} else {
                cat.active = false; 
             }
          });
-         var _anyExists = this.category_parent.some(item => item.active == true );
-         if(_anyExists == false ){
-            this.category_parent_id_selected = null;
+         var noActiveCategories = this.category_parent.some(cat => cat.active == true);
+         if(noActiveCategories){
+            this.filter_category_parent_id = type_of_water_id;
+         }else{
+            this.filter_category_parent_id = null;
          }
+         
       },
 
       async handleScroll() {
@@ -516,24 +623,17 @@ createApp({
          form.append('lng', this.longitude);
          form.append('paged', this.products.length);
 
-         var _category  = this.category.find(item => item.name == this.category_id_selected );
-         var _brand     = this.brand.find(item => item.name == this.brand_id_selected );
-         
          if( this.is_water_device_selected == false ){
             form.append('product_type', 'water');
-            // if(this.category_parent_id_selected != 0 ){
-            //    form.append('category_parent', this.category_parent_id_selected);
-            // }
-            if(this.brand_id_selected != null ){
-               form.append('brand', _brand.name);
-            }
          }else{
             form.append('product_type', 'water_device');
-            form.append('brand', 0);
          }
 
-         if(this.category_id_selected != null ){
-            form.append('category', _category.name);
+         if(this.category_selected.category_id != null ){
+            form.append('category', this.category_selected.category_id);
+         }
+         if(this.category_selected.brand_id != null ){
+            form.append('brand', this.category_selected.brand_id);
          }
          
          var r = await window.request(form);
@@ -568,6 +668,7 @@ createApp({
       // THIS IS FILTER FOR CATEGORY
       this.category_parent    = JSON.parse(JSON.stringify(<?php echo json_encode($category_parent, true); ?>));
       this.brand              = JSON.parse(JSON.stringify(<?php echo json_encode($brand, true); ?>));
+      this.volume             = JSON.parse(JSON.stringify(<?php echo json_encode($volume, true); ?>));
          
       this.get_current_location();
       this.loading = true;

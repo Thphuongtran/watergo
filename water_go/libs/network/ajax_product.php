@@ -698,7 +698,7 @@ function atlantis_get_product_sort_version2(){
 
       $category         = isset($_POST['category']) ? $_POST['category'] : 0;
       // $category_parent  = isset($_POST['category_parent']) ? $_POST['category_parent'] : 0;
-      $brand            = isset($_POST['brand']) ? $_POST['brand'] : 0;
+      $brand            = isset($_POST['brand']) ? $_POST['brand'] : null;
 
       $lat           = isset($_POST['lat']) ? $_POST['lat'] : 10.780900239854994;
       $lng           = isset($_POST['lng']) ? $_POST['lng'] : 106.7226271387539;
@@ -766,7 +766,7 @@ function atlantis_get_product_sort_version2(){
       // if( $category_parent != 0 ){
       //    $sql .= " AND wp_watergo_products.category_parent = $category_parent ";
       // }
-      if( $brand != 0 ){
+      if( $brand != null ){
          $sql .= " AND wp_watergo_products.brand = '$brand' ";
       }
 

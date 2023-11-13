@@ -105,7 +105,9 @@ function atlantis_get_product_from_store(){
          WHERE store_id = $store_id 
          AND ( product_hidden != 1 OR ( product_hidden = 1 AND status = 'pending' ) )
          AND product_type IN ($type_product_string)
-         ORDER BY id DESC
+         ORDER BY 
+            status = 'pending' DESC, id DESC
+
          LIMIT $offset, $limit
       ";
 
@@ -170,7 +172,6 @@ function atlantis_action_product_store(){
       $product_type  = isset($_POST['product_type'])  ? $_POST['product_type'] : '';
       $store_id      = isset($_POST['store_id'])      ? $_POST['store_id'] : 0;
       $product_id    = isset($_POST['product_id'])    ? $_POST['product_id'] : 0;
-
 
       wp_send_json_error(['message' => 'bug', 'res' => $_POST ]);
       wp_die();
@@ -831,18 +832,77 @@ function atlantis_change_product_status(){
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : null;
       $event = isset($_POST['event']) ? $_POST['event'] : null;
 
-
       if( $product_id == null && $event == null ){
          wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
       }
 
       global $wpdb;
+
+      $sql_product_detail     = "SELECT * FROM wp_watergo_products WHERE id = $product_id";
+      $product_detail         = $wpdb->get_results($sql_product_detail);
+
+      $store_id               = $product_detail[0]->store_id;
+
+      $sql_get_user_id_from_store_id = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id";
+      $user_id_from_store_id  = $wpdb->get_results($sql_get_user_id_from_store_id);
+      $user_id_from_store_id  = $user_id_from_store_id[0]->user_id;
+
+      $attachment_url         = func_atlantis_get_images($product_id, 'product', true, 'medium');
+      $link                   = get_bloginfo('home') . '/product/?product_page=product-store&appt=N';
+
+      $attachment_url = $attachment_url['url'];
+
       if( $event == 'allow' ){
          $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 0, 'status' => 'publish' ], [ 'id' => $product_id ]);
+         // SEND NOTIFICATION
+         $wpdb->insert('wp_watergo_notification', [
+            'time_created'          => atlantis_current_datetime(),
+            'order_id'              => 0,
+            'order_number'          => 0,
+            'order_status'          => 'allow',
+            'notification_type'     => 'product_pending',
+            'user_id'               => $user_id_from_store_id,
+            'send_to'               => 'store',
+            'store_id'              => $store_id,
+            'link'                  => $link,
+            'attachment_url'        => $attachment_url,
+            'notification_hidden'   => 0,
+            'product_id'            => $product_id
+         ]);
+         $text_push_notification = __('Admin đã duyệt 1 sản phẩm của bạn', 'watergo');
+         bj_push_notification( 
+            $user_id_from_store_id,
+            'Watergo',
+            $text_push_notification,
+            $link 
+         );
       }
       if( $event == 'deny' ){
          $updated = $wpdb->update('wp_watergo_products', ['product_hidden' => 1, 'status' => 'delete' ], [ 'id' => $product_id ]);
+         // SEND NOTIFICATION
+         $wpdb->insert('wp_watergo_notification', [
+            'time_created'          => atlantis_current_datetime(),
+            'order_id'              => 0,
+            'order_number'          => 0,
+            'order_status'          => 'deny',
+            'notification_type'     => 'product_pending',
+            'user_id'               => $user_id_from_store_id,
+            'send_to'               => 'store',
+            'store_id'              => $store_id,
+            'link'                  => $link,
+            'attachment_url'        => $attachment_url,
+            'notification_hidden'   => 0,
+            'product_id'            => $product_id
+         ]);
+
+         $text_push_notification = __('Admin đã từ trối duyệt 1 sản phẩm của bạn', 'watergo');
+         bj_push_notification( 
+            $user_id_from_store_id,
+            'Watergo',
+            $text_push_notification,
+            $link 
+         );
       }
 
       if($updated){
@@ -850,6 +910,6 @@ function atlantis_change_product_status(){
          wp_die();
       }
       wp_send_json_error(['message' => 'product_not_found']);
-         wp_die();
+      wp_die();
    }
 }
