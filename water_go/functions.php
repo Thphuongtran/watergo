@@ -258,7 +258,7 @@ function bj_push_notification($user_id, $title, $content, $link = "#"){
     if(!empty($result)){
         $user_token = $result[0]["token"];
     }else{
-        return;
+      return;
     }
 
     $url = 'http://ultramommy.net:8080/push-noti';
@@ -271,17 +271,30 @@ function bj_push_notification($user_id, $title, $content, $link = "#"){
     );
     
    $headers = array('Content-Type: application/json');
-  
-   $ch = curl_init ();
-   curl_setopt ( $ch, CURLOPT_URL, $url );
-   curl_setopt ( $ch, CURLOPT_POST, true );
-   curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
-   curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-   curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($body) );
 
-   $data = curl_exec ( $ch );
-   curl_close ( $ch );   
-   return json_decode($data);
+   $response = wp_remote_post($url, array(
+      'headers'   => $headers,
+      'body'      => json_encode($body),
+      'method'    => 'POST',
+   ));
+
+   // Check for errors and handle the response
+   if (is_wp_error($response)) {
+      return;
+   } else {
+      return json_decode(wp_remote_retrieve_body($response));
+   }
+  
+   // $ch = curl_init ();
+   // curl_setopt ( $ch, CURLOPT_URL, $url );
+   // curl_setopt ( $ch, CURLOPT_POST, true );
+   // curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+   // curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+   // curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($body) );
+
+   // $data = curl_exec ( $ch );
+   // curl_close ( $ch );   
+   // return json_decode($data);
 }
 
 

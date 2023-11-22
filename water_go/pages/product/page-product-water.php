@@ -310,11 +310,14 @@
    .box-button .item-image{
       border: 2px solid transparent;
       width: 72px;
-      height: 50px;
-      border-radius: 8px;
+      height: 46px;
+      border-radius: 11px;
       background: white;
       overflow: hidden;
       cursor: pointer;
+   }
+   .box-button .item-image img{
+      width: 100%;
    }
    .box-button .item.selected{
       background: #2790F9;
@@ -662,9 +665,9 @@ createApp({
 
       latitude: function( val ){
          if( val == null ){
-            alert('THIS IS A TEST === location is disable');
+            
          }else{
-            alert('THIS IS A TEST === location are access now');
+
          }
       }
 
@@ -947,7 +950,6 @@ createApp({
 
 function callbackResume(data){
 
-   alert('abc');
 }
 
 </script>

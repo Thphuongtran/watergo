@@ -366,7 +366,7 @@ function atlantis_add_order(){
                   'hash_id'                  => (String) $hash_id,
                ];
 
-               if( $order_note != '' && $order_note != ' ' && $order_note != null){
+               if( strlen($order_note) && $order_note != '' ){
                   $args_insert['order_note'] = $order_note;
                }
 
@@ -386,7 +386,6 @@ function atlantis_add_order(){
                if( ! empty( $get_attachment_url ) ){
                   $attachment_url = wp_get_attachment_image_url( $get_attachment_url[0]->attachment_id );
                }
-
 
                protocal_atlantis_notification_to_store([
                   'order_status'       => 'ordered',
@@ -517,6 +516,9 @@ function atlantis_add_order(){
                   $product_price             = $product->price;
                   $product_discount_percent  = $product->discount_percent;
                   $product_has_discount      = $product->has_discount;
+                  $product_gift_text         = $product->gift_text;
+                  $product_gift_to           = $product->gift_to;
+                  $product_gift_from         = $product->gift_from;
 
                   // ALREADY CHECK DISCOUNT FROM FRONT END
                   if( $product_has_discount == 0 ){
@@ -546,11 +548,11 @@ function atlantis_add_order(){
                      'order_group_product_discount_to'      => $discount_to,
                      'order_group_product_name'             => $product_name,
                      'order_group_product_name_second'      => $product_name_second,
-                     'order_group_product_type'             => $product_type
+                     'order_group_product_type'             => $product_type,
+                     'order_group_product_gift_text'        => $product_gift_text,
+                     'order_group_product_gift_to'          => $product_gift_to,
+                     'order_group_product_gift_from'        => $product_gift_from
                   ]);
-
-
-
 
                   // REDUCE STOCK PER ITEM ORDER
                   // $sql_get_stock    = "SELECT stock FROM wp_watergo_products WHERE id = $product->product_id";
@@ -572,7 +574,19 @@ function atlantis_add_order(){
 
          
 
-         wp_send_json_success(['message' => 'insert_order_ok', 'data' => $order_id  ]);
+         wp_send_json_success([
+            'message' => 'insert_order_ok', 
+            'data' => $order_id, 
+            'notification_args' => [
+               'order_status'       => 'ordered',
+               'order_id'           => $order_id,
+               'user_id'            => $user_id,
+               'store_id'           => $store_id,
+               'attachment_url'     => $attachment_url,
+               'order_number'       => $order_number,
+               'hash'               => $hash_id_for_link_app
+            ]
+         ]);
          wp_die();
       } else {
          wp_send_json_success(['message' => 'hash_exists' ]);
@@ -635,39 +649,15 @@ function atlantis_get_order_schedule(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_order_schedule' ){
       $store_id   = func_get_store_id_from_current_user();
 
-      $limit      = 6;
+      $limit      = 10;
       $paged      = isset($_POST['paged']) ? $_POST['paged'] : 0;
-      $paged      = $paged * $limit;
       $filter     = isset($_POST['filter']) ? $_POST['filter'] : '';
       $datetime   = isset($_POST['datetime']) ? $_POST['datetime'] : '';
-
-      // wp_send_json_success(['message' => 'bug', 'param' => [
-      //    'filter' => $filter,
-      //    'datetime' => $datetime,
-      // ] ]);
-      // wp_die();
-
-      // $product_id_already_exists = isset($_POST['product_id_already_exists']) ? $_POST['product_id_already_exists'] : 0;
-      // $product_id_already_exists = json_decode( $product_id_already_exists );
-      // $placeholders = 0;
-
-      // $wheres = [];
-
-      // if( is_array($product_id_already_exists) && ! empty($product_id_already_exists) ){
-      //    foreach( $product_id_already_exists as $ids ){
-      //       $wheres[] = $ids;
-      //    }
-      //    $placeholders = implode(',', $wheres);
-      // }
 
       global $wpdb;
 
       $sql = "SELECT *,
          wp_watergo_store.name as store_name,
-         -- latitude
-         wp_watergo_store.latitude as store_latitude,
-         -- longitude
-         wp_watergo_store.longitude as store_longitude,
          -- order_time_shipping_id
          wp_watergo_order.order_time_shipping_id as store_order_time_shipping_id
 
@@ -685,14 +675,17 @@ function atlantis_get_order_schedule(){
             ON wp_watergo_order_time_shipping.order_time_shipping_id = wp_watergo_order.order_time_shipping_id
 
          WHERE wp_watergo_store.id = $store_id
+         -- order_status must be confirmed
          AND wp_watergo_order.order_status = 'confirmed'
+         AND wp_watergo_order.order_hidden != 1
          -- AND wp_watergo_order.order_id NOT IN ($placeholders)
       ";
 
       if( $filter == 'once' ){
          $sql .= "
             AND (
-         	   wp_watergo_order.order_delivery_type = 'once_immediately' OR wp_watergo_order.order_delivery_type = 'once_date_time'
+         	   wp_watergo_order.order_delivery_type = 'once_immediately' OR 
+               wp_watergo_order.order_delivery_type = 'once_date_time'
             )
          ";
       }
@@ -711,7 +704,6 @@ function atlantis_get_order_schedule(){
          LIMIT $paged, $limit";
 
       // SORT
-
       $res = $wpdb->get_results($sql);
 
       if( empty( $res ) ){
@@ -796,8 +788,6 @@ function atlantis_get_order_detail(){
 
       wp_send_json_error(['message' => 'get_order_error' ]);
       wp_die();
-
-
 
    }
 }
@@ -1755,7 +1745,11 @@ function atlantis_get_newest_order(){
                      'order_group_product_name_second'      => $product->order_group_product_name_second,
                      'order_group_product_type'             => $product->order_group_product_type,
                      // 
-                     'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true)
+                     'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true),
+
+                     'order_group_product_gift_text'        => $product->order_group_product_gift_text,
+                     'order_group_product_gift_to'          => $product->order_group_product_gift_to,
+                     'order_group_product_gift_from'        => $product->order_group_product_gift_from
                   ];
                }
             }

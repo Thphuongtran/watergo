@@ -445,13 +445,12 @@ function protocal_atlantis_notification_to_store( $args ){
       
       $text_push = sprintf(__('You have new order #%s', 'watergo' ), $order_number_pad );
 
-      bj_push_notification( 
+      $ordered = bj_push_notification( 
          (int) $user_id_from_store_id,
          'Watergo',
          $text_push,
          $link 
       );
-
    }
 
    if( $order_status == 'cancel' ){
@@ -497,4 +496,55 @@ function protocal_atlantis_notification_to_store( $args ){
 
    }
 
+}
+
+/**
+ * @access PROTOCAL IN BACKGROUND
+ */
+add_action( 'wp_ajax_atlantis_protocal_notification_in_background', 'atlantis_protocal_notification_in_background' );
+function atlantis_protocal_notification_in_background(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_protocal_notification_in_background'){
+      $send_to = isset($_POST['send_to']) ? $_POST['send_to'] : null;
+
+      $order_status     = isset($_POST['order_status']) ? $_POST['order_status'] : null;
+      $order_id         = isset($_POST['order_id']) ? $_POST['order_id'] : null;
+      $user_id          = isset($_POST['user_id']) ? $_POST['user_id'] : null;
+      $store_id         = isset($_POST['store_id']) ? $_POST['store_id'] : null;
+      $attachment_url   = isset($_POST['attachment_url']) ? $_POST['attachment_url'] : null;
+      $order_number     = isset($_POST['order_number']) ? $_POST['order_number'] : null;
+      $hash             = isset($_POST['hash']) ? $_POST['hash'] : null;
+
+      $args = [];
+
+      if($order_status){ 
+         $args['order_status'] = $order_status;
+      }
+      if($order_id){ 
+         $args['order_id'] = $order_id;
+      }
+      if($user_id){ 
+         $args['user_id'] = $user_id;
+      }
+      if($store_id){ 
+         $args['store_id'] = $store_id;
+      }
+      if($attachment_url){ 
+         $args['attachment_url'] = $attachment_url;
+      }
+      if($order_number){ 
+         $args['order_number'] = $order_number;
+      }
+      if($hash){ 
+         $args['hash'] = $hash;
+      }
+
+      if( $send_to == 'user' && !empty($args) ){
+         protocal_atlantis_notification_to_user( $args );
+      }
+
+      if( $send_to == 'store' && !empty($args) ){
+         protocal_atlantis_notification_to_store( $args );
+      }
+
+   }
 }

@@ -1,3 +1,9 @@
+<?php 
+   $currency = ' đ';
+   if( get_locale() == 'ko_KR' ){
+      $currency = '동';
+   }
+?>
 <link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 
@@ -137,8 +143,6 @@ var app = Vue.createApp({
 
          datePickerValue: null,
 
-         paged: 0,
-
          get_locale: '<?php echo get_locale(); ?>'
 
       }
@@ -175,7 +179,7 @@ var app = Vue.createApp({
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ 
          if( this.get_locale == 'vi' ){
-            if( order_type == 'once_date_time' || order_type == 'once_immediately' ) return 'Một Lần';
+            if( order_type == 'once_date_time' || order_type == 'once_immediately' ) return 'Giao thường';
             if( order_type == 'weekly' ) return 'Hàng tuần';
             if( order_type == 'monthly' ) return 'Hàng tháng';
          }
@@ -206,19 +210,6 @@ var app = Vue.createApp({
          }
       },
 
-      async getOrderNumber( order_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_order_number');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'get_order_number_ok'){
-               return res.data;
-            }
-         }
-      },
-
       total_product_in_order( order ){
          var _total = 0;
          if( order.order_products != undefined && order.order_products.length > 0 ){
@@ -242,7 +233,7 @@ var app = Vue.createApp({
             }
             _total_price += ( price - ( price * ( discount_percent / 100 ) ) ) * quantity;
          });
-         return _total_price.toLocaleString('vi-VN') + ' đ';;
+         return parseInt(_total_price).toLocaleString() + ' <?php echo $currency; ?>';
       },
 
       save_datetime_from_datepicker(){
@@ -291,9 +282,9 @@ var app = Vue.createApp({
 
          let instanceApp = this;
 
-         $(function(){
+         jQuery(function(){
 
-            $(document).ready(function(){
+            jQuery(document).ready(function(){
 
                // Define an object that holds the month and day names for different locales
                var localeData = {
@@ -371,22 +362,18 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_order_schedule');
          form.append('filter', filter);
          form.append('paged', this.orders.length );
-         form.append('datetime', String( datetime) );
+         form.append('datetime', datetime );
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
-
                res.data.forEach(item => {
                   if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
                      this.orders.push(item);
                   }
                });
-
             }
          }
-
       },
 
       async handleScroll(){

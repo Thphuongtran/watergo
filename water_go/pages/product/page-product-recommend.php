@@ -176,117 +176,63 @@ var app = Vue.createApp({
 
          // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
          if (scrollPosition + windowHeight >= documentHeight ) {
-            this.sortFeatureCurrentValue = -1;
-
-            if( this.which_query == 'recommend' ){
-               await this.get_product_recommend(this.products.length);
-            }
-            if( this.which_query == 'discount' ){
-               await this.get_product_discount(this.products.length);
-            }
-            if( this.which_query == 'random' ){
-               await this.get_product_random(this.products.length);
-            }
+            await this.atlantis_get_product_discount_and_gift();
          }
-      },
-
-      async get_product_recommend(){
-         
-         if( this.which_query == 'recommend' ){
-            var form = new FormData();
-            form.append('action', 'atlantis_load_product_recommend');
-            form.append('lat', this.latitude);
-            form.append('lng', this.longitude);
-            form.append('paged', this.products.length );
-            form.append('perPage', 10 );
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify( r));
-               if( res.message == 'product_found' ){
-
-                  res.data.forEach(item => {
-                     if (! this.products.some(existingItem => existingItem.id === item.id)) {
-                        this.products.push(item);
-                     }
-                  });
-
-                  if( this.products.length < 10){
-                     this.which_query = 'discount';
-                     var _get_product_discount_length = 10 - this.products.length;
-                     await this.get_product_discount(0, _get_product_discount_length);
-                  }
-
-               }else{
-                  this.which_query = 'discount';
-               }
-
-            }
-         }
-         
-      },
-
-      /**
-       * @access PRODUCT DISCOUNT
-       */
-      async get_product_discount( limit, perPage  ){
-         if(perPage == null ) perPage = 10;
-         if( this.which_query == 'discount' ){
-            var form = new FormData();
-            form.append('action', 'atlantis_load_product_recommend_discount');
-            form.append('lat', this.latitude);
-            form.append('lng', this.longitude);
-            form.append('paged', limit );
-            form.append('perPage', perPage );
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify(r));
-               if( res.message == 'product_found' ){
-
-                  res.data.forEach(item => {
-                     if (! this.products.some(existingItem => existingItem.id === item.id)) {
-                        this.products.push(item);
-                     }
-                  });
-
-                  if( this.products.length < 10){
-                     this.which_query = 'random';
-                     var _get_product_random_length = 10 - this.products.length;
-                     await this.get_product_random(0, _get_product_random_length);
-                  }
-               }else{
-                  this.which_query = 'random';
-               }
-            }
-         }
-
-
       },
 
       /**
        * @access PRODUCT RANDOM
        */
 
-      async get_product_random( limit, perPage ){
-         if(perPage == null ) perPage = 10;
-         if( this.which_query == 'random' ){
-            var form = new FormData();
-            form.append('action', 'atlantis_load_product_recommend_random');
-            form.append('lat', this.latitude);
-            form.append('lng', this.longitude);
-            form.append('paged', limit );
-            form.append('perPage', perPage );
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify(r));
-               if( res.message == 'product_found' ){
-                  res.data.forEach(item => {
-                     if (! this.products.some(existingItem => existingItem.id === item.id)) {
-                        this.products.push(item);
-                     }
-                  });
-               }
-               
+      async get_product_random( paged ){
+         var form = new FormData();
+         form.append('action', 'atlantis_load_product_recommend_random');
+         form.append('lat', this.latitude);
+         form.append('lng', this.longitude);
+         form.append('paged', paged );
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'product_found' ){
+               res.data.forEach(item => {
+                  if (! this.products.some(existingItem => existingItem.id === item.id)) {
+                     this.products.push(item);
+                  }
+               });
             }
+            
+         }
+      },
+
+      async atlantis_get_product_discount_and_gift(){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_product_discount_and_gift');
+         form.append('limit', 10);
+         form.append('paged', this.products.length);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'product_found' ){
+               res.data.forEach(item => {
+                  if (! this.products.some(existingItem => existingItem.id === item.id)) {
+                     this.products.push( item );
+                  }
+               });
+            }
+
+            if( this.products.length < 10 ){
+               var _get_rest_of_data_random = 10 - this.products.length;
+               await this.get_product_random(_get_rest_of_data_random);
+            }
+
+         }else{
+
+            var _get_rest_of_data_random   = this.products.length;
+            if( this.products.length < 10 ){
+               _get_rest_of_data_random = 10 - this.products.length;
+            }
+            await this.get_product_random(_get_rest_of_data_random);
+
          }
       },
 
@@ -341,17 +287,8 @@ var app = Vue.createApp({
    async created() {
       this.get_current_location();
       this.loading = true;
-      // await this.get_product_recommend('nearest', [0]);
-      if( this.which_query == 'recommend' ){
-         await this.get_product_recommend();
-      }
-      if( this.which_query == 'discount' ){
-         await this.get_product_discount(this.products.length);
-      }
-      if( this.which_query == 'random' ){
-         await this.get_product_random(this.products.length);
-      }
 
+      await this.atlantis_get_product_discount_and_gift();
       
       this.loading = false;
       window.appbar_fixed();

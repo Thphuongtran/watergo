@@ -170,6 +170,7 @@
                      <div class='order-gr'>
                         <span class='product-title'>{{ product.name }}</span>
                         <span class='product-subtitle'>{{ product.name_second }}</span>
+                        <span v-show='has_gift(product) == true' class='product-subtitle product-gift' >{{ product.gift_text }}</span>
                      </div>
                      <div class='order-price'>
                         <span class='price' >
@@ -543,6 +544,8 @@ var app = Vue.createApp({
 
    methods: { 
 
+      has_gift( p){ return window.has_gift(p); },
+
       resize_input_order_note(){
          const maxHeight = 40;
          const textarea = this.$refs.resize_input_order_note;
@@ -563,6 +566,8 @@ var app = Vue.createApp({
          var _watergo_carts = JSON.parse(localStorage.getItem('watergo_carts'));
          
          if( this.canPlaceOrder == true && this.delivery_address_primary != null  ){
+
+
             this.loading = true;
             var delivery_data = [];
             var delivery_type = '';
@@ -593,8 +598,9 @@ var app = Vue.createApp({
             form.append('delivery_type',     delivery_type );
             form.append('productSelected',   JSON.stringify( this.carts ) );
             form.append('input_order_note',  this.input_order_note  );
-
+            
             var r = await window.request(form);
+
             if( r != undefined ){
                var res = JSON.parse(JSON.stringify(r));
                if( res.message == 'insert_order_ok' ){
@@ -611,6 +617,26 @@ var app = Vue.createApp({
                   }
                   localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
                   // 
+
+                  // SEND NOTIFCATION IN BACKGROUND
+                  // try {
+                  //    var form_background_notification = new FormData();
+                  //    form_background_notification.append('action', 'atlantis_protocal_notification_in_background');
+                  //    form_background_notification.append('send_to', 'store');
+                  //    form_background_notification.append('order_status', res.notification_args.order_status);
+                  //    form_background_notification.append('order_id', res.notification_args.order_id);
+                  //    form_background_notification.append('user_id', res.notification_args.user_id);
+                  //    form_background_notification.append('store_id', res.notification_args.store_id);
+                  //    form_background_notification.append('attachment_url', res.notification_args.attachment_url);
+                  //    form_background_notification.append('order_number', res.notification_args.order_number);
+                  //    form_background_notification.append('hash', res.notification_args.hash);
+                  //    const requestPromise = window.request(form_background_notification);
+                  //    const immediatePromise = new Promise(resolve => resolve());
+                  //    // Use Promise.race to determine which promise resolves first
+                  //    await Promise.race([requestPromise, immediatePromise]);
+                  // } catch (error) {}
+
+                  this.loading = false;
                   this.banner_open = true;
                }else{
                   this.loading = false;
@@ -970,6 +996,7 @@ var app = Vue.createApp({
       // INITIAL carts
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
       if( _carts.length > 0 ){
+
          _carts.forEach( store => {
             if (store.store_select == true ) {
                this.carts.push({ ...store, products: [...store.products.filter( product => product.product_select == true )] });
@@ -985,6 +1012,7 @@ var app = Vue.createApp({
                }
             }
          });
+
          this.carts.forEach( ( store, storeIndex ) => {
             store.products.forEach( async ( product, productIndex ) => {
                var form = new FormData();
@@ -996,16 +1024,24 @@ var app = Vue.createApp({
                   if( res.message == 'product_found' ){
                      this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
                      this.carts[storeIndex].products[productIndex].name             = res.data.name;
+                     // DISCOUNT
                      this.carts[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
                      this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
                      this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
                      this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
+                     // GIFT
+                     this.carts[storeIndex].products[productIndex].has_gift         = res.data.has_gift;
+                     this.carts[storeIndex].products[productIndex].gift_to          = res.data.gift_to;
+                     this.carts[storeIndex].products[productIndex].gift_from        = res.data.gift_from;
+                     this.carts[storeIndex].products[productIndex].gift_text        = res.data.gift_text;
+
                      this.carts[storeIndex].products[productIndex].price            = res.data.price;
                      this.carts[storeIndex].products[productIndex].product_type     = res.data.product_type;
                   }
                }
             });
          });
+         
       }      
 
       this.delivery_type.once = true;

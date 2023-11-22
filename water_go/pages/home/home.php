@@ -264,6 +264,14 @@
       padding: 0 12px;
    }
 
+   .list-store .product-block{
+      width: 179px;
+   }
+   .list-store .product-block .img{
+      width: 100%;
+      height: 179px;
+   }
+
    #btn-zalo{
       width: 50px;
       height: 50px;
@@ -503,7 +511,7 @@
 
                </div>
 
-               <div v-if='storeNearby.length > 0' class='list-product-recommend' style='margin-top: 28px;'>
+               <div v-if='storeNearby.length > 0' class='list-product-recommend list-store' style='margin-top: 28px;'>
                   <div class='gr-heading'>
                      <p class='heading'><?php echo __('Nearby store', 'watergo'); ?></p>
                      <span @click='gotoNearbyStore' class='link'><?php echo __('See all', 'watergo'); ?></span>

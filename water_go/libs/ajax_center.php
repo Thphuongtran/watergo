@@ -134,7 +134,11 @@ function func_atlantis_get_order_fullpack( $args ){
                      'order_group_product_name_second'      => $product->order_group_product_name_second,
                      'order_group_product_type'             => $product->order_group_product_type,
                      // 
-                     'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true)
+                     'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true),
+
+                     'order_group_product_gift_text'        => $product->order_group_product_gift_text,
+                     'order_group_product_gift_to'          => $product->order_group_product_gift_to,
+                     'order_group_product_gift_from'        => $product->order_group_product_gift_from
                   ];
                }
             }

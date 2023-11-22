@@ -21,15 +21,20 @@
    }
    .box-textarea{
       margin-top: 10px;
+      padding-bottom: 10px;
    }
    .btn-primary.disabled{
       opacity: 0.6;
       pointer-events: none;
    }
+   .box-textarea textarea{
+      overflow: hidden;
+      height: auto;
+   }
 </style>
 <div id='app'>
 
-   <div v-show='loading == true && order != null && order.order_hidden == 0'>
+   <div v-if='loading == true && order != null && order.order_hidden == 0'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -62,12 +67,12 @@
 
       <div class='break-line'></div> 
 
-      <div v-show='order_delivery_address != null' class='inner'>
+      <div v-if='order != null' class='inner'>
          <div class='list-tile delivery-address style-order'>
             <div class='content'>
                <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
-               <p class='tt03' v-if='order_delivery_address != null'>{{ order_delivery_address.address }}</p>
-               <p class='tt02' v-if='order_delivery_address != null'>{{ order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order_delivery_address.phone ) : '' }}</p>
+               <p class='tt03'>{{ order.order_delivery_address.address }}</p>
+               <p class='tt02'>{{ order.order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order.order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order.order_delivery_address.phone ) : '' }}</p>
             </div>
          </div>
       </div>
@@ -94,6 +99,9 @@
                   <div class='order-gr'>
                      <span class='product-title'>{{ product.order_group_product_name }}</span>
                      <span class='product-subtitle'>{{ product.order_group_product_name_second }}</span>
+                     <span class='product-subtitle' v-show='product.order_group_product_gift_text != ""'>
+                        {{ product.order_group_product_gift_text }}
+                     </span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -149,7 +157,7 @@
 
       <div v-if='order != null && order.order_note != null && order.order_note != ""' class='inner'>
          <div class='box-textarea'>
-            <textarea @input='resize_input_order_note' ref='resize_input_order_note' class='input_order_note' v-model='order.order_note' readonly></textarea>
+            <textarea ref='input_order_note'  class='input_order_note' readonly>{{order.order_note}}</textarea>
          </div>
       </div>
 
@@ -261,7 +269,6 @@ createApp({
 
          order_number: 0,
          order_status: '',
-         order_delivery_address: null,
 
          get_locale: '<?php echo get_locale(); ?>',
 
@@ -279,9 +286,24 @@ createApp({
       }
    },
 
-   methods: {
+   watch: {
+      order: {
+         handler( data ){
+            if( data.order_note != null && data.order_note.length > 0){
+               this.$nextTick(() => {
+                  const textarea = this.$refs.input_order_note;
+                  const lineHeight = 22;
+                  const content = textarea.value;
+                  const lineBreaksCount = (content.match(/\n/g) || []).length + (content.match(/<br\s*\/?>/g) || []).length;
+                  textarea.style.height = `${lineHeight * (lineBreaksCount + 1)}px`;
+               });
 
-      
+            }
+         }, deep: true
+      }
+   },
+
+   methods: {
 
       async atlantis_create_conversation_or_get_it(order_id, store_id){ 
          var form = new FormData();
@@ -394,7 +416,6 @@ createApp({
                
                this.order_number = res.data.order_number;
                this.order_status = res.data.order_status;
-               this.order_delivery_address = res.data.order_delivery_address;
 
                this.order = res.data;
 
@@ -488,7 +509,6 @@ createApp({
          form.append('action', 'atlantis_notification_mark_read_notification_hash_id');
          form.append('hash_id', hash_id);
          var r = await window.request(form);
-         console.log(r);
       },
 
    },
@@ -614,8 +634,7 @@ createApp({
          }
       }
 
-      setTimeout(() => {}, 200);
-      
+
       window.appbar_fixed();
       this.loading = false;
    },

@@ -424,7 +424,7 @@ var app = Vue.createApp({
    },
 
    methods: {
-
+      
       formatDescription(description) {return description.replace(/\n/g, '<br>');},
 
       async btn_share(){

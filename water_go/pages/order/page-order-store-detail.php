@@ -1,6 +1,3 @@
-<?php 
-   $user_id = get_current_user_id();
-?>
 <style>
    .list-tile.order .list-items .list-items-wrapper{
       flex-flow: row wrap;
@@ -8,11 +5,16 @@
    .box-textarea{
       margin-top: 10px;
       margin-bottom: 20px;
+      padding-bottom: 10px;
+   }
+   .box-textarea textarea{
+      overflow: hidden;
+      height: auto;
    }
 </style>
 <div id='app'>
 
-   <div v-show='loading == true && order != null && order.order_hidden == 0'>
+   <div v-if='loading == true && order != null && order.order_hidden == 0'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -37,13 +39,12 @@
 
       <div class='break-line'></div> 
 
-      <div class='inner'>
+      <div v-if='order != null'  class='inner'>
          <div class='list-tile delivery-address style-order style01'>
             <div class='content'>
                <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
-               <p class='tt03' v-if='order != null && order.order_delivery_address != undefined'>{{ order.order_delivery_address.address }}</p>
-               <p class='tt02' v-if='order != null && order.order_delivery_address != undefined'>{{ order.order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order.order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order.order_delivery_address.phone ) : '' }}</p>
-               <!-- <span v-if='address_kilometer > 0' class='address-kilometer'>{{address_kilometer}}km</span> -->
+               <p class='tt03' v-if='order.order_delivery_address != null'>{{ order.order_delivery_address.address }}</p>
+               <p class='tt02' v-if='order.order_delivery_address != null'>{{ order.order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order.order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order.order_delivery_address.phone ) : '' }}</p>
             </div>
          </div>
       </div>
@@ -64,6 +65,9 @@
                   <div class='order-gr'>
                      <span class='product-title'>{{ product.order_group_product_name }}</span>
                      <span class='product-subtitle'>{{ product.order_group_product_name_second }}</span>
+                     <span class='product-subtitle' v-show='product.order_group_product_gift_text != ""'>
+                        {{ product.order_group_product_gift_text }}
+                     </span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -119,7 +123,7 @@
 
       <div v-if='order != null && order.order_note != null && order.order_note != ""' class='inner'>
          <div class='box-textarea'>
-            <textarea @input='resize_input_order_note' ref='resize_input_order_note' class='input_order_note' v-model='order.order_note' readonly></textarea>
+            <textarea ref='input_order_note' class='input_order_note' readonly>{{order.order_note}}</textarea>
          </div>
       </div>
 
@@ -180,7 +184,7 @@
 
    </div>
 
-   <div v-show='popup_confirm_cancel == true' class='modal-popup style01 open'>
+   <div v-if='popup_confirm_cancel == true' class='modal-popup style01 open'>
       <div class='modal-wrapper'>
          <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
          <p class='tt01'><?php echo __('Select Cancellation Reason', 'watergo'); ?></p>
@@ -224,7 +228,6 @@ var app = Vue.createApp({
 
          popup_confirm_cancel: false,
 
-         address_kilometer: 0.0,
          time_shipping: [],
          
          reason_cancel: [
@@ -240,6 +243,23 @@ var app = Vue.createApp({
          btn_has_pressed: false,
 
          get_locale: '<?php echo get_locale();?>'
+      }
+   },
+
+   watch: {
+      order: {
+         handler( data ){
+            if( data.order_note != null && data.order_note.length > 0){
+               this.$nextTick(() => {
+                  const textarea = this.$refs.input_order_note;
+                  const lineHeight = 22;
+                  const content = textarea.value;
+                  const lineBreaksCount = (content.match(/\n/g) || []).length + (content.match(/<br\s*\/?>/g) || []).length;
+                  textarea.style.height = `${lineHeight * (lineBreaksCount + 1)}px`;
+               });
+
+            }
+         }, deep: true
       }
    },
 
@@ -454,56 +474,6 @@ var app = Vue.createApp({
          var res = JSON.parse( JSON.stringify(r));
          this.order = res.data;
          await this.get_time_shipping_order(this.order.order_id);
-
-         // console.log(this.order)
-
-         // CACULATOR LOCATION FROM USER ADDRESS TO KILOMETERS
-         // var form_get_store_location = new FormData();
-         // form_get_store_location.append('action', 'atlantis_get_location_of_store');
-         // form_get_store_location.append('store_id', this.order.store_id);
-
-         // var _store = await window.request(form_get_store_location);
-         // var _store_lat = 0.0;
-         // var _store_lng = 0.0;
-         // if(_store != undefined){
-         //    var _store_res = JSON.parse( JSON.stringify( _store ));
-         //    if( _store_res.message == 'store_found'){
-         //       _store_lat = parseFloat(_store_res.data.latitude);
-         //       _store_lng = parseFloat(_store_res.data.longitude);
-         //    }
-
-         //    var _order_delivery_address = res.data.order_delivery_address;
-         //    if( _order_delivery_address != undefined && _order_delivery_address != null ){
-         //       if( _order_delivery_address.latitude != undefined && _order_delivery_address.longitude){
-         //          var latitude = _order_delivery_address.latitude;
-         //          var longitude = _order_delivery_address.longitude;
-         //          var _caculator_distance = this.calculateDistance(
-         //             _store_lat, _store_lng,
-         //             latitude, longitude
-         //          );
-         //          this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
-         //       }
-
-         //    }
-         // }
-
-
-
-
-         // var _r = await window.get_location_from_address(_order_address);
-
-         // if( _r != undefined ){
-         //    var _res = JSON.parse( JSON.stringify( _r ));
-         //    // caculator distance 
-         //    var _lat = _res.items[0].position.lat;
-         //    var _lng = _res.items[0].position.lng;
-         //    var _caculator_distance = this.calculateDistance(
-         //       _store_lat, _store_lng,
-         //       _lat, _lng
-         //    );
-         //    this.address_kilometer = parseFloat(_caculator_distance).toFixed(1);
-         // }
-
       }
 
       setTimeout(() => {

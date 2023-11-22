@@ -850,6 +850,7 @@ function atlantis_get_product_discount_and_gift(){
          )
          AND wp_watergo_products.mark_out_of_stock = 0
          AND wp_watergo_products.product_hidden != 1 
+         AND wp_watergo_products.status = 'publish'
 
          ORDER BY wp_watergo_products.discount_percent DESC
          LIMIT $paged, $limit
