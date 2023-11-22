@@ -85,7 +85,9 @@ createApp({
          }
          // GO TO PRODUCT DETAI
          else if( item.notification_type == "product_pending"){
-            this.gotoProductDetail(item.product_id);
+            // this.gotoProductDetail(item.product_id);
+            // window.location.href = item.link;
+            window.appBridge.navigateTo("Product", `tab_product_refresh|${item.product_type}`);
          }
       },
 
@@ -124,87 +126,7 @@ createApp({
       },
 
       title_compact( item ){
-
-         // NOTIFICATION TYPE {product-pending}
-         if( item.notification_type == 'product_pending' && item.send_to == 'store' ){
-            if( item.order_status == 'allow' ){
-               return '<?php echo __('Admin đã duyệt 1 sản phẩm của bạn', 'watergo'); ?>';
-            }else if( item.order_status == 'deny' ){
-               return '<?php echo __('Admin đã từ chối duyệt 1 sản phẩm của bạn', 'watergo'); ?>';
-            }
-         }
-
-         if( this.get_locale == 'en_US'){
-            if( item.notification_type == 'order' && item.order_status == 'ordered' && item.send_to == 'store' ){
-               return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'store' ){
-               return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> was canceled`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'delivering' && item.send_to == 'user' ){
-               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is delivering`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'completed' && item.send_to == 'user' ){
-               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is completed`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'confirmed' && item.send_to == 'user' ){
-               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is confirmed`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'user' ){
-               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
-            }
-         }
-
-         if( this.get_locale == 'ko_KR'){
-            if( item.notification_type == 'order' && item.order_status == 'ordered' && item.send_to == 'store' ){
-               return `You have new order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span>`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'store' ){
-               return `The order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> was canceled`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'confirmed' && item.send_to == 'user' ){
-               return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 확인되었습니다`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'delivering' && item.send_to == 'user' ){
-               return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 배송중입니다`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'completed' && item.send_to == 'user' ){
-               return `주문번호 <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> 가 배송완료되었습니다`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'user' ){
-               return `Your order <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> is canceled`;
-            }
-
-         }
-
-         if( this.get_locale == 'vi' ){
-            if( item.notification_type == 'order' && item.order_status == 'ordered' && item.send_to == 'store' ){
-               return `Bạn có đơn mới <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đang chờ xác nhận`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'store' ){
-               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã bị huỷ`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'delivering' && item.send_to == 'user' ){
-               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đang trên đường giao tới bạn`;
-            }
-            if( item.notification_type == 'order' && item.order_status == 'completed' && item.send_to == 'user' ){
-               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được giao thành công`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'confirmed' && item.send_to == 'user' ){
-               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được xác nhận`;
-            }
-
-            if( item.notification_type == 'order' && item.order_status == 'cancel' && item.send_to == 'user' ){
-               return `Đơn <span class="hightlight-order">#${this.formatNumberWithLeadingZeros(item.order_number)}</span> đã được huỷ`;
-            }
-         }
-
+         return item.text;
       },
 
       goBack(){ 
@@ -217,8 +139,6 @@ createApp({
          form.append('paged', this.notifications.length);
          var r = await window.request(form);
 
-         console.log(r)
-         
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'notification_found' ){

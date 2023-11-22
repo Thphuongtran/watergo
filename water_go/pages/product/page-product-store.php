@@ -8,12 +8,17 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
 
 ?>
 <style>
+   .list-type-product li .product-l{
+      position: relative;
+   }
    .product-image{
+      width: 80px;
+      height: 80px;
       position: relative;
    }
    .product-image-badge{
       position: absolute;
-      bottom: 7px; left: 0;
+      bottom: 0px; left: 0;
       width: 46px;
       height: 14px;
       background: #FFC83A;
@@ -23,6 +28,29 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
       letter-spacing: 0px;
       text-align: center;
    }
+   .badge-discount{
+      min-width: 30px;
+      width: auto;
+      height: 14px;
+      left: 0;
+      color: #FF4848;
+      font-size: 9px;
+      font-weight: 400;
+      line-height: 13px;
+      letter-spacing: 0px;
+      text-align: center;
+      white-space: nowrap;
+      padding: 0 2px;
+      background: white;
+   }
+   .list-type-product li .tt3{
+      justify-content: flex-start;
+      flex-flow: row wrap
+   }
+   .list-type-product li .tt3 .price-sub{
+      margin-right: 5px;
+   }
+
 </style>
 <div id='app'>
    <div v-show='loading == false' class='page-product-store'>
@@ -120,16 +148,16 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
                   <div class='product-l'>
                      <div class='product-image'>
                         <img :src='product.product_image.url'>
+                        <span v-show='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                         <div class='product-image-badge' v-if='is_product_pending(product) != ""'><?php echo __('Pending', 'watergo'); ?></div>
                      </div>
                   </div>
 
                   <div class='product-r'>
                      <div class='tt1'>{{ product.name }}</div>
-                     <div class='tt2'>{{ product_name_compact(product) }}</div>
+                     <div class='tt2'>{{ product.name_second }}</div>
 
                      <div class='tt3'>
-
                         <div 
                            class='gr-price' 
                            :class="has_discount(product) == true ? 'has_discount' : '' ">
@@ -138,6 +166,9 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
                               {{ common_price_show_currency(product.price) }}
                            </span>
                         </div>
+                        <span v-show='has_gift(product) == true' class='badge-gift'>
+                           <span class='text'>{{ product.gift_text }}</span>
+                        </span>
 
                         <!-- <button class="btn-action-view">View</button> -->
                      </div>
@@ -200,6 +231,7 @@ var app = Vue.createApp({
       }
    },
 
+
    computed: {
 
       is_single_tab(){
@@ -232,16 +264,6 @@ var app = Vue.createApp({
    },
 
    methods: {
-
-      product_name_compact( product ){
-         if( product.name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         }else if( product.product_type == "ice_device"){
-            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
-         }else{
-            return product.name_second;
-         }
-      },
 
       async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 
@@ -301,6 +323,7 @@ var app = Vue.createApp({
             this.products.push( data);
          }
       },
+
       update_delete_data_from_callback(product_id ){
          var _indexItem = this.products.findIndex( item => item.id == product_id );
          if( _indexItem != -1){
@@ -388,6 +411,7 @@ var app = Vue.createApp({
       },
 
       has_discount( product ){ return window.has_discount( product ); },
+      has_gift( product ){ return window.has_gift( product ); },
       common_price_show_currency(p){ return common_price_show_currency(p) },
       common_price_after_discount(p){ return common_price_after_discount(p) },
 
@@ -428,14 +452,27 @@ var app = Vue.createApp({
 
       this.loading = true;
       setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+
+      const urlParams   = new URLSearchParams(window.location.search);
+      const tab         = urlParams.get('tab');
+      const reload      = urlParams.get('reload');
+
+      if( reload == 1 ){
+         alert('reload page');
+      }
+
       
       await this.get_product_type();
       await this.get_notification_count();
       
-      var _findTabSelected = this.product_tab.find( item => item.active );
-      if( _findTabSelected ){
-         await this.atlantis_get_product_from_store( _findTabSelected.value );
-         this.product_tab_value = _findTabSelected.value;
+      if( tab && tab != '' ){
+         await this.product_tab_select(tab)
+      }else{
+         var _findTabSelected = this.product_tab.find( item => item.active );
+         if( _findTabSelected ){
+            await this.atlantis_get_product_from_store( _findTabSelected.value );
+            this.product_tab_value = _findTabSelected.value;
+         }
       }
 
       setTimeout( () => { 
@@ -443,10 +480,13 @@ var app = Vue.createApp({
          window.appbar_fixed();
       }, 200);
 
-
    },
 
 
 }).mount('#app');
 window.app = app;
+
+async function callbackActiveTab(){
+   await window.app.get_notification_count();
+}
 </script>

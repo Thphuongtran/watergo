@@ -64,7 +64,71 @@
    .space-top-product .product-design .price-sub{
       margin-left: 0;
       position: relative;
+      line-height: 22px;
+   }
+
+   .badge-discount, .badge-out-of-stock{
+      z-index: 88;
+   }
+
+   .product-header .main{
+      height: 328px;
+   }
+
+   .banner-notify-cart{
+      z-index: 8888;
+   }
+
+   .product-design .price-sub{
+      margin-left: 0;
+      margin-right: 10px;
+      line-height: 22px;
+   }
+   .product-design.product-detail .price{
+      margin-right: 5px;
+   }
+
+   .product-detail-bottomsheet {
+      z-index: 88
+   }
+   .badge-gift {
+      display: flex;
+      flex-flow: row nowrap;
+   }
+   .badge-gift .icon{
+      height: 24px;
+   }
+   .badge-gift .text{
+      white-space: pre-wrap;
+      line-height: 26px;
+   }
+   .product-design.product-detail .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+
+   .space-top-product .badge-gift {
+      position: relative;
+      width: 100%;
+   }
+   .space-top-product .badge-gift .icon {
+      position: absolute;
       top: -2px;
+   }
+   .space-top-product .badge-gift .text {
+      padding-left: 25px;
+      line-height: 20px;
+   }
+   .list-horizontal ul{
+      overflow-y: hidden;
+   }
+
+   .product-detail-wrapper{
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: calc( 100vh - 50px);
+      padding-bottom: 30px;
    }
 </style>
 
@@ -122,7 +186,7 @@
                      {{ product.category_parent }}</span>
                </p>
                {{ product.category_parent }}
-               <p class='tt02'>{{ product_name_compact(product) }}</p>
+               <p class='tt02'>{{ product.name_second }}</p>
 
                <p v-if='product.description != ""' class='tt03' v-html='formatDescription(product.description)'></p>
                <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
@@ -132,11 +196,20 @@
                   <span v-if='has_discount(product) == true' class='price-sub'>
                      {{ common_price_show_currency(product.price) }}
                   </span>
+                  <span v-show='has_gift(product) == true' class='badge-gift'>
+                     <span class='icon'>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </span>
+                     <span class='text'>{{ product.gift_text}}</span>
+                  </span>
                </div>
 
                <div class='entry-quantity'>
-                  <p><?php echo __('Quantity', 'watergo'); ?></p>
-                  <div class='quantity-event'>
+                  <p v-show='view_only == false'><?php echo __('Quantity', 'watergo'); ?></p>
+                  <div v-show='view_only == false' class='quantity-event'>
                      <span @click='minsQuantity'>
                         <svg width="20" height="3" viewBox="0 0 20 3" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.5714 2.85714H1.42857C1.04969 2.85714 0.686328 2.70663 0.418419 2.43872C0.15051 2.17081 0 1.80745 0 1.42857C0 1.04969 0.15051 0.686328 0.418419 0.418419C0.686328 0.15051 1.04969 0 1.42857 0H18.5714C18.9503 0 19.3137 0.15051 19.5816 0.418419C19.8495 0.686328 20 1.04969 20 1.42857C20 1.80745 19.8495 2.17081 19.5816 2.43872C19.3137 2.70663 18.9503 2.85714 18.5714 2.85714Z" fill="#A2A2A2"/></svg>
                      </span>
@@ -190,7 +263,7 @@
 
          <div v-if='product_by_store.length > 0' class='inner space-top-product'>
             <div class='gr-heading'>
-               <p class='heading'><?php echo __('Top products', 'watergo'); ?></p><span @click='gotoProductTop(product.category)' class='link'><?php echo __('See All', 'watergo'); ?></span>
+               <p class='heading'><?php echo __('Top products', 'watergo'); ?></p><span v-show='view_only == false' @click='gotoProductTop(product.category)' class='link'><?php echo __('See All', 'watergo'); ?></span>
             </div>
             <div class='list-horizontal'>
                <ul>
@@ -202,7 +275,7 @@
                            class='badge-discount badge-out-of-stock size-large'><?php echo __('Out of Stock', 'watergo'); ?></span>
                      </div>
                      <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ product_name_compact(product) }}</p>
+                     <p class='tt02'>{{ product.name_second }}</p>
                      
 
                      <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
@@ -212,6 +285,16 @@
                         <span v-if='has_discount(product) == true' class='price-sub'>
                            {{ common_price_show_currency(product.price) }}
                         </span>
+                        <span v-show='has_gift(product) == true' class='badge-gift'>
+                           <span class='icon'>
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                           </span>
+                           <span class='text'>{{ product.gift_text}}</span>
+                        </span>
+
                      </div>
 
                   </li>
@@ -220,7 +303,7 @@
          </div>
       </div>
 
-      <div class='product-detail-bottomsheet cell-order'>
+      <div v-show='view_only == false' class='product-detail-bottomsheet cell-order'>
          
          <!-- <button 
             <?php echo is_user_logged_in() == false ? "@click='gotoLogin'" : "@click='chat_to_store'" ?> 
@@ -241,22 +324,22 @@
             ?>
          </button>
       </div>
-
-      <div v-if='modal_store_working == true' class='modal-popup open'>
-         <div class='modal-wrapper'>
-            <div class='modal-close'><div @click='buttonCloseModal_store_working' class='close-button'><span></span><span></span></div></div>
-            <p class='heading t-primary style01'><?php echo __('Store Closed', 'watergo'); ?>:</p>
-            <p>{{ timestamp_to_date(store.close_time) }} - {{ timestamp_to_date(store.start_time) }}</p>
-         </div>
-      </div>
-
-      <div v-if='modal_store_out_of_stock == true' class='modal-popup open'>
-         <div class='modal-wrapper'>
-            <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
-            <p class='heading'><?php echo __("This Product is <span class='t-primary'>Out of Stock</span>", 'watergo');?></p>
-         </div>
-      </div>
       
+   </div>
+
+   <div v-if='modal_store_working == true' class='modal-popup open'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='buttonCloseModal_store_working' class='close-button'><span></span><span></span></div></div>
+         <p class='heading t-primary style01'><?php echo __('Store Closed', 'watergo'); ?>:</p>
+         <p>{{ timestamp_to_date(store.close_time) }} - {{ timestamp_to_date(store.start_time) }}</p>
+      </div>
+   </div>
+
+   <div v-if='modal_store_out_of_stock == true' class='modal-popup open'>
+      <div class='modal-wrapper'>
+         <div class='modal-close'><div @click='buttonCloseModal_store_out_of_stock' class='close-button'><span></span><span></span></div></div>
+         <p class='heading'><?php echo __("This Product is <span class='t-primary'>Out of Stock</span>", 'watergo');?></p>
+      </div>
    </div>
 
    <div class='modal-popup' :class='loading == false && ( product == null || product.product_hidden == 1 ) ? "open" : ""'>
@@ -303,6 +386,8 @@ var app = Vue.createApp({
          store: null,
          account: null,
 
+         view_only: false,
+
          show_add_cart: false,
 
          product_type: '',
@@ -340,16 +425,6 @@ var app = Vue.createApp({
 
    methods: {
 
-      product_name_compact( product ){
-         if( product.name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         }else if( product.product_type == "ice_device"){
-            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
-         }else{
-            return product.name_second;
-         }
-      },
-
       formatDescription(description) {return description.replace(/\n/g, '<br>');},
 
       async btn_share(){
@@ -364,6 +439,7 @@ var app = Vue.createApp({
       buttonCloseModal_store_out_of_stock(){ this.modal_store_out_of_stock = false; },
       
       has_discount( product ){ return window.has_discount( product ); },
+      has_gift( product ){ return window.has_gift( product ); },
       product_is_mark_out_of_stock( product ){ return window.product_is_mark_out_of_stock(product); },
       common_price_after_discount(p){ return common_price_after_discount(p) },
       common_price_show_currency(p){ return common_price_show_currency(p) },
@@ -372,9 +448,7 @@ var app = Vue.createApp({
          
          if( show_modal_success == true ){
             this.show_add_cart = true;
-
             var timeoutId = setTimeout(() => {this.show_add_cart = false;}, 1500);
-
             if (timeoutId) {
                clearTimeout(timeoutId);
                this.show_add_cart = true;
@@ -382,6 +456,7 @@ var app = Vue.createApp({
             }
          }
 
+         // GET CURRENT STORE AND PRODUCT
          var _storeIndex = this.carts.findIndex( store => store.store_id == this.store.id );
          if( _storeIndex == -1 ){
             this.carts.push({
@@ -409,9 +484,24 @@ var app = Vue.createApp({
             }else{
                this.carts[_storeIndex].products.some( product => product.product_select = false);
                this.carts[_storeIndex].products[_productIndex].product_select = true;
-               this.carts[_storeIndex].products[_productIndex].product_quantity_count = this.carts[_storeIndex].products[_productIndex].product_quantity_count + this.product_quantity_count;
+               this.carts[_storeIndex].products[_productIndex].product_quantity_count = this.product_quantity_count;
             }
          }
+
+
+         // RESET ALL SELECT - CHECK ONLY CURRENT PRODUCT
+         // if( show_modal_success == false this.carts.length > 0 ){
+         //    this.carts.forEach( store => {
+         //       if( store.id == this.store.id ){
+         //          store.store_select = true;
+         //          store.products.forEach( product => product.product_select = false );
+         //       }else{
+         //          store.store_select = false;
+         //       }
+         //    });
+
+         // }
+         // localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
 
       },
 
@@ -596,6 +686,10 @@ var app = Vue.createApp({
 
    async created(){
 
+      if( window.appBridge != undefined ){
+         window.appBridge.setEnableScroll(false);
+      }
+
       this.loading = true;
 
       // const appFireBase = initializeApp(firebaseConfig);
@@ -605,6 +699,11 @@ var app = Vue.createApp({
 
       const urlParams = new URLSearchParams(window.location.search);
       const product_id = urlParams.get('product_id');
+      const _view_only = urlParams.get('view_only');
+      if( _view_only && _view_only == 1){
+         this.view_only = true;
+      }
+
       await this.get_current_user_id();
       await this.findProduct(product_id);
 

@@ -19,6 +19,7 @@
    .scaffold{
       height: 100%;
       overflow-y: auto;
+      padding-bottom: 56px;
    }
 
    .btn_send_message.disabled{
@@ -31,14 +32,14 @@
    }
 
    .leading-group{
-      width: 72%;
+      /* width: 72%;
       position: absolute;
       text-align: center;
       transform: translateX(-50%);
       left: 50%;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; */
    }
 
    .list-messenger li{
@@ -124,7 +125,7 @@
    }
 
    .box-form-chat{
-      position: initial;
+      /* position: initial; */
    }
 
    .page-chat{
@@ -132,6 +133,9 @@
 	   grid-template-rows: 56px 1fr 56px;
 	   height: 100vh;
 	}
+   .page-chat.expanded{
+      grid-template-rows: 136px 1fr 56px;
+   }
 
    .list-messenger .pin-new-product{
       margin-top: -14px;
@@ -141,6 +145,28 @@
       margin-top: 0;
    }
 
+   .order-pin {
+      width: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: flex-start;
+      background: #F6F3F3;
+      padding: 8px 50px;
+      font-size: 13px;
+      font-weight: 500;
+   }
+   .order-pin .t01 {
+      font-size: 13px;
+      font-weight: 500;
+      color: #252831;
+      padding: 5px 0;
+   }
+   .order-pin .t02 {
+      color: #2790F9;
+      padding: 5px 0;
+   }
+
+
 
 </style>
 <?php 
@@ -148,7 +174,7 @@
 ?>
 
 <div id='app'>
-   <div v-if='loading == false && message_not_found == false' class='page-chat'>
+   <div v-if='loading == false && message_not_found == false' class='page-chat' :class='order.order_number != 0 ? "expanded" : ""'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -168,13 +194,14 @@
                </div>
             </div>
          </div>
-
+         <div v-show='order.order_number != 0' class='order-pin'>
+            <span class='t01'><?php echo __('Order', 'watergo'); ?> #{{ padZeros(order.order_number) }}</span>
+            <span class='t02'>{{ common_price_show_currency(order.order_total) }}</span>
+         </div>
       </div>
 
       <div class='scaffold'>
-         
          <div class='scaffold-body'>
-
             <ul class='list-messenger'>
 
                <li
@@ -190,7 +217,6 @@
                   <div class='message-wrapper'
                      v-for='(messages, messagesKey) in messenger.messages' :key='messagesKey'
                   >
-
                      <div v-if='messages.product != null' class='product-pin' :class='messagesKey > 1 ? "not-first" : "" '>
                         <div class='leading'>
                            <img :src="messages.product.product_image">
@@ -213,7 +239,7 @@
                      
                      <div v-if='messenger.user_id != null' class='message-context'>
                         <div v-if='messenger.message_id == messages.message_id' class='avatar'><img :src="get_avatar_user_chat(messenger)" ></div>
-                        <div class='contens'>{{ messages.content }}</div>
+                        <div class='contens' v-html='messages.content'></div>
                      </div>
 
                   </div>
@@ -224,7 +250,6 @@
 
             </ul>
          </div>
-
       </div>
 
       <div v-if='message_not_found == false' class='box-form-chat'>
@@ -286,8 +311,12 @@ var app = Vue.createApp({
    data (){
       
       return {
+
+         get_locale: '<?php echo get_locale(); ?>',
          loading: false,
          loading_data: false,
+
+         pulldown_window_at_once: false,
 
          message_not_found: false,
          message_in_first_time: true,
@@ -330,6 +359,11 @@ var app = Vue.createApp({
 
          is_send: false,
 
+         order: {
+            order_number: 0,
+            order_total: 0
+         },
+
       }
    },
 
@@ -346,6 +380,27 @@ var app = Vue.createApp({
 
    methods: {
 
+      async atlantis_get_chat_order_detail( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_chat_order_detail');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         if( r != undefined){
+            var res = JSON.parse( JSON.stringify(r));
+            if( res.message == 'order_found'){
+               var _total_price = 0;
+               res.data.forEach( product => {
+                  this.order.order_number = product.order_number;
+                  _total_price += ( product.order_group_product_price - ( product.order_group_product_price * ( product.order_group_product_discount_percent / 100)) ) * product.order_group_product_quantity_count;
+               });
+               this.order.order_total = _total_price;
+            }
+         }
+      },
+
+      common_price_show_currency(price){ return window.common_price_show_currency(price); },
+
+
       get_price_discount_from_message( product ){
          if( product.product_price_discount != null && product.product_price_discount != 0 ){
             return this.common_price_show_currency( product.product_price_discount );
@@ -355,14 +410,14 @@ var app = Vue.createApp({
       },
 
       handleFocusIn(){
-         // if( window.appBridge != undefined ){
-         //    window.appBridge.setEnableScroll(true);
-         // }
+         jQuery(window).on('resize', function(){
+            jQuery('.scaffold').animate({
+               scrollTop: jQuery('.scaffold')[0].scrollHeight
+            }, 0);
+         });
       },
       handleFocusOut(){
-         // if( window.appBridge != undefined ){
-         //    window.appBridge.setEnableScroll(false);
-         // }
+         
       },
 
       truncateUTF8String(n){ return window.truncateUTF8String(n)},
@@ -383,22 +438,36 @@ var app = Vue.createApp({
       },
 
       formatDateTime(inputDateTime) {
-         const months = [
-            "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
-         ];
+         if( inputDateTime ){
 
-         const dateTime = new Date(inputDateTime);
-         const month = months[dateTime.getMonth()];
-         const day = dateTime.getDate();
-         const year = dateTime.getFullYear();
-         const hours = dateTime.getHours();
-         const minutes = dateTime.getMinutes();
-         const ampm = hours >= 12 ? 'pm' : 'am';
-         const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-         const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const months = [
+               "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+               "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+            ];
 
-         return `${month} ${day}, ${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+            const dateTime = new Date(inputDateTime);
+            const month = months[dateTime.getMonth()];
+
+            const day = dateTime.getDate();
+            const year = dateTime.getFullYear();
+            const hours = dateTime.getHours();
+            const minutes = dateTime.getMinutes();
+            const ampm = hours >= 12 ? 'pm' : 'am';
+            const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+            if( this.get_locale == 'en_US' ){
+               return `${month} ${day}, ${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+            } else if( this.get_locale == 'ko_KR' ){
+               return `${year}년 ${dateTime.getMonth()+1}월 ${day}일 ${formattedHours}:${formattedMinutes} ${ampm}`;
+            } else if( this.get_locale == 'vi' ){
+               return `Ngày ${day} Tháng ${dateTime.getMonth()+1} Năm ${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+            }else{
+               return `${month} ${day}, ${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+            }
+         }
+
+         
       },
 
       can_show_time_chat( message_id){
@@ -571,6 +640,7 @@ var app = Vue.createApp({
          form.append('conversation_id', this.conversation_id);
          form.append('where_app', this.where_app);
          var r = await window.request(form);
+
          if( r != undefined ){
             var res = JSON.parse(JSON.stringify(r ));
             if( res.message == 'conversation_found'){
@@ -587,10 +657,12 @@ var app = Vue.createApp({
          }
       },
 
-      async atlantis_get_messeges(){
+      async atlantis_get_messeges( get_newest = 0 ){
          var form = new FormData();
          form.append('action', 'atlantis_get_messeges');
-         form.append('conversation_id', parseInt(this.conversation_id));
+         form.append('conversation_id', this.conversation_id);
+         form.append('paged', this.messages.length);
+         form.append('get_newest', get_newest);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -657,11 +729,11 @@ var app = Vue.createApp({
 
                   this.product = null;
 
-                  console.log(this.messages);
-
-                  jQuery('.scaffold').animate({
-                     scrollTop: $(document).height()
-                  }, 0);
+                  jQuery(document).ready(function($){
+                     jQuery('.scaffold').animate({
+                        scrollTop: jQuery('.scaffold')[0].scrollHeight
+                     }, 0);
+                  });
 
                   // COUNT MESSAGES
 
@@ -714,32 +786,10 @@ var app = Vue.createApp({
          }
       },
 
-      async atlantis_get_message_realtime_per_second( paged ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_message_realtime_per_second');
-         form.append('conversation_id', this.conversation_id);
-         form.append('paged', paged);
-         
-         var placeholders = [];
-         if( this.messages.length > 0 ){
-            this.messages.forEach( item => {
-               placeholders.push( item.message_id);
-            });
-            form.append('placeholders', JSON.stringify(placeholders) );
-         }
-         var r = await window.request(form);
-
-         if( r != undefined ){
-            var res = JSON.parse(JSON.stringify( r));
-            if( res.message == 'message_found' ){
-               res.data.forEach( mess => {
-                  var _exists = this.messages.some( item => item.message_id == mess.message_id );
-                  if( ! _exists ){
-                     this.messages.push( mess );
-                  }
-               });
-
-            }
+      padZeros(number) {
+         if( number != undefined ){
+            if (number <= 1000) return number.toString().padStart(4, '0');
+            return number.toString();
          }
       },
 
@@ -751,9 +801,7 @@ var app = Vue.createApp({
    },
 
    async mounted(){
-      setInterval( async () => {
-         await this.atlantis_get_message_realtime_per_second(0);
-      }, 1800);
+      
    },
 
    async created(){
@@ -771,6 +819,8 @@ var app = Vue.createApp({
       this.where_app          = urlParams.get('where_app');
       this.pin_product        = urlParams.get('pin_product');
 
+      await this.atlantis_get_chat_order_detail(this.order_id);
+
       await this.atlantis_get_conversation();
       await this.atlantis_read_all_messages();
 
@@ -782,34 +832,34 @@ var app = Vue.createApp({
          this.message_in_first_time = false;
       }
 
-      await this.atlantis_get_product_and_check( this.pin_product, this.conversation_id );
+      // await this.atlantis_get_product_and_check( this.pin_product, this.conversation_id );
 
       await setInterval( async () => {
-         await this.atlantis_get_messeges();
-      }, 1800);
+         await this.atlantis_get_messeges(1);
+      }, 2000);
+
+      if( this.messages.length > 0 ){
+         jQuery(document).ready(function($){
+            setTimeout( () => {
+
+            jQuery('.scaffold').animate({
+               scrollTop: jQuery('.scaffold')[0].scrollHeight
+            }, 0);
+            }, 1000);
+         });
+      }
 
       setTimeout(() => {
          this.loading = false;
          // window.appbar_fixed();
       }, 1000);
 
-      jQuery(document).ready(function($){
-         jQuery('.scaffold').animate({
-            scrollTop: $(document).height()
-         }, 0);
-      });
 
-      console.log(this.messages)
-
-
-      
-
-
-      
 
    }
 }).mount('#app');
 window.app = app;
+
 
 </script>
 

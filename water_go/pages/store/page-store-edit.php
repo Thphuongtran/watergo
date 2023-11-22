@@ -3,6 +3,9 @@
    .form-group input{font-size: 16px;}
    .form-group .btn{line-height: 38px;}
    .form-group input:disabled{  opacity: 0.6;}
+   .forcehidden{
+      display: none;
+   }
 </style>
 <div id='app'>
 
@@ -380,4 +383,9 @@ function initialize() {
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
+jQuery(document).ready(function($){
+   $(document).on('click', 'button.dismissButton', function(){
+      $('.pac-container').addClass('forcehidden');
+   });
+});
 </script>

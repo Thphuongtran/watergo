@@ -1304,12 +1304,12 @@ var app = Vue.createApp({
 
       btn_open_add_water_product(){ 
          this.popup_add_water_product = true;
-         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=add&store_id=${this.store_id}&appt=N&skipforce=pending` + '&disable=goback';
+         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=add&store_id=${this.store_id}&appt=N&skipforce=publish` + '&disable=goback';
       },
 
       btn_open_add_ice_product(){ 
          this.popup_add_ice_product = true; 
-         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=add&store_id=${this.store_id}&appt=Nskipforce=pending` + '&disable=goback';
+         this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=add&store_id=${this.store_id}&appt=N&skipforce=publish` + '&disable=goback';
       },
 
       async btn_close_popup( id_product_callback ){ 
@@ -1341,11 +1341,11 @@ var app = Vue.createApp({
 
          if(_product_type == 'ice' || _product_type == 'ice_device' ){
             this.popup_add_ice_product = true;
-            this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=edit&product_id=${_product_id}&appt=N` + '&disable=goback';
+            this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=edit&product_id=${_product_id}&skipforce=publish&appt=N` + '&disable=goback';
          }
          if(_product_type == 'water' || _product_type == 'water_device' ){
             this.popup_add_water_product = true;
-            this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=edit&product_id=${_product_id}&appt=N` + '&disable=goback';
+            this.link_iframe = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=edit&product_id=${_product_id}&skipforce=publish&appt=N` + '&disable=goback';
          }
       },
 

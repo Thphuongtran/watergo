@@ -314,6 +314,8 @@ function atlantis_send_message(){
       $product_price_discount = isset($_POST['product_price_discount']) ? $_POST['product_price_discount'] : '';
       $product_image       = isset($_POST['product_image']) ? $_POST['product_image'] : '';
 
+      $chat_content        = stripcslashes(nl2br($chat_content));
+
       $args = [
          'conversation_id_hash'   => $conversation_id,
          'user_id'                => $user_id,
@@ -661,11 +663,10 @@ add_action( 'wp_ajax_atlantis_get_messeges', 'atlantis_get_messeges' );
 function atlantis_get_messeges(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_messeges' ){
 
-      $limit   = isset($_POST['limit']) ? $_POST['limit'] : 25;
-      $perPage = isset($_POST['perPage']) ? $_POST['perPage'] : 0;
-      $perPage = $perPage * $limit;
-
-      $conversation_id = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+      $limit            = isset($_POST['limit']) ? $_POST['limit'] : 25;
+      $paged            = isset($_POST['paged']) ? $_POST['paged'] : 0;
+      $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : '';
+      $get_newest       = isset($_POST['get_newest']) ? $_POST['get_newest'] : 0;
 
       if( $conversation_id == '' ){
          wp_send_json_error([ 'message' => 'message_not_found' ] );
@@ -673,10 +674,23 @@ function atlantis_get_messeges(){
       }
       
       global $wpdb;
-      $sql = "SELECT * FROM wp_watergo_messages 
-         WHERE conversation_id_hash = '$conversation_id '
-         ORDER BY timestamp DESC
-      ";
+
+      if( $get_newest == 0 ){
+         $sql = "SELECT * FROM wp_watergo_messages 
+            WHERE conversation_id_hash = '$conversation_id'
+            ORDER BY message_id DESC
+            LIMIT $paged, $limit
+         ";
+      }else if( $get_newest == 1 ){
+         $sql = "SELECT * FROM wp_watergo_messages 
+            WHERE conversation_id_hash = '$conversation_id'
+            ORDER BY message_id DESC
+            LIMIT 1
+         ";
+      }else{
+         wp_send_json_error([ 'message' => 'message_not_found' ] );
+         wp_die();
+      }
       $res = $wpdb->get_results($sql);
 
       if( empty($res )){
@@ -945,6 +959,7 @@ function atlantis_get_product_and_check(){
 
 /**
  * @access UPGRADE FUNCTION GET CONVERSATION * create when it not exists
+ * @chat version 2
  */
 add_action( 'wp_ajax_nopriv_atlantis_create_conversation_or_get_it', 'atlantis_create_conversation_or_get_it' );
 add_action( 'wp_ajax_atlantis_create_conversation_or_get_it', 'atlantis_create_conversation_or_get_it' );
@@ -953,58 +968,98 @@ function atlantis_create_conversation_or_get_it(){
 
       $order_id         = isset($_POST['order_id']) ? $_POST['order_id'] : null;
       $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : null; // check by hash_id
-      $to_user          = get_current_user_id();
+      $from_user        = get_current_user_id();
       $store_id         = isset($_POST['store_id']) ? $_POST['store_id'] : null;
+      $get_by           = isset($_POST['get_by']) ? $_POST['get_by'] : null;
+      // $get_by_allow     = ['order_id'];
 
-      if( $order_id == null && $conversation_id == null){
+      if( $order_id == null){
          wp_send_json_error(['message' => 'conversation_not_found' ]);
          wp_die();
       }
 
       global $wpdb;
-      $sql_get_conversation = "SELECT * FROM wp_watergo_conversations WHERE converation_id_hash = '$conversation_id' OR order_id = $order_id LIMIT 1";
-      $conversation_id = $wpdb->get_results( $sql_get_conversation);
+      $get_user_id_from_store_id = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id";
+      $res_user_id               = $wpdb->get_results( $get_user_id_from_store_id);
+      $to_user                   = $res_user_id[0]->user_id;
 
+      // GET CONVERSATION BY ORDER ID
+      // $sql_get_conversation_by_order_id = "SELECT * FROM wp_watergo_conversations WHERE order_id = $order_id LIMIT 1";
+      // $conversation_id = $wpdb->get_results( $sql_get_conversation_by_order_id);
+      // GET CONVERSATION BY user and store
+      $sql_get_conversation_by_user_and_store = "SELECT * FROM wp_watergo_conversations WHERE to_user = $to_user AND from_user = $from_user LIMIT 1";
+      $conversation_id = $wpdb->get_results( $sql_get_conversation_by_user_and_store);
 
       if( empty( $conversation_id ) ){
          $converation_id_hash = bin2hex(random_bytes(32));
          // CONVERT STORE_ID TO {from_user} 
-         $from_user_sql = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id";
-         $from_user_res = $wpdb->get_results( $from_user_sql);
-         $from_user     = $from_user_res[0]->user_id;
          $create_at     = atlantis_current_datetime();
-
          $order_detail  = "SELECT * FROM wp_watergo_order_group WHERE order_group_store_id = $store_id ORDER BY order_group_id ASC LIMIT 1";
-
          $wpdb->insert('wp_watergo_conversations', [
             'from_user'             => $from_user,
             'to_user'               => $to_user,
             'conversation_id_hash'  => $converation_id_hash,
             'created_at'            => $create_at,
-            'order_id'              => $order_id
          ]);
 
          // ADD PIN PRODUCT FIRST MESSAGE
-         $wpdb->insert('wp_watergo_messages', [
-            'conversation_id_hash'   => $converation_id_hash,
-            'timestamp'              => $create_at,
-            'product_id'             => '',
-            'product_name'           => '',
-            'product_name_second'    => '',
-            'product_price'          => '',
-            'product_price_discount' => '',
-            'product_image'          => '',
-            'message_type'           => 'pin_product'
-         ]);
+         // $wpdb->insert('wp_watergo_messages', [
+         //    'conversation_id_hash'   => $converation_id_hash,
+         //    'timestamp'              => $create_at,
+         //    'product_id'             => '',
+         //    'product_name'           => '',
+         //    'product_name_second'    => '',
+         //    'product_price'          => '',
+         //    'product_price_discount' => '',
+         //    'product_image'          => '',
+         //    'message_type'           => 'pin_product'
+         // ]);
 
 
          wp_send_json_success(['message' => 'conversation_found', 'data' => $converation_id_hash ]);
          wp_die();
       }
 
-      wp_send_json_success(['message' => 'bug', 'res' => $conversation_id[0]->converation_id_hash ]);
+      wp_send_json_success(['message' => 'conversation_found', 'data' => $conversation_id[0]->conversation_id_hash ]);
       wp_die();
 
+
+   }
+}
+
+
+add_action( 'wp_ajax_atlantis_get_chat_order_detail', 'atlantis_get_chat_order_detail' );
+function atlantis_get_chat_order_detail(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_chat_order_detail' ){
+      $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : 0;
+
+      if($order_id == 0 ){
+         wp_send_json_error(['message' => 'order_not_found']);
+         wp_die();
+      }
+
+      global $wpdb;
+      $sql = "SELECT 
+            wp_watergo_order_group.order_group_product_quantity_count,
+            wp_watergo_order_group.order_group_product_price,
+            wp_watergo_order_group.order_group_product_discount_percent,
+            wp_watergo_order.order_number
+
+         FROM wp_watergo_order_group
+
+         LEFT JOIN wp_watergo_order
+         ON wp_watergo_order.hash_id = wp_watergo_order_group.hash_id
+         WHERE wp_watergo_order.order_id = $order_id
+      ";
+
+      $res = $wpdb->get_results( $sql);
+      if( empty($res ) ){
+         wp_send_json_error(['message' => 'order_not_found']);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'order_found', 'data' => $res]);
+      wp_die();
 
    }
 }

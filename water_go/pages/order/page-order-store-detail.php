@@ -1,7 +1,15 @@
 <?php 
    $user_id = get_current_user_id();
 ?>
-
+<style>
+   .list-tile.order .list-items .list-items-wrapper{
+      flex-flow: row wrap;
+   }
+   .box-textarea{
+      margin-top: 10px;
+      margin-bottom: 20px;
+   }
+</style>
 <div id='app'>
 
    <div v-show='loading == true && order != null && order.order_hidden == 0'>
@@ -54,8 +62,8 @@
                <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.order_group_product_metadata.product_name }}</span>
-                     <span class='product-subtitle'>{{ product_name_compact(product) }}</span>
+                     <span class='product-title'>{{ product.order_group_product_name }}</span>
+                     <span class='product-subtitle'>{{ product.order_group_product_name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -74,7 +82,7 @@
       <div class='box-delivery-time'>
          <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02' v-if='order != null && get_delivery_time_activity != null'>{{ get_delivery_time_activity }}</p>
-         <p class='tt03' v-if=' order != null && order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 1 hour)', 'watergo'); ?> </p>
+         <p class='tt03' v-if=' order != null && order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
          <div 
             v-if='
                (order != null && order.order_delivery_type == "once_date_time" ) ||
@@ -109,12 +117,19 @@
          <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'><?php echo __('Cancel Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
       </div>
 
+      <div v-if='order != null && order.order_note != null && order.order_note != ""' class='inner'>
+         <div class='box-textarea'>
+            <textarea @input='resize_input_order_note' ref='resize_input_order_note' class='input_order_note' v-model='order.order_note' readonly></textarea>
+         </div>
+      </div>
+
       <div class='break-line'></div>
 
       <div class='box-func-order-detail-store'>
          
-         <button 
-            @click='chat_to_user' 
+         <button  
+            v-show='is_user_can_chat == true'
+            @click='atlantis_create_conversation_or_get_it(order.order_id, order.store_id)' 
             class='btn-chat'>
             <span class='icon'>
                <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -150,7 +165,6 @@
             :class='[
                order.order_status == "complete" || order.order_status == "cancel" ? "on-right" : "cell-re-order",
             ]'
-         
          >
             <p 
             v-if='order != null '
@@ -230,17 +244,20 @@ var app = Vue.createApp({
    },
 
    methods: {
-      product_name_compact( product ){
-         console.log(this.order);
-         if( product.order_group_product_metadata.product_name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         // }else if( product.product_type == "ice_device"){
-         //    return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
-         }else{
-            return product.order_group_product_metadata.product_name_second;
-         }
 
-         
+      async atlantis_create_conversation_or_get_it(order_id, store_id){ 
+         var form = new FormData();
+         form.append('action', 'atlantis_create_conversation_or_get_it');
+         form.append('order_id', order_id);
+         form.append('store_id', store_id);
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'conversation_found' ){
+               var conversation_id   = res.data;
+               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_user&order_id=' + order_id + '&appt=N';
+            }
+         }
       },
       
       // PERFORM CANCEL ORDER
@@ -300,26 +317,6 @@ var app = Vue.createApp({
          }
       },
       
-
-      async chat_to_user( ){ 
-         var produdct_id = parseInt( this.order.order_products[0].order_group_product_id );
-         var form = new FormData();
-         form.append('action', 'atlantis_create_or_get_conversation');
-         form.append('from_user', parseInt( this.order.order_by) );
-         form.append('to_user', parseInt( <?php echo $user_id; ?> ) );
-         form.append('pin_product', produdct_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'get_conversation_ok' ){
-               var conversation_id   = res.data;
-               
-               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_user&appt=N';
-            }
-         }
-
-      },
-
 
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       
@@ -387,6 +384,13 @@ var app = Vue.createApp({
 
    computed: {
 
+      is_user_can_chat(){
+         if( this.order != null && ( this.order.order_status == "complete" || this.order.order_status == "cancel" ) ){
+            return false;
+         }
+         return true;
+      },
+
       is_button_has_pressed(){ return this.btn_has_pressed; },
 
       filter_time_shipping(){
@@ -396,29 +400,22 @@ var app = Vue.createApp({
 
       get_delivery_time_activity(){
          var _delivery_type = '';
-         if( this.order != null && this.order.order_delivery_type == 'once_immediately' ){
-            _delivery_type = 'once';
-         } else if( this.order != null && this.order.order_delivery_type == 'once_date_time' ){
-            _delivery_type = 'once';
-         } else if( this.order != null && this.order.order_delivery_type == 'weekly' ){
-            _delivery_type = 'weekly';
-         } else if( this.order != null && this.order.order_delivery_type == 'monthly' ){
-            _delivery_type = 'monthly';
+
+         var text_delivery_once = '<?php echo __("Delivery once", 'watergo'); ?>';
+         if( this.get_locale == 'vi' ){
+            text_delivery_once = 'Giao thường';
          }
 
-         if(this.get_locale == 'vi'){
-            if( this.order.order_delivery_type == 'once_immediately' ){
-               return 'Giao một lần';
-            } else if( this.order.order_delivery_type == 'once_date_time' ){
-               return 'Giao một lần';
-            } else if( this.order.order_delivery_type == 'weekly' ){
-               return 'Giao hàng tuần';
-            } else if( this.order.order_delivery_type == 'monthly' ){
-               return 'Giao hàng tháng';
-            }
-         }else{
-            return 'Delivery ' + _delivery_type;
+         if( this.order.order_delivery_type == 'once_immediately' ){
+            return text_delivery_once;
+         } else if( this.order.order_delivery_type == 'once_date_time' ){
+            return text_delivery_once;
+         } else if( this.order.order_delivery_type == 'weekly' ){
+            return '<?php echo __("Delivery weekly", 'watergo'); ?>';
+         } else if( this.order.order_delivery_type == 'monthly' ){
+            return '<?php echo __("Delivery monthly", 'watergo'); ?>';
          }
+         
 
       },
 
@@ -431,7 +428,7 @@ var app = Vue.createApp({
                product.order_group_product_discount_percent
             );
          });
-         return _total.toLocaleString('vi-VN') + ' đ';
+         return parseInt(_total).toLocaleString() + global_currency;
       },
 
 

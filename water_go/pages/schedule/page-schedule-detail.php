@@ -1,3 +1,8 @@
+<style>
+   .list-tile.order .list-items .list-items-wrapper{
+      flex-flow: row wrap;
+   }
+</style>
 <div id='app'>
 
    <div v-show='loading == false && order != null' class='page-order-detail'>
@@ -44,8 +49,8 @@
                <div class="list-items-wrapper">
                   <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
                   <div class='order-gr'>
-                     <span class='product-title'>{{ product.order_group_product_metadata.product_name }}</span>
-                     <span class='product-subtitle'>{{ product.order_group_product_metadata.product_name_second }}</span>
+                     <span class='product-title'>{{ product.order_group_product_name }}</span>
+                     <span class='product-subtitle'>{{ product.order_group_product_name_second }}</span>
                   </div>
                   <div class='order-price'>
                      <span class='price'>
@@ -101,7 +106,7 @@
       </div>
 
       <div class='box-extra-function'>
-         <!-- <div @click='gotoChatMessenger' class='b-chat'>
+         <div @click='' class='b-chat'>
             <button class='btn-action'>
                <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3473 0H3.06939C2.25531 0 1.47458 0.334446 0.898939 0.929764C0.323301 1.52508 -8.7738e-05 2.33251 -8.7738e-05 3.17441V9.52324C-8.7738e-05 9.94011 0.0793056 10.3529 0.233561 10.738C0.387817 11.1232 0.613913 11.4731 0.898939 11.7679C1.18397 12.0627 1.52234 12.2965 1.89475 12.456C2.26715 12.6155 2.6663 12.6977 3.06939 12.6977H4.91107H9.46249H15.3473C16.1614 12.6977 16.9421 12.3632 17.5177 11.7679C18.0934 11.1726 18.4168 10.3652 18.4168 9.52324V3.17441C18.4168 2.33251 18.0934 1.52508 17.5177 0.929764C16.9421 0.334446 16.1614 0 15.3473 0ZM15.3473 1.26977H3.06939C2.58094 1.26977 2.1125 1.47043 1.76712 1.82762C1.42174 2.18482 1.2277 2.66927 1.2277 3.17441V9.52324C1.2277 10.0284 1.42174 10.5128 1.76712 10.87C2.1125 11.2272 2.58094 11.4279 3.06939 11.4279H15.3473C15.8357 11.4279 16.3042 11.2272 16.6496 10.87C16.9949 10.5128 17.189 10.0284 17.189 9.52324V3.17441C17.189 2.66927 16.9949 2.18482 16.6496 1.82762C16.3042 1.47043 15.8357 1.26977 15.3473 1.26977Z" fill="#2790F9"/>
@@ -114,7 +119,7 @@
                </svg>
                <span class='text'>Chat</span>
             </button>
-         </div> -->
+         </div>
          <div class='b-call'>
             <a :href='"tel:" + order.order_delivery_address.phone' class='btn-action'>
                <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -165,6 +170,7 @@ var app = Vue.createApp({
    },
 
    methods: {
+
       get_weekly_day_compact( title ){
          if( this.get_locale == 'vi' ){
             if( title == 'Monday') return 'Thứ Hai';

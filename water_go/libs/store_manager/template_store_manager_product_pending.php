@@ -162,7 +162,8 @@ function template_store_manager_product_pending(){
          v-if='filter_product_water.length > 0'
          v-for='(product, productKey ) in filter_product_water' :key='productKey'
          >
-         <td class='row-title'>{{ product.category }}
+            <td class='row-title'>
+               <strong @click='btn_open_view_product(product)'>{{ product.category }}</strong>
          </td>
          <td>{{ product.brand}}</td>
          <td>{{ product.category_parent}}</td>
@@ -197,10 +198,10 @@ function template_store_manager_product_pending(){
          v-if='filter_product_water_device.length > 0'
          v-for='(product, productKey ) in filter_product_water_device' :key='productKey'
       >
-         <td class=' row-title'>
-            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.name }}</strong>
+         <td class='row-title'>
+            <strong class='text-highlight' @click='btn_open_view_product(product)'>{{ product.name }}</strong>
          </td>
-         <td>{{ product.feature_device }}</td>
+         <td>{{ product_ice_compact(product.feature_device) }}</td>
          <td>{{ common_price_show_currency(product.price) }}</td>
          <td v-html='get_date_discount(product)'></td>
          <td>
@@ -218,7 +219,6 @@ function template_store_manager_product_pending(){
    <table class='wp-list-table widefat fixed striped table-view-list posts'>
       <tr>
          <th><span><?php echo __('Product Name', 'watergo'); ?></span></th>
-         <th><span><?php echo __('Type of ice', 'watergo'); ?></span></th>
          <th><span><?php echo __('Price', 'watergo'); ?></span></th>
          <th><span><?php echo __('Discount', 'watergo'); ?></span></th>
          <th><span><?php echo __('Length*Width', 'watergo'); ?></span></th>
@@ -230,9 +230,8 @@ function template_store_manager_product_pending(){
          v-for='(product, productKey ) in filter_product_ice' :key='productKey'
       >
          <td class='row-title'>
-            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.name }}</strong>
+            <strong class='text-highlight' @click='btn_open_view_product(product)'>{{ product.name }}</strong>
          </td>
-         <td>{{ product.category_parent }}</td>
          <td>{{ common_price_show_currency(product.price) }}</td>
          <td v-html='get_date_discount(product)'></td>
          <td>{{ product.length_width }} mm</td>
@@ -262,9 +261,9 @@ function template_store_manager_product_pending(){
          v-for='(product, productKey ) in filter_product_ice_device' :key='productKey'
       >
          <td class='row-title'>
-            <strong class='text-highlight' @click='btn_edit_product(product)'>{{ product.name }}</strong>
+            <strong class='text-highlight' @click='btn_open_view_product(product)'>{{ product.name }}</strong>
          </td>
-         <td>{{ product.capacity_device }}</td>
+         <td><?php echo __('Dung Tích', 'watergo'); ?> {{ product.capacity_device }}</td>
          <td>{{ common_price_show_currency(product.price) }}</td>
          <td v-html='get_date_discount(product)'></td>
          <td>
@@ -289,6 +288,18 @@ function template_store_manager_product_pending(){
       </div>
    </div>
 
+   <!-- POPUP VIEW PRODUCT -->
+   <div :class='popup_open_view_product == true ? "open" : ""' class='popup-overlay'>
+      <div class="popup-content">
+         <span @click='btn_close_view_product' class="popup-close">&times;</span>
+         <div style='height: 100%'>
+            <!--  -->
+            <iframe width='100%' height='100%' :src='link_view_product'></iframe>
+            <!--  -->
+         </div>
+      </div>
+   </div>
+
 </div>
 <script>
 
@@ -296,7 +307,10 @@ var app = Vue.createApp({
    data(){
       return {
          popup_open_change_product_status: false,
+         popup_open_view_product: false,
+
          products: [],
+         link_view_product: '',
 
          product_id: null,
          event: null
@@ -327,6 +341,29 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      product_ice_compact( feature_name ){
+         if( feature_name == "Cả 2"){
+            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
+         }else {
+            return feature_name;
+         }
+      },
+
+      btn_open_view_product( product ){
+         if(product.product_type == 'ice' || product.product_type == 'ice_device' ){
+            this.link_view_product = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-ice-action&action=edit&product_id=${product.id}&view_only=1&appt=N`;
+            this.popup_open_view_product = true;
+         }
+         if(product.product_type == 'water' || product.product_type == 'water_device' ){
+            this.link_view_product = `<?php echo get_bloginfo('url'); ?>/product/?product_page=product-water-action&action=edit&product_id=${product.id}&view_only=1&appt=N`;
+            this.popup_open_view_product = true;
+         }
+      },
+      btn_close_view_product(){
+         this.popup_open_view_product        = false;
+         this.link_view_product = '';
+      },
 
       async btn_change_product_status(){
          var form = new FormData();

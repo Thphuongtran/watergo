@@ -237,6 +237,7 @@ function template_store_manager_add(){
          selectedImage: function(val){ this.force_check_all_field(); },
          address: function(val){ this.force_check_all_field(); },
          select_type_product_text: function(val){ this.force_check_all_field(); },
+
       },
 
       computed: {

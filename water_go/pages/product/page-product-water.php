@@ -9,15 +9,18 @@
    $sql_category_parent = "SELECT * FROM wp_watergo_product_category
       WHERE category = 'type_of_water' AND ( category_hidden != 1 || category_hidden IS NULL) 
       ORDER BY wp_watergo_product_category.order ASC";
-   $sql_brand      = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_brand' AND ( category_hidden != 1 || category_hidden IS NULL)";
+   $sql_brand      = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_brand' AND ( category_hidden != 1 || category_hidden IS NULL) ORDER BY wp_watergo_product_category.order DESC" ;
 
-   $sql_volume = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_volume' AND ( category_hidden != 1 || category_hidden IS NULL)";
+   // $sql_volume     = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_volume' AND ( category_hidden != 1 || category_hidden IS NULL)";
+
+   $sql_quantity   = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_quantity' AND ( category_hidden != 1 || category_hidden IS NULL)";
 
 
    $category         = $wpdb->get_results($sql_category);
    $category_parent  = $wpdb->get_results($sql_category_parent);
    $brand            = $wpdb->get_results($sql_brand);
-   $volume           = $wpdb->get_results($sql_volume);
+   // $volume           = $wpdb->get_results($sql_volume);
+   $quantity         = $wpdb->get_results($sql_quantity);
 
    
    foreach($category as $k => $vl ){
@@ -58,6 +61,7 @@
 
 
 ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
    .grid-masonry{
       padding-bottom: 30px;
@@ -168,7 +172,16 @@
 
    /*  */
 
+   .navbar.select-item{
+      /* display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      grid-auto-flow: column;
+      overflow-x: auto; */
+   }
+
    .navbar.select-item select {
+      white-space: nowrap;
+      box-sizing: border-box; 
       margin-right: 10px;
       background: #E8E8E8;
       border-radius: 5px;
@@ -180,24 +193,42 @@
       box-shadow: none;
       outline: none;
       appearance: none;
-      width: 100%;
+      min-width: 110px;
+      padding-right: 20px;
    }
 
    .select-box {
       border-radius: 5px;
       margin: 0 5px;
       position: relative;
-      min-width: 100px;
-      padding-right: 20px;
       background: #E8E8E8;
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      padding-left: 6px;
+      padding-right: 22px;
+      height: 30px;
+      min-width: 100px;
+      position: relative;
+      cursor: pointer;
+   }
+   .select-box .text{
+      font-weight: 400;
+      font-size: 12px;
+      color: #252831;
    }
    .select-box .icon-select {
+      width: 20px;
+      height: 20px;
       position: absolute;
-      right: 15px;
+      right: 4px;
       top: 50%;
       transform: translateY(-50%);
    }
 
+   .navbar.style01.select-item{
+      white-space: nowrap;
+   }
 
 
    @media screen and (max-width: 375px){
@@ -206,6 +237,146 @@
          padding-right: 0px;
          padding-top: 0;
       }
+   }
+
+   /* UPDATE FILTER */
+   .popup-filter{
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: white;
+      width: 100%;
+      height: 100vh;
+      z-index: 88;
+      padding-top: 56px;
+   }
+
+   .appbar .appbar-top.center{
+      justify-content: center;
+   }
+
+   .popup-filter-close{
+      background: none;
+      box-shadow: none;
+      outline: none;
+      border: none;
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      transform: translateY(-50%);
+      cursor: pointer;
+   }
+
+   .filter-content{
+      height: calc( 100vh - 56px );
+      overflow-x: hidden;
+      overflow-y: scroll;
+      padding: 0 20px;
+      padding-top: 50px;
+      padding-bottom: 70px;
+   }
+   .filter-content .heading{
+      color: #252831;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+   }
+
+   .box-button{
+      display: flex;
+      flex-flow: row wrap;
+      gap: 10px;
+      margin-top: 16px;
+      margin-bottom: 25px;
+   }
+
+   .box-button .item{
+      display: flex;
+      align-items: center;
+      height: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      padding: 0px 8px;
+      background: #E8E8E8;
+      color: #252831;
+      border-radius: 5px;
+      cursor: pointer;
+   }
+   .box-button .item-image{
+      border: 2px solid transparent;
+      width: 72px;
+      height: 50px;
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+      cursor: pointer;
+   }
+   .box-button .item.selected{
+      background: #2790F9;
+      color: white;
+   }
+   .box-button .item-image.selected{
+      box-shadow: 0px 4px 4px 0px #0000001F;
+      border: 2px solid #2790F9;
+   }
+
+   .button-apply{
+      width: 100%;
+      height: 50px;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      background: #2790F9;
+      outline: none;
+      box-shadow: none;
+      border: none;
+      color: white;
+   }
+
+   .wrapper-btn{
+      background: white;
+      width: 100%;
+      padding: 12px 20px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+   }
+   .product-design.product-detail .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+
+   .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .product-design .price{
+      padding-right: 5px;
+   }
+   .product-design .price-sub{
+      margin-left: 0;
+      position: relative;
+      top: -2px;
+   }
+
+   .badge-gift {
+      position: relative;
+      width: 100%;
+   }
+   .badge-gift .icon {
+      position: absolute;
+      top: -2px;
+   }
+   .badge-gift .text {
+      padding-left: 25px;
+      line-height: 20px;
    }
 
 
@@ -225,38 +396,6 @@
                <p v-show='is_water_device_selected == true' class='leading-title'><?php echo __('Thiết bị nước', 'watergo'); ?></p>
             </div>
             <div class='action'>
-
-               <!-- <div v-show='is_water_device_selected == false' class='filter-type-box'>
-
-                  <div @click='open_filter_type_box' class='filter-type-placeholder'>
-                     <span class='icon'>
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_3436_257)">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M1.75 2.625C1.75 2.39294 1.84219 2.17038 2.00628 2.00628C2.17038 1.84219 2.39294 1.75 2.625 1.75H11.375C11.6071 1.75 11.8296 1.84219 11.9937 2.00628C12.1578 2.17038 12.25 2.39294 12.25 2.625V3.84183C12.2499 4.15123 12.127 4.44793 11.9082 4.66667L8.75 7.82483V12.1555C8.75002 12.2649 8.72207 12.3725 8.66881 12.468C8.61555 12.5636 8.53875 12.6439 8.4457 12.7014C8.35265 12.7589 8.24644 12.7917 8.13717 12.7966C8.02789 12.8015 7.91917 12.7784 7.82133 12.7295L5.65308 11.6457C5.53197 11.5851 5.4301 11.492 5.35891 11.3768C5.28772 11.2616 5.25 11.1289 5.25 10.9935V7.82483L2.09183 4.66667C1.87303 4.44793 1.75007 4.15123 1.75 3.84183V2.625Z" fill="#2790F9"/>
-                        </g>
-                        <defs>
-                        <clipPath id="clip0_3436_257">
-                        <rect width="14" height="14" fill="white"/>
-                        </clipPath>
-                        </defs>
-                        </svg>
-                     </span>
-                     <span class='text _outside_handler_clicked'><?php echo __('Type of water', 'watergo'); ?></span>
-                  </div>
-
-                  <div class='filter-modal-wrapper' :class='filter_type_box_open == true ? "active" : ""'>
-                     <div class='filter-modal'>
-                        <div 
-                           @click='select_category_parent(type_water.name)'
-                           v-for='(type_water, type_water_index) in category_parent' :key='type_water_index'
-                           class='item _outside_handler_clicked' :class='type_water.active ? "active" : ""'
-                        >
-                           {{ type_water.name }}
-                        </div>
-                     </div>
-                  </div>
-
-               </div> -->
 
                <div @click='buttonSortFeature' class='btn-text'>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -280,6 +419,8 @@
                </ul>
             </div>
 
+
+            <!-- CATEGORY -->
             <ul class='navbar auto-resize-375 navbar-icon'>
                <li @click='select_category(cat.name)' 
                   v-for='(cat, index) in category' :key='index' 
@@ -294,65 +435,50 @@
                </li>
             </ul>
 
-            <ul v-show='is_water_device_selected == false' class='navbar brand-resize style01 '>
-               <li @click='select_brand(brand.name)' 
-                  v-for='(brand, index) in brand' :key='index'
-                  :class='brand.active == true ? "active" : ""'>
-                  {{ brand.name }}
-               </li>
-            </ul>
-
+            <!-- BRAND -->
             <ul class='navbar style01 select-item'>
-               <div class='select-box'>
-                  <select>
-                     <option value="" selected disabled><?php echo __('Brand', 'watergo'); ?></option>
-                     <option 
-                        @click=''
-                        v-for='(brand_item, brand_index) in brand' :key='brand_index'
-                        class='item' :selected='brand_item.active'
-                     >
-                        {{ brand_item.name }}
-                     </option>
-                  </select>
+               <div class='select-box' @click='btn_open_popup_filter'>
+                  <span class='text'><?php echo __('Brand', 'watergo'); ?></span>
                   <span class='icon-select'>
-                     <svg width="9" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M5.83366 8.33333L10.0003 12.5L14.167 8.33333" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
                   </span>
                </div>
 
-               <div class='select-box'>
-                  <select>
-                     <option value="" selected disabled><?php echo __('Volume', 'watergo'); ?></option>
-                     <option 
-                        @click=''
-                        v-for='(volume_item, volume_index) in volume' :key='volume_index'
-                        class='item' :selected='volume_item.active'
-                     >
-                        {{ volume_item.name }}
-                     </option>
-                  </select>
+               <div class='select-box' @click='btn_open_popup_filter'>
+                  <span class='text'><?php 
+                     if( get_locale() == 'vi' ){ echo 'Thể tích';
+                     }else if(get_locale() == 'ko_KR'){ echo __('Volume', 'watergo');
+                     }else{ echo 'Volume'; }
+                  ?></span>
                   <span class='icon-select'>
-                     <svg width="9" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M5.83366 8.33333L10.0003 12.5L14.167 8.33333" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
                   </span>
                </div>
 
-               <div class='select-box'>
-                  <select>
-                     <option value="" selected disabled><?php echo __('Type', 'watergo'); ?></option>
-                     <option 
-                           @click='select_category_parent(type_water.name)'
-                           v-for='(type_water, type_water_index) in category_parent' :key='type_water_index'
-                           class='item' :selected='type_water.active'
-                        >
-                           {{ type_water.name }}
-                     </option>
-                  </select>
+               <div class='select-box' @click='btn_open_popup_filter'>
+                  <span class='text'><?php echo __('Đóng gói', 'watergo'); ?></span>
                   <span class='icon-select'>
-                     <svg width="9" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M5.83366 8.33333L10.0003 12.5L14.167 8.33333" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
+               <div class='select-box' @click='btn_open_popup_filter'>
+                  <span class='text'>
+                     <?php 
+                        if( get_locale() == 'vi' ){echo 'Loại nước';
+                        }else if(get_locale() == 'ko_KR'){echo __('Type', 'watergo');
+                        }else{echo 'Type';}
+                     ?>
+                  </span>
+                  <span class='icon-select'>
+                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M5.83366 8.33333L10.0003 12.5L14.167 8.33333" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
                   </span>
                </div>
@@ -378,7 +504,7 @@
                   <div class='box-wrapper'>
                      
                      <p class='tt01'>{{ product.name }} </p>
-                     <p class='tt02'>{{ product_name_compact(product) }}</p>
+                     <p class='tt02'>{{ product.name_second }}</p>
 
                      <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                         <span class='price'>
@@ -387,6 +513,16 @@
                         <span v-if='has_discount(product) == true' class='price-sub'>
                            {{ common_price_show_currency(product.price) }}
                         </span>
+                        <span v-show='has_gift(product) == true' class='badge-gift'>
+                           <span class='icon'>
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                           </span>
+                           <span class='text'>{{ product.gift_text}}</span>
+                        </span>
+
                      </div>
 
                   </div>
@@ -407,6 +543,64 @@
       </div>
    </div>
 
+   <div v-show='popup_filter == true' class='popup-filter'>
+      <div class='appbar'>
+         <div class='appbar-top center'>
+            <div class='leading'>
+               <p class='leading-title'><?php echo __('Bộ lọc tìm kiếm', 'watergo'); ?></p>
+            </div>
+         </div>
+         <button @click='btn_open_popup_filter' class='popup-filter-close'>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 6L18 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+         </button>
+      </div>
+      <div class='filter-content'>
+         <p class='heading'>
+            <?php 
+               if( get_locale() == 'vi' ){ echo 'Loại';
+               }else if(get_locale() == 'ko_KR'){ echo __('Type', 'watergo');
+               }else{ echo 'Type'; }
+            ?>
+         </p>
+         <div class='box-button'>
+            <div :class='is_select_category_parent(cat.name) == true ? "selected" : ""' 
+               @click='select_category_parent(cat.name)' class='item' v-for='(cat, cat_index) in category_parent' :key='cat_index'>
+               {{ cat.name }}
+            </div>
+         </div>
+         <p class='heading'><?php echo __('Đóng gói', 'watergo'); ?></p>
+         <div class='box-button'>
+            <div :class='is_select_quantity(cat.name)  == true ? "selected" : ""' 
+               @click='select_quantity(cat.name)' class='item' v-for='(cat, cat_index) in quantity' :key='cat_index'>
+               {{ cat.name }}
+            </div>
+         </div>
+         <p class='heading'><?php 
+            if( get_locale() == 'vi' ){ echo 'Thể tích';
+            }else if(get_locale() == 'ko_KR'){ echo __('Volume', 'watergo');
+            }else{ echo 'Volume'; }
+         ?></p>
+         <div class='box-button'>
+            <div :class='is_select_volume(cat.name) == true ? "selected" : ""' @click='select_volume(cat.name)' class='item' v-for='(cat, cat_index) in volume' :key='cat_index'>
+               {{ cat.label }}
+            </div>
+         </div>
+         <p class='heading'><?php echo __('Brand', 'watergo'); ?></p>
+         <div class='box-button'>
+            <div :class='is_select_brand(cat.name) == true ? "selected" : ""' 
+               @click='select_brand(cat.name)' class='item-image' v-for='(cat, cat_index) in brand' :key='cat_index'>
+               <img :src="get_full_path_image(cat.image)">
+            </div>
+         </div>
+         <div class='wrapper-btn'>
+            <button @click='btn_filter_apply' class='button-apply'>Apply</button>
+         </div>
+      </div>
+   </div>
+
 </div>
 
 <script>
@@ -416,28 +610,38 @@ var { createApp } = Vue;
 createApp({
    data(){
       return{
+         
+         popup_filter: false,
+         popup_filter_data: {
+            category: '',
+            brand: [],
+            volume: [],
+            quantity: [],
+            category_parent: [],
+         },
+
 
          is_water_device_selected: false,
 
          loading: false,
          sortFeatureOpen: false,
          sortFeatureCurrentValue: -1,
-         latitude: 10.780900239854994,
-         longitude: 106.7226271387539,
+         latitude: null,
+         longitude: null,
 
          products: [],
 
          category: [],
          category_parent: [],
          brand: [],
-         volume: [],
-
-         filter_category_parent_id: null,
-
-         category_selected: {
-            category_id: null,
-            brand_id: null
-         },
+         volume: [
+            {name: "Dưới 350ml", label: '<?php echo __("Dưới 350ml", "watergo"); ?>', value: '350ml' },
+            {name: "Từ 350ml đến 1L", label: '<?php echo __("Từ 350ml đến 1L", "watergo"); ?>', value: '350ml-1l' },
+            {name: "Chai lớn 1L trở lên", label: '<?php echo __("Chai lớn 1L trở lên", "watergo"); ?>', value: '1l' },
+            {name: "Bình vòi 18L đến 20L", label: '<?php echo __("Bình vòi 18L đến 20L", "watergo"); ?>', value: 'binh-voi-18l-20l' },
+            {name: "Bình úp 18L đến 20L", label: '<?php echo __("Bình úp 18L đến 20L", "watergo"); ?>', value: 'binh-up-18l-20l' }
+         ],
+         quantity: [],
 
          filter_type_box_open: false,
 
@@ -448,17 +652,22 @@ createApp({
    },
 
    watch: {
-      category_selected: {
-         async handler(data) {
-            window.appbar_fixed();
-
-            this.loading_data = true;
-            this.products = [];
-            await this.atlantis_get_product_sort_version2();
-            this.loading_data = false;
-
+      products: {
+         handler( data ) {
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
          }, deep: true
       },
+
+      latitude: function( val ){
+         if( val == null ){
+            alert('THIS IS A TEST === location is disable');
+         }else{
+            alert('THIS IS A TEST === location are access now');
+         }
+      }
+
    },
 
    computed: {
@@ -477,10 +686,6 @@ createApp({
             // Nearest
             _products.sort((a, b) => a.distance - b.distance);
          }
-         
-         if( this.filter_category_parent_id != null ){
-            _products = _products.filter( item => item.category_parent == this.filter_category_parent_id );
-         }
 
          return _products;
       },
@@ -488,15 +693,68 @@ createApp({
 
    methods: {
 
-      product_name_compact( product ){
-         if( product.name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         }else if( product.product_type == "ice_device"){
-            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
+      async btn_filter_apply(){
+         this.popup_filter = false;
+
+         this.loading_data = true;
+         this.products = [];
+         await this.atlantis_get_product_sort_version2();
+         this.loading_data = false;
+      },
+
+      select_category_parent( cat_name ){
+         var _findIndex = this.popup_filter_data.category_parent.findIndex( item => item == cat_name );
+         if( _findIndex != -1 ){
+            this.popup_filter_data.category_parent.splice(_findIndex, 1);
          }else{
-            return product.name_second;
+            this.popup_filter_data.category_parent.push(cat_name);
          }
       },
+      is_select_category_parent( cat_name ){
+         return this.popup_filter_data.category_parent.some( item => item == cat_name );
+      },
+
+      select_quantity( cat_name ){
+         var _findIndex = this.popup_filter_data.quantity.findIndex( item => item == cat_name );
+         if( _findIndex != -1 ){
+            this.popup_filter_data.quantity.splice(_findIndex, 1);
+         }else{
+            this.popup_filter_data.quantity.push(cat_name);
+         }
+      },
+      is_select_quantity( cat_name ){
+         return this.popup_filter_data.quantity.some( item => item == cat_name );
+      },
+
+      select_volume( cat_name ){
+         var _findIndex = this.popup_filter_data.volume.findIndex( item => item == cat_name );
+         if( _findIndex != -1 ){
+            this.popup_filter_data.volume.splice(_findIndex, 1);
+         }else{
+            this.popup_filter_data.volume.push(cat_name);
+         }
+      },
+      is_select_volume( cat_name ){
+         return this.popup_filter_data.volume.some( item => item == cat_name );
+      },
+
+      select_brand( cat_name ){
+         var _findIndex = this.popup_filter_data.brand.findIndex( item => item == cat_name );
+         if( _findIndex != -1 ){
+            this.popup_filter_data.brand.splice(_findIndex, 1);
+         }else{
+            this.popup_filter_data.brand.push(cat_name);
+         }
+      },
+      is_select_brand( cat_name ){
+         return this.popup_filter_data.brand.some( item => item == cat_name );
+      },
+
+      get_full_path_image( image ){
+         return '<?php echo THEME_URI . "/assets/images/" ?>' + image;
+      },
+
+      btn_open_popup_filter(){ this.popup_filter = !this.popup_filter },
 
       open_filter_type_box(){
          this.filter_type_box_open = !this.filter_type_box_open;
@@ -518,6 +776,7 @@ createApp({
       },
 
       has_discount( product ){ return window.has_discount(product); },
+      has_gift( product ){ return window.has_gift(product); },
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
@@ -531,63 +790,6 @@ createApp({
          window.bodyScrollToggle();
       },
 
-      select_category(cat_name){
-         this.category.some( cat => { 
-            if (cat.name === cat_name ) {
-               cat.active = !cat.active; 
-            }else{
-               cat.active = false;
-            }
-         });
-         var noActiveCategories = this.category.some(cat => cat.active == true);
-         if(noActiveCategories){
-            this.category_selected.category_id = cat_name;
-            this.is_water_device_selected      = false;
-            if( cat_name == 'Thiết bị nước'){
-               this.category_selected.category_parent = null;
-               this.category_selected.brand_id        = null;
-               this.filter_category_parent_id         = null;
-               this.brand.some( item => item.active = false);
-               this.category_parent.some( item => item.active = false);
-               this.is_water_device_selected          = true;
-            }
-         }else{
-            this.category_selected.category_id = null;
-            this.is_water_device_selected      = false;
-         }
-      },
-
-      select_brand(brand_id){
-         this.brand.some( cat => { 
-            if (cat.name === brand_id) {
-               cat.active = !cat.active;
-            }else{
-               cat.active = false;
-            }
-         });
-         var noActiveCategories = this.brand.some(cat => cat.active == true);
-         if(noActiveCategories){
-            this.category_selected.brand_id = brand_id;
-         }else{
-            this.category_selected.brand_id = null;
-         }
-      },
-
-      select_category_parent( type_of_water_id ){
-         this.open_filter_type_box();
-         this.category_parent.some( cat => { 
-            if (cat.name === type_of_water_id) {cat.active = !cat.active;} else {
-               cat.active = false; 
-            }
-         });
-         var noActiveCategories = this.category_parent.some(cat => cat.active == true);
-         if(noActiveCategories){
-            this.filter_category_parent_id = type_of_water_id;
-         }else{
-            this.filter_category_parent_id = null;
-         }
-         
-      },
 
       async handleScroll() {
          const windowTop            = window.pageYOffset || document.documentElement.scrollTop;
@@ -616,11 +818,18 @@ createApp({
       goBack(){ window.goBack(); },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id)},
 
-      async atlantis_get_product_sort_version2( ){
+      async atlantis_get_product_sort_version2(){
          var form = new FormData();
          form.append('action', 'atlantis_get_product_sort_version2');
-         form.append('lat', this.latitude);
-         form.append('lng', this.longitude);
+
+         if( this.latitude == null && this.longitude == null ){
+            form.append('no_location_found', 1);
+            this.sortFeatureCurrentValue = 1;
+         }else{
+            form.append('lat', this.latitude);
+            form.append('lng', this.longitude);
+         }
+
          form.append('paged', this.products.length);
 
          if( this.is_water_device_selected == false ){
@@ -629,14 +838,24 @@ createApp({
             form.append('product_type', 'water_device');
          }
 
-         if(this.category_selected.category_id != null ){
-            form.append('category', this.category_selected.category_id);
+         if(this.popup_filter_data.category != ''){
+            form.append('category', this.popup_filter_data.category );
          }
-         if(this.category_selected.brand_id != null ){
-            form.append('brand', this.category_selected.brand_id);
+         if(this.popup_filter_data.category_parent.length > 0){
+            form.append('category_parent', this.popup_filter_data.category_parent.join(',') );
          }
-         
+         if(this.popup_filter_data.quantity.length > 0){
+            form.append('quantity', this.popup_filter_data.quantity.join(',') );
+         }
+         if(this.popup_filter_data.volume.length > 0){
+            form.append('volume', this.popup_filter_data.volume.join(',') );
+         }
+         if(this.popup_filter_data.brand.length > 0){
+            form.append('brand', this.popup_filter_data.brand.join(',') );
+         }
+
          var r = await window.request(form);
+         console.log(r)
 
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -650,6 +869,47 @@ createApp({
          }
       },
 
+      async select_category(cat_name){
+         this.category.some( cat => { 
+            if (cat.name === cat_name) {cat.active = !cat.active;
+            } else {cat.active = false;}
+         });
+         this.popup_filter_data.category = cat_name;
+         var _any_selected = this.category.some(cat => cat.active == true );
+
+         if( _any_selected == false ){
+            this.popup_filter_data.category = '';
+            this.is_water_device_selected = false;
+
+            this.loading_data = true;
+            this.products = [];
+            await this.atlantis_get_product_sort_version2();
+            this.loading_data = false;
+         }else{
+
+            if( cat_name == 'Thiết bị nước'){
+               this.is_water_device_selected = true;
+            }else{
+               this.is_water_device_selected = false;
+            }
+
+            window.appbar_fixed();
+
+            this.loading_data = true;
+            this.products = [];
+            await this.atlantis_get_product_sort_version2();
+            this.loading_data = false;
+         }
+
+
+
+
+      }
+
+   },
+
+   update(){
+      this.get_current_location();
    },
 
    mounted() {
@@ -668,9 +928,10 @@ createApp({
       // THIS IS FILTER FOR CATEGORY
       this.category_parent    = JSON.parse(JSON.stringify(<?php echo json_encode($category_parent, true); ?>));
       this.brand              = JSON.parse(JSON.stringify(<?php echo json_encode($brand, true); ?>));
-      this.volume             = JSON.parse(JSON.stringify(<?php echo json_encode($volume, true); ?>));
+      this.quantity           = JSON.parse(JSON.stringify(<?php echo json_encode($quantity, true); ?>));
          
       this.get_current_location();
+
       this.loading = true;
       await this.atlantis_get_product_sort_version2();
 
@@ -682,5 +943,11 @@ createApp({
    },
 
 }).mount('#app');
+
+
+function callbackResume(data){
+
+   alert('abc');
+}
 
 </script>

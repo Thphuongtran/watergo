@@ -1,0 +1,2047 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Water Go\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-11-21 18:23+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.4; wp-6.2.2\n"
+"X-Domain: watergo"
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:213
+msgid " day ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:218
+msgid " days ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:225
+msgid " hour ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:230
+msgid " hours ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:237
+msgid " min ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:242
+msgid " mins ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:248
+msgid " second ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:201
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:944
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:55
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:257
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:356
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:52
+msgid "Add"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:21
+msgid "Add Address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:298
+msgid "Add Date"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:265
+msgid "Add Day"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:950
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:69
+msgid "Add Ice Product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-index.php:17
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-index.php:18
+msgid "Add New"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:163
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:219
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:318
+msgid "Add Photo"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/template_product_category_index.php:44
+msgid "Add Product Category"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:739
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:743
+msgid "Add Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:358
+msgid "Add success"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:317
+msgid "Add to Cart"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:949
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:99
+msgid "Add Water Product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:125
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:888
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:37
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:37
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:94
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:84
+msgid "Address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_product_store.php:906
+msgid "Admin đã duyệt 1 sản phẩm của bạn"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_product_store.php:935
+msgid "Admin đã từ chối duyệt 1 sản phẩm của bạn"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-profile.php:89
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-adverstising-inquery.php:17
+msgid "Advertising inquery"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:750
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:43
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:55
+msgid "All"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:180
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:205
+msgid "All field must be not empty"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:303
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:321
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1447
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:450
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:466
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:422
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:295
+msgid "All field must be not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby.php:114
+msgid "Allow Access"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:91
+msgid "Are you sure to delete this<br> monthly order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:90
+msgid "Are you sure to delete this<br> weekly order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:168
+msgid "Are you sure to remove this product from your cart"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:119
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:181
+msgid "Available"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:170
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:932
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:79
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:115
+msgid "Both"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:35
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:958
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:152
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:127
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:441
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:591
+msgid "Brand"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:314
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:108
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:557
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:559
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:99
+msgid "By Cash"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:641
+msgid "Bình vòi 18L đến 20L"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:642
+msgid "Bình úp 18L đến 20L"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:550
+msgid "Bộ lọc tìm kiếm"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:154
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:129
+msgid "Call"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:214
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:224
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:233
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:242
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:290
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:163
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:93
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:71
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:63
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:61
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:139
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:270
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:369
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:171
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:52
+msgid "Cancel"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:117
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:156
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:143
+msgid "Cancel Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/report/report-index.php:110
+msgid "CANCELED"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:46
+msgid "Cart"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:20
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/template_product_category_index.php:52
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:80
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:110
+msgid "Category"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:640
+msgid "Chai lớn 1L trở lên"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:232
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:268
+msgid "Change delivery information"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:233
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:269
+msgid "Change delivery time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index.php:114
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:53
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:62
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:312
+msgid "Chat"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:791
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:416
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-recommend.php:56
+msgid "Cheapest"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:163
+msgid "Check Out"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1379
+msgid "Chưa Duyệt"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:176
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:209
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:241
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:271
+msgid "Chấp nhận"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:992
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:192
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:172
+msgid "Chức năng"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:140
+msgid "Click here to view"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:253
+msgid "Closed"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:442
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:285
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:411
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:277
+msgid "Code is not match."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:175
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:123
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:201
+msgid "Complete"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:116
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:142
+msgid "Complete Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:215
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:173
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:113
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:188
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:225
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:234
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:243
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:291
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:271
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:370
+msgid "Confirm"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:117
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:39
+msgid "Confirm New Password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:148
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:105
+msgid "Confirm Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:114
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:140
+msgid "Confirmed Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:166
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:142
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:150
+msgid "Congratulations"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:212
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:221
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-messenger.php:288
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:348
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:169
+msgid "Content Not Found"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:62
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:63
+msgid "Continue"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-password.php:150
+msgid "Current Password it not correct."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:425
+msgid "Cửa hàng giao sai đơn"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:100
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:126
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:71
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:91
+msgid "Date"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/report/report-index.php:71
+msgid "Day"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:212
+msgid "day ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:217
+msgid "days ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-index.php:69
+msgid "Default"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:203
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:41
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:94
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:73
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:119
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:140
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:259
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:358
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:173
+msgid "Delete"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:43
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:13
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:32
+msgid "Delete Account"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:51
+msgid "Delete Address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:174
+msgid "Delivering"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:122
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:198
+msgid "Delivery"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-index.php:14
+msgid "Delivery Address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:119
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:43
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:64
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:31
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:59
+msgid "Delivery address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:79
+msgid "Delivery Immediately"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:46
+msgid "Delivery Monthly"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:272
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:416
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:551
+msgid "Delivery monthly"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:83
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:86
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:89
+msgid "Delivery on"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:44
+msgid "Delivery Once"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:197
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:404
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:539
+msgid "Delivery once"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:115
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:152
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:141
+msgid "Delivery Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:83
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:109
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:71
+msgid "Delivery time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:45
+msgid "Delivery Weekly"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:235
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:414
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:549
+msgid "Delivery weekly"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:80
+msgid "Describe your store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:120
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:883
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:79
+msgid "Description"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:62
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:961
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:994
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1017
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1044
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:155
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:194
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:223
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:256
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:128
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:207
+msgid "Discount"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:240
+msgid "Do you want to complete <span class='t-primary'>All Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:288
+msgid "Do you want to complete this <span class='t-primary'>Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:222
+msgid "Do you want to confirm <span class='t-primary'>All Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:286
+msgid "Do you want to confirm this <span class='t-primary'>Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:68
+msgid "Do you want to delete this delivery address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:212
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:268
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:367
+msgid "Do you want to delete this product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:137
+msgid "Do you want to delete this review"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:231
+msgid "Do you want to delivering <span class='t-primary'>All Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:287
+msgid "Do you want to delivering this <span class='t-primary'>Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:32
+msgid "Don’t worry when it happens <br> Reset your password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1042
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:254
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:266
+msgid "Dung Tích"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/ajax_center.php:295
+#: ../../../../../../GitHub/watergo/water_go/libs/ajax_center.php:665
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:104
+msgid "Dung tích"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:158
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:195
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:226
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:257
+msgid "Duyệt Sản Phẩm"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:638
+msgid "Dưới 350ml"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/template_product_category_index.php:54
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-index.php:66
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:118
+msgid "Edit"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:21
+msgid "Edit Address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:76
+msgid "Edit Info"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:23
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:43
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:24
+msgid "Edit Profile"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:15
+msgid "Edit Review"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:736
+msgid "Edit Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:136
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:772
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:898
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:72
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:35
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:78
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:72
+msgid "Email"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:295
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1430
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:138
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:438
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:405
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:274
+msgid "Email already exists."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:385
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:135
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:251
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:117
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:355
+msgid "Email already register."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:131
+msgid "Email format error."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:307
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:134
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:382
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:396
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:216
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:352
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:366
+msgid "Email is not correct format."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:230
+msgid "Email is not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:219
+msgid "Email is not exitst."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:461
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:419
+msgid "Email is not verify."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:210
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:213
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:216
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:220
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:259
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:262
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:265
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:268
+msgid "Email or password is incorrect"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:579
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-language.php:52
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:115
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:147
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:193
+msgid "English"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:99
+msgid "Enter a location"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:85
+msgid "Enter address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:85
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:70
+msgid "Enter owner name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:113
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:118
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:35
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:40
+msgid "Enter password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:69
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:160
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:239
+msgid "Enter Percentage"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:106
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:90
+msgid "Enter phone"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:152
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:208
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:307
+msgid "Enter Product Description"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:90
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:75
+msgid "Enter store name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:112
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:74
+msgid "Enter you email"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:61
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:18
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:36
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:79
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:95
+msgid "Enter your email"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:130
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:66
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:38
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:84
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:102
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:100
+msgid "Enter your password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-add.php:19
+msgid "Enter your question"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:13
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:68
+msgid "Enter your username"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:634
+msgid "Everymonth"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:354
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:234
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-password.php:97
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:92
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:72
+msgid "Exit"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:182
+msgid "Field is not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:164
+msgid "Field must be not empty"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:170
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-password.php:143
+msgid "Field must be not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:117
+msgid "Filter"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:363
+msgid "Find products or stores by name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:70
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:88
+msgid "Forget Password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:31
+msgid "Forgot Password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:74
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:140
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:166
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:219
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:245
+msgid "From"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:393
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:145
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:222
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:227
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:257
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:123
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:363
+msgid "Get Code Verify Error."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:307
+msgid "Ghi chú địa điểm giao hàng. Ví dụ: số hẻm, chung cư, vác lầu,..."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:83
+msgid "Go Shopping Now"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/template_product_category_index.php:53
+msgid "Has Parent"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:148
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:910
+msgid "Hide"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:752
+msgid "Hide Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:224
+msgid "hour ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:229
+msgid "hours ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1369
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:416
+msgid "Hết hạn"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:136
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:80
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:99
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:108
+msgid "I agree with"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:29
+msgid "I don't want to use WaterGo app anymore"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:37
+msgid "I have a privacy concern"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:33
+msgid "I want to create another account"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:166
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:928
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:423
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby.php:61
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:743
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:223
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:75
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:111
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:278
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:287
+msgid "Ice"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:73
+msgid "Immediately (within 1 hour)"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:206
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:85
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:111
+msgid "Immediately (within 2 hour)"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:189
+msgid "Input Weight"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:319
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1445
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:293
+msgid "Invalid address, please select the address in the suggestion book"
+msgstr ""
+
+#. Author of the theme
+msgid "Khách"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:424
+msgid "Khách hẹn giao lại sau"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:423
+msgid "Khách từ chối nhận hàng"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:422
+msgid "Không liên lạc được với khách"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:581
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-language.php:54
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:117
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:149
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:195
+msgid "Korean"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:30
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-language.php:18
+msgid "Language"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:104
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:193
+msgid "Length * Width"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1018
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:224
+msgid "Length*Width"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby.php:112
+msgid "Location information is not available"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:147
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:171
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:57
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:86
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:47
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:147
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:75
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:111
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:123
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:155
+msgid "Log In"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:53
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:119
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:129
+msgid "Log in with Apple"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:54
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:120
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:130
+msgid "Log in with Google"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:55
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:121
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:131
+msgid "Log in with Zalo"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:46
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:35
+msgid "Log Out"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:31
+msgid "Login"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:61
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:50
+msgid "Logout"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/ajax_center.php:289
+#: ../../../../../../GitHub/watergo/water_go/libs/ajax_center.php:659
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:347
+msgid "Làm nóng và lạnh"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby.php:31
+msgid "Map"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:194
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:250
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:349
+msgid "Mark as out of stock"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-messenger.php:265
+msgid "Message..."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:236
+msgid "min ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:241
+msgid "mins ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:231
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:267
+msgid "Misplaced product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index.php:57
+msgid "Month"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:15
+msgid "Monthly order list"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:85
+msgid "My Reviews"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:29
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:29
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:67
+msgid "Name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/template_product_category_index.php:51
+msgid "Name Category"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:143
+msgid "Name or Email is not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby-store.php:13
+msgid "Nearby"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:509
+msgid "Nearby store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:790
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:414
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-recommend.php:55
+msgid "Nearest"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:93
+msgid "New first"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:112
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:34
+msgid "New Password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:105
+msgid "Nhập dung tích thiết bị"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:190
+msgid "Nhập mô tả thiết bị"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:134
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:213
+msgid "Nhập quà tặng"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:99
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:145
+msgid "Nhập tên thiết bị"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:982
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1007
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1034
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1057
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:182
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:214
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:246
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:276
+msgid "No products found."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/support-index.php:71
+msgid "No Results Match"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:800
+msgid "No stores found."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/notification/notification-index.php:14
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:21
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-profile.php:67
+msgid "Notification"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:64
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:53
+msgid "Okay"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:94
+msgid "Old first"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:50
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:116
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:126
+msgid "Or log in with"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index.php:54
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:108
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:56
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:44
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:71
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:42
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-messenger.php:198
+msgid "Order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:231
+msgid "Order Successfully"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:350
+msgid "Order Successfully<br>Please wait for the store to confirm."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:113
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:144
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:139
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:104
+msgid "Ordered Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:41
+msgid "Other"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:235
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:426
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:271
+msgid "Others"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:118
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:182
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:170
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:275
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-top-related.php:74
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:134
+msgid "Out of Stock"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:110
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:771
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:873
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:84
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:69
+msgid "Owner"
+msgstr ""
+
+#. Name of the template
+msgid "Page Conditions"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:141
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:903
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:34
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:129
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:65
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:37
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:83
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:101
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:99
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:21
+msgid "Password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:294
+msgid "Password and Code is not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:67
+msgid "Password Changed"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:132
+msgid "Password is not empty"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:134
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:149
+msgid "Password is not match"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:268
+msgid "Password is not match."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-password.php:147
+msgid "Password is not same."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:314
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:107
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:133
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:98
+msgid "Payment method"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:152
+msgid "Pending"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:66
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:158
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:237
+msgid "Percentage Discount"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:131
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:893
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:33
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:33
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:105
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:89
+msgid "Phone"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:133
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:140
+msgid "Phone number is invalid"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:299
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1433
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:446
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:280
+msgid "Phone number is not correct format."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:155
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:211
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:310
+msgid "Photo"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:326
+msgid "Place Order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:24
+msgid "Please login to explore more"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby.php:113
+msgid "Please share your location for a better experience on Watergo"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:45
+msgid "Please tell us the reason"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:51
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:960
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:993
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1016
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1043
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:154
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:193
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:222
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:255
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:110
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:167
+msgid "Price"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:40
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-privacy-policy.php:18
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-privacy-policy.php:15
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:28
+msgid "Privacy Policy"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:773
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:60
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:111
+msgid "Product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index.php:140
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:180
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:64
+msgid "product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/template_product_category_index.php:39
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/product_category_index.php:10
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/product_category_index.php:10
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/product_category_index.php:12
+#: ../../../../../../GitHub/watergo/water_go/libs/product_category/product_category_index.php:13
+msgid "Product Category"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:150
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:206
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:189
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:306
+msgid "Product Description"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:957
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:991
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1014
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1041
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:151
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:191
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:221
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:253
+msgid "Product Name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:145
+msgid "Product Pending"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:947
+msgid "Products"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:95
+msgid "products"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:8
+msgid "Profile"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:249
+msgid "purchase"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:118
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:962
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:156
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:269
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:211
+msgid "Quantity"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:171
+msgid "Re-Order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-recommend.php:41
+msgid "Recommend"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:431
+msgid "Recommend product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:311
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:174
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:178
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:402
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:416
+msgid "Register Error."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/report/report-index.php:9
+msgid "Report"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:118
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:26
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:108
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:30
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:84
+msgid "Resend"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:72
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:20
+msgid "Reset your password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:157
+msgid "Review Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:88
+msgid "Review Successfully"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/review/review-index.php:13
+msgid "Reviews"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:92
+msgid "reviews"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:202
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:943
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:52
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-edit.php:80
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-review-edit.php:43
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-password.php:78
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:258
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:357
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:53
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:122
+msgid "Save"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:12
+msgid "Schedule"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/support-index.php:38
+msgid "Search"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/search/search-index.php:51
+msgid "Search by product or store name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:103
+msgid "Search product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:758
+msgid "Search Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:11
+msgid "Search Store Name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:8
+msgid "Search User Name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/chat/chat-index.php:247
+msgid "second ago"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:266
+msgid "See All"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:432
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:510
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:93
+msgid "See all"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:765
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:109
+msgid "Select All"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-add.php:47
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-edit.php:43
+msgid "Select as default address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:38
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:130
+msgid "Select Brand"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:186
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:181
+msgid "Select Cancellation Reason"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:23
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:84
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:114
+msgid "Select Category"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:217
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:243
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:283
+msgid "Select date"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:210
+msgid "Select Date & Time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:188
+msgid "Select delivery time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:157
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:919
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:103
+msgid "Select Product"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:121
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:275
+msgid "Select Quantity"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:221
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:255
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:287
+msgid "Select time"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:152
+msgid "Select type of water"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:136
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:292
+msgid "Select Volume"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:92
+msgid "Select Weight"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/support-index.php:79
+msgid "Send a Message"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-add.php:23
+msgid "Send Message"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/support-index.php:78
+msgid "Send message to tell us more and we’ll help you"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:13
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:67
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-profile.php:97
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:13
+msgid "Settings"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:149
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:911
+msgid "Show"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:66
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:146
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:87
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:9
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:46
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:112
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:64
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:122
+msgid "Sign Up"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:86
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:184
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:262
+msgid "Size Description"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/report/report-index.php:94
+msgid "SOLD"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:177
+msgid "Sold"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:783
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:405
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-recommend.php:48
+msgid "Sort"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-profile.php:7
+msgid "Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:65
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:829
+msgid "Store Avatar"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:333
+msgid "Store Closed"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1436
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:283
+msgid "Store Edit Error."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:733
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/store_manager_index.php:15
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/store_manager_index.php:15
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/store_manager_index.php:17
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/store_manager_index.php:18
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/store_manager_index.php:19
+msgid "Store Manager"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:115
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:770
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:878
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:89
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:74
+msgid "Store Name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:234
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:270
+msgid "Store requested cancellation"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:44
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:126
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:48
+msgid "Submit"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-profile.php:75
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-profile.php:80
+msgid "Support"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-pricing-term.php:12
+msgid "Surcharge Policy"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:954
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:148
+msgid "Sản Phẩm Nước"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:988
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:188
+msgid "Sản Phẩm Thiết Bị Nước"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1038
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:250
+msgid "Sản Phẩm Thiết Bị Đá"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1011
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:218
+msgid "Sản Phẩm Đá"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-settings.php:37
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-term-conditions.php:16
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-term-conditions.php:16
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-settings.php:25
+msgid "Terms & Conditions"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:138
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:82
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:101
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:110
+msgid "Terms and Conditions"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:462
+#, php-format
+msgid "The order #%s was canceled"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:351
+msgid ""
+"The order will be automatically canceled after 60 minutes if the store does "
+"not confirm."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:120
+#: ../../../../../../GitHub/watergo/water_go/pages/delivery-address/delivery-address-index.php:32
+msgid "There is no address"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:30
+msgid "There is no monthly order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:82
+msgid "There is no product in your cart"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:29
+msgid "There is no weekly order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:334
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:207
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:341
+msgid "This Product is <span class='t-primary'>Out of Stock</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:396
+msgid "Thiết bị nước"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:744
+msgid "Thiết bị đá"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:79
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:149
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:174
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:228
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:253
+msgid "To"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-top-related.php:41
+msgid "Top Products"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:266
+msgid "Top products"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:792
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:418
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-recommend.php:57
+msgid "Top Rated"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index.php:141
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:319
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:325
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-store-detail.php:172
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:181
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:167
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:65
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:96
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-detail.php:137
+#: ../../../../../../GitHub/watergo/water_go/pages/cart/cart.php:158
+msgid "Total"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:103
+#: ../../../../../../GitHub/watergo/water_go/pages/schedule/page-schedule-index.php:54
+msgid "Total order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/report/report-index.php:126
+msgid "TOTAL PROFIT"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:475
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:564
+msgid "Type"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1015
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice.php:762
+msgid "Type of ice"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:959
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:153
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:149
+msgid "Type of water"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:98
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:144
+msgid "Tên thiết bị"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:120
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:199
+msgid "Tặng quà"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:639
+msgid "Từ 350ml đến 1L"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:177
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:210
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:242
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:272
+msgid "Từ chối"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1371
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:418
+msgid "Từ ngày"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:12
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:67
+msgid "User name"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:408
+msgid "Username already exists."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:223
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:271
+msgid "Username or Password must be not empty."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:113
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:75
+msgid "Verify"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:22
+msgid "Verify your email"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:580
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-language.php:53
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-login.php:116
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:148
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:194
+msgid "Vietnamese"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:185
+msgid "View"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-detail.php:238
+msgid "View Store"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:147
+msgid "View Surcharge Policy"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:963
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:157
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:452
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:583
+msgid "Volume"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_add.php:162
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:924
+#: ../../../../../../GitHub/watergo/water_go/pages/home/home.php:402
+#: ../../../../../../GitHub/watergo/water_go/pages/nearby/page-nearby.php:60
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-store.php:222
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:395
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:71
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-edit.php:107
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:277
+#: ../../../../../../GitHub/watergo/water_go/pages/store/page-store-detail.php:285
+msgid "Water"
+msgstr ""
+
+#. Name of the theme
+msgid "Water Go"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:133
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water-action.php:289
+msgid "Water Volume"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-notification.php:13
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-detail.php:13
+#: ../../../../../../GitHub/watergo/water_go/pages/support/support-index.php:22
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-add.php:12
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-notification-detail.php:12
+msgid "WaterGo Support"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:54
+msgid "We are sorry to see you leave"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:73
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-reset-password.php:21
+msgid "We have sent a code to your email"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:118
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register-store.php:26
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:84
+msgid "We have sent a code to your email."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index.php:57
+msgid "Week"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-filter.php:14
+msgid "Weekly order list"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/page-iframe.php:89
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1019
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:225
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-ice-action.php:188
+msgid "Weight"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-login.php:23
+msgid "WELCOME"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-review-edit.php:19
+msgid "What ‘s your rate"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:22
+msgid "What's your rate"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:55
+msgid ""
+"When you delete your account, you won't <br>be able to log in again by "
+"deleted account."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:251
+msgid "Why do you want to cancel <span class='t-primary'>All Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/order-index-store.php:252
+msgid "Why do you want to cancel <span class='t-primary'>This Order</span>"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-delete-account.php:24
+msgid "Why do you want to delete your account"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-review-edit.php:13
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:14
+msgid "Write Review"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-review-edit.php:38
+msgid "Write your review"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:41
+msgid "Write your review...."
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/report/report-index.php:82
+msgid "Year"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-detail.php:214
+msgid "You already review this order"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:403
+#, php-format
+msgid "You have new order #%s"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:443
+#, php-format
+msgid "Your order #%s is canceled"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:351
+#, php-format
+msgid "Your order #%s is completed"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:295
+#, php-format
+msgid "Your order #%s is confirmed"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:323
+#, php-format
+msgid "Your order #%s is delivering"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:143
+msgid ""
+"Your password has been reset successfully<br>Now login with your new password"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-notification.php:22
+#: ../../../../../../GitHub/watergo/water_go/pages/support/page-support-add.php:18
+msgid "Your Question"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:167
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-register.php:151
+msgid "Your registration has been successful"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/user/page-user-review-edit.php:29
+#: ../../../../../../GitHub/watergo/water_go/pages/review/page-review-form.php:32
+msgid "Your Review"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1376
+msgid "Đã Duyệt"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:463
+#: ../../../../../../GitHub/watergo/water_go/pages/product/page-product-water.php:574
+msgid "Đóng gói"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_index.php:1371
+#: ../../../../../../GitHub/watergo/water_go/libs/store_manager/template_store_manager_product_pending.php:418
+msgid "Đến ngày"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:464
+msgid "Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất"
+msgstr ""

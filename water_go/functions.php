@@ -3,15 +3,15 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.75');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.85');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
 
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
-   wp_enqueue_script('query-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
+   wp_enqueue_script('query-cdn', THEME_URI . '/assets/js/jquery-3.7.1.min.js', [], '1.0');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.64');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.75');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.85');
 
 }
 
@@ -228,24 +228,23 @@ function custom_wp_mail_from_name($from_name) {
 }
 
 function pv_update_user_token(){
-    $current_user_id = get_current_user_id();
 
-    if($current_user_id != 0){
-       $headers = array_change_key_case(getallheaders(), CASE_LOWER);
-       if(!empty($headers["app_push_token"]) && $headers["app_push_token"] != "Token not found"){
-          global $wpdb;
-          $table = $wpdb->prefix."bj_user_push_token";
-          $token = $headers["app_push_token"];
-          $check_user_exist = $wpdb->get_results ( $wpdb->prepare(" SELECT * FROM  {$table} WHERE  user_id = %d ",$current_user_id) ,ARRAY_A);
-         
-          if (!empty($check_user_exist)){
-             $result = $wpdb->update($table , ["token" => $token,"status" => ""], ["user_id" => $current_user_id],["%s","%s"],["%d"]);     
-          }else{
-             $result = $wpdb->insert($table,["user_id" => $current_user_id,"token" => $token],["%d","%s"]);
-         
+   if( is_user_logged_in() ){
+      $current_user_id = get_current_user_id();
+      $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+      if(!empty($headers["app_push_token"]) && $headers["app_push_token"] != "Token not found"){
+         global $wpdb;
+         $table = $wpdb->prefix."bj_user_push_token";
+         $token = $headers["app_push_token"];
+         $check_user_exist = $wpdb->get_results ( $wpdb->prepare(" SELECT * FROM  {$table} WHERE  user_id = %d ",$current_user_id) ,ARRAY_A);
+      
+         if (!empty($check_user_exist)){
+            $result = $wpdb->update($table , ["token" => $token,"status" => ""], ["user_id" => $current_user_id],["%s","%s"],["%d"]);     
+         }else{
+            $result = $wpdb->insert($table,["user_id" => $current_user_id,"token" => $token],["%d","%s"]);
          }
-       }
-    }
+      }
+   }
 
 }
 

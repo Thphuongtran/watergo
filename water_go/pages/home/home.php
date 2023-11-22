@@ -1,7 +1,5 @@
 <?php
 
-   pv_update_user_token();
-
    $home_sliders = get_fields(713, 'home_sliders');
    // echo '<pre>';
    // print_r($home_sliders['home_sliders'][0]);
@@ -17,11 +15,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<script src='<?php echo THEME_URI . '/pages/module/location_modal.js'; ?>'></script>
-<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js'; ?>'></script>
+<script src="<?php echo THEME_URI . '/assets/js/slick.min.js'; ?>"></script>
+<link rel="stylesheet" href="<?php echo THEME_URI . '/assets/css/slick.min.css'; ?>">
+<script src='<?php echo THEME_URI . '/pages/module/location_modal.js?ver=1.0'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=1.0'; ?>'></script>
 <style>
 
    .box-language .dropdown-language{
@@ -229,6 +226,9 @@
 		font-weight: 400;
 		font-size: 9px;
 		text-decoration: line-through;
+      position: relative;
+      top: -2px;
+      white-space: nowrap;
    }
    .gr-price{
       padding: 0 16px;
@@ -239,13 +239,61 @@
    .product-block .price{
       padding-left: 0;
    }
-   .product-block .price-sub{
-      position: relative;
-      top: -2px;
-   }
+
    .product-block .tt01{
       overflow: hidden;
       text-overflow: ellipsis;
+   }
+   .product-block .price{
+      font-size: 14px;
+      font-weight: 600;
+   }
+
+   .list-product-recommend-style-1 .product-block {
+      width: 179px;
+      min-height: 264px;
+      padding-bottom: 0;
+   }
+   .list-product-recommend-style-1 .product-block .img{
+      width: 100%;
+      height: 179px;
+   }
+   .list-product-recommend-style-1 .product-block .gr-price,
+   .list-product-recommend-style-1 .product-block .tt01,
+   .list-product-recommend-style-1 .product-block .tt02{
+      padding: 0 12px;
+   }
+
+   #btn-zalo{
+      width: 50px;
+      height: 50px;
+      box-shadow: 0px 4px 4px 0px #0000001F;
+      border-radius: 100%;
+      display: block;
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+   }
+
+   #btn-zalo.add-space{
+      bottom: 72px;
+   }
+   .badge-gift {
+      display: flex;
+      flex-flow: row nowrap;
+      padding-bottom: 5px;
+   }
+   .badge-gift .icon{
+      height: 24px;
+   }
+   .badge-gift .text{
+      white-space: pre-wrap;
+      line-height: 26px;
+   }
+   .product-design.product-detail .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
    }
 </style>
 <div id='app'>
@@ -377,7 +425,7 @@
 
             <div class='home-contents'>
 
-               <div v-if='productRecommend.length > 0' class='list-product-recommend'>
+               <div v-if='productRecommend.length > 0' class='list-product-recommend list-product-recommend-style-1'>
                   <div class='gr-heading'>
                      <p class='heading'><?php echo __('Recommend product', 'watergo'); ?></p>
                      <span @click='gotoProductRecommend' class='link'><?php echo __('See all', 'watergo'); ?></span>
@@ -396,7 +444,7 @@
                                  <span v-if="has_discount(product) == true" class="badge-discount">-{{ product.discount_percent }}%</span>
                               </div>
                               <p class="tt01">{{ product.name }} </p>
-                              <p class="tt02">{{ product_name_compact(product) }}</p>
+                              <p class="tt02">{{ product.name_second }}</p>
                               <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
                                  <span class="price">
                                     {{ common_price_after_discount(product) }}
@@ -404,6 +452,16 @@
                                  <span v-if="has_discount(product) == true" class="price-sub">
                                     {{ common_price_show_currency(product.price) }}
                                  </span>
+                                 <span v-show='has_gift(product) == true' class='badge-gift'>
+                                    <span class='icon'>
+                                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                       <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                                       <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                                       </svg>
+                                    </span>
+                                    <span class='text'>{{ product.gift_text}}</span>
+                                 </span>
+
                               </div>
                            </div>
                         </div>
@@ -426,7 +484,7 @@
                               </div>
                               
                               <p class="tt01">{{ product.name }} </p>
-                              <p class="tt02">{{ product_name_compact(product) }}</p>
+                              <p class="tt02">{{ product.name_second }}</p>
 
                               <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
                                  <span class="price">
@@ -479,6 +537,8 @@
          </div>
       </div>
 
+      <a id='btn-zalo' :class='banner_delivering_active == true ? "add-space" : ""' href="https://zalo.me/0909157151/?appt=D"><img src='<?php echo THEME_URI . '/assets/images/home-zalo-icon.svg'; ?>'></a>
+
    </div>
 
    <div v-else>
@@ -497,6 +557,9 @@
 var app = Vue.createApp({
    data (){
       return {
+         banner_delivering_active: false,
+
+         popup_filter: false,
 
          loading: false,
          inputSearch: '',
@@ -528,15 +591,7 @@ var app = Vue.createApp({
 
    methods: {
 
-      product_name_compact( product ){
-         if( product.name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         }else if( product.product_type == "ice_device"){
-            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
-         }else{
-            return product.name_second;
-         }
-      },
+      btn_open_popup_filter(){ this.popup_filter = !this.popup_filter; },
 
       // 
       splitArray(arr, size) {
@@ -617,6 +672,7 @@ var app = Vue.createApp({
       // END CHANGE LANGUAGE
 
       has_discount( product ){ return window.has_discount( product ); },      
+      has_gift( product ){ return window.has_gift( product ); },      
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
       
@@ -736,8 +792,6 @@ var app = Vue.createApp({
 
    },
 
-
-
    async created(){
 
       // const urlParams         = new URLSearchParams(window.location.search);
@@ -761,11 +815,8 @@ var app = Vue.createApp({
       this.count_product_in_cart();
 
       var form = new FormData();
-      form.append('action', 'atlantis_load_product_recommend');
-      form.append('lat', this.latitude);
-      form.append('lng', this.longitude);
-      form.append('paged', 0);
-      form.append('perPage', 20);
+      form.append('action', 'atlantis_get_product_discount_and_gift');
+      form.append('limit', 20);
       var r = await window.request(form);
       if( r != undefined ){
          var res = JSON.parse( JSON.stringify( r));
@@ -778,14 +829,36 @@ var app = Vue.createApp({
          }
       }
 
-      var _get_rest_of_data_discount = 20 - this.productRecommend.length;
-      if( _get_rest_of_data_discount > 0 && _get_rest_of_data_discount <= 20 ){
-         await this.get_product_discount(_get_rest_of_data_discount);
-      }
       var _get_rest_of_data_random   = 20 - this.productRecommend.length;
       if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
          await this.get_product_random(_get_rest_of_data_random);
       }
+
+      // form.append('action', 'atlantis_load_product_recommend');
+      // form.append('lat', this.latitude);
+      // form.append('lng', this.longitude);
+      // form.append('paged', 0);
+      // form.append('perPage', 20);
+      // var r = await window.request(form);
+      // if( r != undefined ){
+      //    var res = JSON.parse( JSON.stringify( r));
+      //    if( res.message == 'product_found' ){
+      //       res.data.forEach(item => {
+      //          if (! this.productRecommend.some(existingItem => existingItem.id === item.id)) {
+      //             this.productRecommend.push( item );
+      //          }
+      //       });
+      //    }
+      // }
+
+      // var _get_rest_of_data_discount = 20 - this.productRecommend.length;
+      // if( _get_rest_of_data_discount > 0 && _get_rest_of_data_discount <= 20 ){
+      //    await this.get_product_discount(_get_rest_of_data_discount);
+      // }
+      // var _get_rest_of_data_random   = 20 - this.productRecommend.length;
+      // if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
+      //    await this.get_product_random(_get_rest_of_data_random);
+      // }
    
       
       jQuery(document).ready(function($){
@@ -815,6 +888,9 @@ var app = Vue.createApp({
 
 window.app = app;
 
-
+async function callbackActiveTab(){
+   await window.app.get_notification_count();
+   window.app.count_product_in_cart();
+}
 </script>
 

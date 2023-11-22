@@ -603,5 +603,14 @@ window.app = app;
 
    setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1800);
 
+   async function callbackActiveTab(){
+      var count_cart = window.count_product_in_cart();
+      if(count_cart > 0){
+         jQuery('.count-cart').text(count_cart).addClass("enable");
+      }else{
+         jQuery('.count-cart').text("").removeClass("enable");
+      }
+      await window.app.get_notification_count();
+   }
 </script>
 

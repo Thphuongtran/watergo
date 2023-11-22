@@ -1,3 +1,4 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js?ver=1.0" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
    .product-header .main{
       text-align: center;
@@ -14,7 +15,46 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
    }
+
+   .product-header .main{
+      height: 328px;
+   }
+
+   .product-design.product-detail .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+
+   .list-product-by-store .badge-gift {
+      position: relative;
+      width: 100%;
+   }
+   .list-product-by-store .badge-gift .icon {
+      position: absolute;
+      top: -2px;
+   }
+   .list-product-by-store .badge-gift .text {
+      padding-left: 25px;
+      line-height: 20px;
+   }
+   .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .product-design .price{
+      padding-right: 5px;
+   }
+   .product-design .price-sub{
+      margin-left: 0;
+      position: relative;
+      top: -2px;
+   }
+
+
 </style>
+
 <div id='app'>
 
    <div v-show='loading == false && store != null' class="page-store-detail">
@@ -103,6 +143,15 @@
                         <span v-if='has_discount(product) == true' class='price-sub'>
                            {{ common_price_show_currency(product.price) }}
                         </span>
+                        <span v-show='has_gift(product) == true' class='badge-gift'>
+                           <span class='icon'>
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                           </span>
+                           <span class='text'>{{ product.gift_text}}</span>
+                        </span>
                      </div>
                   </div>
                </div>
@@ -143,6 +192,7 @@ var app = Vue.createApp({
          store: null,
          page: 0,
          limit: 10,
+
          product_by_store: [],
          total_reviews: 0,
          averageRating: 0,
@@ -153,6 +203,16 @@ var app = Vue.createApp({
 
          callback_cart_count: 0,
          callback_notification_count: 0,
+      }
+   },
+
+   watch: {
+      products: {
+         handler(data){
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+         }, deep: true
       }
    },
 
@@ -181,6 +241,7 @@ var app = Vue.createApp({
       },
 
       has_discount( product ){return window.has_discount(product);},
+      has_gift( product ){return window.has_gift(product);},
       product_is_mark_out_of_stock( product ){ return window.product_is_mark_out_of_stock(product); },
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
@@ -317,7 +378,7 @@ var app = Vue.createApp({
          }
       },
 
-      async mark_user_read_notification(hash_id){
+      async atlantis_notification_mark_read_notification_hash_id(hash_id){
          var form = new FormData();
          form.append('action', 'atlantis_notification_mark_read_notification_hash_id');
          form.append('hash_id', hash_id);
@@ -388,17 +449,22 @@ var app = Vue.createApp({
       const urlParams            = new URLSearchParams(window.location.search);
       this.store_id              = urlParams.get('store_id');
       const hash_id              = urlParams.get('hash_id');
+
+      if( hash_id != undefined ){
+         await this.atlantis_notification_mark_read_notification_hash_id(hash_id);
+      }
+
       this.loading = true;
 
       await this.get_current_location();
       await this.check_current_user_is_store();
-
-      if( hash_id != undefined ){
-         await this.mark_user_read_notification(hash_id);
-      }
       await this.findStore(this.store_id);
 
       window.appbar_fixed();
+
+      jQuery(document).ready(function($){
+         jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+      });
 
       this.loading = false;
    }

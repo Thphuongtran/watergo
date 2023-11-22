@@ -12,7 +12,23 @@
       position: relative;
       top: -2px;
    }
+
+   .box-search.style01 .input-search{
+      padding-right: 15px;
+   }
+
+   .search-data{
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: calc( 100vh - 56px);
+      padding-top: 20px;
+      padding-bottom: 30px;
+   }
+   .grid-masonry{
+      margin-top: 0;
+   }
 </style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id='app'>
 
@@ -69,13 +85,22 @@
                   </div>
                   <div v-if='searchItem.search_type == "product"'  class='box-wrapper'>
                      <p class='tt01'>{{ searchItem.name }} </p>
-                     <p class='tt02'>{{ product_name_compact(searchItem) }}</p>
+                     <p class='tt02'>{{ searchItem.name_second }}</p>
                      <div class='gr-price' :class="has_discount(searchItem) == true ? 'has_discount' : '' ">
                         <span class='price'>
                            {{ common_price_after_discount(searchItem ) }}
                         </span>
                         <span v-if='has_discount(searchItem) == true' class='price-sub'>
                            {{ common_price_show_currency(searchItem.price) }}
+                        </span>
+                        <span v-show='has_gift(searchItem) == true' class='badge-gift'>
+                           <span class='icon'>
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                           </span>
+                           <span class='text'>{{ searchItem.gift_text}}</span>
                         </span>
                      </div>
                   </div>
@@ -158,16 +183,6 @@ createApp({
    },
 
    methods: {
-
-      product_name_compact( product ){
-         if( product.name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         }else if( product.product_type == "ice_device"){
-            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
-         }else{
-            return product.name_second;
-         }
-      },
       
       gotoProductDetail(id){ window.gotoProductDetail(id)},
       gotoStoreDetail(store_id){ window.gotoStoreDetail( store_id ) },
@@ -248,6 +263,7 @@ createApp({
       },
 
       has_discount(p){ return window.has_discount(p); },
+      has_gift(p){ return window.has_gift(p); },
       
       common_price_after_discount(p){ return window.common_price_after_discount(p)},
       common_price_show_currency(p){ return window.common_price_show_currency(p)},
@@ -290,6 +306,10 @@ createApp({
 
 
    async created(){
+      if( window.appBridge != undefined ){
+         window.appBridge.setEnableScroll(false);
+      }
+
       this.get_current_location();
 
       jQuery(document).ready(function($){
@@ -301,8 +321,3 @@ createApp({
    }
 }).mount('#app');
 </script>
-<style>
-   .box-search.style01 .input-search{
-      padding-right: 15px;
-   }
-</style>

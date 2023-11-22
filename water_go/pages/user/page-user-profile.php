@@ -1,7 +1,3 @@
-<?php
-   pv_update_user_token();
-
-?>
 <script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js'; ?>'></script>
 <div id='app'>
 
@@ -187,8 +183,6 @@ var app = Vue.createApp({
    methods: {
       
       gotoChat(){ window.gotoChat(); },
-      gotoCart(){ window.gotoCart(); },
-      count_product_in_cart(){return window.count_product_in_cart(); },
 
       get_avatar( u ){
          if( u != undefined && u != null ) return u.user_avatar.url;
@@ -341,4 +335,8 @@ var app = Vue.createApp({
 .mount('#app');
 
 window.app = app;
+
+async function callbackActiveTab(){
+   window.app.count_product_in_cart();
+}
 </script>

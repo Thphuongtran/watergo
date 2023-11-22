@@ -129,6 +129,11 @@ function func_atlantis_get_order_fullpack( $args ){
                      'order_group_product_price'            => $product->order_group_product_price,
                      'order_group_product_discount_percent' => $product->order_group_product_discount_percent,
                      'order_group_store_id'                 => $product->order_group_store_id,
+                     //
+                     'order_group_product_name'             => $product->order_group_product_name,
+                     'order_group_product_name_second'      => $product->order_group_product_name_second,
+                     'order_group_product_type'             => $product->order_group_product_type,
+                     // 
                      'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true)
                   ];
                }
@@ -266,17 +271,28 @@ function func_atlantis_get_product_by( $args ){
          $vl->description    = stripcslashes($vl->description);
 
          if( $vl->product_type == 'water'){
+            // CHANGE NAME Lavie/viva to LaVie
+            if( $vl->brand == 'Lavie/viva'){
+               $vl->brand = 'LaVie';
+            }
             $vl->name                     = $vl->brand;
             $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+
          }else if( $vl->product_type == 'ice'){
             $vl->name                     = $vl->category;
             $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
          }else if( $vl->product_type == 'water_device'){
             $vl->name                     = $vl->name_device;
+
+            // Change name Cả 2 to làm nóng và lạnh
+            if( $vl->feature_device == 'Cả 2' ){
+               $vl->feature_device = __('Làm nóng và lạnh', 'watergo');
+            }
             $vl->name_second              = $vl->feature_device;
+
          }else if( $vl->product_type == 'ice_device'){
             $vl->name                     = $vl->name_device;
-            $vl->name_second              = $vl->capacity_device;
+            $vl->name_second              = __('Dung tích', 'watergo') . ' '. $vl->capacity_device;
          }
          
       }
@@ -611,6 +627,48 @@ require_once THEME_DIR . '/libs/network/ajax_share.php';
 require_once THEME_DIR . '/libs/network/ajax_cart.php';
 
 
+
+function atlantis_component_extract_product( $res, $limit_image = 1, $image_size = 'medium'){
+   if($limit_image == 1 || $limit_image == true ){
+      $limit_image = true;
+   }else{
+      $limit_image = false;
+   }
+
+   if( !empty( $res )){
+      foreach( $res as $k => $vl ){
+         $vl->product_image = func_atlantis_get_images($vl->id, 'product', $limit_image, $image_size);
+         $vl->description   = stripcslashes($vl->description);
+
+         if( $vl->product_type == 'water'){
+            // CHANGE NAME Lavie/viva to LaVie
+            if( $vl->brand == 'Lavie/viva'){
+               $vl->brand = 'LaVie';
+            }
+            $vl->name                     = $vl->brand;
+            $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
+
+         }else if( $vl->product_type == 'ice'){
+            $vl->name                     = $vl->category;
+            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+         }else if( $vl->product_type == 'water_device'){
+            $vl->name                     = $vl->name_device;
+
+            // Change name Cả 2 to làm nóng và lạnh
+            if( $vl->feature_device == 'Cả 2' ){
+               $vl->feature_device = __('Làm nóng và lạnh', 'watergo');
+            }
+            $vl->name_second              = $vl->feature_device;
+
+         }else if( $vl->product_type == 'ice_device'){
+            $vl->name                     = $vl->name_device;
+            $vl->name_second              = __('Dung tích', 'watergo') . ' '. $vl->capacity_device;
+         }
+      }
+      return $res;
+   }
+   return [];
+}
 
 // TESTING API FOR ALL
 function atlantis_testing(){

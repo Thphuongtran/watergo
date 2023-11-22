@@ -82,7 +82,7 @@
 
 
 </div>
-<script type='module'>
+<script>
 
 var app = Vue.createApp({
    data(){
@@ -231,6 +231,5 @@ var app = Vue.createApp({
 }).mount('#app');
 
 window.app = app;
-
 
 </script>

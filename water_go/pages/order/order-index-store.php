@@ -26,6 +26,14 @@
          min-width: 67px;
       }
    }
+   .color-yellow{
+      color: #FFC83A;
+   }
+
+   .modal-popup.style01 .actions button.disabled{
+      opacity: 0.6;
+      pointer-events: none;
+   }
 </style>
 <div id='app'>
    <div v-show='loading == false' class='page-order'>
@@ -103,7 +111,14 @@
 
                   <div class='action-all'>
                      <button v-if='order_status_current == "ordered"' @click='btn_action_all("confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
-                     <!-- <button v-if='order_status_current == "ordered"' @click='btn_action_all("cancel")' class='btn-action-cancel'>Cancel</button> -->
+                     <!-- STORE CANCEL WHEN ORDER IS DELIVERING -->
+                     <button v-if='order_status_current == "delivering"' @click='btn_action_all("cancel")' class='btn-action-cancel color-yellow'>
+                        <?php
+                        if( get_locale() == 'vi'){ echo 'Huỷ';
+                        }else if( get_locale() == 'ko_KR'){ echo 'Cancel';
+                        }else{ echo 'Cancel'; }
+                        ?>
+                     </button>
                      <button v-if='order_status_current == "confirmed"' @click='btn_action_all("delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
                      <button v-if='order_status_current == "delivering"' @click='btn_action_all("complete")' class='btn-action-cancel'><?php echo __('Complete', 'watergo'); ?></button>
                   </div>
@@ -171,9 +186,13 @@
                   <button 
                      v-if='order.order_status == "ordered"'
                      @click='btn_action_order_single_record(order.order_id, "confirmed")' class='btn-action-confirm'><?php echo __('Confirm', 'watergo'); ?></button>
-                  <!-- <button 
-                     v-if='order.order_status == "ordered"'
-                     @click='btn_action_order_single_record(order.order_id, "cancel")' class='btn-action-cancel'>Cancel</button> -->
+                  <button 
+                     v-if='order.order_status == "delivering"'
+                     @click='btn_action_order_single_record(order.order_id, "cancel")' class='btn-action-cancel color-yellow'><?php 
+                        if( get_locale() == 'vi'){ echo 'Huỷ';
+                        }else if( get_locale() == 'ko_KR'){ echo 'Cancel';
+                        }else{ echo 'Cancel'; }
+                     ?></button>
                   <button 
                      v-if='order.order_status == "confirmed"' 
                      @click='btn_action_order_single_record(order.order_id, "delivering")' class='btn-action-cancel'><?php echo __('Delivery', 'watergo'); ?></button>
@@ -225,10 +244,12 @@
          </div>
       </div>
    </div>
+
    <div v-show='popup_cancel_all_item == true' class='modal-popup open style01'>
       <div class='modal-wrapper'>
          <div class='modal-close style-static'><div @click='btn_modal_cancel_all' class='close-button'><span></span><span></span></div></div>
-         <p class='tt01'><?php echo __("Why do you want to cancel <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
+         <p class='tt01' v-show='access_single_status == null'><?php echo __("Why do you want to cancel <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
+         <p class='tt01' v-show='access_single_status != null'><?php echo __("Why do you want to cancel <span class='t-primary'>This Order</span>", 'watergo'); ?>?</p>
          <ul class='list-Reason'>
             <li @click='btn_select_reason(reason.label)'
                v-for='(reason, index) in reason_cancel' :key='index'>
@@ -239,7 +260,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button @click='btn_do_all_action' class='btn btn-primary'>
+            <button v-show='access_single_status == null' @click='btn_do_all_action' class='btn btn-primary' :class='is_select_reason_cancel == false ? "disabled" : ""'>
                <?php 
                   // SUBMIT BUTTON 
                   if( get_locale() == 'vi'){ echo 'Gửi';
@@ -247,6 +268,27 @@
                   }else{ echo 'Submit'; }
                ?>
             </button>
+            <button v-show='access_single_status != null' @click='btn_single_modal_confirm' class='btn btn-primary' :class='is_select_reason_cancel == false ? "disabled" : ""'>
+               <?php 
+                  // SUBMIT BUTTON 
+                  if( get_locale() == 'vi'){ echo 'Gửi';
+                  }else if( get_locale() == 'ko_KR'){ echo '보내기';
+                  }else{ echo 'Submit'; }
+               ?>
+            </button>
+         </div>
+      </div>
+   </div>
+
+   <!-- SINGLE ORDER ACCESS MODEL -->
+   <div v-show='popup_single_modal == true' class='modal-popup open'>
+      <div class='modal-wrapper'>
+         <p class='heading' v-show='access_single_status == "confirmed"'><?php echo __("Do you want to confirm this <span class='t-primary'>Order</span>", 'watergo'); ?>?</p>
+         <p class='heading' v-show='access_single_status == "delivering"'><?php echo __("Do you want to delivering this <span class='t-primary'>Order</span>", 'watergo'); ?>?</p>
+         <p class='heading' v-show='access_single_status == "complete"'><?php echo __("Do you want to complete this <span class='t-primary'>Order</span>", 'watergo'); ?>?</p>
+         <div class='actions'>
+            <button @click='btn_modal_cancel_all' class='btn btn-outline'><?php echo __('Cancel', 'watergo') ?></button>
+            <button @click='btn_single_modal_confirm' class='btn btn-primary'><?php echo __('Confirm', 'watergo') ?></button>
          </div>
       </div>
    </div>
@@ -266,12 +308,15 @@ var app = Vue.createApp({
          popup_complete_all_item: false,
          popup_cancel_all_item: false,
 
+         popup_single_modal: false,
+
+         access_single_order_id: null,
+         access_single_status: null,
+
          message_count: 0,
          notification_count: 0,
 
          total_order: 0,
-
-         paged: 0,
 
          is_select_all: false,
          // IF ORDER SELECT -> BUTTON CAN ACCESS
@@ -374,10 +419,10 @@ var app = Vue.createApp({
 
          // Reason for cancellation: 
          reason_cancel: [
-            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Không liên lạc được với khách', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Khách từ chối nhận hàng', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Khách hẹn giao lại sau', 'watergo'); ?>', active: false},
+            {label: '<?php echo __('Cửa hàng giao sai đơn', 'watergo'); ?>', active: false},
             {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
          ],
 
@@ -414,12 +459,31 @@ var app = Vue.createApp({
          this.popup_cancel_all_item = false;
          this.popup_delivering_all_item = false;
          this.popup_complete_all_item = false;
+         this.reason_cancel.some(item => item.active = false);
+         this.access_single_order_id = null;
+         this.access_single_status = null;
+         this.popup_single_modal = false;
       },
 
       // FOR SINGLE BUTTON
-      async btn_action_order_single_record(order_id, order_status){
-         var _arr = [ parseInt(order_id) ];
-         await this.btn_action_order_status( _arr, order_status );
+      btn_action_order_single_record(order_id, order_status){
+         this.access_single_order_id = order_id;
+         this.access_single_status   = order_status;
+         if( order_status != 'cancel' ){
+            this.popup_single_modal = true;
+         }
+         if( order_status == 'cancel' ){
+            this.popup_cancel_all_item = true;
+         }
+      },
+
+      async btn_single_modal_confirm(){
+         this.popup_single_modal = false;
+         this.popup_cancel_all_item = false;
+         var _arr = [ parseInt(this.access_single_order_id) ];
+         await this.btn_action_order_status( _arr, this.access_single_status );
+         this.access_single_order_id = null;
+         this.access_single_status = null;
       },
 
       // THIS FUNCTION WILL AJAX ALL ACTION 
@@ -462,7 +526,6 @@ var app = Vue.createApp({
       // BUTTON DO ALL ACTION
       async btn_do_all_action(){
          var order_ids = [];
-
          
          this.orders.forEach( od => {
             if( od.select == true ){ order_ids.push( parseInt( od.order_id) ); }
@@ -497,12 +560,11 @@ var app = Vue.createApp({
 
       async reset_get_order_store(){
          this.loading_data = true;
-         this.paged = 0;
          this.orders = [];
          this.total_count = 0;
          this.order_by_filter_select = { value: 'desc' };
          await this.get_count_total_order();
-         await this.get_order_store(this.order_status_current, this.paged);
+         await this.get_order_store(this.order_status_current);
          await this.get_notification_count();
          window.appbar_fixed();
          this.loading_data = false;
@@ -541,7 +603,7 @@ var app = Vue.createApp({
       get_type_order(order_type){ return window.get_type_order(order_type)},
       print_type_order_text(order_type){ 
          if( this.get_locale == 'vi' ){
-            if( order_type == 'once_date_time' || order_type == 'once_immediately' ) return 'Một Lần';
+            if( order_type == 'once_date_time' || order_type == 'once_immediately' ) return 'Giao thường';
             if( order_type == 'weekly' ) return 'Hàng tuần';
             if( order_type == 'monthly' ) return 'Hàng tháng';
          }
@@ -604,8 +666,6 @@ var app = Vue.createApp({
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_status');
          var r = await window.request(form);
-         
-         console.log(r);
 
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
@@ -619,11 +679,11 @@ var app = Vue.createApp({
          }
       },
 
-      async get_order_store( order_status, paged ){
+      async get_order_store( order_status ){
          var form = new FormData();
          form.append('action', 'atlantis_get_order_store');
          form.append('order_status', order_status);
-         form.append('paged', paged);
+         form.append('paged', this.orders.length);
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
@@ -647,14 +707,11 @@ var app = Vue.createApp({
          const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
-
          var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
          var documentScroll   = documentHeight + scrollEndThreshold;
-
          // if (scrollPosition + windowHeight + 10 >= documentHeight) {
          if (scrollPosition + windowHeight >= documentHeight ) {
-
-            await this.get_order_store( this.order_status_current, this.paged++ );
+            await this.get_order_store( this.order_status_current );
          }
       }
       
@@ -669,20 +726,23 @@ var app = Vue.createApp({
 
    // STREAM ORDER STATUS -> reload order
    watch: {
-      order_status_current: async function( filter ){
+      order_status_current: async function( status ){
          this.loading_data = true;
          await this.get_count_total_order();
-         this.paged = 0;
          this.orders = [];
          this.total_count = 0;
          this.order_by_filter_select = { value: 'desc' };
-         await this.get_order_store(filter, this.paged);
+         await this.get_order_store( status );
          window.appbar_fixed();
          this.loading_data = false;
       },
    },
 
    computed: {
+
+      is_select_reason_cancel(){
+         return this.reason_cancel.some( item => item.active == true);
+      },
       
       order_filter(){
          var _filter_orders = this.orders;
@@ -698,16 +758,20 @@ var app = Vue.createApp({
    },
 
    async created(){
+
+      const urlParams   = new URLSearchParams(window.location.search);
+      const tab    = urlParams.get('tab');
+
+      if(tab && tab != undefined ){
+         // this.order_status_current = tab;
+      }
       
       this.loading = true;
-
-      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 2000);
       
       await this.get_count_total_order();
-      await this.get_order_store( this.order_status_current, 0 );
+      await this.get_order_store( this.order_status_current );
       await this.get_notification_count();
-
-      // console.log(this.orders)
       
       this.loading = false;
 
@@ -718,5 +782,9 @@ var app = Vue.createApp({
 
 window.app = app;
 
-
+async function callbackActiveTab(){
+   await window.app.get_count_total_order();
+   await window.app.get_order_store( window.app.order_status_current );
+   await window.app.get_notification_count();
+}
 </script>

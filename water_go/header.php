@@ -1,26 +1,27 @@
 <?php 
 
+   pv_update_user_token();
    atlantis_setup_language();
    
    $get_locale = get_locale();
 
-   // if( is_user_logged_in() ){
-   //    $user_id = get_current_user_id();
-   //    $is_user_store = get_user_meta($user_id , 'user_store', true);
+   if( is_user_logged_in() ){
+      $user_id = get_current_user_id();
+      $is_user_store = get_user_meta($user_id , 'user_store', true);
 
-   //    if( $is_user_store == 1 || $is_user_store == true  ){
-   //       $get_locale = 'vi';
-   //       if( isset($_COOKIE['site_lang']) && $_COOKIE['site_lang'] != 'vi'){
-   //          func_quick_app_change_language_callback('vi');
-   //       }
-   //    }
-   // }
+      if( $is_user_store == 1 || $is_user_store == true  ){
+         $get_locale = 'vi';
+         if( isset($_COOKIE['site_lang']) && $_COOKIE['site_lang'] != 'vi'){
+            func_quick_app_change_language_callback('vi');
+         }
+      }
+   }
 
-   // $auth_page = isset($_GET['auth_page']) ? $_GET['auth_page'] : '';
+   $auth_page = isset($_GET['auth_page']) ? $_GET['auth_page'] : '';
 
-   // if( in_array($auth_page, ['auth-store-login', 'auth-store-register', 'auth-store-forget-password', 'auth-store-reset-password']) ){
-   //    func_quick_app_change_language_callback( 'vi');
-   // }
+   if( in_array($auth_page, ['auth-store-login', 'auth-store-register', 'auth-store-forget-password', 'auth-store-reset-password']) ){
+      func_quick_app_change_language_callback( 'vi');
+   }
 
 ?>
 

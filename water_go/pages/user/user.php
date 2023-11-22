@@ -11,11 +11,16 @@ $allow_page = [
    'user-password',
    'user-review-edit',
    'user-delete-account',
+   'user-pricing-term',
 ];
 
 if( in_array($user_page, $allow_page) ){
    
    if( is_user_logged_in() ){
+
+      if( $user_page == 'user-pricing-term' ){
+         get_template_part('pages/user/page-user-pricing-term');
+      }
 
       if( $user_page == 'user-profile' ){
          get_template_part('pages/user/page-user-profile');

@@ -818,6 +818,25 @@ function has_discount( product ){
    }
 }
 
+function has_gift( product ){
+   if( product.has_gift == null || product.has_gift == 0 ) return false;
+
+   var currentDate = new Date();
+   var gift_from = new Date(product.gift_from);
+   var gift_to   = new Date(product.gift_to);
+   currentDate.setHours(0,0,0,0);
+   gift_from.setHours(0,0,0,0);
+   gift_to.setHours(0,0,0,0);
+   currentDate    = parseInt(currentDate.getTime() / 1000);
+   gift_from  = parseInt(gift_from.getTime() / 1000);
+   gift_to    = parseInt(gift_to.getTime() / 1000);
+   if ( currentDate >= gift_from && currentDate <= gift_to ) {
+      return true;
+   }else{
+      return false;
+   }
+}
+
 /**
  * @access TOTAL PRICE WITH QUANTITY + DISCOUNT
  */

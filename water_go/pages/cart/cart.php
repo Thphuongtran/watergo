@@ -193,37 +193,44 @@ var app = Vue.createApp({
          select_all_value: false,
          popup_delete_item: false,
          trigger_btn_delete: false,
-         carts: [],
-
          total_product_select: 0,
+
+         carts: [],
       }
    },
    
    watch: {
       carts: {
          handler( data ){
+            let totalProductSelect = 0;
             data.forEach( ( store, storeIndex ) => {
                if( store.products.length == 0 ){
                   data.splice(storeIndex, 1);
                }else{
-                  var _count_product_select = 0;
                   store.products.forEach( ( product, productIndex ) => {
                      if( product.product_quantity_count == 0 ){
                         data[storeIndex].products.splice(productIndex, 1);
                      }
                      if( product.product_select == true ){
-                        _count_product_select += parseInt(product.product_quantity_count);
+                        const quantityCount = parseInt(product.product_quantity_count, 10);
+                        if (!isNaN(quantityCount)) {
+                           totalProductSelect += quantityCount;
+                        }
                      }
                   });
-                  this.total_product_select = _count_product_select;
                }
             });
+            this.total_product_select = totalProductSelect;
             localStorage.setItem('watergo_carts', JSON.stringify(data));
          }, deep: true
       }
    },
 
    methods: {
+
+      restream(){
+         localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+      },
 
       goBackHome(){ 
          window.appBridge.navigateTo('Home', 'data=cart_count');
@@ -347,7 +354,7 @@ var app = Vue.createApp({
 
       gotoPageOrder(){
          if( this.total_product_select > 0 ){
-
+            this.restream();
             this.gotoOrderProduct();
          }
       },
@@ -387,12 +394,12 @@ var app = Vue.createApp({
          var _final_price = null;
 
          if( gr_price.price != gr_price.price_discount){
-            _final_price = gr_price.price.toLocaleString() + '<?php echo $currency; ?>';
+            _final_price = parseInt(gr_price.price).toLocaleString() + '<?php echo $currency; ?>';
          }
 
          return {
             price: _final_price,
-            price_discount: gr_price.price_discount.toLocaleString() + '<?php echo $currency; ?>'
+            price_discount: parseInt(gr_price.price_discount).toLocaleString() + '<?php echo $currency; ?>'
          };
       },
 

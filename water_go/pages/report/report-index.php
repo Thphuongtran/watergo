@@ -629,4 +629,7 @@ var app = Vue.createApp({
 }).mount('#app');
 window.app = app;
 
+async function callbackActiveTab(){
+   await window.app.get_notification_count();
+}
 </script>

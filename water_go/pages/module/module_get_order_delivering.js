@@ -48,8 +48,10 @@ const module_get_order_delivering = {
          handler( data ){
             if( data.length > 0){
                this.banner_delivering_active = true;
+               this.$root.banner_delivering_active = true;
             }else{
                this.banner_delivering_active = false;
+               this.$root.banner_delivering_active = false;
             }
          },
          deep: true
@@ -176,7 +178,6 @@ const module_get_order_delivering = {
       await setInterval( async () => {
          await this.is_order_confirmed();
       }, 2000);
-
    },
 
 };

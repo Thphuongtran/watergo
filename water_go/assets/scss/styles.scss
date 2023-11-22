@@ -3323,3 +3323,81 @@
 	margin-left: 11px;
 	color: #2790F9;
 }
+
+
+.badge-gift,
+.badge-gift .text{
+   font-size: 12px;
+   font-weight: 300;
+   color: #7B7D83;
+}
+
+.product-block .price,
+.product-block .price-sub,
+.product-design .price{
+   white-space: nowrap;
+}
+
+.badge-gift {
+   display: flex;
+   flex-flow: row nowrap;
+   .icon{
+      height: 24px;
+   }
+   .text{
+      white-space: pre-wrap;
+      line-height: 26px;
+   }
+}
+
+.box-payment{
+   margin-top: 20px;
+   .tt1{
+      font-size: 14px;
+      font-weight: 500;
+   }
+}
+
+.box-price{
+   padding: 10px 16px;
+   margin-top: 20px;
+   box-shadow: 0px -1px 0px 0px #EFEFF4;
+   font-size: 16px;
+   font-weight: 500;
+   .tt2{
+      color: #2790F9;
+      white-space: nowrap;
+   }
+}
+
+.box-textarea {
+   width: 100%;
+   padding: 10px 10px 20px;
+   background: #F5F5F5;
+   position: relative;
+   margin-top: 20px;
+   border-radius: 5px;
+   min-height: 80px;
+   textarea {
+      width: 100%;
+      resize: none;
+      background: none;
+      border: none;
+      box-shadow: none;
+      outline: none;
+      color: #252831;
+      min-height: 40px;
+      &:placeholder {
+         font-size: 15px;
+         font-weight: 400;
+      }
+   }
+   .count-text {
+      position: absolute;
+      bottom: 0;
+      right: 10px;
+      color: #7B7D83;
+      font-size: 16px;
+      font-weight: 400;
+   }
+}

@@ -119,6 +119,21 @@
          }
       }
    }
+
+   function reload_in_current_tab( option = '' ){
+      let url = window.location.href;
+      if (url.indexOf("appt=N") > -1){
+         url = url.replace("appt=N", "appt=C");
+      }else if(url.indexOf("appt=C") > -1){
+         //url = url+"&appt=C";
+      }else if(url.indexOf("?") > -1){
+         url = url+"&appt=C";
+      }else{
+         url = url+"?appt=C";
+      }
+      // http://watergo.net/order/?order_page=order-product&appt=C
+      window.location.replace(url + option);
+   }
    
 
    /**
@@ -217,19 +232,9 @@
             window.app.cart_count = window.count_product_in_cart();
          }
 
+         
          if( partial[0] == 'delivery_update'){
-            var _order_delivery_address   = JSON.parse(localStorage.getItem('watergo_order_delivery_address'));
-            if( _order_delivery_address != undefined && _order_delivery_address.length > 0 ){
-               window.app.delivery_address_primary = {
-                  id:         _order_delivery_address[0].id,
-                  name:       _order_delivery_address[0].name,
-                  phone:      _order_delivery_address[0].phone,
-                  address:    _order_delivery_address[0].address,
-                  user_id:    _order_delivery_address[0].user_id,
-                  latitude:   _order_delivery_address[0].latitude,
-                  longitude:  _order_delivery_address[0].longitude
-               };
-            }
+            reload_in_current_tab();
          }
 
          if( partial[0] == 'delivery_just_add' ){
@@ -297,15 +302,38 @@
             await atlantis_get_language().then( (data) => window.app.user_language = data );  
          }
 
-         // SECOND ROUTE
-         // if( partial[1] != undefined ){
-         //    for( var i = 1; i < partial.length; i++ ){
-         //       var multi_part = partial[i].split('=');
-         //       if( multi_part[0] == 'notification_callback' && multi_part[1] == 'notification_count' ){
-         //          await get_notification_count().then( (data) => window.app.notification_count = data );  
-         //       }
-         //    }
-         // }
+         // REFRESH TAB PRODUCT 
+
+         if( partial[0] == 'tab_product_refresh' ){
+            let product_type = partial[1];
+            let tab_input = '';
+            if( product_type == 'water' || product_type == 'water_device' ){
+               tab_input = 'water';
+            }
+            if( product_type == 'ice' || product_type == 'ice_device'){
+               tab_input = 'ice';
+            }
+            window.app.product_tab.forEach(tab => {
+               if( tab.value == tab_input ){ 
+                  tab.active = true; 
+               }else{ 
+                  tab.active = false; 
+               }
+            });
+            window.app.loading_data = true;
+            window.app.product_tab_value = tab_input;
+            window.app.products = [];
+            await window.app.atlantis_get_product_from_store( tab_input );
+            await window.app.get_notification_count();
+            window.app.loading_data = false;
+         }
+
+         // REFRESH TAB ORDER
+         if( data == 'order_refresh'){
+            await window.app.get_notification_count();
+            await window.app.atlantis_get_newest_order();
+            await window.app.get_count_total_order();
+         }
 
       }
    }
@@ -346,11 +374,9 @@
             action: 'atlantis_social_login',
             token: token,  
             type: type,
-            //web_token:jQuery("#login-token").val(),  
             information:information,             
          },
          beforeSend: function() {
-            //alert('Hieu dep trai');
          },
          success: function(output, textStatus, request) {
 
@@ -374,41 +400,6 @@
    function callbackLoginFail(message){
       console.log('Login Fail ' + message);
    }
-
-
-   (function($){
-      $(document).on('ready', function(){
-      });
-
-   //    $("body").on("click", ".share-btn", function(e) {
-   //       let linkShare = $(this).data("link") ;
-   //       $("body").addClass("loading");
-   //       $.ajax({
-   //          url: define.ajax_url,
-   //          type: "post",
-   //          dataType: "text",
-   //          data: {                  
-   //             action: 'get_short_link_to_share',
-   //             link: linkShare,
-   //             token: $("#verify-token").val(),                                                         
-   //          },
-   //          success: function(link) {
-   //             let shareData = {
-   //                title: 'Table On',
-   //                text: '',
-   //                url: link,
-   //             }
-   //             $("body").removeClass("loading");
-   //             navigator.share(shareData);
-   //          },
-   //          error: function () {
-   //             alert('error')
-   //          }
-
-   //       });
-   //    });
-   })(jQuery);
-
    
 </script>
 

@@ -17,6 +17,9 @@
       box-shadow: none;
       outline: none;
    }
+   .forcehidden{
+      display: none;
+   }
 </style>
 <div id='authentication'>
 
@@ -508,8 +511,11 @@ function initialize() {
    jQuery(document).ready(function($){
       $(document).on("keyup",".box-code-verify input",function (e) {         
          if(e.keyCode != 46 && e.keyCode != 32 && e.keyCode != 8) {
-         $(this).next("input").focus();  
-         }   
+            $(this).next("input").focus();  
+         } 
+      });
+      $(document).on('click', 'button.dismissButton', function(){
+         $('.pac-container').addClass('forcehidden');
       });
    })
 </script>

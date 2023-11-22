@@ -153,23 +153,7 @@ function atlantis_search_product(){
       $res_product = $wpdb->get_results($sql_product);
 
       if( !empty( $res_product ) ){
-         foreach( $res_product as $k => $vl ){
-            $vl->product_image = func_atlantis_get_images($vl->id, 'product', true, 'medium');
-            
-            if( $vl->product_type == 'water'){
-               $vl->name                     = $vl->brand;
-               $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
-            }else if( $vl->product_type == 'ice'){
-               $vl->name                     = $vl->category;
-               $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
-            }else if( $vl->product_type == 'water_device'){
-               $vl->name                     = $vl->name_device;
-               $vl->name_second              = $vl->feature_device;
-            }else if( $vl->product_type == 'ice_device'){
-               $vl->name                     = $vl->name_device;
-               $vl->name_second              = $vl->capacity_device;
-            }
-         }
+         $res_product = atlantis_component_extract_product($res_product);
          wp_send_json_success(['message' => 'search_found', 'data' => $res_product ]);
          wp_die();
       }

@@ -138,4 +138,6 @@ var app = Vue.createApp({
 }).mount('#app');
 
 window.app = app;
+
+
 </script>

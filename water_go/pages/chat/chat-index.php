@@ -12,6 +12,44 @@
    }
 
 ?>
+
+<style>
+   #btn-testing{
+      background: #2790F9;
+      color: white;
+   }
+   .tt02 {
+      position: relative;
+   }
+   .tt02 .badge-is_read {
+      z-index: 8;
+      position: absolute;
+      right: 0;
+      top: 4px;
+      min-width: 15px;
+      height: 15px;
+      line-height: 15px;
+      color: white;
+      font-weight: 700;
+      font-size: 10px;
+      background: #FF1E1E;
+      text-align: center;
+      border-radius: 25px;
+      padding: 0 4px;
+   }
+
+   .tt02 .text{
+      word-break: break-word;
+      padding-right: 30px;
+   }
+
+   .list-chat{
+      overflow-y: scroll;
+   }
+
+</style>
+
+
 <div id='app'>
    <div v-show='loading == false' class='page-chat'>
 
@@ -100,7 +138,8 @@ var app = Vue.createApp({
          user_id: <?php echo $user_id; ?>,
          where_app: '<?php echo $where_app; ?>',
          window_width: $(window).width(),
-         get_locale: '<?php echo get_locale(); ?>'
+         get_locale: '<?php echo get_locale(); ?>',
+
       }
       
    },
@@ -119,7 +158,6 @@ var app = Vue.createApp({
          }else{
             _filter = this.conversations;
          }
-
          return _filter.sort((a, b) => b.count_new_messages - a.count_new_messages);
       },
 
@@ -133,7 +171,6 @@ var app = Vue.createApp({
    methods: {
 
       truncateUTF8String(n){ 
-         
          if( this.window_width <= 320 ){
             return window.truncateUTF8String(n, 28 );
          }else if(this.window_width >= 375){
@@ -253,7 +290,6 @@ var app = Vue.createApp({
          var form = new FormData();
          form.append('action', 'atlantis_load_all_conversation');
          form.append('where_app', this.where_app);
-         
          var placeholders = [];
          if( this.conversations.length > 0 ){
             this.conversations.forEach( item => {
@@ -273,8 +309,7 @@ var app = Vue.createApp({
                });
             }
          }
-      }
-
+      },
 
    },
 
@@ -380,40 +415,3 @@ window.app = app;
 
 
 </script>
-
-<style>
-   #btn-testing{
-      background: #2790F9;
-      color: white;
-   }
-   .tt02 {
-      position: relative;
-   }
-   .tt02 .badge-is_read {
-      z-index: 8;
-      position: absolute;
-      right: 0;
-      top: 4px;
-      min-width: 15px;
-      height: 15px;
-      line-height: 15px;
-      color: white;
-      font-weight: 700;
-      font-size: 10px;
-      background: #FF1E1E;
-      text-align: center;
-      border-radius: 25px;
-      padding: 0 4px;
-   }
-
-   .tt02 .text{
-      word-break: break-word;
-      padding-right: 30px;
-   }
-
-   .list-chat{
-      overflow-y: scroll;
-   }
-
-</style>
-

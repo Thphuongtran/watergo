@@ -585,6 +585,7 @@
 
 
 ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
    .grid-masonry{
       padding-bottom: 30px;
@@ -693,8 +694,39 @@
       white-space: nowrap;
    }
 
+   
+   .product-design.product-detail .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
 
+   .gr-price{
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-end;
+   }
+   .product-design .price{
+      padding-right: 5px;
+   }
+   .product-design .price-sub{
+      margin-left: 0;
+      position: relative;
+      top: -2px;
+   }
 
+   .badge-gift {
+      position: relative;
+      width: 100%;
+   }
+   .badge-gift .icon {
+      position: absolute;
+      top: -2px;
+   }
+   .badge-gift .text {
+      padding-left: 25px;
+      line-height: 20px;
+   }
    
 </style>
 <div id='app'>
@@ -712,36 +744,6 @@
                <p v-show='is_ice_device_selected == true' class='leading-title'><?php echo __('Thiết bị đá', 'watergo'); ?></p>
             </div>
             <div class='action'>
-
-               <!-- <div v-show='is_ice_device_selected == false' class='filter-type-box'>
-                  <div @click='open_filter_type_box' class='filter-type-placeholder'>
-                     <span class='icon' >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_3436_257)">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M1.75 2.625C1.75 2.39294 1.84219 2.17038 2.00628 2.00628C2.17038 1.84219 2.39294 1.75 2.625 1.75H11.375C11.6071 1.75 11.8296 1.84219 11.9937 2.00628C12.1578 2.17038 12.25 2.39294 12.25 2.625V3.84183C12.2499 4.15123 12.127 4.44793 11.9082 4.66667L8.75 7.82483V12.1555C8.75002 12.2649 8.72207 12.3725 8.66881 12.468C8.61555 12.5636 8.53875 12.6439 8.4457 12.7014C8.35265 12.7589 8.24644 12.7917 8.13717 12.7966C8.02789 12.8015 7.91917 12.7784 7.82133 12.7295L5.65308 11.6457C5.53197 11.5851 5.4301 11.492 5.35891 11.3768C5.28772 11.2616 5.25 11.1289 5.25 10.9935V7.82483L2.09183 4.66667C1.87303 4.44793 1.75007 4.15123 1.75 3.84183V2.625Z" fill="#2790F9"/>
-                        </g>
-                        <defs>
-                        <clipPath id="clip0_3436_257">
-                        <rect width="14" height="14" fill="white"/>
-                        </clipPath>
-                        </defs>
-                        </svg>
-                     </span>
-                     <span class='text _outside_handler_clicked'><?php echo __('Type of ice', 'watergo'); ?></span>
-                  </div>
-
-                  <div class='filter-modal-wrapper' :class='filter_type_box_open == true ? "active" : ""'>
-                     <div class='filter-modal'>
-                        <div 
-                           @click='select_category_parent(type_ice.name)'
-                           v-for='(type_ice, type_ice_index) in get_category_parent' :key='type_ice_index'
-                           class='item _outside_handler_clicked' :class='type_ice.active ? "active" : ""'
-                        >
-                           {{ type_ice.name }}
-                        </div>
-                     </div>
-                  </div>
-               </div> -->
 
                <div id='btn-filter-sort' @click='buttonSortFeature' class='btn-text'>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -799,7 +801,7 @@
                      </div>
                      <div class='box-wrapper'>
                         <p class='tt01'>{{ product.name }} </p>
-                        <p class='tt02'>{{ product_name_compact(product) }}</p>
+                        <p class='tt02'>{{ product.name_second }}</p>
                         
                         <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
                            <span class='price'>
@@ -807,6 +809,15 @@
                            </span>
                            <span v-if='has_discount(product) == true' class='price-sub'>
                               {{ common_price_show_currency(product.price) }}
+                           </span>
+                           <span v-show='has_gift(product) == true' class='badge-gift'>
+                              <span class='icon'>
+                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M12.0002 7.91235V19.3409M5.14307 11.3409H18.8574V17.0552C18.8574 17.6614 18.6165 18.2428 18.1879 18.6715C17.7592 19.1001 17.1778 19.3409 16.5716 19.3409H7.42878C6.82257 19.3409 6.24119 19.1001 5.81254 18.6715C5.38388 18.2428 5.14307 17.6614 5.14307 17.0552V11.3409Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                                 <path d="M12 7.9123H8.57143C7.67886 7.01973 7.67886 5.3763 8.57143 4.48373C9.464 3.59115 12 3.9123 12 5.62658M12 7.9123V5.62658M12 7.9123H15.4286C16.3211 7.01973 16.3211 5.3763 15.4286 4.48373C14.536 3.59115 12 3.9123 12 5.62658M5.14286 7.9123H18.8571C19.1602 7.9123 19.4509 8.0327 19.6653 8.24703C19.8796 8.46136 20 8.75205 20 9.05515V10.198C20 10.5011 19.8796 10.7918 19.6653 11.0061C19.4509 11.2205 19.1602 11.3409 18.8571 11.3409H5.14286C4.83975 11.3409 4.54906 11.2205 4.33474 11.0061C4.12041 10.7918 4 10.5011 4 10.198V9.05515C4 8.75205 4.12041 8.46136 4.33474 8.24703C4.54906 8.0327 4.83975 7.9123 5.14286 7.9123Z" stroke="#2790F9" stroke-linecap="round" stroke-linejoin="round"/>
+                                 </svg>
+                              </span>
+                              <span class='text'>{{ product.gift_text}}</span>
                            </span>
                         </div>
                      </div>
@@ -845,8 +856,8 @@ createApp({
          sortFeatureOpen: false,
 
          sortFeatureCurrentValue: -1,
-         latitude: 10.780900239854994,
-         longitude: 106.7226271387539,
+         latitude: null,
+         longitude: null,
 
          products: [],
 
@@ -896,17 +907,17 @@ createApp({
       },
    },
 
-   methods: {
-
-      product_name_compact( product ){
-         if( product.name_second == "Cả 2"){
-            return "<?php echo __('Làm nóng và lạnh', 'watergo'); ?>";
-         }else if( product.product_type == "ice_device"){
-            return "<?php echo __('Dung tích', 'watergo') ?> " + product.name_second;
-         }else{
-            return product.name_second;
-         }
+   watch: {
+      products: {
+         async handler(data) {
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+         }, deep: true
       },
+   },
+
+   methods: {
 
       open_filter_type_box(){
          this.filter_type_box_open = !this.filter_type_box_open;
@@ -929,6 +940,7 @@ createApp({
       },
 
       has_discount( product ){ return window.has_discount(product); },
+      has_gift( product ){ return window.has_gift( product ); },
       common_price_show_currency(p){ return window.common_price_show_currency(p) },
       common_price_after_discount(p){ return window.common_price_after_discount(p) },
 
@@ -974,26 +986,20 @@ createApp({
 
       },
 
-      // select_category_parent(cat_id){
-      //    this.open_filter_type_box();
-      //    this.category_parent_id_selected = cat_id;
-      //    this.category_parent.some(cat => {
-      //       if (cat.name === cat_id) {cat.active = !cat.active;
-      //       } else {cat.active = false;}
-      //    });
-      //    var _anyCategoryNoActive = this.category_parent.some(item => item.active == true );
-      //    if( _anyCategoryNoActive == false ){
-      //       this.category_parent_id_selected = null;
-      //    }
-      // },
-
       // INIT
       async atlantis_get_product_sort_version2(){
 
          var form = new FormData();
          form.append('action', 'atlantis_get_product_sort_version2');
-         form.append('lat', this.latitude);
-         form.append('lng', this.longitude);
+
+         if( this.latitude == null && this.longitude == null ){
+            form.append('no_location_found', 1);
+            this.sortFeatureCurrentValue = 1;
+         }else{
+            form.append('lat', this.latitude);
+            form.append('lng', this.longitude);
+         }
+
          form.append('paged', this.products.length );
          var _category  = this.category.find(item => item.name == this.category_id_selected );
 

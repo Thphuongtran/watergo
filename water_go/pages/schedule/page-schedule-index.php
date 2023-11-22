@@ -1,6 +1,3 @@
-<?php 
-   pv_update_user_token();
-?>
 <link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
 
@@ -444,6 +441,10 @@ var app = Vue.createApp({
 .mount('#app');
 
 window.app = app;
+
+async function callbackActiveTab(){
+   await window.app.get_notification_count();
+}
 </script>
 
 
