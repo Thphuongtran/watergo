@@ -7,16 +7,9 @@
 
    }
 
-   $currency = ' đ';
-   if( get_locale() == 'ko_KR' ){
-      $currency = '동';
-   }
-
 ?>
 <link defer rel="stylesheet" href="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.css'; ?>">
 <script defer src="<?php echo THEME_URI . '/assets/js/jquery_ui_1.13.2.min.js'; ?>"></script>
-<link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <style>
    .ui-date-picker-wrapper.active #ui-datepicker-div{display: block;}
 
@@ -82,6 +75,15 @@
       height: auto;
    }
 
+
+   /* .product-detail-bottomsheet.cell-placeorder button, 
+   .product-detail-bottomsheet.cell-re-order button{
+      width: 50%;
+   }
+   .product-detail-bottomsheet{
+      justify-content: flex-end;
+   } */
+
    .scaffold{
       height: calc( 100vh - 112px);
       overflow-y: scroll;
@@ -89,189 +91,11 @@
       padding-bottom: 40px;
    }
 
-   .group-select-delivery-time .btn-select-input,
-   .group-select-delivery-time .btn-select{
-      width: 100%;
-   }
-   .group-select-delivery-time .btn-wrapper-order.no-arrow:after{display: none;}
-
-   .page-product-order{
-      padding-bottom: 0;
-   }
-
-   .wrapper-datepicker {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.2);
-      z-index: 888;
-      display: none;
-      flex-flow: column nowrap;
-      align-items: center;
-   }
-   .wrapper-datepicker.enable {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-   }
-   
-   .flatpickr-calendar {
-      font-family: "Be Vietnam Pro",sans-serif;
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      max-width: 388px !important;
-      width: 90%;
-   }
-   .flatpickr-innerContainer,
-   .dayContainer,
-   .flatpickr-rContainer,
-   .flatpickr-days {
-      width: 100%;
-      max-width: 100%;
-      min-width: 100%;
-   }
-   .dayContainer {
-      justify-content: flex-start;
-   }
-   .flatpickr-rContainer {
-      padding: 8px 0;
-   }
-   .flatpickr-day {
-      width: calc( 100% / 7);
-      max-width: calc( 100% / 7);
-      font-size: 14px;
-      font-weight: 400;
-      height: 20px;
-      line-height: 20px;
-      border: none;
-      margin-bottom: 10px;
-   }
-   .flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n+1)), .flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n+1)), .flatpickr-day.endRange.startRange + .endRange:not(:nth-child(7n+1)){
-      box-shadow: none;
-   }
-   .flatpickr-day.inRange,
-   .flatpickr-day.prevMonthDay.inRange,
-   .flatpickr-day.nextMonthDay.inRange,
-   .flatpickr-day.today.inRange,
-   .flatpickr-day.prevMonthDay.today.inRange,
-   .flatpickr-day.nextMonthDay.today.inRange,
-   .flatpickr-day:hover,
-   .flatpickr-day.prevMonthDay:hover,
-   .flatpickr-day.nextMonthDay:hover,
-   .flatpickr-day:focus,
-   .flatpickr-day.prevMonthDay:focus,
-   .flatpickr-day.nextMonthDay:focus {
-      background: none;
-      border-radius: 0;
-   }
-   .flatpickr-day.selected.startRange,
-   .flatpickr-day.startRange.startRange,
-   .flatpickr-day.endRange.startRange,
-   .flatpickr-day.selected.endRange,
-   .flatpickr-day.startRange.endRange,
-   .flatpickr-day.endRange.endRange {
-      border-radius: 0;
-      background: none;
-      border: none;
-   }
-   .flatpickr-day.inRange {
-      box-shadow: none;
-      background: #F2F5F8;
-   }
-   .flatpickr-day.startRange,
-   .flatpickr-day.selected,
-   .flatpickr-day.endRange {
-      position: relative;
-      color: white;
-   }
-   .flatpickr-day.startRange:after,
-   .flatpickr-day.selected:after,
-   .flatpickr-day.endRange:after {
-      position: absolute;
-      content: '';
-      z-index: -1;
-      width: 20px;
-      height: 20px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 100%;
-      background: #2790F9;
-   }
-
-   .flatpickr-day.startRange:before {
-      position: absolute;
-      content: '';
-      background: #F2F5F8;
-      width: 50%;
-      height: 100%;
-      z-index: -2;
-      right: 0;
-   }
-   .flatpickr-day.endRange:before {
-      position: absolute;
-      content: '';
-      background: #F2F5F8;
-      width: 50%;
-      height: 100%;
-      z-index: -2;
-      left: 0;
-   }
-   .flatpickr-day.selected.startRange.endRange:before,
-   .flatpickr-day.selected.endRange.startRange:before{
-      display: none;
-   }
-   .flatpickr-disabled {
-      display: none;
-   }
-   .flatpickr-header .text {
-      font-size: 16px;
-   }
-   .flatpickr-footer{
-      text-align: right;
-      padding: 16px;
-      padding-top: 0;
-   }
-   .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay{
-      background: none;
-   }
-   #btn_apply_monthly{
-      width: 112px; height: 32px;
-      background: #2790F9;
-      appearance: none;
-      outline: none;
-      border: none;
-      border-radius: 5px;
-      font-size: 15px;
-      font-weight: 700;
-      text-align: center;
-      color: white;
-
-   }
-
-   #btn_apply_monthly.disabled{
-      opacity: 0.6;
-      touch-action: none;
-      pointer-events: none;
-   }
-
-   .btn-select-input.no-arrow:after{display: none;}
-   .flatpickr-header button .text-btn{
-      color: #252831;
-   }
-   @media screen and (max-width: 350px){
-      .box-slot-weekly .item span{
-         font-size: 4.6vw;
-      }
-   }
-
 </style>
-
 <div id='app'>
-   <div v-show='loading == false && product_not_found == false' class='page-product-order'>
+
+   <div v-show='loading == false' class='page-product-order'>
+      
       <div class='appbar style01 fixed'>
          <div class='appbar-top'>
             <div class='leading'>
@@ -326,7 +150,7 @@
             </div>
          </div>
 
-         <ul v-if='carts.length > 0 && product_not_found == false' class='list-tile order'>
+         <ul v-if='carts.length > 0' class='list-tile order'>
             <li  
                v-for='(store, index) in carts' :key='index'
                >
@@ -358,7 +182,6 @@
                      </div>
                   </div>
                </div>
-
             </li>
          </ul>
          
@@ -369,8 +192,11 @@
                <div class='form-check'>
                   <input @click='select_delivery_type("once")' :checked='delivery_type.once' id='select_type01' type="radio" class='form-input'>
                   <label for='select_type01' ><?php 
-                     if( get_locale() == 'vi' ){ echo 'Giao thường';
-                     }else{ echo __('Delivery once', 'watergo'); }
+                     if( get_locale() == 'vi' ){
+                        echo 'Giao thường';
+                     }else{
+                        echo __('Delivery once', 'watergo'); 
+                     }
                   ?></label>
                </div>
 
@@ -411,43 +237,20 @@
                </div>
 
                <div v-show='delivery_type.weekly == true' class='deliverySelect_weekly'>
-
-                  <div class='box-select-weekly'>
-                     <button class='btn-select' :class='modal_slot_select_day ? "active": ""' @click='btn_open_modal_select_weekly'><?php echo __('Select day', 'watergo'); ?></button>
-                     <div class='box-slot-weekly' v-show='modal_slot_select_day'>
-                        
-                        <div class='item' :class='{ selected: is_select_all_day_weekly }' @click='btn_select_all_day_weekly'>
-                           <div class='checkbox-realistic'>
-                              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <rect width="14" height="14" rx="2" fill="#2790F9"/>
-                              <path d="M10.5 4.375L5.08594 10.5L2.625 7.71591" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                              </svg>
-                           </div>
-                           <span><?php echo __('All', 'watergo'); ?></span>
-                        </div>
-
-                        <div class='item' 
-                           @click='btn_select_weekly(select.day_name)' 
-                           :class='select.select == true ? "selected" : ""'
-                           v-for='(select, selectKey) in delivery_data.weekly' :key='selectKey'>
-                           <div class='checkbox-realistic'>
-                              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <rect width="14" height="14" rx="2" fill="#2790F9"/>
-                              <path d="M10.5 4.375L5.08594 10.5L2.625 7.71591" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                              </svg>
-                           </div>
-                           <span>{{ select.label }}</span>
-                        </div>
-                        <div @click='btn_apply_select_weekly' class='btn-apply'><?php echo __('Apply', 'watergo'); ?></div>
-                     </div>
-                  </div>
-
-                  <div v-show='apply_show_slot_weekly' v-for="slot in filter_slot_weekly" :key="slot.id">
+                  <div v-for="slot in delivery_data.weekly" :key="slot.id">
                      <div class="group-select-delivery-time group-select-delivery-time_parent">
                         <div class="btn-wrapper-order">
-                           <button class='btn-select no-arrow'>{{ slot.label }}</button>
+                           <select @change='btn_select_slot_weekly_day($event, slot.day)' v-model="slot.day" class="btn_select_weekly_day btn-dropdown">
+                              <option value='' selected disabled><?php echo __('Select date', 'watergo'); ?></option>
+                              <option :disabled="isDayDisabled(day_of_week, slot.id)" 
+                                 v-for="(day_of_week, indexWeek) in dayOfWeeks" :key="indexWeek" 
+                                 :value="day_of_week"
+                                 :selected="slot.day == day_of_week ? true : false"
+                              >
+                                 {{ day_of_week }}
+                              </option>
+                           </select>
                         </div>
-                        
                         <div class="btn-wrapper-order">
                            <select v-model="slot.time" class="btn_select_weekly_time btn-dropdown">
                               <option value='' selected disabled><?php echo __('Select time', 'watergo'); ?></option>
@@ -456,10 +259,11 @@
                               </option>
                            </select>
                         </div>
-
                      </div>
                   </div>
                </div>
+
+               <button v-show='delivery_type.weekly' @click='btn_add_dom_delivery_weekly' class='button_add_delivery button_add_dom_delivery_weekly' :style='{ opacity: delivery_data.weekly.length == 7 ? "0.5" : "1.0" }'><?php echo __('Add Day', 'watergo'); ?></button>
             </div>
 
             <!-- monthly -->
@@ -471,30 +275,28 @@
 
                <div v-show='delivery_type.monthly == true' class='deliverySelect_monthly'>
 
-                  <div class='box-select-monthly'>
-                     <button id='select_date_monthly' class='btn-select' :class='modal_slot_select_day ? "active": ""'><?php echo __('Select date', 'watergo'); ?></button>
-                  </div>
-
-                  <div 
-                     v-show='apply_show_slot_monthly' v-for="slot in filter_slot_monthly" :key="slot.id"
-                     class='group-select-delivery-time'>
-                     <div class='btn-wrapper-order no-arrow'>
-                        <div class='btn-select-input no-arrow'>
-                           <button class='btn-select no-arrow'><?php echo __('Date', 'watergo'); ?> {{ slot.day }}</button>
+                  <div v-for="slot in delivery_data.monthly" :key="slot.id">
+                     <div class='group-select-delivery-time'>
+                        <div class='btn-wrapper-order'>
+                           <input @click='select_monthly_time(slot.id, true)' type='text' :value='slot.day'
+                              class='btn_select_monthly_primary btn_select_monthly btn-dropdown' 
+                              :class='"btn_select_monthly_slot_" + slot.id'
+                              placeholder='<?php echo __('Select date', 'watergo'); ?>' readonly>
                         </div>
-                     </div>
-                     <div class='btn-wrapper-order'>
-                        <select v-model="slot.time" class="btn_select_monthly_time btn-dropdown">
-                           <option value='' selected disabled><?php echo __('Select time', 'watergo'); ?></option>
-                           <option v-for="(hour, indexHour) in total_hour" :key="indexHour" :value="hour.value" :selected='slot.time == hour.time ? true : false'> 
-                              {{ hour.label }}
-                           </option>
-                        </select>
+                        <div class='btn-wrapper-order'>
+                           <select v-model="slot.time" class="btn_select_monthly_time btn-dropdown">
+                              <option value='' selected disabled><?php echo __('Select time', 'watergo'); ?></option>
+                              <option v-for="(hour, indexHour) in total_hour" :key="indexHour" :value="hour.value" :selected='slot.time == hour.time ? true : false'> 
+                                 {{ hour.label }}
+                              </option>
+                           </select>
+                        </div>
                      </div>
                   </div>
 
                </div>
 
+               <button v-show='delivery_type.monthly' @click='btn_add_dom_delivery_monthly' class='button_add_delivery button_add_dom_delivery_monthly' :style='{ opacity: delivery_data.monthly.length == 7 ? "0.5" : "1.0" }'><?php echo __('Add Date', 'watergo'); ?></button>
             </div>
             
          </div>
@@ -553,14 +355,6 @@
       </div>
    </div>
 
-   <!-- CONTENT NOT FOUND -->
-   <div class='modal-popup' :class='loading == false && product_not_found == true ? "open" : ""'>
-      <div class='modal-wrapper'>
-         <div class='modal-close'><div @click='goBack' class='close-button'><span></span><span></span></div></div>
-         <p class='heading'><?php echo __('Content Not Found', 'watergo'); ?> </p>
-      </div>
-   </div>
-
 
 </div>
 
@@ -586,28 +380,15 @@ var app = Vue.createApp({
             monthly:          false,
          },
 
-         modal_slot_select_day: false,
-         apply_show_slot_weekly: false,
-         is_select_all_day_weekly: false,
-
-         modal_slot_select_date: false,
-         apply_show_slot_monthly: false,
-         is_select_all_date_monthly: false,
-
          once_date_time_allow: [],
-
-         // WRITE DATA
-         slot_weekly: [],
-         slot_monthly: [],
 
          delivery_data: {
             once_date:  [{ day: '', time: '' }],
-            // FORMAT weekly - monthly { day:'' time: '', datetime: '', select: false  }
-            // JUST INIT DATA READONLY
             weekly:     [],
             monthly:    [],
          },
 
+         dayOfWeeks: [  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ],
          total_hour: [
             {hour: 7,  value: '7:00-8:00',   label: '7:00  -  8:00' },
             {hour: 8,  value: '8:00-9:00',   label: '8:00  -  9:00' },
@@ -627,8 +408,6 @@ var app = Vue.createApp({
 
          delivery_address_primary: null,
          carts: [],
-         product_order: [],
-
 
          // FOR RE-ORDER
          time_shipping: [],
@@ -636,8 +415,7 @@ var app = Vue.createApp({
          // modal out of stock
          modal_store_out_of_stock: false,
          canPlaceOrder: false,
-         is_mark_out_of_stock: false,
-         product_not_found: false,
+         dateWeekAuto: [],
 
       }
    },
@@ -656,71 +434,64 @@ var app = Vue.createApp({
             // RESET DATA WHEN DOESNT NEEDED
             if( current_selected == 'once'){
                this.create_init_once_data();
-               this.create_init_slot_weekly();
-               this.create_init_slot_monthly();
                if( this.delivery_type.once_immediately == true){
                   this.canPlaceOrder = true;
                }else{
                   this.canPlaceOrder = false;
                }
             }else if( current_selected == 'weekly'){
-               this.create_init_once_data();
-               this.create_init_slot_weekly();
+               this.create_init_weekly_data();
             }else if( current_selected == 'monthly'){
-               this.create_init_once_data();
-               this.create_init_slot_monthly();
-            }
-
-         }, deep: true
-      },
-
-      slot_weekly: {
-         handler( data ){
-            if( this.delivery_type.weekly == true && this.delivery_address_primary != null && this.is_mark_out_of_stock == false && this.product_not_found == false){
-               if( data.length > 0 ){
-                  this.canPlaceOrder = data.every(item => item.time !== '');
-               }else{
-                  this.canPlaceOrder = false;
-               }
+               this.create_init_monthly_data();
             }
          }, deep: true
       },
 
-      slot_monthly: {
+      delivery_data: {
          handler( data){
-            if( this.delivery_type.monthly == true && this.delivery_address_primary != null && this.is_mark_out_of_stock == false && this.product_not_found == false){
-               if( data.length > 0){
-                  this.canPlaceOrder = data.every(item => item.time !== '');
-               }else{
-                  this.canPlaceOrder = false;
-               }
-            }
+            if( this.delivery_address_primary != null ){
 
+               if( this.delivery_type.once_date_time == true ){
+                  if( data.once_date[0].day != '' && data.once_date[0].time != '' ){
+                     this.canPlaceOrder = true;
+                  }else{
+                     this.canPlaceOrder = false;
+                  }
+               }
+               if( this.delivery_type.weekly == true ){
+
+                  for( let i = 0; i < data.weekly.length; i++ ){
+                     if( 
+                        ( data.weekly[i].day !== '' && data.weekly.day !== '' ) &&
+                        ( data.weekly[i].time !== '' && data.weekly.time !== '' )
+                     ){
+                        this.canPlaceOrder = true;
+                     }else{
+                        this.canPlaceOrder = false;
+                        break;
+                     }
+                  }
+
+               } 
+               if( this.delivery_type.monthly == true ){
+                  for( let i = 0; i < data.monthly.length; i++ ){
+                     if( 
+                        ( data.monthly[i].day !== '' && data.monthly.day !== '' ) &&
+                        ( data.monthly[i].time !== '' && data.monthly.time !== '' )
+                     ){
+                        this.canPlaceOrder = true;
+                     }else{
+                        this.canPlaceOrder = false;
+                        break;
+                     }
+                  }
+               }
+
+            }else{
+               this.canPlaceOrder = false;
+            }
          }, deep: true
       },
-
-      delivery_data : {
-         handler( data ){
-
-            if( this.delivery_type.once_date_time == true && this.delivery_address_primary != null && this.is_mark_out_of_stock == false && this.product_not_found == false ){
-               if(data.once_date[0].day != '' && data.once_date[0].time != ''){
-                  this.canPlaceOrder = true;
-               }else{
-                  this.canPlaceOrder = false;
-               }
-            }
-
-         }, deep: true
-      },
-
-      is_select_all_date_monthly: function( val ){
-         if( val == true ){
-            $('.checkbox-realistic').addClass('active');
-         }else{
-            $('.checkbox-realistic').removeClass('active');
-         }
-      }
-
    },
 
    
@@ -730,12 +501,15 @@ var app = Vue.createApp({
          var gr_price = { price: 0, price_discount: 0 };
 
          this.carts.forEach( store => {
+
             store.products.forEach( product => {
 
                var currentDate = new Date();
                var discount_from = new Date(product.discount_from);
                var discount_to   = new Date(product.discount_to);
                currentDate.setHours(0,0,0,0);
+               discount_from.setHours(0,0,0,0);
+               discount_to.setHours(0,0,0,0);
                currentDate    = parseInt(currentDate.getTime() / 1000);
                discount_from  = parseInt(discount_from.getTime() / 1000);
                discount_to    = parseInt(discount_to.getTime() / 1000);
@@ -746,85 +520,29 @@ var app = Vue.createApp({
                   product.has_discount = 0;
                   gr_price.price_discount += product.price * product.product_quantity_count;
                }
+
                gr_price.price += product.price * product.product_quantity_count;
             });
 
          });
          
-         var _final_price = 0;
+         var _final_price = null;
 
          if( gr_price.price != gr_price.price_discount){
-            _final_price = parseInt(gr_price.price).toLocaleString() + ' <?php echo $currency; ?>';
+            _final_price = gr_price.price.toLocaleString('vi-VN') + ' đ'
          }
 
          return {
             price: _final_price,
-            price_discount: parseInt(gr_price.price_discount).toLocaleString() + ' <?php echo $currency; ?>'
+            price_discount: gr_price.price_discount.toLocaleString('vi-VN') + ' đ'
          };
       },
 
       // JUST AUTO UPDATE {time} WHEN SELECT DATE ONCE -> pick date
-      get_once_date_time_allow(){ return this.once_date_time_allow },
-
-      filter_slot_weekly(){
-         return this.slot_weekly.sort((a, b) => {
-            var daysOfWeekOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            return daysOfWeekOrder.indexOf(a.day_name) - daysOfWeekOrder.indexOf(b.day_name);
-         });
-      },
-
-      filter_slot_monthly(){
-         return this.slot_monthly.sort( (a, b) => a.day - b.day );
-      }
-
-
+      get_once_date_time_allow(){ return this.once_date_time_allow }
    },
 
    methods: { 
-      
-      // WEEKLY
-      btn_select_all_day_weekly(){
-         this.is_select_all_day_weekly = !this.is_select_all_day_weekly;
-         if(this.is_select_all_day_weekly == true ){
-            this.delivery_data.weekly.every( item => item.select = true );
-         }else{
-            this.delivery_data.weekly.some( item => item.select = false );
-         }
-      },
-
-      btn_open_modal_select_weekly(){
-         this.modal_slot_select_day = !this.modal_slot_select_day;
-      },
-
-      btn_apply_select_weekly(){
-         this.modal_slot_select_day = false;
-         this.delivery_data.weekly.forEach( item => {
-            var _findIndex = this.slot_weekly.findIndex( s => s.day_name == item.day_name );
-            if( item.select == true && _findIndex == -1 ){
-               this.slot_weekly.push(item);
-            }else if( item.select == false && _findIndex != -1 ){
-               this.slot_weekly.splice(_findIndex, 1);
-               item.time = '';
-            }
-         });
-         this.apply_show_slot_weekly = true;
-      },
-
-      btn_select_weekly( day_name ){
-         this.is_select_all_day_weekly = false;
-         this.delivery_data.weekly.some( item => {
-            if( day_name == item.day_name ){ item.select = !item.select; }
-         });
-      },
-
-      reset_all_data_slot_weekly(){
-         this.apply_show_slot_weekly = false;
-         this.delivery_data.weekly.some( item => {
-            item.select = false;
-            item.time   = '';
-         });
-      },
-      // 
 
       has_gift( p){ return window.has_gift(p); },
 
@@ -847,7 +565,8 @@ var app = Vue.createApp({
          var _currentDate = new Date();
          var _watergo_carts = JSON.parse(localStorage.getItem('watergo_carts'));
          
-         if( this.canPlaceOrder == true && this.delivery_address_primary != null && this.is_mark_out_of_stock == false && this.product_not_found == false ){
+         if( this.canPlaceOrder == true && this.delivery_address_primary != null  ){
+
 
             this.loading = true;
             var delivery_data = [];
@@ -864,12 +583,12 @@ var app = Vue.createApp({
             
             if( this.delivery_type.weekly == true ){
                delivery_type = 'weekly';
-               delivery_data = this.slot_weekly;
+               delivery_data = this.delivery_data.weekly;
             }
             
             if( this.delivery_type.monthly == true ){
                delivery_type = 'monthly';
-               delivery_data = this.slot_monthly;
+               delivery_data = this.delivery_data.monthly;
             }
 
             var form = new FormData();
@@ -899,6 +618,24 @@ var app = Vue.createApp({
                   localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
                   // 
 
+                  // SEND NOTIFCATION IN BACKGROUND
+                  // try {
+                  //    var form_background_notification = new FormData();
+                  //    form_background_notification.append('action', 'atlantis_protocal_notification_in_background');
+                  //    form_background_notification.append('send_to', 'store');
+                  //    form_background_notification.append('order_status', res.notification_args.order_status);
+                  //    form_background_notification.append('order_id', res.notification_args.order_id);
+                  //    form_background_notification.append('user_id', res.notification_args.user_id);
+                  //    form_background_notification.append('store_id', res.notification_args.store_id);
+                  //    form_background_notification.append('attachment_url', res.notification_args.attachment_url);
+                  //    form_background_notification.append('order_number', res.notification_args.order_number);
+                  //    form_background_notification.append('hash', res.notification_args.hash);
+                  //    const requestPromise = window.request(form_background_notification);
+                  //    const immediatePromise = new Promise(resolve => resolve());
+                  //    // Use Promise.race to determine which promise resolves first
+                  //    await Promise.race([requestPromise, immediatePromise]);
+                  // } catch (error) {}
+
                   this.loading = false;
                   this.banner_open = true;
                }else{
@@ -909,6 +646,79 @@ var app = Vue.createApp({
          }else{
             this.canPlaceOrder = false;
          }
+      },
+
+      select_monthly_time( slot_id, isOpen = false ){
+
+         let instanceApp = this;
+
+         if( isOpen == true){
+            jQuery('.ui-datepicker .ui-datepicker-title').empty();
+            jQuery('.ui-date-picker-wrapper').addClass('active');
+            jQuery('.ui-date-picker-wrapper').addClass('datepicker-monthly');
+            jQuery('.ui-datepicker .ui-datepicker-title').html('<?php echo __("Everymonth", 'watergo'); ?>');
+            jQuery('.ui-datepicker-calendar thead').remove();
+            jQuery('.ui-widget-header a').remove();
+         }
+         
+         jQuery(document).ready(function($) {
+            jQuery('.btn_select_monthly_slot_' + slot_id).datepicker({
+               dateFormat: "dd",
+               changeMonth: false,
+               changeYear: false,
+               stepMonths: 0,
+               showButtonPanel: false,
+               maxDate: new Date(new Date().getFullYear(), new Date().getMonth(), 28),
+               autoOpen: isOpen,
+               
+               beforeShow: function(dateText, inst){
+                  if( jQuery('.ui-date-picker-wrapper').length == 0 ){
+                     inst.dpDiv.wrap($("<div class='ui-date-picker-wrapper'></div>"));
+                  }
+               },
+               
+               beforeShowDay: function( date ) {
+
+                  jQuery('.ui-datepicker .ui-datepicker-title').empty();
+                  jQuery('.ui-widget-header a').remove();
+                  jQuery('.ui-datepicker-calendar thead').remove();
+
+                  var disabledDays = [];
+                  if( instanceApp.delivery_data.monthly.length > 0  ) {
+                     instanceApp.delivery_data.monthly.forEach( m => {
+                        disabledDays.push(m.datetimeDisable);
+                     });
+                  }
+                  var string     = jQuery.datepicker.formatDate('dd/mm/yy', date);
+                  var isDisabled = ($.inArray( string, disabledDays) != -1);
+                  var isMaxDate  = date < new Date(new Date().getFullYear(), new Date().getMonth(), 29);
+                  var extraClass = isMaxDate ? "datepicker-month-selected" : "datepicker-month-disabled";
+                  //day != 0 disables all Sundays
+                  return [ date && !isDisabled, extraClass ];
+                  return date;
+               },
+
+               onSelect: function(dateText, inst){
+                  if(dateText != undefined || dateText != '' || dateText != null){
+
+                     let currentDate = new Date();
+                     let year = currentDate.getFullYear();
+                     let month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                     let day = String(dateText).padStart(2, '0');
+                     let fulldate = `${day}/${month}/${year}`;
+
+                     instanceApp.delivery_data.monthly[slot_id].day = dateText;
+                     instanceApp.delivery_data.monthly[slot_id].datetime = window.compare_day_with_currentDate(dateText);
+                     instanceApp.delivery_data.monthly[slot_id].datetimeDisable = fulldate;
+                  }
+               },
+               onClose: function(dateText, inst){
+                  jQuery('.ui-date-picker-wrapper').removeClass('active');
+                  jQuery('.ui-date-picker-wrapper').removeClass('datepicker-monthly');
+               }
+            });
+         });
+
       },
 
       select_once_date_time( targetElement ){
@@ -944,21 +754,18 @@ var app = Vue.createApp({
                onSelect: function(dateText, inst){
                   
                   if(dateText != undefined || dateText != '' || dateText != null){
-
                      var [_day, _month, _year] = dateText.split('/');
                      var convertToDateEn = _month + '/' + _day + '/' + _year;
-                     instanceApp.delivery_data.once_date[0].day = dateText;
+                     instanceApp.delivery_data.once_date[0].day = convertToDateEn;
 
                      // var _currentSelectDate = new Date( convertToDateEn );
                      var selectedDate = new Date(convertToDateEn);
-
                      var _currentDate = new Date();
                      const day = _currentDate.getDate().toString().padStart(2, '0');
                      const month = (_currentDate.getMonth() + 1).toString().padStart(2, '0');
                      const year = _currentDate.getFullYear().toString();
                      const hours = _currentDate.getHours().toString().padStart(2, '0');
                      const minutes = _currentDate.getMinutes().toString().padStart(2, '0');
-
                      const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
 
                       // Check if the selected date is the current day
@@ -991,37 +798,59 @@ var app = Vue.createApp({
 
       },
 
+
       create_init_once_data(){
-         this.delivery_data.once_date[0].day = '';
-         this.delivery_data.once_date[0].time = '';
+         this.delivery_data.once_date.push({ day: '', time: '' });
+      },
+      
+      /**
+       * @access WEEKLY CONSTRUCTION
+       */
+      isDayDisabled(selectedDay, slotIndex) {
+         return this.delivery_data.weekly.some((slot, index) => index !== slotIndex && slot.day === selectedDay);
+      },
+      btn_add_dom_delivery_weekly(){
+         if( this.delivery_data.weekly.length < 7){
+            this.delivery_data.weekly.push({ id: this.delivery_data.weekly.length, day: '', time: '', datetime: '', });
+         }
+      },
+      btn_select_slot_weekly_day(e, day_of_week){
+         var _find = this.dateWeekAuto.find( item => item.dayOfWeek == day_of_week );
+         this.delivery_data.weekly.forEach( ( item, indexSlot ) => {
+            if( item.day == day_of_week ) {
+               item.datetime = _find.date;
+            }
+         });
+      },
+      create_init_weekly_data(){
+         this.delivery_data.weekly = [];
+         this.delivery_data.weekly.push({ id: 0, day: '', time: '', datetime: '' });
+         
+         // this.delivery_type.once             = false;
+         // this.delivery_type.once_immediately = false;
+         // this.delivery_type.once_date_time   = false;
+         // this.delivery_type.monthly          = false;
+
       },
 
-      create_init_slot_weekly(){
-         this.slot_weekly = [];
-         this.delivery_data.weekly.some( item => item.select = false);
-         this.apply_show_slot_weekly = false;
-         this.is_select_all_day_weekly = false;
-      },
-      create_init_slot_monthly(){
-         this.slot_monthly = [];
-         this.delivery_data.monthly.some( item => item.select = false);
-         this.apply_show_slot_monthly = false;
-         this.is_select_all_day_monthly = false;
-      },
 
       /**
        * @access MONTHLY CONSTRUCTION
        */
+      
 
-      get_label_translate( label ){
-         if( label == 'Monday' ) return '<?php echo __('Monday', 'watergo'); ?>';
-         if( label == 'Tuesday' ) return '<?php echo __('Tuesday', 'watergo'); ?>';
-         if( label == 'Wednesday' ) return '<?php echo __('Wednesday', 'watergo'); ?>';
-         if( label == 'Thursday' ) return '<?php echo __('Thursday', 'watergo'); ?>';
-         if( label == 'Friday' ) return '<?php echo __('Friday', 'watergo'); ?>';
-         if( label == 'Saturday' ) return '<?php echo __('Saturday', 'watergo'); ?>';
-         if( label == 'Sunday' ) return '<?php echo __('Sunday', 'watergo'); ?>';
+      create_init_monthly_data(){
+         this.delivery_data.monthly = [];
+         this.delivery_data.monthly.push({ id: 0, day: '', time: '', datetime: '', });
+         this.select_monthly_time(0, false);
       },
+      btn_add_dom_delivery_monthly(){
+         if( this.delivery_data.monthly.length < 7){
+            this.delivery_data.monthly.push({ id: this.delivery_data.monthly.length, day: '', time: '', datetime: '', });
+            this.select_monthly_time(this.delivery_data.monthly.length - 1, false);
+         }
+      },
+
 
       automatic_count_date_week(){
          function formatDate(date) {
@@ -1030,60 +859,28 @@ var app = Vue.createApp({
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
          }
+         function getDayOfWeek(date) {
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return daysOfWeek[date.getDay()];
+         }
+         function getNextDay(date) {
+            const nextDate = new Date(date);
+            nextDate.setDate(date.getDate() + 1);
+            return nextDate;
+         }
          var today = new Date();
          for (let i = 0; i < 7; i++) {
-            var currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-            var dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(currentDate);
-            this.delivery_data.weekly.push({
-               select: false,
-               datetime: formatDate(currentDate),
-               day: today.getDate() + i,
-               day_name: dayName,
-               label: this.get_label_translate(dayName),
-               time: '',
+            var currentDate = getNextDay(today);
+            // const currentDate = new Date(today);
+            currentDate.setDate(today.getDate() + i);
+            var isToday = i === 0; // Check if it's the first iteration (today)
+            this.dateWeekAuto.push({
+               dayOfWeek : getDayOfWeek(currentDate),
+               date      : formatDate(currentDate),
+               isToday   : isToday,
+               isSelect  : false,
             });
-         }
-         this.delivery_data.weekly.sort((a, b) => {
-            const daysOfWeekOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            return daysOfWeekOrder.indexOf(a.day_name) - daysOfWeekOrder.indexOf(b.day_name);
-         });
-      },
-
-      automatic_count_date_monthly(){
-         var currentDate = new Date();
-         var currentYear = currentDate.getFullYear();
-         var currentMonth = currentDate.getMonth();
-         var currentDay = currentDate.getDate();
-         var lastDayOfCurrentMonth = new Date( currentYear, currentMonth, 0).getDate();
-
-         for (let day = 1; day <= 28; day++) {
-            let date = new Date(currentYear, currentMonth, day);
-            if (day < currentDay) {
-               date.setMonth(date.getMonth() + 1);
-            }
-            var _d = String(date.getDate()).padStart(2, '0');
-            var _m = String(date.getMonth() + 1).padStart(2, '0');
-            var _datetime = _d + '/' + _m + '/' + date.getFullYear();
-            var dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
-
-            if( lastDayOfCurrentMonth > day ){
-               this.delivery_data.monthly.push({
-                  select: false,
-                  day_name: dayName,
-                  day: day,
-                  time: '',
-                  datetime: _datetime,
-               });
-            }else{
-               this.delivery_data.monthly.push({
-                  select: false,
-                  day_name: '',
-                  day: day,
-                  time: '',
-                  datetime: '',
-               });
-            }
-
+            today.setDate(today.getDate()); // Move to the next day
          }
       },
 
@@ -1170,6 +967,7 @@ var app = Vue.createApp({
          }
       }
 
+
    },
 
    update(){
@@ -1187,10 +985,13 @@ var app = Vue.createApp({
       const re_order_id    = urlParams.get('re_order_id');
       // const order_page     = urlParams.get('order_init');
 
-      await this.initial_delivery_address();
+      // if( order_page != undefined && order_page == 'init_delivery' ){
+         await this.initial_delivery_address();
+      // }
 
 
       // INITIAL order_delivery
+     
 
       // INITIAL carts
       var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
@@ -1219,16 +1020,8 @@ var app = Vue.createApp({
                form.append('product_id', product.product_id);
                var r = await window.request(form);
                if( r != undefined ){
-
                   var res = JSON.parse( JSON.stringify(r));
                   if( res.message == 'product_found' ){
-
-                     if( parseInt(res.data.mark_out_of_stock) == 1 ){
-                        this.is_mark_out_of_stock = true; 
-                        this.modal_store_out_of_stock = true;
-                        this.canPlaceOrder = false;
-                     }
-
                      this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
                      this.carts[storeIndex].products[productIndex].name             = res.data.name;
                      // DISCOUNT
@@ -1244,171 +1037,33 @@ var app = Vue.createApp({
 
                      this.carts[storeIndex].products[productIndex].price            = res.data.price;
                      this.carts[storeIndex].products[productIndex].product_type     = res.data.product_type;
-
-
-                  }else{
-                     this.canPlaceOrder = false;
-                     this.product_not_found = true;
                   }
                }
             });
          });
          
-      }else{
-         this.canPlaceOrder = false;
-         this.product_not_found = true;
-      }
+      }      
 
       this.delivery_type.once = true;
       this.delivery_type.once_immediately = true;
       this.automatic_count_date_week();
-      this.automatic_count_date_monthly();
 
       if( re_order_id != undefined ){
-         this.delivery_type.once = true;
-         this.delivery_type.once_immediately = true;
-
-         let form = new FormData();
-         // form.append('action', '');
+         this.delivery_type.once = false;
+         this.delivery_type.once_immediately = false;
       }
 
       let instanceApp = this;
 
-      function get_string_datetime( datetime ){
-         var date = new Date(datetime)
-         var d = String(date.getDate()).padStart(2, '0');
-         var m = String(date.getMonth() + 1).padStart(2, '0');
-         var y = date.getFullYear();
-         return d + '-' + m + '-' + y;
-      }
-
-
       jQuery(document).ready(function($){
          instanceApp.select_once_date_time(".select_once_date_time");
-         var selectedDatesArray = []; 
-         var flatpickrInstance = flatpickr("#select_date_monthly", {
-            enableTime: false,
-            mode: "multiple",
-            dateFormat: "d-m-Y",
-            minDate: "01-08-2022",
-            maxDate: "28-08-2022",
-            position: 'center center',
-            allowInput: false,
-            clickOpens: false,
-            locale: {
-               firstDayOfWeek: 1
-            },
-            onChange: function(selectedDates, dateStr, instance) {
-               if( instanceApp.is_select_all_date_monthly == true ){
-                  instanceApp.is_select_all_date_monthly = false;
-                  instance.clear();
-                  instance.redraw();
-               }else{
-                  if (selectedDates.length === 0) {
-                     selectedDatesArray = [];
-                  } else {
-                     selectedDatesArray = selectedDates.map(date => date.getDate());
-                  }
-                  instanceApp.delivery_data.monthly.forEach(item => {
-                     item.select = selectedDatesArray.includes(item.day);
-                  });
-               }
-            },
-            onOpen: function(selectedDates, dateStr, instance) {
-               $('.wrapper-datepicker').addClass('enable');
-               $('.flatpickr-weekdays').hide();
-            },
-            onClose: function(selectedDates, dateStr, instance) {
-               $('.wrapper-datepicker').removeClass('enable');
-            },
-         });
-
-         if( $('.wrapper-datepicker').length == 0 ){
-            $('.flatpickr-calendar').wrap("<div class='wrapper-datepicker'></div>");
-         }
-         if( $('.flatpickr-footer').length == 0 ){
-            $('.flatpickr-calendar').append(`
-               <div class="flatpickr-footer"><button id="btn_apply_monthly"><?php echo __('Apply', 'watergo'); ?></button></div>
-            `);
-         }
-         if( $('.flatpickr-header').length == 0 ){
-            $('.flatpickr-month').empty();
-            $('.flatpickr-month').append(`<div class='flatpickr-header'>
-               <div class='text'><?php echo __("Everymonth", 'watergo'); ?></div>
-               <button id='btn_select_all_date_monthly'>
-                  <div class='checkbox-realistic'>
-                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <rect width="14" height="14" rx="2" fill="#2790F9"/>
-                     <path d="M10.5 4.375L5.08594 10.5L2.625 7.71591" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                     </svg>
-                  </div>
-                  <span class='text-btn'><?php echo __('All', 'watergo'); ?></span>
-               </button>
-            </div>`);
-         }
-          
-         // APPLY DATEPICKER
-         $('#btn_apply_monthly').on('click', function() {
-            flatpickrInstance.close();
-
-            // NO SELECT ALL
-            if( instanceApp.is_select_all_date_monthly == false ){
-               instanceApp.slot_monthly = [];
-               instanceApp.delivery_data.monthly.forEach( item => {
-                  var findIndex =  instanceApp.slot_monthly.findIndex( s => s.day == item.day);
-                  if( item.select == true && findIndex == -1 ){
-                     instanceApp.slot_monthly.push( item );
-                  }else if( item.select == false && findIndex != -1 ){
-                     instanceApp.slot_monthly.splice( findIndex, 1 );
-                     item.time = '';
-                  }
-               });
-            }else{
-               instanceApp.delivery_data.monthly.forEach( item => {
-                  if (item.select) {
-                     var _exists = instanceApp.slot_monthly.includes(item);
-                     if (!_exists) {
-                        instanceApp.slot_monthly.push(item);
-                     }
-                  } else {
-                     instanceApp.slot_monthly = instanceApp.slot_monthly.filter(existingItem => existingItem !== item);
-                  }
-               });
-            }
-            instanceApp.apply_show_slot_monthly = true;
-         });
-         // OPEN DATEPICKER
-         $('#select_date_monthly').on('click', function() {
-            flatpickrInstance.open();
-            // $('.dayContainer .flatpickr-day:last').nextAll().slice(0, 3).remove();
-            // $('.dayContainer .flatpickr-day:gt(-4)').remove();
-            // $('.dayContainer .flatpickr-disabled').remove();
-         });
-         // SELECT ALL DATE MONTHLY
-         $('#btn_select_all_date_monthly').on('click', function(){
-            instanceApp.is_select_all_date_monthly = !instanceApp.is_select_all_date_monthly;
-            if(instanceApp.is_select_all_date_monthly == false ){
-               flatpickrInstance.clear();
-               instanceApp.delivery_data.monthly.every( item => item.select = false );
-            }else{
-               var defaultStartDate = flatpickrInstance.formatDate(new Date(2022, 7, 1), "d-m-Y");
-               var defaultEndDate   = flatpickrInstance.formatDate(new Date(2022, 7, 28), "d-m-Y");
-               flatpickrInstance.setDate([defaultStartDate, defaultEndDate]);
-               flatpickrInstance.redraw();
-               $('.dayContainer .flatpickr-disabled').remove();
-               var dayElements = $('.flatpickr-day');
-               dayElements.first().addClass('startRange');
-               dayElements.last().addClass('endRange');
-               dayElements.slice(1, -1).addClass('inRange');
-               instanceApp.delivery_data.monthly.forEach( item => item.select = true );
-            }
-         });
-
-         
       });
 
       window.appbar_fixed();
+
       this.loading = false;
+
+
 
    },
    
@@ -1424,13 +1079,4 @@ window.app = app;
 //     return true;
 // }
 </script>
-<style>
-   .flatpickr-calendar{
-      top: initial; right: initial;
-      position: initial;
-   }
-   .flatpickr-calendar:after,
-   .flatpickr-calendar:before {
-      display: none;
-   }
-</style>
+

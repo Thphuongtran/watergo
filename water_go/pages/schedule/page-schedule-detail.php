@@ -91,25 +91,24 @@
          <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02'>{{ get_delivery_time_activity }}</p>
          <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
-         <div 
-            v-if='
-               order.order_delivery_type == "once_date_time" ||
-               order.order_delivery_type == "weekly" ||
-               order.order_delivery_type == "monthly"
-               '
-            v-for='( date_time, date_time_key ) in order_time_shipping' :key='date_time_key'
+         <div
+            v-if='order.order_delivery_type == "once_date_time"'
+            v-for='( time_shipping, date_time_key ) in order.order_time_shipping' :key='date_time_key'
             class='display_delivery_time'
-            :class='order.order_time_shipping_id == date_time.order_time_shipping_id ? "highlight" : ""'
          >
-
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
-
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_weekly_day_compact(date_time.order_time_shipping_day) }}</div>
-               <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
-
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ date_time.order_time_shipping_day }}</div>
-               <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(date_time.order_time_shipping_time) }}</div>
+            <div class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+         </div>
+         <div
+            v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
+            v-for='( ship_item, ship_key ) in order.order_setting_shipping.settings' :key='ship_key'
+            class='display_delivery_time'
+            :class='ship_item.day == order.order_time_shipping.order_time_shipping_day ? "highlight" : ""'
+         >
+            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_title_weekly_compact(ship_item.day) }}</div>
+            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
+            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ ship_item.day }}</div>
+            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
          </div>
       </div>
 
@@ -266,18 +265,10 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
-         // console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
                this.order = res.data;
-               // var _address_kilometer = window.calculateDistance(
-               //    this.latitude,
-               //    this.longitude,
-               //    this.order.order_delivery_address.latitude,
-               //    this.order.order_delivery_address.longitude,
-               // );
-               // this.order.address_kilometer = parseFloat(_address_kilometer).toFixed(1);
             }
          }
       },
@@ -316,32 +307,6 @@ var app = Vue.createApp({
       },
 
       get_delivery_time_activity(){
-         // var _delivery_type = '';
-         // if( this.order.order_delivery_type == 'once_immediately' ){
-         //    _delivery_type = 'once';
-         // } else if( this.order.order_delivery_type == 'once_date_time' ){
-         //    _delivery_type = 'once';
-         // } else if( this.order.order_delivery_type == 'weekly' ){
-         //    _delivery_type = 'weekly';
-         // } else if( this.order.order_delivery_type == 'monthly' ){
-         //    _delivery_type = 'monthly';
-         // }
-
-         // if(this.get_locale == 'vi'){
-         //    if( this.order.order_delivery_type == 'once_immediately' ){
-         //       return 'Giao một lần';
-         //    } else if( this.order.order_delivery_type == 'once_date_time' ){
-         //       return 'Giao một lần';
-         //    } else if( this.order.order_delivery_type == 'weekly' ){
-         //       return 'Giao hàng tuần';
-         //    } else if( this.order.order_delivery_type == 'monthly' ){
-         //       return 'Giao hàng tháng';
-         //    }
-         // }else{
-         //    return 'Delivery ' + _delivery_type;
-         // }
-
-         // var _delivery_type = '';
 
          var text_delivery_once = '<?php echo __("Delivery once", 'watergo'); ?>';
          if( this.get_locale == 'vi' ){

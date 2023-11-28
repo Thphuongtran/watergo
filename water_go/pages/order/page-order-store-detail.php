@@ -20,9 +20,9 @@
       </div>
    </div>
 
-   <div v-show="loading == false && order != null && order.order_hidden == 0" class='page-order-detail'>
+   <div v-if="loading == false && order != null && order.order_hidden == 0" class='page-order-detail'>
 
-      <div class='appbar'>
+      <div class='appbar style01'>
          <div class='appbar-top'>
             <div class='leading'>
                <button @click='goBack' class='btn-action'>
@@ -31,13 +31,13 @@
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5309 0.375342C10.8759 0.806604 10.806 1.4359 10.3747 1.78091L2.60078 8.00004L10.3747 14.2192C10.806 14.5642 10.8759 15.1935 10.5309 15.6247C10.1859 16.056 9.55657 16.1259 9.12531 15.7809L0.375305 8.78091C0.13809 8.59113 0 8.30382 0 8.00004C0 7.69625 0.13809 7.40894 0.375305 7.21917L9.12531 0.219168C9.55657 -0.125842 10.1859 -0.0559202 10.5309 0.375342Z" fill="#252831"/>
                   </svg>
                </button>
-               <p class='leading-title' v-if='order != null && order.order_number != undefined'>#{{ order.order_number }}</p>
+               <p class='leading-title' v-if='order != null && order.order_number != null'>#{{ order.order_number }}</p>
                <!--  -->
             </div>
          </div>
+         <div class='break-line'></div> 
       </div>
 
-      <div class='break-line'></div> 
 
       <div v-if='order != null'  class='inner'>
          <div class='list-tile delivery-address style-order style01'>
@@ -86,8 +86,8 @@
       <div class='box-delivery-time'>
          <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02' v-if='order != null && get_delivery_time_activity != null'>{{ get_delivery_time_activity }}</p>
-         <p class='tt03' v-if=' order != null && order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
-         <div 
+         <p class='tt03' v-if='order != null && order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
+         <!-- <div 
             v-if='
                (order != null && order.order_delivery_type == "once_date_time" ) ||
                (order != null && order.order_delivery_type == "weekly" ) ||
@@ -103,6 +103,25 @@
                <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item small-size'><?php echo __('Date', 'watergo'); ?> {{ time_shipping.order_time_shipping_day }} - {{ time_shipping.order_time_shipping_datetime }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+         </div> -->
+         <div
+            v-if='order.order_delivery_type == "once_date_time"'
+            v-for='( time_shipping, date_time_key ) in order.order_time_shipping' :key='date_time_key'
+            class='display_delivery_time'
+         >
+            <div class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+         </div>
+         <div
+            v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
+            v-for='( ship_item, ship_key ) in order.order_setting_shipping.settings' :key='ship_key'
+            class='display_delivery_time'
+            :class='ship_item.day == order.order_time_shipping.order_time_shipping_day ? "highlight" : ""'
+         >
+            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_shortname_day_of_week(ship_item.day) }} - {{ ship_item.datetime }}</div>
+            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
+            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ ship_item.day }} - {{ ship_item.datetime }}</div>
+            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
          </div>
       </div>
 
@@ -295,7 +314,6 @@ var app = Vue.createApp({
       },
 
       async buttonModalSubmit_cancel_order(){
-         
          var isCancel = this.reason_cancel.some(item => item.active == true ); 
          if( isCancel == true ){
             this.loading = true;
@@ -359,33 +377,21 @@ var app = Vue.createApp({
          }
       },
 
-      goBack(){ window.goBack() },
 
-      async get_time_shipping_order(order_id){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_all_time_shipping_from_order');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'time_shipping_found'){
-               this.time_shipping.push(...res.data);
-            }
-         }
-      },
+      goBack(){ window.goBack() },
 
       async btn_order_status( order_status ){
          this.btn_has_pressed = true;
 
          var ods = [ parseInt(this.order.order_id )];
-         var timestamp = Math.floor(Date.now() / 1000);
 
          var form = new FormData();
          form.append('action', 'atlantis_order_status');
          form.append('order_id', JSON.stringify(ods));
          form.append('status', order_status);
-         form.append('timestamp', timestamp);
          var r = await window.request(form);
+         console.log(r);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -397,7 +403,102 @@ var app = Vue.createApp({
             }
          }
 
-      }
+      },
+
+      get_title_weekly_compact( title ){
+         if( this.get_locale == 'vi' ){
+            if( title == 'Monday' ) return 'Thứ Hai';
+            if( title == 'Tuesday' ) return 'Thứ Ba';
+            if( title == 'Wednesday' ) return 'Thứ Tư';
+            if( title == 'Thursday' ) return 'Thứ Năm';
+            if( title == 'Friday' ) return 'Thứ Sáu';
+            if( title == 'Saturday' ) return 'Thứ Bảy';
+            if( title == 'Sunday' ) return 'Chủ Nhật';
+
+         }else if( this.get_locale == 'ko_KR' ){
+            if( title == 'Monday' )    return '월요일';
+            if( title == 'Tuesday' )   return '화요일';
+            if( title == 'Wednesday' ) return '수요일';
+            if( title == 'Thursday' )  return '목요일';
+            if( title == 'Friday' )    return '금요일';
+            if( title == 'Saturday' )  return '토요일';
+            if( title == 'Sunday' )    return '일요일';
+         }else{
+            return title;
+         }
+         
+      },
+
+      
+
+      get_date_from_day_name(datetime, dayName) {
+         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+         const [day, month, year] = datetime.split('/').map(Number);
+         const inputDate = new Date(year, month - 1, day);
+         const inputDayIndex = inputDate.getDay();
+         const targetDayIndex = daysOfWeek.indexOf(dayName);
+         let dayDifference = targetDayIndex - inputDayIndex;
+         if (dayDifference <= 0) {
+            dayDifference += 7;
+         }
+         inputDate.setDate(inputDate.getDate() + dayDifference);
+         var _day    = String(inputDate.getDate()).padStart(2, '0');
+         var _month  = String(inputDate.getMonth() + 1).padStart(2, '0');
+         var _year   = inputDate.getFullYear();
+         const result = `${_day}/${_month}/${_year}`;
+         return result;
+      },
+
+      get_date_from_day_of_month(datetime, targetDate) {
+         const [day, month, year] = datetime.split('/').map(Number);
+         const inputDate = new Date(year, month - 1, 1);
+
+         inputDate.setDate(targetDate);
+         if (inputDate.getDate() < targetDate) {
+            inputDate.setMonth(inputDate.getMonth() + 1);
+         }
+         var _day    = String(inputDate.getDate()).padStart(2, '0');
+         var _month  = String(inputDate.getMonth() + 1).padStart(2, '0');
+         var _year   = inputDate.getFullYear();
+         const result = `${_day}/${_month}/${_year}`;
+         return result;
+      },
+
+
+      async atlantis_get_order_detail( order_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_get_order_detail');
+         form.append('order_id', order_id);
+         var r = await window.request(form);
+         console.log(r)
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'get_order_ok'){
+               this.order = res.data;
+               
+               if( this.order.order_delivery_type == 'weekly' || this.order.order_delivery_type == 'monthly'){
+                  var _day_shipping = this.order.order_time_shipping.order_time_shipping_day;
+                  var _datime_shipping = this.order.order_time_shipping.order_time_shipping_datetime;
+
+                  this.order.order_setting_shipping.settings.forEach( item => {
+                     if( item.day == _day_shipping ){
+                        item.datetime = _datime_shipping;
+                     }else{
+                        if( this.order.order_delivery_type == 'weekly'){
+                           item.datetime = this.get_date_from_day_name(_datime_shipping, item.day);
+                        }
+                        if( this.order.order_delivery_type == 'monthly'){
+                           item.datetime = this.get_date_from_day_of_month(_datime_shipping, item.day);
+                        }
+                     }
+                  });
+               }
+
+               
+
+            }
+         }
+      },
  
 
    },
@@ -412,11 +513,6 @@ var app = Vue.createApp({
       },
 
       is_button_has_pressed(){ return this.btn_has_pressed; },
-
-      filter_time_shipping(){
-         return this.time_shipping;
-         // .sort( ( a, b ) => a.order_time_shipping_datetime < b.order_time_shipping_datetime  );
-      },
 
       get_delivery_time_activity(){
          var _delivery_type = '';
@@ -458,23 +554,14 @@ var app = Vue.createApp({
       window.appbar_fixed();
    },
 
-   async mounted(){
+   async created(){
 
       this.loading = true;
 
       const urlParams = new URLSearchParams(window.location.search);
       const order_id = urlParams.get('order_id');
 
-      var form = new FormData();
-      form.append('action', 'atlantis_get_order_detail');
-      form.append('order_id', parseInt(order_id));
-      var r = await window.request(form);
-
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify(r));
-         this.order = res.data;
-         await this.get_time_shipping_order(this.order.order_id);
-      }
+      await this.atlantis_get_order_detail(parseInt(order_id));
 
       setTimeout(() => {
          window.appbar_fixed();

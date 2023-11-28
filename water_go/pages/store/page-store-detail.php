@@ -52,6 +52,9 @@
       top: -2px;
    }
 
+   .store-product{
+      padding-bottom: 50px;
+   }
 
 </style>
 

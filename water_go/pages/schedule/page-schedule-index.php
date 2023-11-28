@@ -82,23 +82,23 @@
 
                      <div class='order-item-title-container-tile02'>
                         <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>
-                           <?php echo __('Delivery Immediately', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_time }}
+                           <?php echo __('Delivery Immediately', 'watergo'); ?> {{ order.order_time_shipping_time }}
                         </p>
                         <p 
                            v-if="order.order_delivery_type == 'once_date_time'"
-                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping.order_time_shipping_day }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{order.order_time_shipping_day }} | {{ order.order_time_shipping_time }}</p>
                         <p 
                            v-if="order.order_delivery_type == 'weekly'"
-                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ get_title_weekly_compact(order.order_time_shipping.order_time_shipping_day) }} | {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ get_title_weekly_compact(order.order_time_shipping_day) }} | {{ order.order_time_shipping_datetime }} | {{ order.order_time_shipping_time }}</p>
                         <p 
                            v-if="order.order_delivery_type == 'monthly'"
-                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ order.order_time_shipping.order_time_shipping_datetime }} | {{ order.order_time_shipping.order_time_shipping_time }}</p>
+                           class='text-xsm'><?php echo __('Delivery on', 'watergo'); ?> {{ order.order_time_shipping_datetime }} | {{ order.order_time_shipping_time }}</p>
                      </div>
 
 
                   </div>
                   <div class='order-item-discount text-sm'>
-                     <p>{{ total_product_in_order( order )}} <?php echo __('products', 'watergo'); ?></p>
+                     <p>{{ order.total_product }} <?php echo __('products', 'watergo'); ?></p>
                      <p><?php echo __('Total', 'watergo'); ?>: <span class='text-price'>{{ total_product_price_in_order(order) }}</span></p>
                      <!-- <p v-if='order.address_kilometer > 0'>{{ order.address_kilometer }}km</p> -->
                   </div>
@@ -149,10 +149,6 @@ var app = Vue.createApp({
    },
 
    watch: {
-      datePickerValue: async function ( date ){
-      //    // var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
-      //    await this.schedule_load_product('all', date, 0);
-      }
    },
 
    methods: {
@@ -210,30 +206,21 @@ var app = Vue.createApp({
          }
       },
 
-      total_product_in_order( order ){
-         var _total = 0;
-         if( order.order_products != undefined && order.order_products.length > 0 ){
-            order.order_products.forEach( item => {
-               _total += parseInt(item.order_group_product_quantity_count);
-            });
-         }
-         return _total;
-      },
-
       total_product_price_in_order( order ){
-         var _total_price = 0;
+         // var _total_price = 0;
 
-         order.order_products.forEach( product => {
-            var discount_percent = parseInt(product.order_group_product_discount_percent);
-            var price            = parseInt(product.order_group_product_price);
-            var quantity         = parseInt(product.order_group_product_quantity_count);
+         // order.order_products.forEach( product => {
+         //    var discount_percent = parseInt(product.order_group_product_discount_percent);
+         //    var price            = parseInt(product.order_group_product_price);
+         //    var quantity         = parseInt(product.order_group_product_quantity_count);
 
-            if( discount_percent == undefined || discount_percent == null || discount_percent == 0){
-               discount_percent = 0;
-            }
-            _total_price += ( price - ( price * ( discount_percent / 100 ) ) ) * quantity;
-         });
-         return parseInt(_total_price).toLocaleString() + ' <?php echo $currency; ?>';
+         //    if( discount_percent == undefined || discount_percent == null || discount_percent == 0){
+         //       discount_percent = 0;
+         //    }
+         //    _total_price += ( price - ( price * ( discount_percent / 100 ) ) ) * quantity;
+         // });
+
+         return parseInt(order.total_price_product).toLocaleString() + ' <?php echo $currency; ?>';
       },
 
       save_datetime_from_datepicker(){
@@ -363,7 +350,11 @@ var app = Vue.createApp({
          form.append('filter', filter);
          form.append('paged', this.orders.length );
          form.append('datetime', datetime );
+
          var r = await window.request(form);
+
+         console.log(r);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){

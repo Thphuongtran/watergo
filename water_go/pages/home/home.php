@@ -837,10 +837,10 @@ var app = Vue.createApp({
          }
       }
 
-      var _get_rest_of_data_random   = 20 - this.productRecommend.length;
-      if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
-         await this.get_product_random(_get_rest_of_data_random);
-      }
+      // var _get_rest_of_data_random   = 20 - this.productRecommend.length;
+      // if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
+      //    await this.get_product_random(_get_rest_of_data_random);
+      // }
 
       // form.append('action', 'atlantis_load_product_recommend');
       // form.append('lat', this.latitude);

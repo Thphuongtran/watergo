@@ -24,6 +24,11 @@
       padding-left: 25px;
       line-height: 20px;
    }
+
+   .page-recommend{
+      padding-bottom: 50px;
+   }
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id='app'>
@@ -219,21 +224,18 @@ var app = Vue.createApp({
                   }
                });
             }
-
-            if( this.products.length < 10 ){
-               var _get_rest_of_data_random = 10 - this.products.length;
-               await this.get_product_random(_get_rest_of_data_random);
-            }
-
-         }else{
-
-            var _get_rest_of_data_random   = this.products.length;
-            if( this.products.length < 10 ){
-               _get_rest_of_data_random = 10 - this.products.length;
-            }
-            await this.get_product_random(_get_rest_of_data_random);
-
+            // if( this.products.length < 10 ){
+            //    var _get_rest_of_data_random = 10 - this.products.length;
+            //    await this.get_product_random(_get_rest_of_data_random);
+            // }
          }
+         // else{
+         //    var _get_rest_of_data_random   = this.products.length;
+         //    if( this.products.length < 10 ){
+         //       _get_rest_of_data_random = 10 - this.products.length;
+         //    }
+         //    await this.get_product_random(_get_rest_of_data_random);
+         // }
       },
 
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Water Go\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-22 02:53+0000\n"
+"POT-Creation-Date: 2023-11-23 06:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -2077,4 +2077,28 @@ msgid "Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách
 msgstr ""
 
 msgid "Note your shipping address"
+msgstr ""
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
+
+msgid "Select day"
 msgstr ""

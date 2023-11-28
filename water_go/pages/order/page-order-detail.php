@@ -42,7 +42,7 @@
    
    <div v-show='loading == false && order != null && order.order_hidden == 0' class='page-order-detail'>
 
-      <div class='appbar'>
+      <div class='appbar style01'>
          <div class='appbar-top'>
             <div class='leading'>
 
@@ -53,7 +53,7 @@
                   </svg>
                </button>
                
-               <p v-if='order_number != 0' class='leading-title'><?php echo $order_text; ?> #{{ order_number }}</p>
+               <p v-if='order != null && order.order_number != null' class='leading-title'><?php echo $order_text; ?> #{{ order.order_number }}</p>
             </div>
             <div v-show='is_user_can_chat == true' class='action'>
                <!-- <span class='badge-status'>{{ get_status_activity(order_status) }}</span> -->
@@ -63,9 +63,8 @@
                </button>
             </div>
          </div>
+         <div class="break-line"></div>
       </div>
-
-      <div class='break-line'></div> 
 
       <div v-if='order != null' class='inner'>
          <div class='list-tile delivery-address style-order'>
@@ -121,7 +120,7 @@
          <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02'>{{ get_delivery_time_activity }}</p>
          <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
-         <div 
+         <!-- <div 
             v-if='
                order.order_delivery_type == "once_date_time" ||
                order.order_delivery_type == "weekly" ||
@@ -137,6 +136,25 @@
                <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ time_shipping.order_time_shipping_day }}</div>
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+         </div> -->
+         <div
+            v-if='order.order_delivery_type == "once_date_time"'
+            v-for='( time_shipping, date_time_key ) in order.order_time_shipping' :key='date_time_key'
+            class='display_delivery_time'
+         >
+            <div class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
+            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+         </div>
+         <div
+            v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
+            v-for='( ship_item, ship_key ) in order.order_setting_shipping.settings' :key='ship_key'
+            class='display_delivery_time'
+            :class='ship_item.day == order.order_time_shipping.order_time_shipping_day ? "highlight" : ""'
+         >
+            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_title_weekly_compact(ship_item.day) }}</div>
+            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
+            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ ship_item.day }}</div>
+            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
          </div>
       </div>
 
@@ -272,14 +290,12 @@ createApp({
 
          get_locale: '<?php echo get_locale(); ?>',
 
-         time_shipping: [],
-
          reason_cancel: [
-            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', active: false},
-            {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
+            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', value: 'Misplaced product', active: false},
+            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', value: 'Change delivery information', active: false},
+            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', value: 'Change delivery time', active: false},
+            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', value: 'Store requested cancellation', active: false},
+            {label: '<?php echo __("Others", 'watergo'); ?>', value: 'Others', active: false}
          ],
 
          order: null
@@ -338,10 +354,10 @@ createApp({
             if( title == 'Friday' )    return '금요일';
             if( title == 'Saturday' )  return '토요일';
             if( title == 'Sunday' )    return '일요일';
-
          }else{
             return title;
          }
+         
       },
 
       hasMoreThanTwoZeroes(number) {
@@ -389,9 +405,12 @@ createApp({
          if( isCancel == true ){
             this.loading = true;
             var form = new FormData();
+            var get_reason = this.reason_cancel.find( item => item.active == true );
             form.append('action', 'atlantis_cancel_order');
             form.append('order_id', this.order.order_id);
             form.append('order_type', this.order.order_delivery_type);
+            form.append('reason_cancel', get_reason.value);
+            
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
@@ -405,21 +424,19 @@ createApp({
 
       // END CANCEL ORDER
 
-      async findOrder( order_id ){
+      async atlantis_get_order_detail( order_id ){
          var form = new FormData();
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
+         console.log(r);
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
-               
-               this.order_number = res.data.order_number;
+               // this.order_number = res.data.order_number;
                this.order_status = res.data.order_status;
-
                this.order = res.data;
-
-               setTimeout(() => {}, 1);
             }
          }
       },
@@ -476,18 +493,6 @@ createApp({
          
       },
 
-      async get_time_shipping_order(order_id){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_all_time_shipping_from_order');
-         form.append('order_id', order_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r ));
-            if( res.message == 'time_shipping_found'){
-               this.time_shipping.push(...res.data);
-            }
-         }
-      },
 
       async is_can_review( order_id ){
          var form = new FormData();
@@ -612,8 +617,7 @@ createApp({
          console.error('Error occurred during the request:', error);
       }
 
-      await this.findOrder(order_id);
-      await this.get_time_shipping_order(order_id);
+      await this.atlantis_get_order_detail(order_id);
       await this.is_can_review(order_id);
 
       // IF THIS IS SUB ORDER FROM PARENT SO DONT DO REORDER

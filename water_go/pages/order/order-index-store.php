@@ -247,7 +247,7 @@
 
    <div v-show='popup_cancel_all_item == true' class='modal-popup open style01'>
       <div class='modal-wrapper'>
-         <div class='modal-close style-static'><div @click='btn_modal_cancel_all' class='close-button'><span></span><span></span></div></div>
+         <div class='modal-close style-static'><div @click='btn_close_modal_cancel' class='close-button'><span></span><span></span></div></div>
          <p class='tt01' v-show='access_single_status == null'><?php echo __("Why do you want to cancel <span class='t-primary'>All Order</span>", 'watergo'); ?>?</p>
          <p class='tt01' v-show='access_single_status != null'><?php echo __("Why do you want to cancel <span class='t-primary'>This Order</span>", 'watergo'); ?>?</p>
          <ul class='list-Reason'>
@@ -260,7 +260,7 @@
             </li>
          </ul>
          <div class='actions'>
-            <button v-show='access_single_status == null' @click='btn_do_all_action' class='btn btn-primary' :class='is_select_reason_cancel == false ? "disabled" : ""'>
+            <button v-show='access_single_status == null' @click='btn_do_all_action' class='btn btn-primary btn-access-all' :class='is_select_reason_cancel == false ? "disabled" : ""'>
                <?php 
                   // SUBMIT BUTTON 
                   if( get_locale() == 'vi'){ echo 'Gửi';
@@ -268,7 +268,7 @@
                   }else{ echo 'Submit'; }
                ?>
             </button>
-            <button v-show='access_single_status != null' @click='btn_single_modal_confirm' class='btn btn-primary' :class='is_select_reason_cancel == false ? "disabled" : ""'>
+            <button v-show='access_single_status != null' @click='btn_single_modal_confirm' class='btn btn-primary btn-single-modal' :class='is_select_reason_cancel == false ? "disabled" : ""'>
                <?php 
                   // SUBMIT BUTTON 
                   if( get_locale() == 'vi'){ echo 'Gửi';
@@ -419,11 +419,11 @@ var app = Vue.createApp({
 
          // Reason for cancellation: 
          reason_cancel: [
-            {label: '<?php echo __('Không liên lạc được với khách', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Khách từ chối nhận hàng', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Khách hẹn giao lại sau', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Cửa hàng giao sai đơn', 'watergo'); ?>', active: false},
-            {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
+            {label: '<?php echo __('Không liên lạc được với khách', 'watergo'); ?>', value: 'Không liên lạc được với khách' , active: false},
+            {label: '<?php echo __('Khách từ chối nhận hàng', 'watergo'); ?>', value: 'Khách từ chối nhận hàng', active: false},
+            {label: '<?php echo __('Khách hẹn giao lại sau', 'watergo'); ?>', value: 'Khách hẹn giao lại sau', active: false},
+            {label: '<?php echo __('Cửa hàng giao sai đơn', 'watergo'); ?>', value: 'Cửa hàng giao sai đơn', active: false},
+            {label: '<?php echo __("Others", 'watergo'); ?>', value: 'Others', active: false}
          ],
 
       }
@@ -453,13 +453,19 @@ var app = Vue.createApp({
          this.orders.some(item => item.is_select = false);
       },
 
+      btn_close_modal_cancel(){
+         this.popup_cancel_all_item = false;
+         this.access_single_order_id = null;
+         this.access_single_status = null;
+         this.popup_single_modal = false;
+         this.reason_cancel.some(item => item.active = false );
+      },
 
       btn_modal_cancel_all(){ 
          this.popup_confirm_all_item = false;
          this.popup_cancel_all_item = false;
          this.popup_delivering_all_item = false;
          this.popup_complete_all_item = false;
-         this.reason_cancel.some(item => item.active = false);
          this.access_single_order_id = null;
          this.access_single_status = null;
          this.popup_single_modal = false;
@@ -488,14 +494,32 @@ var app = Vue.createApp({
 
       // THIS FUNCTION WILL AJAX ALL ACTION 
       async btn_action_order_status(order_ids, order_status){
-         var timestamp = Math.floor(Date.now() / 1000);
+         
          var form = new FormData();
          form.append('action', 'atlantis_order_status');
          form.append('order_id', JSON.stringify(order_ids));
          form.append('status', order_status);
-         form.append('timestamp', timestamp);
+
+         if( order_status == 'cancel' ){
+            var _findReason = this.reason_cancel.find( item => item.active == true );
+            form.append('reason_cancel', _findReason.value);
+            form.append('cancel_by', 'store');
+            var options_cancel = [];
+
+            order_ids.forEach( item => {
+               var _find_order = this.orders.find( order => order.order_id == item );
+               options_cancel.push({
+                  order_id: parseInt(_find_order.order_id),
+                  order_type: _find_order.order_delivery_type,
+                  order_tag_repeat: _find_order.order_tag_repeat,
+               });
+            });
+            form.append('options_cancel', JSON.stringify(options_cancel));
+         }
+
          var r = await window.request(form);
-         // console.log(r)
+         this.is_select_all = false;
+
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -531,21 +555,18 @@ var app = Vue.createApp({
             if( od.select == true ){ order_ids.push( parseInt( od.order_id) ); }
          });
          
+         // IF NOT CANCEL
          if( this.status_change_all != 'cancel' ){
             if( order_ids.length > 0 ){
                this.btn_modal_cancel_all();
                await this.btn_action_order_status(order_ids, this.status_change_all );
                await this.reset_get_order_store();
-               this.btn_modal_cancel_all();
             }
          }
 
-         // SPECIAL FOR CANCEL ALL ORDER
+         // IF CANCEL
          if( this.status_change_all == 'cancel' ){
-            var _is_reason_select = false;
-            this.reason_cancel.forEach( reason => {
-               if(reason.active == true ){ _is_reason_select = true; }
-            });
+            var _is_reason_select = this.reason_cancel.some( item => item.active == true );
             if(_is_reason_select == true ){
                if( order_ids.length > 0 ){
                   this.btn_modal_cancel_all();

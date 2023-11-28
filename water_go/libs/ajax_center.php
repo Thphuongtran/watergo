@@ -71,7 +71,16 @@ function func_atlantis_get_order_fullpack( $args ){
    if( ! empty( $orders ) ){
 
       foreach( $orders as $kOrder => $order){
-         $orders[$kOrder]->order_number = func_atlantis_get_order_number($order->order_id);
+         $order_number = $order->order_number;
+         $number_repeat = $order->order_number_repeat;
+
+         if( $number_repeat != 0 && $number_repeat != null && $number_repeat != ''){
+            $order_number = str_pad( $order_number, 4, "0", STR_PAD_LEFT) . '-' . $number_repeat;
+         }else{
+            $order_number = str_pad( $order_number, 4, "0", STR_PAD_LEFT);
+         }
+
+         $orders[$kOrder]->order_number = $order_number;
          $orders[$kOrder]->order_delivery_address = json_decode( json_decode( $order->order_delivery_address ) );
       }
 
@@ -79,13 +88,19 @@ function func_atlantis_get_order_fullpack( $args ){
       // GET TIME SHIPPING
       if($is_get_time_shipping == 1){
          foreach( $orders as $kOrder => $order){
-            // $order_time_shipping_id   = $order->order_time_shipping_id;
-            $time_shipping = "SELECT * FROM wp_watergo_order_time_shipping WHERE order_time_shipping_id = $order->order_time_shipping_id";
+            $time_shipping = "SELECT * FROM wp_watergo_order_time_shipping WHERE order_time_shipping_order_id = $order->order_id";
             $res_time_shipping = $wpdb->get_results($time_shipping);
             if( !empty($res_time_shipping)){
-               $orders[$kOrder]->order_time_shipping = $res_time_shipping;
+               $orders[$kOrder]->order_time_shipping = $res_time_shipping[0];
             }
-
+            // GET SETTING SHIPPING
+            $order_tag_repeat = $orders[$kOrder]->order_tag_repeat;
+            if( $order_tag_repeat != null || $order_tag_repeat != ''){
+               $sql_setting_shipping = "SELECT * FROM wp_watergo_order_settings WHERE order_tag_repeat = '$order_tag_repeat'";
+               $res_setting_shipping = $wpdb->get_results($sql_setting_shipping);
+               $res_setting_shipping[0]->settings = json_decode($res_setting_shipping[0]->settings, true);
+               $orders[$kOrder]->order_setting_shipping = $res_setting_shipping[0];
+            }
          }
       }
 
@@ -153,50 +168,6 @@ function func_atlantis_get_order_fullpack( $args ){
 
 }
 
-
-
-/**
- * @access GET ORDER NUMBER
- */
-
-function func_get_order_number_in_by_order_id( $order_id ){
-   global $wpdb;
-   $sql_order_number = "SELECT order_number FROM wp_watergo_order WHERE order_id = $order_id ";
-   $res_order_number = $wpdb->get_results($sql_order_number);
-   if( empty( $res_order_number ) ){
-      return 0;
-   }
-   return $res_order_number[0]->order_number;
-}
-
-function func_atlantis_get_order_number( $order_id ){
-   $sql = "SELECT * FROM wp_watergo_order_repeat WHERE order_repeat_order_id_parent = $order_id LIMIT 1";
-   global $wpdb;
-   $res = $wpdb->get_results($sql);
-   
-   if ( ! empty( $res ) ) {
-
-      if( $res[0]->order_repeat_type == 'weekly' || $res[0]->order_repeat_type == 'monthly' ){
-         $number_repeat = '';
-         $order_number = 0;
-
-         if( $res[0]->order_repeat_order_id != $res[0]->order_repeat_order_id_parent ){
-            $number_repeat = '-' . $res[0]->order_repeat_count;
-            $order_number  = func_get_order_number_in_by_order_id($res[0]->order_repeat_order_id_parent);
-         }else{
-            $order_number  = func_get_order_number_in_by_order_id($res[0]->order_repeat_order_id_parent);
-         }
-
-         $numberWithZeros = str_pad( $order_number, 4, "0", STR_PAD_LEFT) . $number_repeat;
-         return $numberWithZeros;
-      }
-   }
-
-   $order_number = func_get_order_number_in_by_order_id($order_id);
-
-   $numberWithZeros = str_pad( $order_number , 4, "0", STR_PAD_LEFT);
-   return $numberWithZeros;
-}
 
 /**
  * @access GET PRODUCT VERSION 2 -> GET METADATA PRODUCT 
@@ -463,33 +434,6 @@ function atlantis_get_images(){
  * @access CHECK REPEAT ORDER CAN CREATE?
  */
 
-// function func_check_repeat_order_can_create( $order_id ){
-//    global $wpdb;
-//    $sql_get_id_parent = "SELECT 
-//       order_repeat_order_id
-//       FROM wp_watergo_order_repeat 
-//       WHERE order_repeat_order_id_parent = $order_id";
-//    $res_get_id_parent = $wpdb->get_results($sql_get_id_parent);
-
-
-//    if( $res_get_id_parent[0]->order_repeat_order_id != null ){
-//       $order_id_parent = $res_get_id_parent[0]->order_repeat_order_id;
-
-//       $sql_is_repeat = "SELECT 
-//          order_repeat_is_keep_repeat
-//          FROM wp_watergo_order_repeat 
-//          WHERE order_repeat_order_id_parent = $order_id_parent
-//          AND order_repeat_order_id = $order_id_parent
-//       ";
-//       $get_is_repeat = $wpdb->get_results($sql_is_repeat);
-//       if( $get_is_repeat[0]->order_repeat_is_keep_repeat == 1 ){
-//          return 1;
-//       }
-//       return 0;
-//    }
-//    return 0;
-// }
-
 function func_get_repeat_order_id( $order_id ){
    global $wpdb;
    $sql_get_repeat_order = "SELECT *
@@ -630,6 +574,75 @@ require_once THEME_DIR . '/libs/network/ajax_report.php';
 require_once THEME_DIR . '/libs/network/ajax_share.php';
 require_once THEME_DIR . '/libs/network/ajax_cart.php';
 
+function get_datetime_from_day_month($day, $format = 'd/m/Y') {
+   $day = (int) $day;
+   if (!is_numeric($day) || $day < 1 || $day > 31) {
+      return "Invalid day input";
+   }
+   $currentDay = date('d');
+   $currentMonth = date('m');
+   $currentYear = date('Y');
+   if ($day < $currentDay) {
+      $currentMonth++;
+      if ($currentMonth == 13) {
+         $currentMonth = 1;
+         $currentYear++;
+      }
+   }
+   // Format the day with leading zero
+   $formattedDay = sprintf("%02d", $day);
+   $formattedDate = "{$formattedDay}/{$currentMonth}/{$currentYear}";
+   return $formattedDate;
+}
+
+function get_datetime_from_day_name( $dayName, $format = 'd/m/Y' ){
+   if( $dayName ){
+      $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      $currentDate = new DateTime();
+      $currentDayOfWeek = $currentDate->format('l');
+      $daysToAdd = (array_search($dayName, $daysOfWeek) + 7 - array_search($currentDayOfWeek, $daysOfWeek)) % 7;
+      $currentDate->add(new DateInterval("P{$daysToAdd}D"));
+      $resultingDate = $currentDate->format($format);
+      return $resultingDate;
+   }
+   return;
+}
+
+// GET NEXT DAY FROM DATETIME 
+function get_next_day_from_datetime($datetime, $day, $day_type ) {
+   $datetimeObj = DateTime::createFromFormat('d/m/Y', $datetime, new DateTimeZone('GMT'));
+   $datetimeObj->setTimezone(new DateTimeZone('GMT+7'));
+
+   if ($day_type == 'weekly') {
+      $targetDay = date('N', strtotime($day));
+      $currentDay = $datetimeObj->format('N');
+      if ($currentDay == $targetDay) {
+         $datetimeObj->modify("+7 days");
+      } else {
+         $daysToAdd = ($targetDay - $currentDay + 7) % 7;
+         $datetimeObj->modify("+$daysToAdd days");
+      }
+
+   } else if ($day_type == 'monthly') {
+      $targetDayOfMonth = (int)$day;
+      $currentDayOfMonth = (int)$datetimeObj->format('d');
+      
+      if ($currentDayOfMonth == $targetDayOfMonth) {
+         $datetimeObj->modify("+1 month");
+         $datetimeObj->modify("first day of this month");
+         $datetimeObj->modify("+$targetDayOfMonth days");
+      } elseif ($currentDayOfMonth > $targetDayOfMonth) {
+         $datetimeObj->modify("+1 month");
+         $datetimeObj->modify("first day of this month");
+         $datetimeObj->modify("+$targetDayOfMonth days");
+      } else {
+         $daysToAdd = $targetDayOfMonth - $currentDayOfMonth;
+         $datetimeObj->modify("+$daysToAdd days");
+      }      
+   }
+
+   return $datetimeObj->format('d/m/Y');
+}
 
 
 function atlantis_component_extract_product( $res, $limit_image = 1, $image_size = 'medium'){
