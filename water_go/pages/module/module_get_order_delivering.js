@@ -4,7 +4,7 @@ const module_get_order_delivering = {
       <div 
          class='banner-order-delivering' :class='banner_delivering_active == true ? "" : "d-none"'>
 
-         <div @click='test_add_item' class='icon-leading'>
+         <div class='icon-leading'>
             <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="19.5" cy="19.5" r="19.5" fill="white"/>
             <path d="M22.125 11H15.625C15.194 11 14.7807 11.1712 14.476 11.476C14.1712 11.7807 14 12.194 14 12.625V25.625C14 26.056 14.1712 26.4693 14.476 26.774C14.7807 27.0788 15.194 27.25 15.625 27.25H25.375C25.806 27.25 26.2193 27.0788 26.524 26.774C26.8288 26.4693 27 26.056 27 25.625V15.875L22.125 11Z" stroke="#2790F9" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -62,23 +62,15 @@ const module_get_order_delivering = {
 
       addLeadingZeros(n){ return window.addLeadingZeros( parseInt(n))},
 
-      get_order_number(){
-         if( this.order != null && this.order.order_number != null ){
-            return '#' + this.addLeadingZeros(this.order.order_number);
-         }
-      },
-
       title_compact( order ){
-         // console.log( this.$root.get_locale );
 
-         var _order_number = window.addLeadingZeros( parseInt(order.order_number));
          if( this.$root.get_locale == 'vi'){
-            return `<p>Đơn <span class='t-primary'>#${_order_number}</span> đang chờ cửa hàng xác nhận</p>`;
+            return `<p>Đơn <span class='t-primary'>#${order.order_number}</span> đang chờ cửa hàng xác nhận</p>`;
          }
          if( this.$root.get_locale == 'ko_KR'){
-            return `<p>고객님의 주문 <span class='t-primary'>#${_order_number}</span> 확인 중입니다</p>`;
+            return `<p>고객님의 주문 <span class='t-primary'>#${order.order_number}</span> 확인 중입니다</p>`;
          }
-         return `<p>Order <span class='t-primary'>#${_order_number}</span> is awaiting store confirmation</p>`;
+         return `<p>Order <span class='t-primary'>#${order.order_number}</span> is awaiting store confirmation</p>`;
       },
 
       async get_order_ordered(){
@@ -174,10 +166,10 @@ const module_get_order_delivering = {
       this.initializeSlick();
       await setInterval( async () => {
          await this.get_order_ordered();
-      }, 1500); 
+      }, 2000); 
       await setInterval( async () => {
          await this.is_order_confirmed();
-      }, 2000);
+      }, 3200);
    },
 
 };

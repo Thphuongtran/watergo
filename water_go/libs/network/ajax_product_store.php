@@ -250,6 +250,7 @@ function atlantis_action_product_store(){
             $wpdb->insert('wp_watergo_products',  $args);
             $_product_id_insert = $wpdb->insert_id;
          }
+         
          if( $_product_id_insert != null ){
             $list_attachment = func_atlantis_upload_no_ajax('product', $uploadImages);
             if( !empty($list_attachment)){
@@ -921,12 +922,12 @@ function atlantis_change_product_status(){
             'hash_id'               => $hash_id,
             'text'                  => $text_push_notification
          ]);
-         bj_push_notification( 
-            (int) $user_id_from_store_id,
-            'Watergo',
-            $text_push_notification,
-            $link 
-         );
+         // bj_push_notification( 
+         //    (int) $user_id_from_store_id,
+         //    'Watergo',
+         //    $text_push_notification,
+         //    $link 
+         // );
       }
 
       if( $event == 'deny' ){
@@ -952,16 +953,22 @@ function atlantis_change_product_status(){
          ]);
 
          
-         bj_push_notification( 
-            (int) $user_id_from_store_id,
-            'Watergo',
-            $text_push_notification,
-            $link 
-         );
+         // bj_push_notification( 
+         //    (int) $user_id_from_store_id,
+         //    'Watergo',
+         //    $text_push_notification,
+         //    $link 
+         // );
       }
 
       if($updated){
-         wp_send_json_success(['message' => 'product_found']);
+         wp_send_json_success(['message' => 'product_found', 
+            'notification' => [
+               'user_id'                  => $user_id_from_store_id,
+               'text_push_notification'   => $text_push_notification,
+               'link'                     => $link
+            ]
+         ]);
          wp_die();
       }
       wp_send_json_error(['message' => 'product_not_found']);

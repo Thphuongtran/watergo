@@ -548,3 +548,20 @@ function atlantis_protocal_notification_in_background(){
 
    }
 }
+
+add_action( 'wp_ajax_atlantis_push_notification_in_background', 'atlantis_push_notification_in_background' );
+function atlantis_push_notification_in_background(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_push_notification_in_background' ){
+      $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : 0;
+      $text_push_notification = isset($_POST['text_push_notification']) ? $_POST['text_push_notification'] : 'Watergo';
+      $link                   = isset($_POST['link']) ? $_POST['link'] : 'http://watergo.net/home/?&appt=N';
+
+      bj_push_notification( 
+         (int) $user_id,
+         'Watergo',
+         $text_push_notification,
+         $link 
+      );
+      
+   }
+}

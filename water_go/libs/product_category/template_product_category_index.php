@@ -120,7 +120,7 @@ var app = Vue.createApp({
    created(){
       this.product_category = JSON.parse('<?php echo json_encode( $res_product_category); ?>');
 
-      console.log(this.product_category);
+      // console.log(this.product_category);
 
    }
 })

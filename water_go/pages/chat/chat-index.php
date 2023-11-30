@@ -2,12 +2,10 @@
 
    $user_id = get_current_user_id();
    $is_user_store = get_user_meta($user_id , 'user_store', true);
-   $where_app = '';
+
    if( $is_user_store == 1 || $is_user_store == true ){
-      $where_app         = 'chat_to_user';
       $search_placeholder = __('Search User Name', 'watergo');
    }else{
-      $where_app         = 'chat_to_store';
       $search_placeholder = __('Search Store Name', 'watergo');
    }
 
@@ -80,19 +78,20 @@
       <ul class='list-chat'>
          <li 
             @click='go_to_chat(cons.conversation_id_hash)'
-            v-for='(cons, conversationIndex) in get_conversations' :key='conversationIndex' class='chat-item'>
+            v-for='(cons, conversationIndex) in get_conversations' :key='conversationIndex' class='chat-item'
+         >
 
             <div class='leading'>
-               <img :src="cons.avatar.url">
+               <img :src="cons.chat_user_avatar.url">
             </div>
             <div class='contents'>
                <div class='tt01'>
-                  <div class='name-chat'>{{ cons.name }}</div>
+                  <div class='name-chat'>{{ cons.chat_user_name }}</div>
                   <div class='time'>{{ getTimeDifference(cons.timestamp) }}</div>
                </div>
                <div class='tt02'>
                   <p class='text'>{{ truncateUTF8String(cons.message) }}</p>
-                  <div class='badge-is_read' v-show='cons.count_new_messages > 0'>{{ cons.count_new_messages }}</div>
+                  <div class='badge-is_read' v-show='cons.count_new_message > 0'>{{ cons.count_new_message }}</div>
                </div>
                
             </div>
@@ -136,7 +135,6 @@ var app = Vue.createApp({
          inputSearch: '',
          database: null,
          user_id: <?php echo $user_id; ?>,
-         where_app: '<?php echo $where_app; ?>',
          window_width: $(window).width(),
          get_locale: '<?php echo get_locale(); ?>',
 
@@ -151,14 +149,14 @@ var app = Vue.createApp({
 
          if( this.inputSearch != ''){
             _filter = this.conversations.filter(item =>   
-               item.name.toLowerCase().includes(
+               item.chat_user_name.toLowerCase().includes(
                   this.inputSearch.toLowerCase()
                )
             );
          }else{
             _filter = this.conversations;
          }
-         return _filter.sort((a, b) => b.count_new_messages - a.count_new_messages);
+         return _filter.sort((a, b) => b.count_new_message - a.count_new_message);
       },
 
       get_store_list(){
@@ -182,13 +180,9 @@ var app = Vue.createApp({
 
       goBack(){ window.goBack()},
 
-      gotoChatMessenger(messenger_id){ 
-         window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&messenger_id=' + messenger_id + '&appt=N';
-      },
-
       getTimeDifference(datetimeInput) {
 
-         if (datetimeInput != undefined ) {
+         if (datetimeInput != undefined && datetimeInput != null && datetimeInput != '') {
          
             var unpack = datetimeInput.split(' ');
             var [year, month, day] = unpack[0].split('-');
@@ -255,61 +249,47 @@ var app = Vue.createApp({
 
       shortString(str){ return window.shortString(str)},
 
-      async get_user( user_id ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_user_messenger');
-         form.append('user_id', user_id);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse(JSON.stringify( r));
-            if( res.message == 'user_found'){
-               return res.data;
-            }
-         }
-      },
-
       async go_to_chat( conversation_id ){ 
-         window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app='+ this.where_app +'&appt=N';
-      },
-
-      async atlantis_count_messeage_from_conversation_id(conversation_id){
-         var form = new FormData();
-         form.append('action', 'atlantis_count_messeage_from_conversation_id');
-         form.append('conversation_id', conversation_id);
-         form.append('where_app', this.where_app);
-         var r = await window.request(form);
-         if(r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'count_new_messages'){
-               return res.data;
+         try {
+            if( conversation_id != undefined && conversation_id != null ){
+               let requestPromise = await this.atlantis_read_all_messages(conversation_id);
+               let immediatePromise = new Promise(resolve => resolve());
+               await Promise.race([requestPromise, immediatePromise]);
             }
-         }
+         } catch (error) {}
+
+         window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&appt=N';
       },
 
       async atlantis_load_all_conversation(){
          var form = new FormData();
          form.append('action', 'atlantis_load_all_conversation');
-         form.append('where_app', this.where_app);
-         var placeholders = [];
-         if( this.conversations.length > 0 ){
-            this.conversations.forEach( item => {
-               placeholders.push(item.conversation_id);
-            });
-            form.append('placeholders', JSON.stringify(placeholders) );
-         }
          var r = await window.request(form);
          if( r != undefined){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'conversation_found' ){
                res.data.forEach( item => {
-                  var _exists = this.conversations.some( cons => cons.conversation_id == item.conversation_id );
-                  if( !_exists){
-                     this.conversations.push( item );
+                  if( item.message != ''){
+                     var _existsIndex = this.conversations.findIndex( cons => cons.conversation_id_hash == item.conversation_id_hash );
+                     if( _existsIndex == -1 ){
+                        this.conversations.push( item );
+                     }else{
+                        this.conversations[_existsIndex].message = item.message;
+                        this.conversations[_existsIndex].timestamp = item.timestamp;
+                        this.conversations[_existsIndex].count_new_message = item.count_new_message;
+                     }
                   }
                });
             }
          }
       },
+
+      async atlantis_read_all_messages( conversation_id ){
+         var form = new FormData();
+         form.append('action', 'atlantis_read_all_messages');
+         form.append('conversation_id', conversation_id);
+         var r = await window.request(form);
+      }
 
    },
 
@@ -336,16 +316,7 @@ var app = Vue.createApp({
 
       setInterval( async () => {
          await this.atlantis_load_all_conversation();
-      }, 1800 );
-      
-      setInterval( async () => {
-         await this.conversations.forEach( async ( cons, consIndex ) => {
-            var _res = await this.atlantis_count_messeage_from_conversation_id( cons.conversation_id_hash );
-            this.conversations[consIndex].count_new_messages = _res.count;
-            this.conversations[consIndex].message            = _res.message;
-            this.conversations[consIndex].timestamp          = _res.timestamp;
-         });
-      }, 1800);
+      }, 2500 );
 
 
       // const messengers = query( 

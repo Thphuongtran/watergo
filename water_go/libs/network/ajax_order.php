@@ -37,10 +37,7 @@ add_action( 'wp_ajax_nopriv_atlantis_get_order_time_shipping', 'atlantis_get_ord
 add_action( 'wp_ajax_atlantis_get_order_time_shipping', 'atlantis_get_order_time_shipping' );
 
 
-// FOR ORDER REPEAT
-add_action( 'wp_ajax_nopriv_atlantis_get_order_number', 'atlantis_get_order_number' );
-add_action( 'wp_ajax_atlantis_get_order_number', 'atlantis_get_order_number' );
-
+// FOR ORDER REPEA
 add_action( 'wp_ajax_nopriv_atlantis_get_order_schedule', 'atlantis_get_order_schedule' );
 add_action( 'wp_ajax_atlantis_get_order_schedule', 'atlantis_get_order_schedule' );
 
@@ -703,7 +700,7 @@ function atlantis_get_order_schedule(){
          }else{
             $order_number = str_pad( $order_number, 4, "0", STR_PAD_LEFT);
          }
-         $vl->order_number = $order_number;      
+         $vl->order_number = $order_number;
          
       }
 
@@ -1491,7 +1488,8 @@ function atlantis_get_order_multiple_time(){
       $sql = "SELECT 
          order_id,
          order_number,
-         order_status
+         order_status,
+         order_number_repeat
       FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_hidden != 1 AND order_by = $user_id ORDER BY order_id DESC";
       // SQL IF STORE
       if($is_user_store == 1 || $is_user_store == true ){
@@ -1502,15 +1500,31 @@ function atlantis_get_order_multiple_time(){
          $sql = "SELECT 
             order_id,
             order_number,
-            order_status
-         FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_hidden != 1 AND order_id_store = $store_id ORDER BY order_id DESC";
+            order_status,
+            order_number_repeat
+         FROM wp_watergo_order WHERE order_status IN ('ordered') AND order_hidden != 1 AND order_store_id = $store_id ORDER BY order_id DESC";
       }      
 
       $res = $wpdb->get_results( $sql);
+
       if( empty( $res ) ){
          wp_send_json_error([ 'message' => 'order_not_found']);
          wp_die();
       }
+
+      foreach( $res as $k => $vl ){
+
+         $order_number  = $vl->order_number;
+         $number_repeat = $vl->order_number_repeat;
+
+         if( $number_repeat != 0 && $number_repeat != null && $number_repeat != ''){
+            $order_number = str_pad( $order_number, 4, "0", STR_PAD_LEFT) . '-' . $number_repeat;
+         }else{
+            $order_number = str_pad( $order_number, 4, "0", STR_PAD_LEFT);
+         }
+         $vl->order_number = $order_number;
+      }
+      
       wp_send_json_success([ 'message' => 'order_found', 'data' => $res, 'is_store' => $is_user_store ]);
       wp_die();
 

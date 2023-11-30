@@ -13,6 +13,8 @@ function template_store_manager_index(){
    $currency = ' đ';
    if( get_locale() == 'ko_KR' ){
       $currency = '동';
+
+
    }
 ?>
 <script type="text/javascript">
@@ -775,7 +777,7 @@ function template_store_manager_index(){
 
       <tr 
          v-if='stores.length > 0'
-         v-for='(store, storeKey ) in stores_computed ' :key='storeKey'
+         v-for='(store, storeKey ) in stores ' :key='storeKey'
       >
          <th scope="row" class="check-column">			
             <input @click='select_store(store.id)' type="checkbox" :checked='store.is_select == true ? true : false'>
@@ -804,7 +806,6 @@ function template_store_manager_index(){
 
 
    <div class='watergo-pagination'>
-      <button @click='pagination_first_page' :class="currentPage <= 1 ? 'current-page' : '' ">«</button>
       <button @click='pagination_prev_page' :class="currentPage <= 1 ? 'current-page' : '' ">‹</button>
 
       <button v-for="page in pages" :key="page" @click="goToPage(page)" :class="{ 'current-page': page == currentPage }">
@@ -812,7 +813,6 @@ function template_store_manager_index(){
       </button>
 
       <button @click='pagination_next_page' :class="currentPage >= pages ? 'current-page' : '' ">›</button>
-      <button @click='pagination_last_page' :class="currentPage >= pages ? 'current-page' : '' ">»</button>
    </div>
 
 
@@ -1138,7 +1138,7 @@ var app = Vue.createApp({
           * */
 
          // paged: 0,
-         limit: 50,
+         limit: 20,
          total_store: <?php echo $total_store; ?>,
          currentPage: 1,
 
@@ -1149,11 +1149,6 @@ var app = Vue.createApp({
          products: [],
 
          product_status_memory: null,
-
-         // product_water: [],
-         // product_water_device: [],
-         // product_ice: [],
-         // product_ice_device: [],
 
          is_select_all: false,
          action: null,
@@ -1170,10 +1165,6 @@ var app = Vue.createApp({
 
 
    computed: {
-      
-      stores_computed(){
-         return this.stores.sort( ( a, b ) => b.id - a.id );
-      },
 
       products_computed(){
          return this.products.sort( ( a, b ) => b.id - a.id );
@@ -1198,7 +1189,6 @@ var app = Vue.createApp({
       filter_product_ice_device: function(){
          return this.products.filter( item => item.product_type == 'ice_device' );
       }
-    
 
    },
 
@@ -1210,27 +1200,21 @@ var app = Vue.createApp({
 
       common_price_show_currency(p){ return window.common_price_show_currency(p); },
 
-      pagination_first_page() {
-         this.currentPage = 1;
-      },
       pagination_prev_page() {
          if (this.currentPage > 1) {
             this.currentPage--;
+            this.goToPage(this.currentPage);
          }
       },
       pagination_next_page() {
          if (this.currentPage < this.pages) {
             this.currentPage++;
+            this.goToPage(this.currentPage);
          }
       },
-      pagination_last_page() {
-         this.currentPage = this.pages;
-      },
+      
       goToPage(page) {
          this.currentPage = page;
-         // window.location.href = '/wordpress/wp-admin/admin.php?page=store_manager_index&paged=' + this.currentPage;
-         // window.location.href = window.watergo_domain + 'wordpress/wp-admin/admin.php?page=store_manager_index&paged=' + this.currentPage;
-         
          var hostname = window.location.hostname;
          if (hostname === 'localhost' || hostname === '127.0.0.1') {
             window.location.href = '/wp-admin/admin.php?page=store_manager_index&paged=' + this.currentPage;
@@ -1554,36 +1538,23 @@ var app = Vue.createApp({
          this.stores.forEach(item => item.is_select = this.is_select_all );
       },
 
-      async get_store( page ){
+      async atlantis_load_store_for_admin_page( page ){
+
          var form = new FormData();
-         form.append('action', 'atlantis_load_store');
+         form.append('action', 'atlantis_load_store_for_admin_page');
          form.append('paged', page );
          form.append('limit', this.limit );
          var r = await window.request(form);
          if( r != undefined ){
             if( r.message == 'store_found' ){
                var res = JSON.parse( JSON.stringify( r ));
-               res.data.forEach( async store => {
+               res.data.forEach( store => {
                   var _exists = this.stores.some( s => s.id == store.id );
                   if( ! _exists ){
                      store.is_select = false;
-                     store.email = await this.get_store_email( store.user_id);
                      this.stores.push( store );
                   }
                });
-            }
-         }
-      },
-
-      async get_store_email(user_id){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_store_email');
-         form.append('user_id', user_id );
-         var r = await window.request(form);
-         if( r != undefined ){
-            if( r.message == 'get_store_email_ok' ){
-               var res = JSON.parse( JSON.stringify( r ));
-               return res.data.user_email;
             }
          }
       },
@@ -1612,12 +1583,8 @@ var app = Vue.createApp({
       this.action              = urlParams.get('action');
       this.currentPage         = urlParams.get('paged');
 
-      if( this.currentPage == undefined || this.currentPage == null ){
-         this.currentPage = 1;
-      }
-
       if( this.action == null || this.action == undefined ){
-         await this.get_store( this.currentPage );
+         await this.atlantis_load_store_for_admin_page( this.currentPage );
       }
 
       if( this.action == 'edit' ){

@@ -366,6 +366,7 @@ var app = Vue.createApp({
       },
 
       async btn_change_product_status(){
+         this.popup_open_change_product_status = false;
          var form = new FormData();
          form.append('action', 'atlantis_change_product_status');
          form.append('product_id', this.product_id);
@@ -374,13 +375,32 @@ var app = Vue.createApp({
          if( r != undefined ){
             var res = JSON.parse(JSON.stringify( r));
             if( res.message == 'product_found' ){
-               this.popup_open_change_product_status = false;
                var findIndex = this.products.findIndex( item => item.id == this.product_id );
                this.products.splice(findIndex, 1);
+
+               var user_id = res.notification.user_id
+               var text_push_notification = res.notification.text_push_notification
+               var link = res.notification.link
+
+               var notification_push = new FormData();
+               notification_push.append('action', 'atlantis_push_notification_in_background');
+               notification_push.append('user_id', user_id);
+               notification_push.append('text_push_notification', text_push_notification);
+               notification_push.append('link', link);
+
+               try {
+                  let requestPromise = await window.request(notification_push);
+                  let immediatePromise = new Promise(resolve => resolve());
+                  await Promise.race([requestPromise, immediatePromise]);
+               } catch (error) {
+                  console.error('Error occurred during the request:', error);
+               }
+
             }
          }
-
       },
+
+
 
       btn_open_modal_pending(product_id, event){
          this.popup_open_change_product_status  = true;

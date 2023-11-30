@@ -113,25 +113,23 @@ function atlantis_get_total_purchase_store(){
    }
 }
 
+
+
 function atlantis_load_store(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_load_store' ){
 
       $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 10;
-      $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+      $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 0;
       // $paged = $paged * $limit;
-      if( $paged == 0 || $paged == null){
-         $paged = 1;
-      }
-      $offset = ($paged - 1) * $limit;
 
       global $wpdb;
-      $sql = "SELECT 
-         wp_watergo_store.*
-         FROM wp_watergo_store
-         WHERE store_hidden = 0
+      $sql = "SELECT wp_watergo_store.* FROM wp_watergo_store
+         WHERE store_hidden != 1
          ORDER BY id DESC 
-         LIMIT $offset, $limit";
+         LIMIT $paged, $limit";
+
       $get_results = $wpdb->get_results($sql);
+
       if( empty( $get_results ) ){
          wp_send_json_error([ 'message' => 'store_not_found' ]);
          wp_die();
@@ -139,6 +137,44 @@ function atlantis_load_store(){
          wp_send_json_success(['message' => 'store_found', 'data' => $get_results ]);
          wp_die();
       }
+   }
+}
+
+add_action( 'wp_ajax_atlantis_load_store_for_admin_page', 'atlantis_load_store_for_admin_page' );
+function atlantis_load_store_for_admin_page(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_load_store_for_admin_page' ){
+      $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 10;
+      $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 0;
+
+      if( $paged < 0 || $paged == 0 ){
+         $paged = 0;
+      }else{
+         $paged = ($paged - 1) * $limit;
+      }
+
+      global $wpdb;
+      $sql = "SELECT 
+            wp_watergo_store.*,
+            wp_users.user_email as email
+         FROM wp_watergo_store
+         LEFT JOIN wp_users
+         ON wp_users.ID = wp_watergo_store.user_id
+
+         WHERE wp_watergo_store.store_hidden != 1 
+         ORDER BY wp_watergo_store.id DESC 
+         LIMIT $paged, $limit
+      ";
+
+      $res = $wpdb->get_results($sql);
+
+      if( empty( $res ) ){
+         wp_send_json_error([ 'message' => 'store_not_found' ]);
+         wp_die();
+      }else{
+         wp_send_json_success(['message' => 'store_found', 'data' => $res ]);
+         wp_die();
+      }
+
    }
 }
 

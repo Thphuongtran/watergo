@@ -793,6 +793,8 @@ var app = Vue.createApp({
       await this.get_count_total_order();
       await this.get_order_store( this.order_status_current );
       await this.get_notification_count();
+
+      console.log(this.orders)
       
       this.loading = false;
 

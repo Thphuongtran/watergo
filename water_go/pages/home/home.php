@@ -17,8 +17,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 <script src="<?php echo THEME_URI . '/assets/js/slick.min.js'; ?>"></script>
 <link rel="stylesheet" href="<?php echo THEME_URI . '/assets/css/slick.min.css'; ?>">
-<script src='<?php echo THEME_URI . '/pages/module/location_modal.js?ver=1.0'; ?>'></script>
-<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=1.0'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/location_modal.js?ver=2.0'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=2.0'; ?>'></script>
 <style>
 
    .box-language .dropdown-language{
@@ -883,7 +883,7 @@ var app = Vue.createApp({
          });
       });
 
-      setTimeout(() => {},600);
+      setTimeout(() => {}, 800);
       window.appbar_fixed();
       this.loading = false;
 

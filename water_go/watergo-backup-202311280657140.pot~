@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Water Go\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-21 18:23+0000\n"
+"POT-Creation-Date: 2023-11-23 06:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -1699,6 +1699,11 @@ msgstr ""
 msgid "The order #%s was canceled"
 msgstr ""
 
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:460
+#, php-format
+msgid "The order <span class=\"hightlight-order\">#%s</span> was canceled"
+msgstr ""
+
 #: ../../../../../../GitHub/watergo/water_go/pages/order/page-order-product.php:351
 msgid ""
 "The order will be automatically canceled after 60 minutes if the store does "
@@ -1988,6 +1993,11 @@ msgstr ""
 msgid "You have new order #%s"
 msgstr ""
 
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:400
+#, php-format
+msgid "You have new order <span class=\"hightlight-order\">#%s</span>"
+msgstr ""
+
 #: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:443
 #, php-format
 msgid "Your order #%s is canceled"
@@ -2008,9 +2018,24 @@ msgstr ""
 msgid "Your order #%s is delivering"
 msgstr ""
 
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:441
+#, php-format
+msgid "Your order <span class=\"hightlight-order\">#%s</span> is canceled"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:348
+#, php-format
+msgid "Your order <span class='hightlight-order'>#%s</span> is completed"
+msgstr ""
+
 #: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:292
 #, php-format
 msgid "Your order <span class='hightlight-order'>#%s</span> is confirmed"
+msgstr ""
+
+#: ../../../../../../GitHub/watergo/water_go/libs/network/ajax_notification.php:320
+#, php-format
+msgid "Your order <span class='hightlight-order'>#%s</span> is delivering"
 msgstr ""
 
 #: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-forget-password.php:143
@@ -2049,4 +2074,31 @@ msgstr ""
 
 #: ../../../../../../GitHub/watergo/water_go/pages/authentication/page-auth-store-register.php:464
 msgid "Địa chỉ không hợp lệ, vui lòng chọn địa chỉ trong sách đề xuất"
+msgstr ""
+
+msgid "Note your shipping address"
+msgstr ""
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
+
+msgid "Select day"
 msgstr ""
