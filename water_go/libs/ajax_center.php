@@ -573,6 +573,7 @@ require_once THEME_DIR . '/libs/network/ajax_product_store.php';
 require_once THEME_DIR . '/libs/network/ajax_report.php';
 require_once THEME_DIR . '/libs/network/ajax_share.php';
 require_once THEME_DIR . '/libs/network/ajax_cart.php';
+require_once THEME_DIR . '/libs/network/ajax_services.php';
 
 function get_datetime_from_day_month($day, $format = 'd/m/Y') {
    $day = (int) $day;

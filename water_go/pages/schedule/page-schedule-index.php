@@ -82,7 +82,7 @@
 
                      <div class='order-item-title-container-tile02'>
                         <p v-if="order.order_delivery_type == 'once_immediately' " class='text-xsm'>
-                           <?php echo __('Delivery Immediately', 'watergo'); ?> {{ order.order_time_shipping_time }}
+                           <?php echo __('Delivery Immediately', 'watergo'); ?>
                         </p>
                         <p 
                            v-if="order.order_delivery_type == 'once_date_time'"
@@ -350,17 +350,15 @@ var app = Vue.createApp({
          form.append('filter', filter);
          form.append('paged', this.orders.length );
          form.append('datetime', datetime );
-
          var r = await window.request(form);
-
-         console.log(r);
 
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){
                res.data.forEach(item => {
-                  if (!this.orders.some(existingItem => existingItem.order_id === item.order_id)) {
-                     this.orders.push(item);
+                  var _existsItem = this.orders.some(existingItem => existingItem.order_id == item.order_id);
+                  if( ! _existsItem ){
+                     this.orders.push( item );
                   }
                });
             }
@@ -422,6 +420,10 @@ window.app = app;
 
 async function callbackActiveTab(){
    await window.app.get_notification_count();
+   var _currentDate = window.timestamp_to_date(new Date().getTime() / 1000 );
+   if( window.app.schedule_status_value != undefined){
+      await window.app.schedule_load_product(window.app.schedule_status_value, _currentDate);
+   }
 }
 </script>
 

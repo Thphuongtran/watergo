@@ -897,7 +897,28 @@ var app = Vue.createApp({
                      if (_carts.products.length === 0) { this.carts.splice(i, 1); }
                   }
                   localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
-                  // 
+                  //
+
+                  // PUSH NOTIFICATION IN BACKGROUND
+                  try {
+                     var push_notification = new FormData();
+                     push_notification.append('action', 'atlantis_protocal_notification_in_background');
+                     push_notification.append('order_status', res.notification_args.order_status);
+                     push_notification.append('order_id', res.notification_args.order_id);
+                     push_notification.append('user_id', res.notification_args.user_id);
+                     push_notification.append('store_id', res.notification_args.store_id);
+                     push_notification.append('attachment_url', res.notification_args.attachment_url);
+                     push_notification.append('order_number', res.notification_args.order_number);
+                     push_notification.append('hash', res.notification_args.hash);
+                     push_notification.append('send_to', res.notification_args.send_to);
+                     let requestPromise = window.request(push_notification);
+                     let immediatePromise = new Promise(resolve => resolve());
+                     await Promise.race([requestPromise, immediatePromise]);
+                  } catch (error) {
+                     console.log(error);
+                  }
+
+
 
                   this.loading = false;
                   this.banner_open = true;
@@ -1189,99 +1210,166 @@ var app = Vue.createApp({
 
       await this.initial_delivery_address();
 
-
-      // INITIAL order_delivery
-
-      // INITIAL carts
-      var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-      if( _carts.length > 0 ){
-
-         _carts.forEach( store => {
-            if (store.store_select == true ) {
-               this.carts.push({ ...store, products: [...store.products.filter( product => product.product_select == true )] });
-            } else {
-               const selectedProducts = store.products.filter(product => product.product_select == true);
-               if (selectedProducts.length > 0) {
-                  this.carts.push({
-                     store_id: store.store_id,
-                     store_name: store.store_name,
-                     store_select: false,
-                     products: [...selectedProducts],
-                  });
-               }
-            }
-         });
-
-         this.carts.forEach( ( store, storeIndex ) => {
-            store.products.forEach( async ( product, productIndex ) => {
-               var form = new FormData();
-               form.append('action', 'atlantis_find_product');
-               form.append('product_id', product.product_id);
-               var r = await window.request(form);
-               if( r != undefined ){
-
-                  var res = JSON.parse( JSON.stringify(r));
-                  if( res.message == 'product_found' ){
-
-                     if( parseInt(res.data.mark_out_of_stock) == 1 ){
-                        this.is_mark_out_of_stock = true; 
-                        this.modal_store_out_of_stock = true;
-                        this.canPlaceOrder = false;
-                     }
-
-                     this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
-                     this.carts[storeIndex].products[productIndex].name             = res.data.name;
-                     // DISCOUNT
-                     this.carts[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
-                     this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
-                     this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
-                     this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
-                     // GIFT
-                     this.carts[storeIndex].products[productIndex].has_gift         = res.data.has_gift;
-                     this.carts[storeIndex].products[productIndex].gift_to          = res.data.gift_to;
-                     this.carts[storeIndex].products[productIndex].gift_from        = res.data.gift_from;
-                     this.carts[storeIndex].products[productIndex].gift_text        = res.data.gift_text;
-
-                     this.carts[storeIndex].products[productIndex].price            = res.data.price;
-                     this.carts[storeIndex].products[productIndex].product_type     = res.data.product_type;
-
-
-                  }else{
-                     this.canPlaceOrder = false;
-                     this.product_not_found = true;
-                  }
-               }
-            });
-         });
-         
-      }else{
-         this.canPlaceOrder = false;
-         this.product_not_found = true;
-      }
-
       this.delivery_type.once = true;
       this.delivery_type.once_immediately = true;
       this.automatic_count_date_week();
       this.automatic_count_date_monthly();
 
+      // INITIAL order_delivery      
+
       if( re_order_id != undefined ){
+
+         var reorder_form = new FormData();
+         reorder_form.append('action', 'atlantis_reorder');
+         reorder_form.append('re_order_id', re_order_id);
+         var r = await window.request(reorder_form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'order_found' ){
+               
+               res.data.forEach( store => {
+                  if (store.store_select == true ) {
+                     this.carts.push({ ...store, products: [...store.products.filter( product => product.product_select == true )] });
+                  } else {
+                     const selectedProducts = store.products.filter(product => product.product_select == true);
+                     if (selectedProducts.length > 0) {
+                        this.carts.push({
+                           store_id: store.store_id,
+                           store_name: store.store_name,
+                           store_select: false,
+                           products: [...selectedProducts],
+                        });
+                     }
+                  }
+               });
+
+               this.carts.forEach( ( store, storeIndex ) => {
+                  store.products.forEach( async ( product, productIndex ) => {
+                     var form = new FormData();
+                     form.append('action', 'atlantis_find_product');
+                     form.append('product_id', product.product_id);
+                     var r = await window.request(form);
+                     if( r != undefined ){
+
+                        var res = JSON.parse( JSON.stringify(r));
+                        if( res.message == 'product_found' ){
+
+                           if( parseInt(res.data.mark_out_of_stock) == 1 ){
+                              this.is_mark_out_of_stock = true; 
+                              this.modal_store_out_of_stock = true;
+                              this.canPlaceOrder = false;
+                           }
+
+                           this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
+                           this.carts[storeIndex].products[productIndex].name             = res.data.name;
+                           // DISCOUNT
+                           this.carts[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
+                           this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
+                           this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
+                           this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
+                           // GIFT
+                           this.carts[storeIndex].products[productIndex].has_gift         = res.data.has_gift;
+                           this.carts[storeIndex].products[productIndex].gift_to          = res.data.gift_to;
+                           this.carts[storeIndex].products[productIndex].gift_from        = res.data.gift_from;
+                           this.carts[storeIndex].products[productIndex].gift_text        = res.data.gift_text;
+                           //
+                           this.carts[storeIndex].products[productIndex].price            = res.data.price;
+                           this.carts[storeIndex].products[productIndex].product_type     = res.data.product_type;
+
+
+                        }else{
+                           this.canPlaceOrder = false;
+                           this.product_not_found = true;
+                        }
+                     }
+                  });
+               });
+
+
+            }else{
+               this.canPlaceOrder = false;
+               this.product_not_found = true;
+            }
+
+         }else{
+            this.canPlaceOrder = false;
+            this.product_not_found = true;
+         }
+
          this.delivery_type.once = true;
          this.delivery_type.once_immediately = true;
 
-         let form = new FormData();
-         // form.append('action', '');
+      }else{
+         // INITIAL carts
+         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+         if( _carts.length > 0 ){
+
+            _carts.forEach( store => {
+               if (store.store_select == true ) {
+                  this.carts.push({ ...store, products: [...store.products.filter( product => product.product_select == true )] });
+               } else {
+                  const selectedProducts = store.products.filter(product => product.product_select == true);
+                  if (selectedProducts.length > 0) {
+                     this.carts.push({
+                        store_id: store.store_id,
+                        store_name: store.store_name,
+                        store_select: false,
+                        products: [...selectedProducts],
+                     });
+                  }
+               }
+            });
+
+            this.carts.forEach( ( store, storeIndex ) => {
+               store.products.forEach( async ( product, productIndex ) => {
+                  var form = new FormData();
+                  form.append('action', 'atlantis_find_product');
+                  form.append('product_id', product.product_id);
+                  var r = await window.request(form);
+                  if( r != undefined ){
+
+                     var res = JSON.parse( JSON.stringify(r));
+                     if( res.message == 'product_found' ){
+
+                        if( parseInt(res.data.mark_out_of_stock) == 1 ){
+                           this.is_mark_out_of_stock = true; 
+                           this.modal_store_out_of_stock = true;
+                           this.canPlaceOrder = false;
+                        }
+
+                        this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
+                        this.carts[storeIndex].products[productIndex].name             = res.data.name;
+                        // DISCOUNT
+                        this.carts[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
+                        this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
+                        this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
+                        this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
+                        // GIFT
+                        this.carts[storeIndex].products[productIndex].has_gift         = res.data.has_gift;
+                        this.carts[storeIndex].products[productIndex].gift_to          = res.data.gift_to;
+                        this.carts[storeIndex].products[productIndex].gift_from        = res.data.gift_from;
+                        this.carts[storeIndex].products[productIndex].gift_text        = res.data.gift_text;
+
+                        this.carts[storeIndex].products[productIndex].price            = res.data.price;
+                        this.carts[storeIndex].products[productIndex].product_type     = res.data.product_type;
+
+
+                     }else{
+                        this.canPlaceOrder = false;
+                        this.product_not_found = true;
+                     }
+                  }
+               });
+            });
+            
+         }else{
+            this.canPlaceOrder = false;
+            this.product_not_found = true;
+         }
+
       }
 
       let instanceApp = this;
-
-      function get_string_datetime( datetime ){
-         var date = new Date(datetime)
-         var d = String(date.getDate()).padStart(2, '0');
-         var m = String(date.getMonth() + 1).padStart(2, '0');
-         var y = date.getFullYear();
-         return d + '-' + m + '-' + y;
-      }
-
 
       jQuery(document).ready(function($){
          instanceApp.select_once_date_time(".select_once_date_time");
@@ -1423,6 +1511,7 @@ window.app = app;
 //     alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
 //     return true;
 // }
+
 </script>
 <style>
    .flatpickr-calendar{

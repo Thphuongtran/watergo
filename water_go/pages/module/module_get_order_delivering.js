@@ -74,12 +74,20 @@ const module_get_order_delivering = {
       },
 
       async get_order_ordered(){
+         var order_ids = [];
+         this.orders.forEach(item => {
+            if (!order_ids.includes(item.order_id)) {
+               order_ids.push( parseInt(item.order_id));
+            }
+         });
+
          var form = new FormData();
          form.append('action', 'atlantis_get_order_multiple_time');
+         form.append('order_ids', JSON.stringify(order_ids));
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'order_found' ){
+            if( res.message == 'order_found' ){               
 
                this.is_store = res.is_store == 0 || res.is_store == null ? false : true;
 
@@ -95,13 +103,13 @@ const module_get_order_delivering = {
                         slickElement.on('click', '#order-' + _order.order_id, function() {
                            if( window.app.$refs.module_get_order_delivering.is_store == false ){
                               window.gotoOrderDetail(_order.order_id);
-                           }else{
-                              window.gotoOrderStoreDetail(_order.order_id);
                            }
                         });
                      }
                   }
                });
+
+               await window.app.get_notification_count();
                
             }
          }
@@ -120,9 +128,11 @@ const module_get_order_delivering = {
             form.append('action', 'atlantis_is_order_confirmed');
             form.append('order_ids', JSON.stringify(lists));
             var r = await window.request(form);
+
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'order_confirmed_ok' ){
+
                   res.data.forEach( item => { 
                      var findIndex = this.orders.findIndex( order => order.order_id == item.order_id );
                      if( findIndex != -1 ){
@@ -138,6 +148,8 @@ const module_get_order_delivering = {
 
                      }
                   });
+
+                  await window.app.get_notification_count();
                }
                
             }

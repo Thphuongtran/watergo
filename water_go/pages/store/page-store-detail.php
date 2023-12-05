@@ -1,3 +1,14 @@
+<?php 
+
+   $store_id = isset($_GET['store_id']) ? $_GET['store_id'] : 0;
+   $current_store_id = func_get_store_id_from_current_user();
+   $is_user_store = 0;
+   if( $store_id == $current_store_id ){
+      $is_user_store = 1;
+   }
+
+   
+?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js?ver=1.0" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
    .product-header .main{
@@ -76,7 +87,7 @@
 
             <div v-if='store != null' class='main' :class='is_store_avatar_dummy(store.store_image)'>
                <img :src="store.store_image_full.url">
-               <button v-if='user_current_is_store == true' @click='gotoPageStoreEdit' class='btn-edit-store-info'><?php echo __('Edit Info', 'watergo'); ?></button>
+               <button v-if='user_current_is_store == 1' @click='gotoPageStoreEdit' class='btn-edit-store-info'><?php echo __('Edit Info', 'watergo'); ?></button>
             </div>
          </div>
       </div>
@@ -84,7 +95,7 @@
       <div v-if='store != null' class="inner">
          <div class='product-design product-detail'>
             <p class='tt01'>{{ store.name }}</p>
-            <p class='tt02' v-if='user_current_is_store == false'>{{ store.distance }}</p>
+            <p class='tt02' v-if='user_current_is_store == 0'>{{ store.distance }}</p>
             <p class='tt03'> {{ store.description }}</p>
          </div>
 
@@ -202,7 +213,8 @@ var app = Vue.createApp({
 
          store_type: [],
 
-         user_current_is_store: false,
+         // 0 -> false 1 -> true 
+         user_current_is_store: 0,
 
          callback_cart_count: 0,
          callback_notification_count: 0,
@@ -367,20 +379,6 @@ var app = Vue.createApp({
          });
       },
 
-      async check_current_user_is_store(){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_current_user_id');
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify( r));
-            if( res.message == 'get_current_user_ok' ){
-               if( res.data.is_user_store == 1 ){
-                  this.user_current_is_store = true;
-               }
-            }
-         }
-      },
-
       async atlantis_notification_mark_read_notification_hash_id(hash_id){
          var form = new FormData();
          form.append('action', 'atlantis_notification_mark_read_notification_hash_id');
@@ -389,7 +387,7 @@ var app = Vue.createApp({
       },
 
       gotoProductDetail(product_id){
-         if( this.user_current_is_store == false ){
+         if( this.user_current_is_store == 0 ){
             window.gotoProductDetail(product_id);   
          }
       },
@@ -411,7 +409,7 @@ var app = Vue.createApp({
       get_distance_from_location(){
          var _d = 0;
          _d = setTimeout( () => {
-            if( this.user_current_is_store == false ){
+            if( this.user_current_is_store == 0 ){
                var _distance = window.calculateDistance(
                   this.latitude,
                   this.longitude,
@@ -449,6 +447,9 @@ var app = Vue.createApp({
    },
 
    async created(){
+
+      this.user_current_is_store = <?php echo $is_user_store; ?>;
+
       const urlParams            = new URLSearchParams(window.location.search);
       this.store_id              = urlParams.get('store_id');
       const hash_id              = urlParams.get('hash_id');
@@ -460,7 +461,6 @@ var app = Vue.createApp({
       this.loading = true;
 
       await this.get_current_location();
-      await this.check_current_user_is_store();
       await this.findStore(this.store_id);
 
       window.appbar_fixed();

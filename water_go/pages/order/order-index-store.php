@@ -20,11 +20,10 @@
          font-size: 10px;
       }
       .navbar.navbar-icon li{
-         /* min-width: 64px; */
-         /* min-width: 72px; */
-         /* min-width: 20%; */
-         min-width: 67px;
       }
+   }
+   .navbar.navbar-icon li{
+      min-width: 20%;
    }
    .color-yellow{
       color: #FFC83A;
@@ -317,6 +316,7 @@ var app = Vue.createApp({
          notification_count: 0,
 
          total_order: 0,
+         last_order_id: 0,
 
          is_select_all: false,
          // IF ORDER SELECT -> BUTTON CAN ACCESS
@@ -598,7 +598,6 @@ var app = Vue.createApp({
       },
 
       select_item( order_id ){
-         console.log('order_id ' + order_id);
          this.is_select_all = false;
          this.orders.forEach(order => {
             if( order.order_id == order_id ){
@@ -607,7 +606,7 @@ var app = Vue.createApp({
          });
       },
 
-      select_filter( filter_select ){ 
+      async select_filter( filter_select ){ 
          this.order_status_filter.some( item => {
             if( item.label == filter_select ){
                item.active = true;
@@ -734,7 +733,53 @@ var app = Vue.createApp({
          if (scrollPosition + windowHeight >= documentHeight ) {
             await this.get_order_store( this.order_status_current );
          }
-      }
+      },
+
+
+      async atlantis_get_newest_order(){
+         var order_ids = [];
+         
+         if( this.orders.length > 0){
+            this.orders.forEach( item => {
+               order_ids.push( parseInt(item.order_id) );
+            });
+            this.last_order_id = this.orders.slice().reverse()[this.orders.length - 1].order_id;
+         }
+
+         var form = new FormData();
+         form.append('action', 'atlantis_get_newest_order');
+         form.append('order_status', this.order_status_current);
+         form.append('order_ids', JSON.stringify(order_ids));
+         form.append('last_order_id', this.last_order_id);
+
+         var r = await window.request(form);
+
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'order_found' ){
+               if(res.order_need_delete.length > 0 ){
+                  res.order_need_delete.forEach( order => {
+                     var index = this.orders.findIndex( item => item.order_id == order );
+                     if( index != -1){
+                        this.orders.splice(index, 1);
+                     }
+                  });
+               }
+               if(res.order_need_update.length > 0 ){
+                  res.order_need_update.forEach( order => {
+                     var _exists = this.orders.some( item => item.order_id == order.order_id );
+                     if( !_exists ){
+                        this.orders.unshift( order);
+                     }
+                  });
+               }
+            }
+         }
+
+         this.total_order = this.orders.length;
+         window.appbar_fixed();
+
+      },
       
    },
 
@@ -773,7 +818,6 @@ var app = Vue.createApp({
          if(this.order_by_filter_select.value == 'desc'){
             _filter_orders.sort((a,b) => b.order_id - a.order_id );
          }
-         if( _filter_orders.length == 0 ){ return []; }
          return _filter_orders;
       }
    },
@@ -793,8 +837,6 @@ var app = Vue.createApp({
       await this.get_count_total_order();
       await this.get_order_store( this.order_status_current );
       await this.get_notification_count();
-
-      console.log(this.orders)
       
       this.loading = false;
 
@@ -807,7 +849,7 @@ window.app = app;
 
 async function callbackActiveTab(){
    await window.app.get_count_total_order();
-   await window.app.get_order_store( window.app.order_status_current );
+   await window.app.atlantis_get_newest_order();
    await window.app.get_notification_count();
 }
 </script>

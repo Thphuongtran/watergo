@@ -9,9 +9,6 @@ add_action( 'wp_ajax_atlantis_send_message', 'atlantis_send_message' );
 add_action( 'wp_ajax_nopriv_atlantis_get_newest_messages', 'atlantis_get_newest_messages' );
 add_action( 'wp_ajax_atlantis_get_newest_messages', 'atlantis_get_newest_messages' );
 
-add_action( 'wp_ajax_nopriv_atlantis_is_conversation_created_or_create', 'atlantis_is_conversation_created_or_create' );
-add_action( 'wp_ajax_atlantis_is_conversation_created_or_create', 'atlantis_is_conversation_created_or_create' );
-
 add_action( 'wp_ajax_nopriv_atlantis_count_messages', 'atlantis_count_messages' );
 add_action( 'wp_ajax_atlantis_count_messages', 'atlantis_count_messages' );
 
@@ -132,39 +129,44 @@ function atlantis_load_all_conversation(){
 
       wp_send_json_success(['message'   => 'conversation_found', 'data' => $res]);
       wp_die();
-
-
-
    }
 }
 
+/**
+ * @access COUNT TOAL MESSAGE FOR EVERY SCREEN
+ */
 function atlantis_count_messages(){
    if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_count_messages' ){
 
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
+      if( ! is_user_logged_in() ){
+         wp_send_json_error(['message' => 'message_count_found', 'data' => 0 ]);
          wp_die();
       }
 
+      $user_id = get_current_user_id();
+      $is_user_store = get_user_meta($user_id, 'user_store', true);
 
-      $sql = "SELECT COUNT(*) as total_messages 
-         FROM wp_watergo_messages 
-         LEFT JOIN wp_watergo_conversations
-         ON wp_watergo_conversations.conversation_id = wp_watergo_messages.conversation_id
-         WHERE wp_watergo_messages.user_id = $user_id";
+      $sql = "";
+
+      if( $is_user_store == 1 || $is_user_store == true ){
+         $sql = "SELECT SUM(to_user_count_messages) as total_messages FROM wp_watergo_conversations WHERE to_user = $user_id";
+      }else{
+         $sql = "SELECT SUM(from_user_count_messages) as total_messages FROM wp_watergo_conversations WHERE from_user = $user_id";
+      }
 
       global $wpdb;
       $res = $wpdb->get_results($sql);
-      if( $res[0]->total_messages == 0 ){
-         wp_send_json_error(['message' => 'message_count_not_found' ]);
+
+      if( !empty( $res )){
+
+         wp_send_json_success(['message' => 'message_count_found', 'data' => $res[0]->total_messages ]);
          wp_die();
       }
-      wp_send_json_success(['message' => 'message_count_found', 'data' => $res[0]->total_messages ]);
+
+      wp_send_json_success(['message' => 'message_count_found', 'data' => 0 ]);
       wp_die();
+
+
 
    }
 }
@@ -724,47 +726,40 @@ function atlantis_get_message_realtime_per_second(){
  * @access UPGRADE FUNCTION GET CONVERSATION * create when it not exists
  * @chat version 2
  */
-add_action( 'wp_ajax_nopriv_atlantis_create_conversation_or_get_it', 'atlantis_create_conversation_or_get_it' );
+
 add_action( 'wp_ajax_atlantis_create_conversation_or_get_it', 'atlantis_create_conversation_or_get_it' );
 function atlantis_create_conversation_or_get_it(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_create_conversation_or_get_it' ){
 
       $order_id         = isset($_POST['order_id']) ? $_POST['order_id'] : null;
       $conversation_id  = isset($_POST['conversation_id']) ? $_POST['conversation_id'] : null; // check by hash_id
-      $from_user        = get_current_user_id();
-      $store_id         = isset($_POST['store_id']) ? $_POST['store_id'] : null;
-      $get_by           = isset($_POST['get_by']) ? $_POST['get_by'] : null;
-      // $get_by_allow     = ['order_id'];
 
-      if( $order_id == null){
-         wp_send_json_error(['message' => 'conversation_not_found' ]);
-         wp_die();
-      }
+      // store
+      $to_user          = 0;
+
+      $store_id = isset($_POST['store_id']) ? $_POST['store_id'] : null;
+      $user_id  = isset($_POST['user_id']) ? $_POST['user_id'] : null;
 
       global $wpdb;
-      $get_user_id_from_store_id = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id";
-      $res_user_id               = $wpdb->get_results( $get_user_id_from_store_id);
-      $to_user                   = $res_user_id[0]->user_id;
+      $sql_get_user_id_from_store_id = "SELECT user_id FROM wp_watergo_store WHERE id = $store_id LIMIT 1";
+      $res_get_user_id_from_store_id = $wpdb->get_results($sql_get_user_id_from_store_id);
+      $to_user                       = $res_get_user_id_from_store_id[0]->user_id;
 
       // GET CONVERSATION BY ORDER ID
-      // $sql_get_conversation_by_order_id = "SELECT * FROM wp_watergo_conversations WHERE order_id = $order_id LIMIT 1";
-      // $conversation_id = $wpdb->get_results( $sql_get_conversation_by_order_id);
-      // GET CONVERSATION BY user and store
-      $sql_get_conversation_by_user_and_store = "SELECT * FROM wp_watergo_conversations WHERE to_user = $to_user AND from_user = $from_user LIMIT 1";
+      $sql_get_conversation_by_user_and_store = "SELECT * FROM wp_watergo_conversations WHERE to_user = $to_user AND from_user = $user_id LIMIT 1";
       $conversation_id = $wpdb->get_results( $sql_get_conversation_by_user_and_store);
 
       if( empty( $conversation_id ) ){
          $converation_id_hash = bin2hex(random_bytes(32));
-         // CONVERT STORE_ID TO {from_user} 
-         $create_at     = atlantis_current_datetime();
-         $order_detail  = "SELECT * FROM wp_watergo_order_group WHERE order_group_store_id = $store_id ORDER BY order_group_id ASC LIMIT 1";
+         $create_at           = atlantis_current_datetime();
          $wpdb->insert('wp_watergo_conversations', [
-            'from_user'             => $from_user,
+            // user_id
+            'from_user'             => $user_id,
+            // user_id from store id
             'to_user'               => $to_user,
             'conversation_id_hash'  => $converation_id_hash,
             'created_at'            => $create_at,
          ]);
-
 
          wp_send_json_success(['message' => 'conversation_found', 'data' => $converation_id_hash ]);
          wp_die();
@@ -825,7 +820,7 @@ function atlantis_get_chat_order_detail(){
          $price            = $vl->order_group_product_price;
          $quantity         = $vl->order_group_product_quantity_count;
          $discount_percent = $vl->order_group_product_discount_percent;
-         $order_total_price += ($price - ( $price * ($discount_percent / 1000 ) ) ) * $quantity;
+         $order_total_price += ($price - ( $price * ($discount_percent / 100 ) ) ) * $quantity;
 
          $order['order_number_id']    = $order_number;
          $order['order_id']           = (int) $vl->order_id;

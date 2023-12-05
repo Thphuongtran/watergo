@@ -359,10 +359,6 @@ var app = Vue.createApp({
                }
             });
 
-
-            console.log(this.time_chat);
-            
-
          }, deep: true
       }
    },

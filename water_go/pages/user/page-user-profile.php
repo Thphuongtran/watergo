@@ -1,4 +1,4 @@
-<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=2.0'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=3.0'; ?>'></script>
 <div id='app'>
 
    <div v-show='loading == false && user != null' class='page-user-profile'>

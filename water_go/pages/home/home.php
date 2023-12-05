@@ -1,9 +1,6 @@
 <?php
 
    $home_sliders = get_fields(713, 'home_sliders');
-   // echo '<pre>';
-   // print_r($home_sliders['home_sliders'][0]);
-   // echo '</pre>';
    $list_slide = [];
    if( ! empty($home_sliders['home_sliders'])){
       foreach( $home_sliders['home_sliders'] as $k => $vl ){ 
@@ -11,14 +8,15 @@
       }
    }
 
+
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 <script src="<?php echo THEME_URI . '/assets/js/slick.min.js'; ?>"></script>
 <link rel="stylesheet" href="<?php echo THEME_URI . '/assets/css/slick.min.css'; ?>">
-<script src='<?php echo THEME_URI . '/pages/module/location_modal.js?ver=2.0'; ?>'></script>
-<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=2.0'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/location_modal.js?ver=3.0'; ?>'></script>
+<script src='<?php echo THEME_URI . '/pages/module/module_get_order_delivering.js?ver=3.0'; ?>'></script>
 <style>
 
    .box-language .dropdown-language{
@@ -753,64 +751,15 @@ var app = Vue.createApp({
          }
       },
 
-       /**
-       * @access PRODUCT DISCOUNT
-       */
-      async get_product_discount( limit ){
-
-         var form = new FormData();
-         form.append('action', 'atlantis_load_product_recommend_discount');
-         form.append('perPage', limit);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               res.data.forEach(item => {
-                  if (! this.productRecommend.some(existingItem => existingItem.id === item.id)) {
-                     this.productRecommend.push( item );
-                  }
-               });
-            }
-         }
-      },
-
-      /**
-       * @access PRODUCT RANDOM
-       */
-
-      async get_product_random( limit ){
-
-         var form = new FormData();
-         form.append('action', 'atlantis_load_product_recommend_random');
-         form.append('perPage', limit);
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               res.data.forEach(item => {
-                  if (! this.productRecommend.some(existingItem => existingItem.id === item.id)) {
-                     this.productRecommend.push( item );
-                  }
-               });
-            }
-         }
-      },
-
       async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
 
    },
 
    async created(){
 
-      // const urlParams         = new URLSearchParams(window.location.search);
-      // const callback          = urlParams.get('data');
-      // if( callback != undefined && callback == 'notification_count' ){
-      //    await this.get_notification_count();
-      // }
-
       this.loading = true;
       await this.getLocale();
-      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
+      setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 2500);
 
       this.selectedLanguage = this.languages.find(language => language.id === this.currentLocale) || this.languages[0];
 
@@ -836,37 +785,6 @@ var app = Vue.createApp({
             });
          }
       }
-
-      // var _get_rest_of_data_random   = 20 - this.productRecommend.length;
-      // if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
-      //    await this.get_product_random(_get_rest_of_data_random);
-      // }
-
-      // form.append('action', 'atlantis_load_product_recommend');
-      // form.append('lat', this.latitude);
-      // form.append('lng', this.longitude);
-      // form.append('paged', 0);
-      // form.append('perPage', 20);
-      // var r = await window.request(form);
-      // if( r != undefined ){
-      //    var res = JSON.parse( JSON.stringify( r));
-      //    if( res.message == 'product_found' ){
-      //       res.data.forEach(item => {
-      //          if (! this.productRecommend.some(existingItem => existingItem.id === item.id)) {
-      //             this.productRecommend.push( item );
-      //          }
-      //       });
-      //    }
-      // }
-
-      // var _get_rest_of_data_discount = 20 - this.productRecommend.length;
-      // if( _get_rest_of_data_discount > 0 && _get_rest_of_data_discount <= 20 ){
-      //    await this.get_product_discount(_get_rest_of_data_discount);
-      // }
-      // var _get_rest_of_data_random   = 20 - this.productRecommend.length;
-      // if( _get_rest_of_data_random > 0 && _get_rest_of_data_random <= 20 ){
-      //    await this.get_product_random(_get_rest_of_data_random);
-      // }
    
       
       jQuery(document).ready(function($){

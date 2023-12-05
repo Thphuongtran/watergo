@@ -83,7 +83,11 @@
       touch-action: none;
       pointer-events: none;
    }
-   
+   @media screen and (max-width: 350px){
+      .product-store-view-form .checkbox-water-device .text{
+         font-size: 4.1vw;
+      }
+   }
 </style>
 <div id='app'>
    <div v-show='loading == false' class='page-product-store-view'>
@@ -170,7 +174,7 @@
 
             <!-- WATER DEVICE FEATURE -->
             <div v-show='listen_product_type == "water_device"' class='form-title'><?php echo __('Chức năng', 'watergo'); ?></div>
-            <div v-show='listen_product_type == "water_device" && view_only == false' class='form-checkbox form-check form-checkbox-row'>
+            <div v-show='listen_product_type == "water_device" && view_only == false' class='form-checkbox form-check form-checkbox-row checkbox-water-device'>
                <label @click='btn_select_category_feature(f.name)' v-for='(f, fIndex) in category_feature' :key='fIndex' >
                   <input type='checkbox' :value='f.name' :checked='product.feature_device == f.name ? true : false' 
                      :disabled='product.feature_device == f.name ? true : false'>

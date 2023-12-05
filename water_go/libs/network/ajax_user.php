@@ -1,13 +1,10 @@
 <?php
 
 
-add_action( 'wp_ajax_nopriv_atlantis_user_notification', 'atlantis_user_notification' );
 add_action( 'wp_ajax_atlantis_user_notification', 'atlantis_user_notification' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_user_by_field', 'atlantis_get_user_by_field' );
 add_action( 'wp_ajax_atlantis_get_user_by_field', 'atlantis_get_user_by_field' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_user_login_data', 'atlantis_get_user_login_data' );
 add_action( 'wp_ajax_atlantis_get_user_login_data', 'atlantis_get_user_login_data' );
 
 add_action( 'wp_ajax_nopriv_atlantis_update_user', 'atlantis_update_user' );
@@ -34,14 +31,10 @@ add_action( 'wp_ajax_atlantis_user_delivery_address', 'atlantis_user_delivery_ad
 add_action( 'wp_ajax_nopriv_atlantis_user_change_delivery_address_quick', 'atlantis_user_change_delivery_address_quick' );
 add_action( 'wp_ajax_atlantis_user_change_delivery_address_quick', 'atlantis_user_change_delivery_address_quick' );
 
-add_action( 'wp_ajax_nopriv_atlantis_user_get_avatar', 'atlantis_user_get_avatar' );
 add_action( 'wp_ajax_atlantis_user_get_avatar', 'atlantis_user_get_avatar' );
 
 add_action( 'wp_ajax_nopriv_atlantis_is_user_login_social', 'atlantis_is_user_login_social' );
 add_action( 'wp_ajax_atlantis_is_user_login_social', 'atlantis_is_user_login_social' );
-
-add_action( 'wp_ajax_nopriv_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
-add_action( 'wp_ajax_atlantis_get_current_user_id', 'atlantis_get_current_user_id' );
 
 add_action( 'wp_ajax_nopriv_atlantis_get_user_notification', 'atlantis_get_user_notification' );
 add_action( 'wp_ajax_atlantis_get_user_notification', 'atlantis_get_user_notification' );
@@ -94,33 +87,6 @@ function atlantis_user_notification(){
       wp_die();
    }
 }
-
-// FOR ONLY USER LOGIN
-function atlantis_get_current_user_id(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_current_user_id'){
-
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $is_user_store = get_user_meta($user_id , 'user_store', true) != '' 
-         ? (int) get_user_meta($user_id , 'user_store', true) 
-         : null;
-
-         $res = [
-            'user_id' => $user_id,
-            'is_user_store' => $is_user_store
-         ];
-
-         wp_send_json_success(['message' => 'get_current_user_ok', 'data' => $res ]);
-         wp_die();
-
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }  
-
-   }
-}
-
 
 
 function atlantis_is_user_login_social(){

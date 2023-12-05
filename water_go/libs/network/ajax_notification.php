@@ -394,7 +394,7 @@ function protocal_atlantis_notification_to_user( $args ){
             (int) $get_order->user_id,
             'Watergo',
             $text_push_for_user,
-            $link_store
+            $link_user
          );
 
 
@@ -411,11 +411,11 @@ function protocal_atlantis_notification_to_store( $args ){
    $time_created     = atlantis_current_datetime();
 
    $order_status     = $args['order_status'];
-   $store_id         = $args['store_id'];
-   $order_id         = $args['order_id'];
-   $user_id          = $args['user_id'];
-   $order_number     = $args['order_number'];
-   $attachment_url   = $args['attachment_url'];
+   $store_id         = isset($args['store_id']) ? $args['store_id'] : '';
+   $order_id         = isset($args['order_id']) ? $args['order_id'] : '';
+   $user_id          = isset($args['user_id']) ? $args['user_id'] : '';
+   $order_number     = isset($args['order_number']) ? $args['order_number'] : '';
+   $attachment_url   = isset($args['attachment_url']) ? $args['attachment_url'] : '';
    $hash_id          = bin2hex(random_bytes(32));
 
    $link             = get_bloginfo('home') . '/order/?order_page=order-store-detail&order_id='. $order_id .'&hash_id='. $hash_id .'&appt=N';
@@ -488,7 +488,7 @@ function protocal_atlantis_notification_to_store( $args ){
             (int) $user_id_from_store_id,
             'Watergo',
             $text_push_for_store,
-            $link_user
+            $link_store
          );
 
       }

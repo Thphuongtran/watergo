@@ -93,11 +93,10 @@
          <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
          <div
             v-if='order.order_delivery_type == "once_date_time"'
-            v-for='( time_shipping, date_time_key ) in order.order_time_shipping' :key='date_time_key'
             class='display_delivery_time'
          >
-            <div class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
-            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+            <div class='date_time_item'>{{ order.order_time_shipping.order_time_shipping_day }}</div>
+            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(order.order_time_shipping.order_time_shipping_time) }}</div>
          </div>
          <div
             v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
@@ -131,7 +130,7 @@
       </div>
 
       <div class='box-extra-function'>
-         <div @click='atlantis_create_conversation_or_get_it(order.order_id, order.store_id)' class='b-chat'>
+         <div @click='atlantis_create_conversation_or_get_it(order)' class='b-chat'>
             <button class='btn-action'>
                <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3473 0H3.06939C2.25531 0 1.47458 0.334446 0.898939 0.929764C0.323301 1.52508 -8.7738e-05 2.33251 -8.7738e-05 3.17441V9.52324C-8.7738e-05 9.94011 0.0793056 10.3529 0.233561 10.738C0.387817 11.1232 0.613913 11.4731 0.898939 11.7679C1.18397 12.0627 1.52234 12.2965 1.89475 12.456C2.26715 12.6155 2.6663 12.6977 3.06939 12.6977H4.91107H9.46249H15.3473C16.1614 12.6977 16.9421 12.3632 17.5177 11.7679C18.0934 11.1726 18.4168 10.3652 18.4168 9.52324V3.17441C18.4168 2.33251 18.0934 1.52508 17.5177 0.929764C16.9421 0.334446 16.1614 0 15.3473 0ZM15.3473 1.26977H3.06939C2.58094 1.26977 2.1125 1.47043 1.76712 1.82762C1.42174 2.18482 1.2277 2.66927 1.2277 3.17441V9.52324C1.2277 10.0284 1.42174 10.5128 1.76712 10.87C2.1125 11.2272 2.58094 11.4279 3.06939 11.4279H15.3473C15.8357 11.4279 16.3042 11.2272 16.6496 10.87C16.9949 10.5128 17.189 10.0284 17.189 9.52324V3.17441C17.189 2.66927 16.9949 2.18482 16.6496 1.82762C16.3042 1.47043 15.8357 1.26977 15.3473 1.26977Z" fill="#2790F9"/>
@@ -210,17 +209,19 @@ var app = Vue.createApp({
 
    methods: {
 
-      async atlantis_create_conversation_or_get_it(order_id, store_id){ 
+      async atlantis_create_conversation_or_get_it(order){ 
          var form = new FormData();
          form.append('action', 'atlantis_create_conversation_or_get_it');
-         form.append('order_id', order_id);
-         form.append('store_id', store_id);
+         form.append('order_id', order.order_id);
+         form.append('store_id', order.order_store_id);
+         form.append('user_id', order.order_by);
+         
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'conversation_found' ){
                var conversation_id   = res.data;
-               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_user&order_id=' + order_id + '&appt=N';
+               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&order_id=' + order.order_id + '&appt=N';
             }
          }
       },

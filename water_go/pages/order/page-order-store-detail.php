@@ -105,12 +105,10 @@
                <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
          </div> -->
          <div
-            v-if='order.order_delivery_type == "once_date_time"'
-            v-for='( time_shipping, date_time_key ) in order.order_time_shipping' :key='date_time_key'
-            class='display_delivery_time'
+            v-if='order.order_delivery_type == "once_date_time"' class='display_delivery_time'
          >
-            <div class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
-            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
+            <div class='date_time_item'>{{ order.order_time_shipping.order_time_shipping_day }}</div>
+            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(order.order_time_shipping.order_time_shipping_time) }}</div>
          </div>
          <div
             v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
@@ -152,7 +150,7 @@
          
          <button  
             v-show='is_user_can_chat == true'
-            @click='atlantis_create_conversation_or_get_it(order.order_id, order.store_id)' 
+            @click='atlantis_create_conversation_or_get_it(order)' 
             class='btn-chat'>
             <span class='icon'>
                <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -284,17 +282,19 @@ var app = Vue.createApp({
 
    methods: {
 
-      async atlantis_create_conversation_or_get_it(order_id, store_id){ 
+      async atlantis_create_conversation_or_get_it(order){ 
          var form = new FormData();
          form.append('action', 'atlantis_create_conversation_or_get_it');
-         form.append('order_id', order_id);
-         form.append('store_id', store_id);
+         form.append('order_id', order.order_id);
+         form.append('store_id', order.order_store_id);
+         form.append('user_id', order.order_by);
+         
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'conversation_found' ){
                var conversation_id   = res.data;
-               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&where_app=chat_to_user&order_id=' + order_id + '&appt=N';
+               window.location.href = window.watergo_domain + 'chat/?chat_page=chat-messenger&conversation_id=' + conversation_id + '&order_id=' + order.order_id + '&appt=N';
             }
          }
       },

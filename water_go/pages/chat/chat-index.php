@@ -146,7 +146,6 @@ var app = Vue.createApp({
 
       get_conversations(){
          var _filter = this.conversations;
-
          if( this.inputSearch != ''){
             _filter = this.conversations.filter(item =>   
                item.chat_user_name.toLowerCase().includes(

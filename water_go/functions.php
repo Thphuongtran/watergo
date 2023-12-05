@@ -3,14 +3,14 @@
 require_once __DIR__ . '/libs/config.php';
 
 function stylesheet(){
-   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.88');
+   wp_enqueue_style('styles-main', THEME_URI .'/assets/css/styles.min.css', [], '3.89');
    // wp_enqueue_script('vuejs3-browser', THEME_URI . '/assets/js/vue.esm-browser.js');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js');
    wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
    wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
    wp_enqueue_script('query-cdn', THEME_URI . '/assets/js/jquery-3.7.1.min.js', [], '1.0');
    // wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.js' , [] , '3.64');
-   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.88');
+   wp_enqueue_script('common-js', THEME_URI . '/assets/js/common.min.js' , [] , '3.89');
 }
 
 add_action('wp_enqueue_scripts', 'stylesheet');
@@ -259,7 +259,7 @@ function bj_push_notification($user_id, $title, $content, $link = "#"){
       return;
     }
 
-    $url = 'http://ultramommy.net:8080/push-noti';
+    $url = 'http://watergo.net:8080/push-noti';
     $body = array(
         "app"     => "watergo",
         "token"   => $user_token,
@@ -270,29 +270,29 @@ function bj_push_notification($user_id, $title, $content, $link = "#"){
     
    $headers = array('Content-Type: application/json');
 
-   $response = wp_remote_post($url, array(
-      'headers'   => $headers,
-      'body'      => json_encode($body),
-      'method'    => 'POST',
-   ));
+   // $response = wp_remote_post($url, array(
+   //    'headers'   => $headers,
+   //    'body'      => json_encode($body),
+   //    'method'    => 'POST',
+   // ));
 
-   // Check for errors and handle the response
-   if (is_wp_error($response)) {
-      return;
-   } else {
-      return json_decode(wp_remote_retrieve_body($response));
-   }
+   // // Check for errors and handle the response
+   // if (is_wp_error($response)) {
+   //    return;
+   // } else {
+   //    return json_decode(wp_remote_retrieve_body($response));
+   // }
   
-   // $ch = curl_init ();
-   // curl_setopt ( $ch, CURLOPT_URL, $url );
-   // curl_setopt ( $ch, CURLOPT_POST, true );
-   // curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
-   // curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-   // curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($body) );
+   $ch = curl_init ();
+   curl_setopt ( $ch, CURLOPT_URL, $url );
+   curl_setopt ( $ch, CURLOPT_POST, true );
+   curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+   curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+   curl_setopt ( $ch, CURLOPT_POSTFIELDS, json_encode($body) );
 
-   // $data = curl_exec ( $ch );
-   // curl_close ( $ch );   
-   // return json_decode($data);
+   $data = curl_exec ( $ch );
+   curl_close ( $ch );   
+   return json_decode($data);
 }
 
 
@@ -340,3 +340,69 @@ function load_language() {
 }
 
 add_action('after_setup_theme', 'load_language');
+
+/**
+ * @access SCHEDULE EVERY MIN (JOB)
+ */
+
+
+function my_schedule_function() {
+   global $wpdb;
+
+   // OPTION 1
+   // $sql = "SELECT order_id, order_tag_repeat FROM wp_watergo_order WHERE order_status = 'ordered' AND order_hidden != 1 AND TIMESTAMPDIFF(MINUTE, order_time_created, CONVERT_TZ(NOW(), '+00:00', '+07:00') ) > 1";
+   // OPTION 2
+   $current_time = atlantis_current_datetime();
+   $sql = "SELECT order_id, order_tag_repeat FROM wp_watergo_order WHERE order_status = 'ordered' AND order_hidden != 1 
+      AND (UNIX_TIMESTAMP(order_time_created) + 3600) < UNIX_TIMESTAMP('$current_time')";
+
+   $res = $wpdb->get_results($sql);
+
+   if (!empty($res)) {
+      $wheres = [];
+      $order_tag_repeat = [];
+      foreach ($res as $k => $vl) {
+         $wheres[] = $vl->order_id;
+         if( $vl->order_tag_repeat != null && $vl->order_tag_repeat != '' ){
+            $order_tag_repeat[] = $vl->order_tag_repeat;
+         }
+      }
+      
+      $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+      $placeholders_order_tag = implode(',', array_fill(0, count($order_tag_repeat), "'%s'"));
+
+      $sql_order_cancel = "UPDATE wp_watergo_order SET order_status = 'cancel', order_time_cancel = %s WHERE order_id IN ($placeholders)";
+      $exc_order_cancel = $wpdb->prepare($sql_order_cancel, $current_time, ...$wheres);
+      $wpdb->query($exc_order_cancel);
+      // REMOVE ORDER SETTINGS
+      if( !empty($order_tag_repeat) ){
+         $sql_change_order_setting = "UPDATE wp_watergo_order_settings SET wp_watergo_order_settings.repeat = 'no' WHERE order_tag_repeat IN ($placeholders_order_tag)";
+         $exc_change_order_setting = $wpdb->prepare($sql_change_order_setting, ...$order_tag_repeat);
+         $wpdb->query($exc_change_order_setting);
+      }
+
+      // SEND NOTIFI AND PUSH FOR 2 BOTH USER
+      foreach($wheres as $order_id ){
+         protocal_atlantis_notification_to_user([
+            'order_status' => 'cancel',
+            'order_id'     => $order_id
+         ]);
+
+         protocal_atlantis_notification_to_store([
+            'order_status' => 'cancel',
+            'order_id'     => $order_id
+         ]);
+      }
+      
+   }
+
+}
+add_action('order_events', 'my_schedule_function');
+
+// Schedule the event on init
+function my_schedule_init() {
+    if (!wp_next_scheduled('order_events')) {
+        wp_schedule_event(time(), 'every_minute', 'order_events');
+    }
+}
+add_action('init', 'my_schedule_init');
