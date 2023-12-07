@@ -34,7 +34,7 @@
             4. Phí cọc bình<br> 
             Bạn có thể phải trả thêm phí cọc bình cho cửa hàng. Sau khi trả lại bình, cửa hàng sẽ hoàn lại phí cọc này cho bạn.
          </p>
-      <?php }else if( get_locale() == 'en_US' ){ ?>
+      <?php }else if( get_locale() == 'en_US' || get_locale() == 'ko_KR' ){ ?>
          <p>
             1/Delivery Fee<br>
             Free delivery within 5km.<br>

@@ -94,6 +94,8 @@ function func_atlantis_get_order_fullpack( $args ){
          foreach( $orders as $kOrder => $order){
             $hash_id    = $order->hash_id;
             $store_id   = $order->order_store_id;
+            $order->total_product = 0;
+            $order->total_price_product = 0;
 
             // GET STORE 
             $find_store  = "SELECT 
@@ -118,6 +120,7 @@ function func_atlantis_get_order_fullpack( $args ){
             $res_products = $wpdb->get_results($get_products);
             
             if( !empty($res_products) ){
+               $total_price_product = 0;
                foreach( $res_products as $kProduct => $product ){
                   $decode_product_metadata                  = json_decode( $product->order_group_product_metadata);
                   $orders[$kOrder]->order_products[$kProduct] = [
@@ -130,7 +133,13 @@ function func_atlantis_get_order_fullpack( $args ){
                      'order_group_store_id'                 => $product->order_group_store_id,
                      'order_group_product_image'            => func_atlantis_get_images($product->order_group_product_id, 'product', true)
                   ];
+                  $price            = $product->order_group_product_price;
+                  $quantity         = $product->order_group_product_quantity_count;
+                  $discount_percent = $product->order_group_product_discount_percent;
+                  $total_price_product += ($price - ( $price * ($discount_percent / 100 ) ) ) * $quantity;
                }
+               $order->total_product         = count($res_products);
+               $order->total_price_product   = $total_price_product;
             }
 
          }
@@ -259,7 +268,11 @@ function func_atlantis_get_product_by( $args ){
             $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
          }else if( $vl->product_type == 'ice'){
             $vl->name                     = $vl->category;
-            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+            $weight_unit                  = $vl->weight_unit;
+            if( !in_array($weight_unit, ['Kg', 'Ml', 'Box']) ){
+               $weight_unit = 'Kg';
+            }
+            $vl->name_second              = $vl->weight . strtolower($weight_unit) . ' ' . $vl->length_width . ' mm';
          }else if( $vl->product_type == 'water_device'){
             $vl->name                     = $vl->name_device;
             $vl->name_second              = $vl->feature_device;

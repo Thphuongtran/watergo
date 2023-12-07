@@ -335,6 +335,11 @@
             await window.app.get_count_total_order();
          }
 
+         // REFRESH ORDER DETAIL { USER }
+         if( data == 'remove_banner_review' ){
+            window.app.remove_banner_review();
+         }
+
       }
    }
 

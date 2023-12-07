@@ -1,3 +1,15 @@
+<style>
+   .appbar{
+      height: 56px;
+   }
+   .scaffold{
+      height: calc( 100vh - 70px);
+      margin-top: 70px;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      padding-bottom: 30px;
+   }
+</style>
 <div id='authentication'>
 
    <!-- THIS IS STEP PAGE -->
@@ -11,7 +23,7 @@
    <div v-if='step_page == 0 && loading == false' class='page-step'>
       <div class='page-auth-forget-password'>
 
-         <div class='appbar'>
+         <div class='appbar fixed'>
             <div class='appbar-top'>
                <div class='leading'>
 
@@ -27,24 +39,26 @@
             </div>
          </div>
          
-         <div class='inner'>
-            <div class='heading-01 t-center mt100'><?php echo __('Forgot Password','watergo'); ?>?</div>
-            <p class='t-center'><?php echo __("Don’t worry when it happens <br> Reset your password", 'watergo'); ?></p>
+         <div class='scaffold'>
+            <div class='inner'>
+               <div class='heading-01 t-center mt100'><?php echo __('Forgot Password','watergo'); ?>?</div>
+               <p class='t-center'><?php echo __("Don’t worry when it happens <br> Reset your password", 'watergo'); ?></p>
 
-            <div class='form-group'>
-               <span><?php echo __('Email', 'watergo'); ?></span>
-               <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
+               <div class='form-group'>
+                  <span><?php echo __('Email', 'watergo'); ?></span>
+                  <input v-model='inputEmail' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>'>
+               </div>
+
+               <p class='t-red mt10'>
+                  {{ res_text_sendcode }}
+               </p>
+
+               <div class='form-group'>
+                  <button @click='btn_forget_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
+               </div>
+
+
             </div>
-
-            <p class='t-red mt10'>
-               {{ res_text_sendcode }}
-            </p>
-
-            <div class='form-group'>
-               <button @click='btn_forget_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?></button>
-            </div>
-
-
          </div>
       </div>
    </div>
@@ -53,7 +67,7 @@
    <div v-if='step_page == 1 && loading == false' class='page-step'>
       <div class='page-auth-reset-password'>
 
-         <div class='appbar'>
+         <div class='appbar fixed'>
             <div class='appbar-top'>
                <div class='leading'>
                   <button @click='goBackStep' class='btn-action'>
@@ -67,66 +81,67 @@
                <div class='action'></div>
             </div>
          </div>
+         <div class='scaffold'>
+            <div class='inner'>
+               <div class='heading-01 t-center mt100'><?php echo __('Reset your password', 'watergo'); ?></div>
+               <p class='t-center'><?php echo __('We have sent a code to your email', 'watergo'); ?></p>
+               
+               <!-- 
+               <div class='box-code-verify'>
+                  <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+                  <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+                  <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
+                  <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
+               </div>
+               -->
+               <div class="box-code-verify">
+                  <!-- <input @input="moveFocus($event, 'code01')" @keydown.delete="moveFocus($event, 'code01')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @keydown.delete="moveFocus($event, 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
 
-         <div class='inner'>
-            <div class='heading-01 t-center mt100'><?php echo __('Reset your password', 'watergo'); ?></div>
-            <p class='t-center'><?php echo __('We have sent a code to your email', 'watergo'); ?></p>
-            
-            <!-- 
-            <div class='box-code-verify'>
-               <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code01')" id='code01' v-model='code01' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
-               <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code02')" id='code02' v-model='code02' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
-               <input @input="moveFocus($event, 'code04')" @keydown.delete="moveFocus($event, 'code03')" id='code03' v-model='code03' maxlength='1' type="text" pattern='[0-9]*' autocomplete='off'>
-               <input @keydown.delete="moveFocus($event, 'code04')" id='code04' v-model='code04' type="text" maxlength='1' pattern='[0-9]*' autocomplete='off'>
+                  <!-- <input @input="moveFocus($event, 'code02', 'code01')" @keydown.delete="moveFocus($event, 'code01', 'code01')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input="moveFocus($event, 'code03', 'code02')" @keydown.delete="moveFocus($event, 'code02', 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input="moveFocus($event, 'code04', 'code03')" @keydown.delete="moveFocus($event, 'code03', 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @keydown.delete="moveFocus($event, 'code04', 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
+
+                  <input id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input ref="code04" v-model='code04' id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
+
+                  <!-- <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code01' data-id='1' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code02' data-id='2' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code03' data-id='3' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
+                  <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code04' data-id='4' ref="code04" v-model="code04" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off"> -->
+
+
+               </div>
+
+               <p class='t-center'>
+                  <button @click='btn_resend' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
+               </p>
+
+               <div class='form-group'>
+                  <span><?php echo __('New Password', 'watergo'); ?></span>
+                  <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?>'>
+               </div>
+
+               <div class='form-group'>
+                  <span><?php echo __('Confirm New Password', 'watergo'); ?></span>
+                  <input v-model='inputRepassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?> '>
+               </div>
+
+               <p class='t-red mt10'>
+                  {{ res_text_sendcode }}
+               </p>
+
+               <div class='form-group'>
+                  <button @click='btn_reset_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?> </button>
+               </div>
+
+
             </div>
-            -->
-            <div class="box-code-verify">
-               <!-- <input @input="moveFocus($event, 'code01')" @keydown.delete="moveFocus($event, 'code01')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input="moveFocus($event, 'code02')" @keydown.delete="moveFocus($event, 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input="moveFocus($event, 'code03')" @keydown.delete="moveFocus($event, 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @keydown.delete="moveFocus($event, 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
-
-               <!-- <input @input="moveFocus($event, 'code02', 'code01')" @keydown.delete="moveFocus($event, 'code01', 'code01')" id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input="moveFocus($event, 'code03', 'code02')" @keydown.delete="moveFocus($event, 'code02', 'code02')" @keydown.backspace="moveFocusBack($event, 'code01')" id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input="moveFocus($event, 'code04', 'code03')" @keydown.delete="moveFocus($event, 'code03', 'code03')" @keydown.backspace="moveFocusBack($event, 'code02')" id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @keydown.delete="moveFocus($event, 'code04', 'code04')" @keydown.backspace="moveFocusBack($event, 'code03')" ref="code04" v-model="code04" id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off"> -->
-
-               <input id='code01' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input id='code02' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input id='code03' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input ref="code04" v-model='code04' id='code04' type="text" maxlength="1" pattern="[0-9]*" autocomplete="off">
-
-               <!-- <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code01' data-id='1' ref="code01" v-model="code01" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code02' data-id='2' ref="code02" v-model="code02" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code03' data-id='3' ref="code03" v-model="code03" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off">
-               <input @input='codeInput($event)' @keydown.delete='codeInput($event)' id='code04' data-id='4' ref="code04" v-model="code04" maxlength="1" type="text" pattern="[0-9]*" autocomplete="off"> -->
-
-
-            </div>
-
-            <p class='t-center'>
-               <button @click='btn_resend' class='btn-text'><?php echo __('Resend', 'watergo'); ?></button>
-            </p>
-
-            <div class='form-group'>
-               <span><?php echo __('New Password', 'watergo'); ?></span>
-               <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?>'>
-            </div>
-
-            <div class='form-group'>
-               <span><?php echo __('Confirm New Password', 'watergo'); ?></span>
-               <input v-model='inputRepassword' type="password" placeholder='<?php echo __('Enter password', 'watergo'); ?> '>
-            </div>
-
-            <p class='t-red mt10'>
-               {{ res_text_sendcode }}
-            </p>
-
-            <div class='form-group'>
-               <button @click='btn_reset_password' class='btn btn-primary'><?php echo __('Submit', 'watergo'); ?> </button>
-            </div>
-
-
          </div>
       </div>
    </div>
@@ -154,6 +169,11 @@
 </div>
 
 <script>
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
+
 var { createApp } = Vue;
 createApp({
    data (){
@@ -176,10 +196,6 @@ createApp({
          code04: '',
 
       }
-   },
-
-   watch: {
-
    },
 
 

@@ -268,6 +268,11 @@
       }
    }
 
+   .disabled_application{
+      touch-action: none !important;
+      pointer-events: none !important;
+   }
+
 </style>
 
 <div id='app'>
@@ -290,7 +295,13 @@
       <div class='scaffold'>
       
          <div class='inner'>
-            <div id='delivery_address_primary' @click='gotoDeliveryAddress' class='list-tile delivery-address' :class='delivery_address_primary != null ? "has-primary" : ""' >
+            <div id='delivery_address_primary' @click='gotoDeliveryAddress' class='list-tile delivery-address' 
+               :class='[
+                  delivery_address_primary != null ? "has-primary" : "",
+                  { disabled_application: is_mark_out_of_stock == true || product_not_found == true }
+               ]' 
+               
+            >
                <div class='content'>
                   <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
                   <p v-if='delivery_address_primary == null' class='tt02'><?php echo __('There is no address', 'watergo'); ?></p>
@@ -362,7 +373,7 @@
             </li>
          </ul>
          
-         <div class='select_delivery_time'>
+         <div class='select_delivery_time' :class='{ disabled_application: is_mark_out_of_stock == true || product_not_found == true }'>
             <p class='heading-02'><?php echo __('Select delivery time', 'watergo'); ?></p>
             <!-- once -->
             <div class='group-tile'>
@@ -406,7 +417,7 @@
             <!-- weekly -->
             <div class='group-tile'>
                <div class='form-check'>
-                  <input @click='select_delivery_type("weekly")' :checked='delivery_type.weekly' id='select_type02' type="radio" class='form-input'>
+                  <input @click='select_delivery_type("weekly")' :checked='delivery_type.weekly' id='select_type02' type="radio" class='form-input' :disabled='is_mark_out_of_stock'>
                   <label for='select_type02'><?php echo __('Delivery weekly', 'watergo'); ?></label>
                </div>
 
@@ -465,7 +476,7 @@
             <!-- monthly -->
             <div class='group-tile'>
                <div class='form-check'>
-                  <input @click='select_delivery_type("monthly")' :checked='delivery_type.monthly' id='select_type03' type="radio" class='form-input'>
+                  <input @click='select_delivery_type("monthly")' :checked='delivery_type.monthly' id='select_type03' type="radio" class='form-input' :disabled='is_mark_out_of_stock'>
                   <label for='select_type03'><?php echo __('Delivery monthly', 'watergo'); ?></label>
                </div>
 
@@ -502,7 +513,7 @@
          <div class='break-line'></div>
 
          <div class='inner'>
-            <div class='box-textarea'>
+            <div class='box-textarea' :class='{ disabled_application: is_mark_out_of_stock == true || product_not_found == true }'>
                <textarea @input='resize_input_order_note' ref='resize_input_order_note' class='input_order_note' v-model='input_order_note' maxlength='120' placeholder='<?php echo __('Note your shipping address', 'watergo'); ?>'></textarea>
                <span class='count-text'>{{ input_order_note.length }}/120</span>
             </div>
@@ -518,7 +529,6 @@
          </div> -->
       </div>
 
-
       <div class='product-detail-bottomsheet cell-placeorder'>
          <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_product_total_price.price_discount }} </span></p>
          <button id='buttonPlaceOrder' @click='buttonPlaceOrder' class='btn-primary btn-order' :class='canPlaceOrder == false ? "disable" : "" '><?php echo __('Place Order', 'watergo'); ?></button>
@@ -533,13 +543,13 @@
       </div>
    </div>
 
-   <div v-show="loading == true">
+   <div v-if="loading == true">
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled'></progress></div>
       </div>
    </div>
 
-   <div v-show='banner_open == true' class='banner disable' :class='banner_open == true ? "banner-open z-index-5" : "" '>
+   <div v-if='banner_open == true' class='banner disable' :class='banner_open == true ? "banner-open z-index-5" : "" '>
       <div class='banner-head'>
          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
          <circle cx="32" cy="32" r="32" fill="#2790F9"/>
@@ -627,8 +637,6 @@ var app = Vue.createApp({
 
          delivery_address_primary: null,
          carts: [],
-         product_order: [],
-
 
          // FOR RE-ORDER
          time_shipping: [],
@@ -885,18 +893,32 @@ var app = Vue.createApp({
             if( r != undefined ){
                var res = JSON.parse(JSON.stringify(r));
                if( res.message == 'insert_order_ok' ){
-                  for (let i = this.carts.length - 1; i >= 0; i--) {
-                     var _carts = this.carts[i];
-                     for (let j = _carts.products.length - 1; j >= 0; j--) {
-                        var _product = _carts.products[j];
-                        if ( _product.product_select == true ) {
-                           _carts.products.splice(j, 1);
+
+                  // SYNC CART
+                  var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+                  _carts.forEach( (store, storeIndex) => {
+                     store.products.forEach( (product, productIndex) => {
+                        if( product.product_select == true ){
+                           store.products.splice(productIndex, 1);
                         }
-                     }
-                     // remove store when no product in cart
-                     if (_carts.products.length === 0) { this.carts.splice(i, 1); }
-                  }
-                  localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+                     });
+                     if (store.products.length === 0) { _carts.splice(storeIndex, 1); }
+                  });
+                  localStorage.setItem('watergo_carts', JSON.stringify(_carts));
+
+                  // for (let i = this.carts.length - 1; i >= 0; i--) {
+                  //    var _carts = this.carts[i];
+                  //    for (let j = _carts.products.length - 1; j >= 0; j--) {
+                  //       var _product = _carts.products[j];
+                  //       if ( _product.product_select == true ) {
+                  //          _carts.products.splice(j, 1);
+                  //       }
+                  //    }
+                  //    // remove store when no product in cart
+                  //    if (_carts.products.length === 0) { this.carts.splice(i, 1); }
+                  // }
+                  // localStorage.setItem('watergo_carts', JSON.stringify(this.carts));
+
                   //
 
                   // PUSH NOTIFICATION IN BACKGROUND
@@ -1199,6 +1221,8 @@ var app = Vue.createApp({
 
    async created(){
 
+      this.loading = true;
+
       if( window.appBridge != undefined ){
          window.appBridge.setEnableScroll(false);
       }
@@ -1301,16 +1325,21 @@ var app = Vue.createApp({
 
       }else{
          // INITIAL carts
-         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
-         if( _carts.length > 0 ){
 
-            _carts.forEach( store => {
-               if (store.store_select == true ) {
-                  this.carts.push({ ...store, products: [...store.products.filter( product => product.product_select == true )] });
+         var _carts_product = [];
+         var _carts = JSON.parse(localStorage.getItem('watergo_carts'));
+
+         if (_carts.length > 0) {
+            // Map each store to a promise that resolves with the updated store data
+            _carts.map( store => {
+               // TAKE ALL PRODUCT FROM STORE
+               if (store.store_select == true) {
+                     _carts_product.push({ ...store, products: [...store.products.filter(product => product.product_select == true)] });
                } else {
+                  // GET SINGLE PRODUCT FROM STORE
                   const selectedProducts = store.products.filter(product => product.product_select == true);
                   if (selectedProducts.length > 0) {
-                     this.carts.push({
+                     _carts_product.push({
                         store_id: store.store_id,
                         store_name: store.store_name,
                         store_select: false,
@@ -1320,51 +1349,53 @@ var app = Vue.createApp({
                }
             });
 
-            this.carts.forEach( ( store, storeIndex ) => {
-               store.products.forEach( async ( product, productIndex ) => {
-                  var form = new FormData();
-                  form.append('action', 'atlantis_find_product');
-                  form.append('product_id', product.product_id);
-                  var r = await window.request(form);
-                  if( r != undefined ){
+            await Promise.all(
+               _carts_product.map( async (store, storeIndex) => {
+                  await Promise.all(
+                     store.products.map( async (product, productIndex) => {
+                        var form = new FormData();
+                        form.append('action', 'atlantis_find_product');
+                        form.append('product_id', product.product_id);
+                        var r = await window.request(form);
 
-                     var res = JSON.parse( JSON.stringify(r));
-                     if( res.message == 'product_found' ){
+                        if (r != undefined) {
+                           var res = JSON.parse(JSON.stringify(r));
+                           if (res.message == 'product_found') {
 
-                        if( parseInt(res.data.mark_out_of_stock) == 1 ){
-                           this.is_mark_out_of_stock = true; 
-                           this.modal_store_out_of_stock = true;
-                           this.canPlaceOrder = false;
+                              if( parseInt(res.data.mark_out_of_stock) == 1){
+                                 this.is_mark_out_of_stock = true; 
+                                 this.modal_store_out_of_stock = true;
+                                 this.canPlaceOrder = false;
+                              }
+
+                              _carts_product[storeIndex].products[productIndex].product_select   = true;
+                              _carts_product[storeIndex].products[productIndex].name_second      = res.data.name_second;
+                              _carts_product[storeIndex].products[productIndex].name             = res.data.name;
+                              // DISCOUNT
+                              _carts_product[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
+                              _carts_product[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
+                              _carts_product[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
+                              _carts_product[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
+                              // GIFT
+                              _carts_product[storeIndex].products[productIndex].has_gift         = res.data.has_gift;
+                              _carts_product[storeIndex].products[productIndex].gift_to          = res.data.gift_to;
+                              _carts_product[storeIndex].products[productIndex].gift_from        = res.data.gift_from;
+                              _carts_product[storeIndex].products[productIndex].gift_text        = res.data.gift_text;
+
+                              _carts_product[storeIndex].products[productIndex].price            = res.data.price;
+                              _carts_product[storeIndex].products[productIndex].product_type     = res.data.product_type;
+
+                           } else {
+                              this.canPlaceOrder = false;
+                              this.product_not_found = true;
+                           }
                         }
+                     })
+                  );
+               })
+            );
 
-                        this.carts[storeIndex].products[productIndex].name_second      = res.data.name_second;
-                        this.carts[storeIndex].products[productIndex].name             = res.data.name;
-                        // DISCOUNT
-                        this.carts[storeIndex].products[productIndex].has_discount     = res.data.has_discount;
-                        this.carts[storeIndex].products[productIndex].discount_to      = res.data.discount_to;
-                        this.carts[storeIndex].products[productIndex].discount_from    = res.data.discount_from;
-                        this.carts[storeIndex].products[productIndex].discount_percent = res.data.discount_percent;
-                        // GIFT
-                        this.carts[storeIndex].products[productIndex].has_gift         = res.data.has_gift;
-                        this.carts[storeIndex].products[productIndex].gift_to          = res.data.gift_to;
-                        this.carts[storeIndex].products[productIndex].gift_from        = res.data.gift_from;
-                        this.carts[storeIndex].products[productIndex].gift_text        = res.data.gift_text;
-
-                        this.carts[storeIndex].products[productIndex].price            = res.data.price;
-                        this.carts[storeIndex].products[productIndex].product_type     = res.data.product_type;
-
-
-                     }else{
-                        this.canPlaceOrder = false;
-                        this.product_not_found = true;
-                     }
-                  }
-               });
-            });
-            
-         }else{
-            this.canPlaceOrder = false;
-            this.product_not_found = true;
+            this.carts = _carts_product;
          }
 
       }

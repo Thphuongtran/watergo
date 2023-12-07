@@ -12,6 +12,7 @@
       height: auto;
    }
 </style>
+
 <div id='app'>
 
    <div v-if='loading == true && order != null && order.order_hidden == 0'>
@@ -87,23 +88,6 @@
          <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
          <p class='tt02' v-if='order != null && get_delivery_time_activity != null'>{{ get_delivery_time_activity }}</p>
          <p class='tt03' v-if='order != null && order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
-         <!-- <div 
-            v-if='
-               (order != null && order.order_delivery_type == "once_date_time" ) ||
-               (order != null && order.order_delivery_type == "weekly" ) ||
-               (order != null && order.order_delivery_type == "monthly" )
-               '
-            v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
-            class='display_delivery_time'
-            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
-            >
-               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item small-size'>{{ get_shortname_day_of_week(time_shipping.order_time_shipping_day) }} - {{ time_shipping.order_time_shipping_datetime }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item small-size'><?php echo __('Date', 'watergo'); ?> {{ time_shipping.order_time_shipping_day }} - {{ time_shipping.order_time_shipping_datetime }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-         </div> -->
          <div
             v-if='order.order_delivery_type == "once_date_time"' class='display_delivery_time'
          >
@@ -198,33 +182,6 @@
          </div>
       </div>
 
-
-   </div>
-
-   <div v-if='popup_confirm_cancel == true' class='modal-popup style01 open'>
-      <div class='modal-wrapper'>
-         <div class='modal-close'><div @click='buttonModalCancel' class='close-button'><span></span><span></span></div></div>
-         <p class='tt01'><?php echo __('Select Cancellation Reason', 'watergo'); ?></p>
-         <ul class='list-Reason'>
-            <li @click='btn_select_reason(reason.label)'
-               v-for='(reason, index) in reason_cancel' :key='index'>
-               <span
-                  :class='reason.active == true ? "active" : ""' 
-                  class='radio-button'></span>
-               <span class='value'>{{ reason.label }}</span>
-            </li>
-         </ul>
-         <div class='actions'>
-            <button @click='buttonModalSubmit_cancel_order' class='btn btn-primary'>
-               <?php 
-                  // SUBMIT BUTTON 
-                  if( get_locale() == 'vi'){ echo 'Gửi';
-                  }else if( get_locale() == 'ko_KR'){ echo '보내기';
-                  }else{ echo 'Submit'; }
-               ?>
-            </button>
-         </div>
-      </div>
    </div>
 
    <div class='modal-popup' :class='loading == false && ( order == null || order.order_hidden == 1 ) ? "open" : ""'>
@@ -243,17 +200,7 @@ var app = Vue.createApp({
       return {
          loading: true,
 
-         popup_confirm_cancel: false,
-
          time_shipping: [],
-         
-         reason_cancel: [
-            {label: '<?php echo __('Misplaced product', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Change delivery information', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Change delivery time', 'watergo'); ?>', active: false},
-            {label: '<?php echo __('Store requested cancellation', 'watergo'); ?>', active: false},
-            {label: '<?php echo __("Others", 'watergo'); ?>', active: false}
-         ],
 
          order: null,
 
@@ -298,40 +245,7 @@ var app = Vue.createApp({
             }
          }
       },
-      
-      // PERFORM CANCEL ORDER
-      btn_cancel_order(){this.popup_confirm_cancel = true;},
-      btn_select_reason( key ){
-         this.reason_cancel.some( item => { 
-            if( item.label == key ){ item.active = true;
-            }else{ item.active = false; }
-         });
-      },
-
-      buttonModalCancel(){ 
-         this.popup_confirm_cancel = false; 
-         this.reason_cancel.some(item => item.active = false ); 
-      },
-
-      async buttonModalSubmit_cancel_order(){
-         var isCancel = this.reason_cancel.some(item => item.active == true ); 
-         if( isCancel == true ){
-            this.loading = true;
-            var form = new FormData();
-            form.append('action', 'atlantis_cancel_order');
-            form.append('order_id', this.order.order_id);
-            form.append('order_type', this.order.order_delivery_type);
-            var r = await window.request(form);
-            if( r != undefined ){
-               var res = JSON.parse( JSON.stringify(r));
-               if( res.message == 'cancel_done' ) {
-                  this.goBack();
-               }
-            }
-            this.loading = false;
-         }
-      },
-      
+   
 
       hasMoreThanTwoZeroes(number) {
          const numStr = number.toString();

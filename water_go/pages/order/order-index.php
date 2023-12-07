@@ -145,8 +145,8 @@
                </div>
 
                <div class='order-bottom'>
-                  <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} <?php echo __('product', 'watergo'); ?></span>
-                  <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
+                  <span class='total-product'>{{ order.total_product }} <?php echo __('product', 'watergo'); ?></span>
+                  <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ common_price_show_currency(order.total_price_product) }}</span></span>
                </div>
 
             </li>
@@ -175,7 +175,7 @@ var app = Vue.createApp({
          message_count: 0,
          isCancel: false,
          paged: 0,
-         order_status: 'ordered',
+         order_status_current: 'ordered',
          orders: [],
          last_order_id: 0,
          orders_count: 0,
@@ -282,26 +282,30 @@ var app = Vue.createApp({
             }
          ],
 
+         total_count_order_complete_not_in_review: 0,
+         isRequestInProgress: false
+
+
       }
    },
 
    computed: {
 
       filter_orders(){
-         if(this.order_status == 'ordered'){
-            return this.orders.sort( (a, b) => b.order_time_created - a.order_time_created );
+         if(this.order_status_current == 'ordered'){
+            return this.orders.sort( (a, b) => b.order_id - a.order_id );
          }
-         if(this.order_status == 'confirmed'){
-            return this.orders.sort( (a, b) => b.order_time_confirmed - a.order_time_confirmed );
+         if(this.order_status_current == 'confirmed'){
+            return this.orders.sort( (a, b) => b.order_id - a.order_id );
          }
-         if(this.order_status == 'delivering'){
-            return this.orders.sort( (a, b) => b.order_time_delivery - a.order_time_delivery );
+         if(this.order_status_current == 'delivering'){
+            return this.orders.sort( (a, b) => b.order_id - a.order_id );
          }
-         if(this.order_status == 'complete'){
-            return this.orders.sort( (a, b) => b.order_time_completed - a.order_time_completed );
+         if(this.order_status_current == 'complete'){
+            return this.orders.sort( (a, b) => b.order_id - a.order_id );
          }
-         if(this.order_status == 'cancel'){
-            return this.orders.sort( (a, b) => b.order_time_cancel - a.order_time_cancel );
+         if(this.order_status_current == 'cancel'){
+            return this.orders.sort( (a, b) => b.order_id - a.order_id );
          }
 
       },
@@ -319,6 +323,8 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      common_price_show_currency(p){ return window.common_price_show_currency(p) },
 
       async atlantis_create_conversation_or_get_it(order){ 
          var form = new FormData();
@@ -355,51 +361,39 @@ var app = Vue.createApp({
       },
 
       async select_filter( filter_select ){ 
+
+         if( this.order_status_current == filter_select ) return;
+         if (this.isRequestInProgress) return;
+
          this.order_status_filter.some(item => {
             if( item.value == filter_select ){ 
                item.active = true;
-               this.order_status = item.value;
+               this.order_status_current = item.value;
             }else{ item.active = false; }
          });
+
+         this.loading_data = true;
+         this.isRequestInProgress = true;
+
+         try{
+            await this.delay(500);
+            this.orders = [];
+            await this.atlantis_count_review_not_in_order_complete();
+            await this.get_count_total_order();
+            await this.get_order( filter_select );
+            window.appbar_fixed();
+         } catch(e) {
+
+         } finally {
+            this.isRequestInProgress = false;
+         }
+
+         this.loading_data = false;
+
       },
 
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
       gotoStoreDetail(store_id){ window.gotoStoreDetail(store_id); },
-
-      count_total_price_in_order(order_id ){
-         var _total = 0;
-
-         this.orders.some( order => {
-            if( order.order_id == order_id ){
-               if( order.order_products != undefined && order.order_products.length > 0 ){
-                  order.order_products.some ( product => {
-                     _total += get_total_price(
-                        product.order_group_product_price, 
-                        product.order_group_product_quantity_count, 
-                        product.order_group_product_discount_percent
-                     )
-                  });
-               }
-            }
-         });
-         return _total.toLocaleString() + global_currency;
-      },
-
-      count_total_product_in_order(order_id){
-         var _total = 0;
-         if( this.orders.length > 0 ){
-            this.orders.some( order => {
-               if( order.order_id == order_id ){
-                  if( order.order_products != undefined && order.order_products.length > 0 ){
-                     order.order_products.some( product => {
-                        _total += parseInt( product.order_group_product_quantity_count );
-                     });
-                  }
-               }
-            });
-         }
-         return _total;
-      },
 
       change_name_status( status ){
          var _status = status;
@@ -442,7 +436,7 @@ var app = Vue.createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
          // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
          if (scrollPosition + windowHeight >= documentHeight ) {
-            await this.get_order(this.order_status);
+            await this.get_order(this.order_status_current);
          }
       },
 
@@ -465,7 +459,7 @@ var app = Vue.createApp({
       },
 
       async get_count_total_order(){
-         // this.order_status_filter.some(item => item.count = 0);
+
          var form = new FormData();
          form.append('action', 'atlantis_count_total_order_by_user');
          var r = await window.request(form);
@@ -476,10 +470,31 @@ var app = Vue.createApp({
                   var _total_count = item.total_count;
                   var _order_status = this.order_status_filter.find( order_status => order_status.value == item.order_status );
                   _order_status.count = _total_count;
+                  if( _order_status.value == 'cancel' ){
+                     _order_status.count = 0;
+                  }
+                  if( _order_status.value == 'complete' ){
+                     _order_status.count = this.total_count_order_complete_not_in_review;
+                  }
+
                });
             }
          }
 
+      },
+
+      async atlantis_count_review_not_in_order_complete(){
+         var form = new FormData();
+         form.append('action', 'atlantis_count_review_not_in_order_complete');
+         var r = await window.request(form);
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r ));
+            if( res.message == 'order_found' ){
+               this.total_count_order_complete_not_in_review = res.data
+            }else{
+               this.total_count_order_complete_not_in_review = 0;
+            }
+         }
       },
 
       async atlantis_get_newest_order(){
@@ -494,7 +509,7 @@ var app = Vue.createApp({
 
          var form = new FormData();
          form.append('action', 'atlantis_get_newest_order');
-         form.append('order_status',  this.order_status);
+         form.append('order_status',  this.order_status_current);
          form.append('order_ids', JSON.stringify(order_ids));
          form.append('last_order_id', this.last_order_id);
 
@@ -525,27 +540,23 @@ var app = Vue.createApp({
       },
 
       count_product_in_cart(){ this.cart_count = window.count_product_in_cart() },
-      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
+
+      // MAKE USER CAN PRESS SPEED OF LIGHT
+      delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
    }, 
 
    watch: {
 
-      orders: {
-         handler( data ){
-
-         }, deep: true
-      },
-
       order_status: async function( status ){
-         // this.loading = true;
-         this.loading_data = true;
-         this.orders = [];
-         await this.get_count_total_order();
-         await this.get_order(status );
-         this.loading_data = false;
-         // this.loading = false;
-         window.appbar_fixed();
+         // this.loading_data = true;
+         // this.orders = [];
+         // await this.atlantis_count_review_not_in_order_complete();
+         // await this.get_count_total_order();
+         // await this.get_order(status );
+         // this.loading_data = false;
+         // window.appbar_fixed();
       }
    },
 
@@ -553,23 +564,19 @@ var app = Vue.createApp({
       this.loading = true;
       setInterval( async () => { await this.atlantis_count_messeage_everytime(); }, 1500);
 
+      await this.atlantis_count_review_not_in_order_complete();
       await this.get_count_total_order();
       this.count_product_in_cart();
+      await this.get_notification_count();
 
-      setTimeout( async () => {
-         await this.get_order( this.order_status);
-         await this.get_notification_count();
-         this.loading = false;
-      }, 400);
+      await this.get_order( this.order_status_current);
 
-      // setInterval( async () => { await this.get_count_total_order();, 2000 })
-
-      // console.log(this.orders)
+      this.loading = false;
       window.appbar_fixed();
    },
 
-   mounted() { window.addEventListener('scroll', this.handleScroll); },
-   beforeDestroy() {window.removeEventListener('scroll', this.handleScroll); },
+   // mounted() { window.addEventListener('scroll', this.handleScroll); },
+   // beforeDestroy() {window.removeEventListener('scroll', this.handleScroll); },
 
 
 })
@@ -579,16 +586,10 @@ var app = Vue.createApp({
 window.app = app;
 
 async function callbackActiveTab(){
-//  callbackResume()
-   // var _get_order_status = window.app.order_status;
-   // window.app.loading_data = true;
-   // window.app.orders = [];
-   // await window.app.get_count_total_order();
-   // await window.app.get_order(_get_order_status );
-   // window.app.loading_data = false;
 
    window.app.count_product_in_cart();
    await window.app.get_notification_count();
+   await window.app.atlantis_count_review_not_in_order_complete();
    await window.app.atlantis_get_newest_order();
    await window.app.get_count_total_order();
    window.appbar_fixed();

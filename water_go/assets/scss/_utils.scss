@@ -37,10 +37,6 @@ option.weekly_day_disable{ display: none !important; }
    scrollbar-width: none; 
 }
 
-input{
-   // touch-action: manipulation;
-   touch-action: none;
-}
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;

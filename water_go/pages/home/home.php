@@ -5,9 +5,11 @@
    if( ! empty($home_sliders['home_sliders'])){
       foreach( $home_sliders['home_sliders'] as $k => $vl ){ 
          $list_slide[$k]['img'] = wp_get_attachment_url($vl['item']);
+         $list_slide[$k]['link'] = $vl['link'];
       }
    }
 
+   $list_slide = json_encode($list_slide);
 
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -279,29 +281,69 @@
       position: fixed;
       bottom: 10px;
       right: 10px;
+      border: none;
+      outline: none;
    }
 
    #btn-zalo.add-space{
       bottom: 72px;
    }
+
+   
    .badge-gift {
       display: flex;
       flex-flow: row nowrap;
       padding-bottom: 5px;
+      overflow: hidden;
+      padding-bottom: 0;
+      position: relative;
+      top: 2px;
    }
    .badge-gift .icon{
       height: 24px;
    }
    .badge-gift .text{
-      white-space: pre-wrap;
-      line-height: 26px;
+      white-space: nowrap;
+      line-height: 26px;;
+      text-overflow: ellipsis;
+      overflow: hidden;
    }
    .product-design.product-detail .gr-price{
       display: flex;
       flex-flow: row wrap;
       align-items: flex-end;
    }
+
+   .btn-zalo-ios{
+      position: fixed;
+      bottom: 80px;
+      left: 0;
+      background: white;
+   }
+   .btn-zalo-android{
+      position: fixed;
+      bottom: 80px;
+      right: 0;
+      background: white;
+   }
+
+   .full-gift-size .badge-gift{
+      width: 100%;
+      position: relative;
+      left: -3px;
+      padding-bottom: 5px;
+   }
+
+   .btn-link-slide{
+      outline: none;
+      border: none;
+      background: none;
+      box-shadow: none;
+      width: 100%;
+      height: 100%;
+   }
 </style>
+
 <div id='app'>
 
    <div v-if='loading == false'>
@@ -375,18 +417,19 @@
             </div>
          </div>
 
-         <?php if( ! empty($list_slide ) ){ ?>
-         <div class='inner'>
+         <!-- HOME SLIDER -->
+         <div v-if='slide_home.length > 0' class='inner'>
             <div class='slider-container'>
                <ul class='sliders'>
-                  <?php foreach( $list_slide as $k => $vl ){ 
-                  ?>
-                  <li class='slide'><img src="<?php echo $vl['img']; ?>"></li>
-                  <?php } ?>
+                  <li class='slide' v-for='( slide, slideKey ) in slide_home '>
+                     <button class='btn-link-slide' v-if='slide.link != ""' @click='open_link_slider(slide.link)'>
+                        <img :src="slide.img">
+                     </button>
+                     <img v-if='slide.link == ""' :src="slide.img">
+                  </li>
                </ul>
             </div>
          </div>
-         <?php } ?>
 
          <div class='inner'>
             <div class='gr-btn'>
@@ -451,7 +494,11 @@
                               </div>
                               <p class="tt01">{{ product.name }} </p>
                               <p class="tt02">{{ product.name_second }}</p>
-                              <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
+
+                              <div class="gr-price" :class="[
+                                 has_discount(product) == true ? 'has_discount' : '',
+                                 automatic_floating_text(product)
+                              ]">
                                  <span class="price">
                                     {{ common_price_after_discount(product) }}
                                  </span>
@@ -492,7 +539,10 @@
                               <p class="tt01">{{ product.name }} </p>
                               <p class="tt02">{{ product.name_second }}</p>
 
-                              <div class="gr-price" :class="has_discount(product) == true ? 'has_discount' : ''">
+                              <div class="gr-price" :class="[
+                                 has_discount(product) == true ? 'has_discount' : '',
+                                 automatic_floating_text(product)
+                              ]">
                                  <span class="price">
                                     {{ common_price_after_discount(product) }}
                                  </span>
@@ -543,18 +593,18 @@
          </div>
       </div>
 
-      <a id='btn-zalo' :class='banner_delivering_active == true ? "add-space" : ""' href="https://zalo.me/0909157151/?appt=D"><img src='<?php echo THEME_URI . '/assets/images/home-zalo-icon.svg'; ?>'></a>
+      <button @click='goto_zalo_app' id='btn-zalo' :class='banner_delivering_active == true ? "add-space" : ""'> <img src='<?php echo THEME_URI . '/assets/images/home-zalo-icon.svg'; ?>'> </button>
 
    </div>
 
-   <div v-else>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
    </div>
 
    <component-location-modal ref='component_location_modal'></component-location-modal>
-   <module_get_order_delivering ref='module_get_order_delivering'></module_get_order_delivering>
+   <module_get_order_delivering v-if='is_user_logged_in == 1' ref='module_get_order_delivering'></module_get_order_delivering>
 
 </div>
 
@@ -563,7 +613,12 @@
 var app = Vue.createApp({
    data (){
       return {
+
+         link_zalo: '',
+
          banner_delivering_active: false,
+
+         slide_home: JSON.parse('<?php echo $list_slide; ?>'),
 
          popup_filter: false,
 
@@ -591,11 +646,29 @@ var app = Vue.createApp({
          showDropdown: false,
 
          get_locale: '<?php echo get_locale(); ?>',
+
+         is_user_logged_in: '<?php echo is_user_logged_in() == true ? '1' : '0'; ?>',
          
       }
    },
 
+   computed: {
+
+   },
+
    methods: {
+
+      open_link_slider( link ){
+         window.location.href = link + '?appt=D';
+         setTimeout(() => {
+            window.location.href = '&appt=X';
+         },1);
+      },
+
+      automatic_floating_text( product ){
+         if( this.has_discount(product) == true )return 'full-gift-size';
+         if( this.has_gift(product) == true ) return 'full-gift-size';
+      },
 
       btn_open_popup_filter(){ this.popup_filter = !this.popup_filter; },
 
@@ -648,8 +721,6 @@ var app = Vue.createApp({
             }
          }
       },
-
-      convert_wplang_to_native(l){ return window.convert_wplang_to_native(l)},
 
       getFlagImage(languageId) {
          if (languageId === 'en_US') {
@@ -751,7 +822,23 @@ var app = Vue.createApp({
          }
       },
 
-      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() }
+      async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
+
+      goto_zalo_app(){
+         if( window.appBridge != undefined ){
+            var os = window.appBridge.getOSName();
+            if ( os == 'ios') {
+               this.link_zalo = 'zalo://qr/p/1x118tmd10rja/?appt=D';
+            } else if ( os == 'android' ) {
+               this.link_zalo = 'zalo://zaloapp.com/qr/p/1x118tmd10rja/?appt=D';
+            }
+            window.location.href = this.link_zalo;
+            setTimeout(()=>{
+               window.location.href = '&appt=X';
+            }, 1);
+         }
+      }
+
 
    },
 
@@ -803,7 +890,10 @@ var app = Vue.createApp({
 
       setTimeout(() => {}, 800);
       window.appbar_fixed();
+
       this.loading = false;
+
+      
 
    },
 

@@ -9,6 +9,13 @@
       box-shadow: none;
       outline: none;
    }
+   .link-term-condition{
+      line-height: 24px;
+      z-index: 8;
+   }
+   .form-check.style01{
+      align-items: flex-end;
+   }
 </style>
 <div id='authentication'>
 
@@ -74,10 +81,10 @@
             {{ res_text_sendcode }}
          </p>
 
-         <div class='form-check style01' style="display:flex; align-items: center;column-gap: 4px;">
+         <div class='form-check style01' style="display:flex; column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
-               <span v-if class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>
+               <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>
             </label>
             <button @click='gotoPageStoreTermConditions' class='link-term-condition t-primary'><?php echo __('Terms and Conditions', 'watergo'); ?></button>
          </div>

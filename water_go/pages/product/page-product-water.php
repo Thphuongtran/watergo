@@ -806,6 +806,7 @@ createApp({
       async atlantis_get_product_sort_version2(){
          var form = new FormData();
          form.append('action', 'atlantis_get_product_sort_version2');
+         form.append('perPage', 20);
 
          if( this.is_user_share_location == false ){
             form.append('no_location_found', 1);

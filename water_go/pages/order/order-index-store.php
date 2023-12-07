@@ -72,7 +72,7 @@
 
             <ul class='navbar style02 navbar-icon navbar-order' >
 
-               <li @click='select_filter(filter.label)' v-for='(filter, index) in order_status_filter' 
+               <li @click='select_filter(filter.value)' v-for='(filter, index) in order_status_filter' 
                   :key='index' 
                   :class='filter.active == true ? "active" : ""'>
                   <span class='icon mb10'>
@@ -86,7 +86,7 @@
 
             <div v-show='loading_data == false'>
 
-               <div v-if='order_filter.length > 0' class='order-store-header'>
+               <div v-if='filter_orders.length > 0' class='order-store-header'>
                   <div class='select-wrapper'>
                      <select v-model='order_by_filter_select' class='order_filter_select'>
                         <option :value="{ value: 'desc' } "><?php echo __('New first', 'watergo'); ?></option>
@@ -102,7 +102,7 @@
                   <div class='count-order'><?php echo __('Total order', 'watergo'); ?>: <span >{{total_order}}</span> </div>
                </div>
 
-               <div v-show=' order_filter.length > 0 && ( order_status_current != "complete" && order_status_current != "cancel") ' class='order-store-action'>
+               <div v-show=' filter_orders.length > 0 && ( order_status_current != "complete" && order_status_current != "cancel") ' class='order-store-action'>
                   <div class='form-check'>
                      <input @click='select_all_item' type='checkbox' :checked='is_select_all == true ? true : false'>
                      <label @click='select_all_item'><?php echo __('Select All', 'watergo'); ?> </label>
@@ -133,7 +133,7 @@
             
             <li 
                :class='"order-status-" + order_status_current'
-               v-for='( order, keyOrder ) in order_filter' :key='keyOrder'>
+               v-for='( order, keyOrder ) in filter_orders' :key='keyOrder'>
                <div class='order-head'>
                   <div v-if='order.order_status != "complete" && order.order_status != "cancel"' class='form-check form-check-order'><input @click='select_item(order.order_id)' type='checkbox' :checked='order.select'></div>
                   <div @click='select_item(order.order_id)' class='text-order-number'>#{{ order.order_number }}</div>
@@ -176,8 +176,8 @@
                </div>
 
                <div class='order-bottom'>
-                  <span class='total-product'>{{ count_total_product_in_order(order.order_id) }} <?php echo __('product', 'watergo'); ?></span>
-                  <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ count_total_price_in_order(order.order_id) }}</span></span>
+                  <span class='total-product'>{{ order.total_product }} <?php echo __('product', 'watergo'); ?></span>
+                  <span class='total-price'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary'>{{ common_price_show_currency(order.total_price_product) }}</span></span>
                </div>
 
                <div class='order-func'>
@@ -302,6 +302,8 @@ var app = Vue.createApp({
 
          loading: false,
          loading_data: false,
+         stop_pressed: false,
+
          popup_confirm_all_item: false,
          popup_delivering_all_item: false,
          popup_complete_all_item: false,
@@ -426,10 +428,13 @@ var app = Vue.createApp({
             {label: '<?php echo __("Others", 'watergo'); ?>', value: 'Others', active: false}
          ],
 
+         isRequestInProgress: false
+
       }
    },
 
    methods: {
+      common_price_show_currency(p){ return window.common_price_show_currency(p) },
 
       async atlantis_count_messeage_everytime(){ await window.atlantis_count_messeage_everytime() },
 
@@ -524,6 +529,20 @@ var app = Vue.createApp({
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
                await this.reset_get_order_store();
+               // SEND PUSH NOTIFICATION AND ADD NOFICATION
+               try {
+                  var push_notification = new FormData();
+                  push_notification.append('action', 'atlantis_push_notification_in_background_multiple');
+                  push_notification.append('send_to', 'user');
+                  push_notification.append('order_ids', JSON.stringify(order_ids));
+                  push_notification.append('order_status', order_status);
+                  let requestPromise = window.request(push_notification);
+                  let immediatePromise = new Promise(resolve => resolve());
+                  await Promise.race([requestPromise, immediatePromise]);
+               } catch (error) {
+                  console.log(error);
+               }
+
             }
          }
       },
@@ -589,7 +608,6 @@ var app = Vue.createApp({
          await this.get_notification_count();
          window.appbar_fixed();
          this.loading_data = false;
-         
       },
 
       select_all_item(){
@@ -606,9 +624,13 @@ var app = Vue.createApp({
          });
       },
 
-      async select_filter( filter_select ){ 
+      async select_filter( filter_select ){
+
+         if( this.order_status_current == filter_select ) return;
+         if (this.isRequestInProgress) return;
+
          this.order_status_filter.some( item => {
-            if( item.label == filter_select ){
+            if( item.value == filter_select ){
                item.active = true;
                this.order_status_current = item.value;
             }else{
@@ -616,6 +638,35 @@ var app = Vue.createApp({
                item.active = false;
             }
          });
+
+         this.order_status_filter.some(item => {
+            if( item.value == filter_select ){ 
+               item.active = true;
+               this.order_status = item.value;
+            }else{ 
+               this.force_all_select_to_false();
+               item.active = false; 
+            }
+         });
+
+         this.loading_data = true;
+         this.isRequestInProgress = true;
+
+         try{
+            await this.delay(500);
+            await this.get_count_total_order();
+            this.orders = [];
+            this.total_count = 0;
+            this.order_by_filter_select = { value: 'desc' };
+            await this.get_order_store( filter_select );
+            window.appbar_fixed();
+         } catch(e) {
+
+         } finally {
+            this.isRequestInProgress = false;
+         }
+
+         this.loading_data = false;
       },
 
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id); },
@@ -631,36 +682,6 @@ var app = Vue.createApp({
       },
       
       order_formatDate(timestamp){ return window.order_formatDate(timestamp);},
-
-      count_total_price_in_order(order_id ){
-         var _total = 0;
-
-         this.orders.some( order => {
-            if( order.order_id == order_id ){
-               order.order_products.some ( product => {
-                  _total += get_total_price(
-                     product.order_group_product_price, 
-                     product.order_group_product_quantity_count, 
-                     product.order_group_product_discount_percent
-                  )
-               });
-            }
-         });
-         return _total.toLocaleString('vi-VN') + ' đ';
-      },
-
-      count_total_product_in_order(order_id){
-         var _total = 0;
-         this.orders.some( order => {
-            if( order.order_id == order_id ){
-               order.order_products.some( product => {
-                  _total += parseInt( product.order_group_product_quantity_count );
-               });
-            }
-         });
-         return _total;
-      },
-      
 
       addLeadingZeros(number) {
          if( number != undefined ){
@@ -694,6 +715,9 @@ var app = Vue.createApp({
                   var _total_count = item.total_count;
                   var _order_status = this.order_status_filter.find( order_status => order_status.value == item.order_status );
                   _order_status.count = _total_count;
+                  if(_order_status.value == 'complete' || _order_status.value == 'cancel'){
+                     _order_status.count = 0;
+                  }
                });
             }
          }
@@ -710,7 +734,7 @@ var app = Vue.createApp({
             if( res.message == 'get_order_ok' ){
                res.data.forEach( order => {
                   order.select = false;
-                  if( !this.orders.some( existingItem => existingItem.order_id === order.order_id )){
+                  if( !this.orders.some( existingItem => existingItem.order_id === order.order_id ) ){
                      this.orders.push( order );
                   }
                });
@@ -734,7 +758,6 @@ var app = Vue.createApp({
             await this.get_order_store( this.order_status_current );
          }
       },
-
 
       async atlantis_get_newest_order(){
          var order_ids = [];
@@ -780,27 +803,29 @@ var app = Vue.createApp({
          window.appbar_fixed();
 
       },
+
+      // MAKE USER CAN PRESS SPEED OF LIGHT
+      delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
       
    },
 
-   mounted() {
-      window.addEventListener('scroll', this.handleScroll);
-   },
-   beforeDestroy() {
-      window.removeEventListener('scroll', this.handleScroll);
-   }, 
+   // mounted() { window.addEventListener('scroll', this.handleScroll); },
+   // beforeDestroy() {window.removeEventListener('scroll', this.handleScroll);}, 
 
    // STREAM ORDER STATUS -> reload order
    watch: {
       order_status_current: async function( status ){
-         this.loading_data = true;
-         await this.get_count_total_order();
-         this.orders = [];
-         this.total_count = 0;
-         this.order_by_filter_select = { value: 'desc' };
-         await this.get_order_store( status );
-         window.appbar_fixed();
-         this.loading_data = false;
+
+         // this.loading_data = true;
+         // await this.get_count_total_order();
+         // this.orders = [];
+         // this.total_count = 0;
+         // this.order_by_filter_select = { value: 'desc' };
+         // await this.get_order_store( status );
+         // window.appbar_fixed();
+         // this.loading_data = false;
+         // USER CAN MAKE REQUEST AGAIN
+
       },
    },
 
@@ -810,12 +835,13 @@ var app = Vue.createApp({
          return this.reason_cancel.some( item => item.active == true);
       },
       
-      order_filter(){
+      filter_orders(){
          var _filter_orders = this.orders;
          if(this.order_by_filter_select.value == 'asc'){
             _filter_orders.sort((a,b) => a.order_id - b.order_id );
-         }
-         if(this.order_by_filter_select.value == 'desc'){
+         } else if(this.order_by_filter_select.value == 'desc'){
+            _filter_orders.sort((a,b) => b.order_id - a.order_id );
+         } else{
             _filter_orders.sort((a,b) => b.order_id - a.order_id );
          }
          return _filter_orders;

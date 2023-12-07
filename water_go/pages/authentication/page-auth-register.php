@@ -5,9 +5,6 @@
    touch-action: auto;
 }
 
-#authentication{
-}
-
 .page-auth-register{
    overflow-y: scroll;
    height: 100vh;
@@ -17,6 +14,14 @@
    padding-top: 56px;
    padding-bottom: 56px;
 }
+
+   .link-term-condition{
+      line-height: 24px;
+      z-index: 8;
+   }
+   .form-check.style01{
+      align-items: flex-end;
+   }
 
 </style>
 <div id='authentication'>
@@ -102,7 +107,7 @@
             <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
 
-         <div v-if='get_locate != "ko_KR"' class='form-check style01 mt15' style="display:flex; align-items: center;column-gap: 4px;">
+         <div v-if='get_locate != "ko_KR"' class='form-check style01 mt15' style="display:flex; column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
                <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?> </span>

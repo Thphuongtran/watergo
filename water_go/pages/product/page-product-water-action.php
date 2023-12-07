@@ -5,7 +5,7 @@
  */
 
    GLOBAL $wpdb;
-   $get_category = "SELECT * FROM wp_watergo_product_category WHERE category IN ('water_category', 'water_brand', 'water_quantity', 'water_volume') AND ( category_hidden != 1 OR category_hidden IS NULL ) ORDER BY wp_watergo_product_category.order ASC";
+   $get_category = "SELECT * FROM wp_watergo_product_category WHERE category IN ('water_category', 'water_brand', 'water_quantity') AND ( category_hidden != 1 OR category_hidden IS NULL ) ORDER BY wp_watergo_product_category.order ASC";
    $category_primary = $wpdb->get_results($get_category);
 
    // FOR PARENT
@@ -88,6 +88,15 @@
          font-size: 4.1vw;
       }
    }
+
+   .appbar{
+      height: 56px;
+   }
+   .scaffold{
+      height: calc( 100vh - 56px );
+      overflow-y: scroll;
+      overflow-x: hidden;
+   }
 </style>
 <div id='app'>
    <div v-show='loading == false' class='page-product-store-view'>
@@ -107,259 +116,261 @@
          </div>
       </div>
 
-      <!-- FORM  -->
-      <div class='inner'>
-         <div class='product-store-view-form'>
+      <div class='scaffold'>
+         <!-- FORM  -->
+         <div class='inner'>
+            <div class='product-store-view-form'>
 
-            <div class='form-title'><?php echo __('Category', 'watergo'); ?></div>
+               <div class='form-title'><?php echo __('Category', 'watergo'); ?></div>
 
-            <div class='form-control form-select'>
-               <select v-model='product.category' :disabled='view_only'>
-                  <option :value="null" selected disabled><?php echo __('Select Category', 'watergo'); ?></option>
-                  <option 
-                     v-for='(cat, catIndex) in get_category' :key='catIndex'
-                     :value="cat.name">{{ cat.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-            <!-- BRAND -->
-            <div v-show='listen_product_type == "water"' class='form-title'><?php echo __('Brand', 'watergo'); ?></div>
-            <div v-show='listen_product_type == "water"' class='form-control form-select'>
-               <select v-model='product.brand' :disabled='view_only'>
-                  <option :value="null" selected disabled><?php echo __('Select Brand', 'watergo'); ?></option>
-                  <option 
-                     v-for='(brand, brandIndex) in get_brand' :key='brandIndex'
-                     :value="brand.name">{{ brand.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-            <!-- NAME DEVICE -->
-            <div v-show='listen_product_type == "water_device"' class='form-control form-select'>
-               <div class='form-title'><?php echo __('Tên thiết bị', 'watergo'); ?></div>
-               <input v-model='product.name_device' placeholder='<?php echo __('Nhập tên thiết bị', 'watergo'); ?>' :disabled='view_only'>
-            </div>
-
-            <!-- TYPE OF WATER -->
-            <div v-show='listen_product_type == "water"' class='form-title'><?php echo __('Type of water', 'watergo'); ?></div>
-            <div v-show='listen_product_type == "water"' class='form-control form-select'>
-               <select v-model='product.category_parent' :disabled='view_only'>
-                  <option :value="null" selected disabled><?php echo __('Select type of water', 'watergo'); ?></option>
-                  <option 
-                     v-for='(cat, catIndex) in category_parent' :key='catIndex'
-                     :value="cat.name">{{ cat.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-
-            <!-- PRICE -->
-            <div class='form-control'>
-               <div class='form-title'><?php echo __('Price', 'watergo'); ?></div>
-               <input inputmode='numeric' v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ' :disabled='view_only'>
-            </div>
-
-            <!-- WATER DEVICE FEATURE -->
-            <div v-show='listen_product_type == "water_device"' class='form-title'><?php echo __('Chức năng', 'watergo'); ?></div>
-            <div v-show='listen_product_type == "water_device" && view_only == false' class='form-checkbox form-check form-checkbox-row checkbox-water-device'>
-               <label @click='btn_select_category_feature(f.name)' v-for='(f, fIndex) in category_feature' :key='fIndex' >
-                  <input type='checkbox' :value='f.name' :checked='product.feature_device == f.name ? true : false' 
-                     :disabled='product.feature_device == f.name ? true : false'>
-                  <span class='text'>{{f.name}}</span>
-               </label>
-            </div>
-            <div v-show='listen_product_type == "water_device" && view_only == true' class='form-checkbox form-check form-checkbox-row'>
-               <label>
-                  <input type='checkbox' checked :value='product.feature_device' disabled>
-                  <span class='text'>{{ product.feature_device }}</span>
-               </label>
-            </div>
-
-            <!-- PRODUCT DESCRIPTION for Water Device * just clone this -->
-            <div v-show='listen_product_type == "water_device"' class='form-control form-select'>
-               <div class='form-title'><?php echo __('Product Description', 'watergo'); ?></div>
-               <textarea @input='autoResize("textarea1")' ref='textarea1' v-model='product.description' placeholder='<?php echo __('Nhập mô tả thiết bị', 'watergo'); ?>' :disabled='view_only'></textarea>
-            </div>
-
-            <!-- DISCOUNT BOX AND GIFT BOX -->
-            <div class='group-between-box'>
-               <!-- GIFT TOGGLE -->
-               <div class='form-checkbox form-check check-discount'>
-                  <label>
-                     <input @click='gift_toggle' :checked='open_gift_input' type='checkbox' :disabled='view_only'>
-                     <span class='text'><?php echo __('Tặng quà', 'watergo'); ?></span>
-                  </label>
-               </div>
-
-               <!-- DISCOUNT TOGGLE -->
-               <div class='form-checkbox form-check check-discount'>
-                  <label>
-                     <input @click='discount_toggle' :checked='open_discount_input' type='checkbox' :disabled='view_only'>
-                     <span class='text'><?php echo __('Discount', 'watergo'); ?></span>
-                  </label>
-               </div>
-            </div>
-
-            <div v-show='open_gift_input == true' class='form-control box-gift'>
-               <input v-model='product.gift_text' type="text" maxlength='30' placeholder='<?php echo __('Nhập quà tặng', 'watergo'); ?>' :disabled='view_only'>
-               <span class='text'>{{ get_count_gift_text }}/30</span>
-            </div>
-
-            <div v-show='open_gift_input == true' class='group-form-control'>
-               <div class='form-control'>
-                  <div class='form-title'><?php echo __('From', 'watergo'); ?></div>
-                  <input 
-                     @click='select_gift_from_datepicker'
-                     id='gift_from' 
-                     v-model='product.gift_from'
-                     type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'
-                  >
-               </div>
-               <div class='form-control'>
-                  <div class='form-title'><?php echo __('To', 'watergo'); ?></div>
-                  <input 
-                     @click='select_gift_to_datepicker'
-                     id='gift_to' 
-                     v-model='product.gift_to'
-                     type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'>
-               </div>
-            </div>
-
-            <div v-show='open_discount_input == true' class='form-title'><?php echo __('Percentage Discount', 'watergo'); ?></div>
-            <div v-show='open_discount_input == true' class='form-control'>
-               <input inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='<?php echo __('Enter Percentage', 'watergo'); ?>' :disabled='view_only'>
-            </div>
-
-
-            <div v-show='open_discount_input == true' class='group-form-control'>
-               <div class='form-control'>
-                  <div class='form-title'><?php echo __('From', 'watergo'); ?></div>
-                  <input 
-                     @click='select_discount_from_datepicker'
-                     id='discount_from' 
-                     v-model='product.discount_from'
-                     type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'>
-               </div>
-               <div class='form-control'>
-                  <div class='form-title'><?php echo __('To', 'watergo'); ?></div>
-                  <input 
-                     @click='select_discount_to_datepicker'
-                     id='discount_to' 
-                     v-model='product.discount_to'
-                     type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'>
-               </div>
-            </div>
-
-            <div v-show='listen_product_type == "water"' class='form-title'><?php echo __('Size Description', 'watergo'); ?></div>
-
-            <!-- QUANTITY -->
-            <div v-show='listen_product_type == "water"' class='form-title small-size'><?php 
-               if( get_locale() == 'vi'){
-                  echo 'Quy cách đóng gói';
-               }else{
-                  echo __('Quantity', 'watergo'); 
-               }
-            ?></div>
-            <div v-show='listen_product_type == "water"' class='form-control form-select'>
-               <select v-model='product.quantity' :disabled='view_only'>
-                  <option :value="null" selected disabled>
-                     <?php echo __('Select Quantity', 'watergo'); ?>
-                  </option>
-                  <option 
-                     v-for='(water_quantity, water_quantityIndex) in get_water_quantity' :key='water_quantityIndex'
-                     :value="water_quantity.name">{{ water_quantity.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-            <!-- VOLUME -->
-            <div v-show='listen_product_type == "water"' class='form-title small-size'><?php echo __('Water Volume', 'watergo'); ?></div>
-            <div v-show='listen_product_type == "water"' class='form-control form-select'>
-               <select v-model='product.volume' :disabled='view_only'>
-                  <option :value="null" selected disabled><?php echo __('Select Volume', 'watergo'); ?></option>
-                  <option 
-                     v-for='(water_volume, water_volumeIndex) in get_water_volume' :key='water_volumeIndex'
-                     :value="water_volume.name">{{ water_volume.name }}</option>
-               </select>
-               <span class='icon-select'>
-                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-               </span>
-            </div>
-
-            <!-- PRODUCT DESCRIPTION -->
-            <div v-show='listen_product_type == "water"' class='form-control form-select'>
-               <div class='form-title'><?php echo __('Product Description', 'watergo'); ?></div>
-               <textarea @input='autoResize("textarea2")' ref='textarea2' v-model='product.description' placeholder='<?php echo __('Enter Product Description', 'watergo'); ?>' :disabled='view_only'></textarea>
-            </div>
-
-            <div class='form-title'><?php echo __('Photo', 'watergo'); ?></div>
-
-            <ul class='form-photo'>
-               <li class='upload' v-show='view_only == false'>
-                  <label>
-                     <input id='UploadPhoto' type="file" multiple @change="handleFileUpload">
-                     <!-- <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo.png' ?>"> -->
-                     <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo-trans.jpeg'; ?>">
-                     <span class='text-add-photo'><?php echo __('Add Photo', 'watergo'); ?></span>
-                  </label>
-               </li>
-               <!-- IMAGE FROM PRODUCT WHEN EDIT -->
-               <li class='image' v-for="(image, imageIndex) in productImages" :key="imageIndex">
-                  <img :src="image.imagePreview" alt="Preview Image">
-                  <button v-show='view_only == false' @click='btn_delete_product_image(imageIndex)'>
-                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <rect width="16" height="16" rx="2" fill="white" fill-opacity="0.7"/>
-                     <path d="M12 4L4 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M4 4L12 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+               <div class='form-control form-select'>
+                  <select v-model='product.category' :disabled='view_only'>
+                     <option :value="null" selected disabled><?php echo __('Select Category', 'watergo'); ?></option>
+                     <option 
+                        v-for='(cat, catIndex) in get_category' :key='catIndex'
+                        :value="cat.name">{{ cat.name }}</option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
-                  </button>
-               </li>
+                  </span>
+               </div>
 
-               <!-- IMAGE FROM PRODUCT WHEN ADD -->
-               <li class='image' v-for="(image, imageIndex) in uploadImages" :key="imageIndex">
-                  <img :src="image.imagePreview" alt="Preview Image">
-                  <button v-show='view_only == false' @click='btn_delete_upload_image(imageIndex)'>
-                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <rect width="16" height="16" rx="2" fill="white" fill-opacity="0.7"/>
-                     <path d="M12 4L4 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M4 4L12 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+               <!-- BRAND -->
+               <div v-show='listen_product_type == "water"' class='form-title'><?php echo __('Brand', 'watergo'); ?></div>
+               <div v-show='listen_product_type == "water"' class='form-control form-select'>
+                  <select v-model='product.brand' :disabled='view_only'>
+                     <option :value="null" selected disabled><?php echo __('Select Brand', 'watergo'); ?></option>
+                     <option 
+                        v-for='(brand, brandIndex) in get_brand' :key='brandIndex'
+                        :value="brand.name">{{ brand.name }}</option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                      </svg>
-                  </button>
-               </li>
-            </ul>
+                  </span>
+               </div>
 
-            <div v-if='action == "edit"' class='form-checkbox form-check check-out-of-stock'>
-               <label>
-                  <input @click='mark_out_of_stock' :checked='product.mark_out_of_stock == 1 ? true : false' type='checkbox' :disabled='view_only'>
-                  <span class='text'><?php echo __('Mark as out of stock', 'watergo'); ?></span>
-               </label>
-            </div>
+               <!-- NAME DEVICE -->
+               <div v-show='listen_product_type == "water_device"' class='form-control form-select'>
+                  <div class='form-title'><?php echo __('Tên thiết bị', 'watergo'); ?></div>
+                  <input v-model='product.name_device' placeholder='<?php echo __('Nhập tên thiết bị', 'watergo'); ?>' :disabled='view_only'>
+               </div>
 
-            <div class='t-red'>{{ text_error }}</div>
+               <!-- TYPE OF WATER -->
+               <div v-show='listen_product_type == "water"' class='form-title'><?php echo __('Type of water', 'watergo'); ?></div>
+               <div v-show='listen_product_type == "water"' class='form-control form-select'>
+                  <select v-model='product.category_parent' :disabled='view_only'>
+                     <option :value="null" selected disabled><?php echo __('Select type of water', 'watergo'); ?></option>
+                     <option 
+                        v-for='(cat, catIndex) in category_parent' :key='catIndex'
+                        :value="cat.name">{{ cat.name }}</option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
 
-            <div v-show='view_only == false' class='form-button'>
-               <button @click='btn_action_product("add")' v-if='action == "add"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'><?php echo __('Add', 'watergo'); ?></button>
-               <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'><?php echo __('Save', 'watergo'); ?></button>
-               <button @click='btn_modal_open' v-if='action == "edit"' class='btn btn-outline'><?php echo __('Delete', 'watergo'); ?></button>
+
+               <!-- PRICE -->
+               <div class='form-control'>
+                  <div class='form-title'><?php echo __('Price', 'watergo'); ?></div>
+                  <input inputmode='numeric' v-model='product.price' type="text" pattern='[0-9]*' placeholder='0đ' :disabled='view_only'>
+               </div>
+
+               <!-- WATER DEVICE FEATURE -->
+               <div v-show='listen_product_type == "water_device"' class='form-title'><?php echo __('Chức năng', 'watergo'); ?></div>
+               <div v-show='listen_product_type == "water_device" && view_only == false' class='form-checkbox form-check form-checkbox-row checkbox-water-device'>
+                  <label @click='btn_select_category_feature(f.name)' v-for='(f, fIndex) in category_feature' :key='fIndex' >
+                     <input type='checkbox' :value='f.name' :checked='product.feature_device == f.name ? true : false' 
+                        :disabled='product.feature_device == f.name ? true : false'>
+                     <span class='text'>{{f.name}}</span>
+                  </label>
+               </div>
+               <div v-show='listen_product_type == "water_device" && view_only == true' class='form-checkbox form-check form-checkbox-row'>
+                  <label>
+                     <input type='checkbox' checked :value='product.feature_device' disabled>
+                     <span class='text'>{{ product.feature_device }}</span>
+                  </label>
+               </div>
+
+               <!-- PRODUCT DESCRIPTION for Water Device * just clone this -->
+               <div v-show='listen_product_type == "water_device"' class='form-control form-select'>
+                  <div class='form-title'><?php echo __('Product Description', 'watergo'); ?></div>
+                  <textarea @input='autoResize("textarea1")' ref='textarea1' v-model='product.description' placeholder='<?php echo __('Nhập mô tả thiết bị', 'watergo'); ?>' :disabled='view_only'></textarea>
+               </div>
+
+               <!-- DISCOUNT BOX AND GIFT BOX -->
+               <div class='group-between-box'>
+                  <!-- GIFT TOGGLE -->
+                  <div class='form-checkbox form-check check-discount'>
+                     <label>
+                        <input @click='gift_toggle' :checked='open_gift_input' type='checkbox' :disabled='view_only'>
+                        <span class='text'><?php echo __('Tặng quà', 'watergo'); ?></span>
+                     </label>
+                  </div>
+
+                  <!-- DISCOUNT TOGGLE -->
+                  <div class='form-checkbox form-check check-discount'>
+                     <label>
+                        <input @click='discount_toggle' :checked='open_discount_input' type='checkbox' :disabled='view_only'>
+                        <span class='text'><?php echo __('Discount', 'watergo'); ?></span>
+                     </label>
+                  </div>
+               </div>
+
+               <div v-show='open_gift_input == true' class='form-control box-gift'>
+                  <input v-model='product.gift_text' type="text" maxlength='30' placeholder='<?php echo __('Nhập quà tặng', 'watergo'); ?>' :disabled='view_only'>
+                  <span class='text'>{{ get_count_gift_text }}/30</span>
+               </div>
+
+               <div v-show='open_gift_input == true' class='group-form-control'>
+                  <div class='form-control'>
+                     <div class='form-title'><?php echo __('From', 'watergo'); ?></div>
+                     <input 
+                        @click='select_gift_from_datepicker'
+                        id='gift_from' 
+                        v-model='product.gift_from'
+                        type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'
+                     >
+                  </div>
+                  <div class='form-control'>
+                     <div class='form-title'><?php echo __('To', 'watergo'); ?></div>
+                     <input 
+                        @click='select_gift_to_datepicker'
+                        id='gift_to' 
+                        v-model='product.gift_to'
+                        type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'>
+                  </div>
+               </div>
+
+               <div v-show='open_discount_input == true' class='form-title'><?php echo __('Percentage Discount', 'watergo'); ?></div>
+               <div v-show='open_discount_input == true' class='form-control'>
+                  <input inputmode='numeric' v-model='product.discount_percent' type="text" pattern='[0-9]*' maxlength='3' max='100' placeholder='<?php echo __('Enter Percentage', 'watergo'); ?>' :disabled='view_only'>
+               </div>
+
+
+               <div v-show='open_discount_input == true' class='group-form-control'>
+                  <div class='form-control'>
+                     <div class='form-title'><?php echo __('From', 'watergo'); ?></div>
+                     <input 
+                        @click='select_discount_from_datepicker'
+                        id='discount_from' 
+                        v-model='product.discount_from'
+                        type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'>
+                  </div>
+                  <div class='form-control'>
+                     <div class='form-title'><?php echo __('To', 'watergo'); ?></div>
+                     <input 
+                        @click='select_discount_to_datepicker'
+                        id='discount_to' 
+                        v-model='product.discount_to'
+                        type="text" readonly placeholder='dd-mm-yyyy' :disabled='view_only'>
+                  </div>
+               </div>
+
+               <div v-show='listen_product_type == "water"' class='form-title'><?php echo __('Size Description', 'watergo'); ?></div>
+
+               <!-- QUANTITY -->
+               <div v-show='listen_product_type == "water"' class='form-title small-size'><?php 
+                  if( get_locale() == 'vi'){
+                     echo 'Quy cách đóng gói';
+                  }else{
+                     echo __('Quantity', 'watergo'); 
+                  }
+               ?></div>
+               <div v-show='listen_product_type == "water"' class='form-control form-select'>
+                  <select v-model='product.quantity' :disabled='view_only'>
+                     <option :value="null" selected disabled>
+                        <?php echo __('Select Quantity', 'watergo'); ?>
+                     </option>
+                     <option 
+                        v-for='(water_quantity, water_quantityIndex) in get_water_quantity' :key='water_quantityIndex'
+                        :value="water_quantity.name">{{ water_quantity.name }}</option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
+               <!-- VOLUME -->
+               <div v-show='listen_product_type == "water"' class='form-title small-size'><?php echo __('Water Volume', 'watergo'); ?></div>
+               <div v-show='listen_product_type == "water"' class='form-control form-select'>
+                  <select v-model='product.volume' :disabled='view_only'>
+                     <option :value="null" selected disabled><?php echo __('Select Volume', 'watergo'); ?></option>
+                     <option 
+                        v-for='(water_volume, water_volumeIndex) in water_volume_select' :key='water_volumeIndex'
+                        :value="water_volume.label">{{ water_volume.label }}</option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
+               <!-- PRODUCT DESCRIPTION -->
+               <div v-show='listen_product_type == "water"' class='form-control form-select'>
+                  <div class='form-title'><?php echo __('Product Description', 'watergo'); ?></div>
+                  <textarea @input='autoResize("textarea2")' ref='textarea2' v-model='product.description' placeholder='<?php echo __('Enter Product Description', 'watergo'); ?>' :disabled='view_only'></textarea>
+               </div>
+
+               <div class='form-title'><?php echo __('Photo', 'watergo'); ?></div>
+
+               <ul class='form-photo'>
+                  <li class='upload' v-show='view_only == false'>
+                     <label>
+                        <input id='UploadPhoto' type="file" multiple @change="handleFileUpload">
+                        <!-- <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo.png' ?>"> -->
+                        <img class='photo-upload-default' src="<?php echo THEME_URI . '/assets/images/banner-add-photo-trans.jpeg'; ?>">
+                        <span class='text-add-photo'><?php echo __('Add Photo', 'watergo'); ?></span>
+                     </label>
+                  </li>
+                  <!-- IMAGE FROM PRODUCT WHEN EDIT -->
+                  <li class='image' v-for="(image, imageIndex) in productImages" :key="imageIndex">
+                     <img :src="image.imagePreview" alt="Preview Image">
+                     <button v-show='view_only == false' @click='btn_delete_product_image(imageIndex)'>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="16" height="16" rx="2" fill="white" fill-opacity="0.7"/>
+                        <path d="M12 4L4 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 4L12 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </button>
+                  </li>
+
+                  <!-- IMAGE FROM PRODUCT WHEN ADD -->
+                  <li class='image' v-for="(image, imageIndex) in uploadImages" :key="imageIndex">
+                     <img :src="image.imagePreview" alt="Preview Image">
+                     <button v-show='view_only == false' @click='btn_delete_upload_image(imageIndex)'>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="16" height="16" rx="2" fill="white" fill-opacity="0.7"/>
+                        <path d="M12 4L4 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 4L12 12" stroke="#515151" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </button>
+                  </li>
+               </ul>
+
+               <div v-if='action == "edit"' class='form-checkbox form-check check-out-of-stock'>
+                  <label>
+                     <input @click='mark_out_of_stock' :checked='product.mark_out_of_stock == 1 ? true : false' type='checkbox' :disabled='view_only'>
+                     <span class='text'><?php echo __('Mark as out of stock', 'watergo'); ?></span>
+                  </label>
+               </div>
+
+               <div class='t-red'>{{ text_error }}</div>
+
+               <div v-show='view_only == false' class='form-button'>
+                  <button @click='btn_action_product("add")' v-if='action == "add"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'><?php echo __('Add', 'watergo'); ?></button>
+                  <button @click='btn_action_product("edit")' v-if='action == "edit"' class='btn btn-primary' :class='is_can_action == false ? "disable" : ""'><?php echo __('Save', 'watergo'); ?></button>
+                  <button @click='btn_modal_open' v-if='action == "edit"' class='btn btn-outline'><?php echo __('Delete', 'watergo'); ?></button>
+               </div>
             </div>
          </div>
       </div>
@@ -384,6 +395,11 @@
 
 </div>
 <script>
+
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
 
 var app = Vue.createApp({
    data (){
@@ -481,7 +497,40 @@ var app = Vue.createApp({
             // image upload
             uploadImages:     false,
             productImages:    false,
-         }
+         },
+
+
+         // WATER VOLUME
+         water_volume_select: [
+            { label: '160 ml', },
+            { label: '210 ml', },
+            { label: '230 ml', },
+            { label: '250 ml', },
+            { label: '300 ml', },
+            { label: '330 ml', },
+            { label: '350 ml', },
+            { label: '355 ml', },
+            { label: '400 ml', },
+            { label: '430 ml', },
+            { label: '450 ml', },
+            { label: '500 ml', },
+            { label: '510 ml', },
+            { label: '520 ml', },
+            { label: '530 ml', },
+            { label: '555 ml', },
+            { label: '700 ml', },
+            { label: '750 ml', },
+            { label: '1.25L', },
+            { label: '1.5L', },
+            { label: '2L', },
+            { label: '4.5L', },
+            { label: '5L', },
+            { label: '6L', },
+            { label: '7L', },
+            { label: '18.5L', },
+            { label: '19L', },
+            { label: '20L', },
+         ]
       }
    },
 
@@ -753,12 +802,6 @@ var app = Vue.createApp({
       get_water_quantity(){
          return this.category.filter( cat => {
             if( cat.category == 'water_quantity' ) return cat.category == 'water_quantity';
-         });
-      },
-
-      get_water_volume(){
-         return this.category.filter( cat => {
-            if( cat.category == 'water_volume' ) return cat.category == 'water_volume';
          });
       },
       //
@@ -1060,7 +1103,6 @@ var app = Vue.createApp({
             }
             
             var r = await window.request(form);
-            // console.log(r);
             
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r ));

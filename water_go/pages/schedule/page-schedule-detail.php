@@ -23,7 +23,7 @@
 </style>
 <div id='app'>
 
-   <div v-show='loading == false' class='page-order-detail'>
+   <div v-if='loading == false' class='page-order-detail'>
 
       <div class='appbar style01'>
          <div class='appbar-top'>
@@ -191,13 +191,16 @@ var app = Vue.createApp({
       order: {
          handler( data ){
             if( data.order_note != null && data.order_note.length > 0){
-               this.$nextTick(() => {
-                  const textarea = this.$refs.input_order_note;
-                  const lineHeight = 22;
-                  const content = textarea.value;
-                  const lineBreaksCount = (content.match(/\n/g) || []).length + (content.match(/<br\s*\/?>/g) || []).length;
-                  textarea.style.height = `${lineHeight * (lineBreaksCount + 1)}px`;
-               });
+
+                  this.$nextTick(() => {
+                     if( this.$refs.input_order_note != undefined ){
+                        const textarea = this.$refs.input_order_note;
+                        const lineHeight = 22;
+                        const content = textarea.value;
+                        const lineBreaksCount = (content.match(/\n/g) || []).length + (content.match(/<br\s*\/?>/g) || []).length;
+                        textarea.style.height = `${lineHeight * (lineBreaksCount + 1)}px`;
+                     }
+                  });
 
             }
          }, deep: true
@@ -208,6 +211,31 @@ var app = Vue.createApp({
    },
 
    methods: {
+
+      get_title_weekly_compact( title ){
+         if( this.get_locale == 'vi' ){
+            if( title == 'Monday' ) return 'Thứ Hai';
+            if( title == 'Tuesday' ) return 'Thứ Ba';
+            if( title == 'Wednesday' ) return 'Thứ Tư';
+            if( title == 'Thursday' ) return 'Thứ Năm';
+            if( title == 'Friday' ) return 'Thứ Sáu';
+            if( title == 'Saturday' ) return 'Thứ Bảy';
+            if( title == 'Sunday' ) return 'Chủ Nhật';
+
+         }else if( this.get_locale == 'ko_KR' ){
+            if( title == 'Monday' )    return '월요일';
+            if( title == 'Tuesday' )   return '화요일';
+            if( title == 'Wednesday' ) return '수요일';
+            if( title == 'Thursday' )  return '목요일';
+            if( title == 'Friday' )    return '금요일';
+            if( title == 'Saturday' )  return '토요일';
+            if( title == 'Sunday' )    return '일요일';
+         }else{
+            return title;
+         }
+         
+      },
+
 
       async atlantis_create_conversation_or_get_it(order){ 
          var form = new FormData();

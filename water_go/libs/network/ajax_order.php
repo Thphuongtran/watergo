@@ -156,9 +156,11 @@ function func_atlantis_get_user_id_from_store_id( $store_id ){
 
 function return_order_with_group_products( $array_orders ){
    $final = [];
+
+   $total_price_product = 0;
+
    foreach ($array_orders as $k => $item) {
       $key = $item->hash_id;
-
       if (isset($final[$key]['order_products'] )) {
          
          $final[$key]['order_products'][] = [
@@ -171,6 +173,13 @@ function return_order_with_group_products( $array_orders ){
             'order_group_product_discount_percent' => $item->order_group_product_discount_percent,
             'order_group_store_id'                 => $item->order_group_store_id,
          ];
+
+         // $price            = $product->order_group_product_price;
+         // $quantity         = $product->order_group_product_quantity_count;
+         // $discount_percent = $product->order_group_product_discount_percent;
+         // $total_price_product += ($price - ( $price * ($discount_percent / 100 ) ) ) * $quantity;
+      // $order->total_product         = count($res_products);
+      // $order->total_price_product   = $total_price_product;
 
 
       } else {
@@ -695,7 +704,7 @@ function atlantis_get_order_schedule(){
             $price            = $val->order_group_product_price;
             $quantity         = $val->order_group_product_quantity_count;
             $discount_percent = $val->order_group_product_discount_percent;
-            $total_price_product += ($price - ( $price * ($discount_percent / 1000 ) ) ) * $quantity;
+            $total_price_product += ($price - ( $price * ($discount_percent / 100 ) ) ) * $quantity;
          }
          $vl->total_product = count($_product);
          $vl->total_price_product = $total_price_product;
@@ -740,7 +749,7 @@ function atlantis_get_order_user(){
          'get_by'                   => 'user_id',
          'related_id'               => $user_id,
          'order_status'             => $order_status,
-         'paged'                    => $paged,
+         'limit'                    => -1,
          'is_get_product_related'   => 1
       ]);
       
@@ -856,7 +865,7 @@ function atlantis_get_order_filter(){
             $price            = $product->order_group_product_price;
             $quantity         = $product->order_group_product_quantity_count;
             $discount_percent = $product->order_group_product_discount_percent;
-            $total_price_product += ($price - ( $price * ($discount_percent / 1000 ) ) ) * $quantity;
+            $total_price_product += ($price - ( $price * ($discount_percent / 100 ) ) ) * $quantity;
          }
 
          $vl->total_product       = count($res_get_product);
@@ -937,10 +946,10 @@ function atlantis_cancel_order(){
          }
       }
 
-      protocal_atlantis_notification_to_store([
-         'order_status' => 'cancel',
-         'order_id'     => $order_id
-      ]);
+      // protocal_atlantis_notification_to_store([
+      //    'order_status' => 'cancel',
+      //    'order_id'     => $order_id
+      // ]);
       
       wp_send_json_success(['message' => 'cancel_done']);
       wp_die();
@@ -1093,10 +1102,10 @@ function atlantis_order_status(){
             for( $i = 0; $i < count($wheres); $i++ ){
                $_order_id        = $wheres[$i];
                
-               protocal_atlantis_notification_to_user([
-                  'order_status' => 'confirmed',
-                  'order_id'     => $_order_id
-               ]);
+               // protocal_atlantis_notification_to_user([
+               //    'order_status' => 'confirmed',
+               //    'order_id'     => $_order_id
+               // ]);
             }
             
          }
@@ -1106,10 +1115,10 @@ function atlantis_order_status(){
 
             for( $i = 0; $i < count($wheres); $i++ ){
                $_order_id        = $wheres[$i];
-               protocal_atlantis_notification_to_user([
-                  'order_status' => 'delivering',
-                  'order_id'     => $_order_id
-               ]);
+               // protocal_atlantis_notification_to_user([
+               //    'order_status' => 'delivering',
+               //    'order_id'     => $_order_id
+               // ]);
             }
 
          }
@@ -1123,10 +1132,10 @@ function atlantis_order_status(){
 
             for( $i = 0; $i < count($wheres); $i++ ){
                $_order_id        = $wheres[$i];
-               protocal_atlantis_notification_to_user([
-                  'order_status' => 'completed',
-                  'order_id'     => $_order_id
-               ]);
+               // protocal_atlantis_notification_to_user([
+               //    'order_status' => 'completed',
+               //    'order_id'     => $_order_id
+               // ]);
             }
 
             // IF ORDER IS WEEKLY OR MONTHLY - MAKE NEW ORDER
@@ -1283,10 +1292,10 @@ function atlantis_order_status(){
                }
                // REASON CANCEL ORDER
 
-               protocal_atlantis_notification_to_user([
-                  'order_status' => 'cancel',
-                  'order_id'     => $_order_id
-               ]);
+               // protocal_atlantis_notification_to_user([
+               //    'order_status' => 'cancel',
+               //    'order_id'     => $_order_id
+               // ]);
 
             }
          }
@@ -1307,7 +1316,11 @@ function atlantis_order_status(){
 
         if ( $updated ) {
             $insert_id = $wpdb->insert_id;
-            wp_send_json_success( [ 'message' => 'order_status_ok', 'data' => $updated ] );
+            wp_send_json_success( [ 'message' => 'order_status_ok', 
+               'data' => $updated,
+               'order_status' => $status,
+               'order_ids'    => $wheres
+            ] );
          } else {
             wp_send_json_error( [ 'message' => 'order_not_found', 'data' => $updated ] );
          }
@@ -1442,13 +1455,13 @@ function atlantis_count_total_order_by_status(){
       $sql = "SELECT statuses.order_status, COALESCE(COUNT(orders.order_status), 0) AS total_count
          FROM
          (
-            SELECT 'ordered' AS order_status
+            SELECT 'ordered' AS order_status 
             UNION ALL
-            SELECT 'confirmed' AS order_status
+            SELECT 'confirmed' AS order_status 
             UNION ALL
-            SELECT 'delivering' AS order_status
+            SELECT 'delivering' AS order_status 
             UNION ALL
-            SELECT 'complete' AS order_status
+            SELECT 'complete' AS order_status 
             UNION ALL
             SELECT 'cancel' AS order_status
          ) AS statuses
@@ -1484,13 +1497,16 @@ function atlantis_get_order_multiple_time(){
 
       $order_decode  = json_decode($order_ids );
       $wheres = [];
-      foreach( $order_decode as $ids ){
-         $wheres[] = $ids;
-      }
       if( empty( $wheres )){
          $wheres = [0];
+      }else{
+         foreach( $order_decode as $ids ){
+            $wheres[] = $ids;
+         }
       }
+
       $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+
 
       $user_id = get_current_user_id();
 
@@ -1527,7 +1543,7 @@ function atlantis_get_order_multiple_time(){
          $vl->order_number = $order_number;
       }
       
-      wp_send_json_success([ 'message' => 'order_found', 'data' => $res, 'is_store' => 0, 'wheres' => $wheres ]);
+      wp_send_json_success([ 'message' => 'order_found', 'data' => $res, 'is_store' => 0 ]);
       wp_die();
 
    }
@@ -1656,6 +1672,8 @@ function atlantis_get_newest_order(){
 
             $order_number  = $order->order_number;
             $number_repeat = $order->order_number_repeat;
+            $order->total_product = 0;
+            $order->total_price_product = 0;
 
             if( $number_repeat != 0 && $number_repeat != null && $number_repeat != ''){
                $order_number = str_pad( $order_number, 4, "0", STR_PAD_LEFT) . '-' . $number_repeat;
@@ -1683,6 +1701,7 @@ function atlantis_get_newest_order(){
             $res_products = $wpdb->get_results($get_products);
             
             if( !empty($res_products) ){
+               $total_price_product = 0;
                foreach( $res_products as $kProduct => $product ){
                   $res_newest_order[$kOrder]->order_products[$kProduct] = [
                      'order_group_id'                       => $product->order_group_id,
@@ -1702,7 +1721,13 @@ function atlantis_get_newest_order(){
                      'order_group_product_gift_to'          => $product->order_group_product_gift_to,
                      'order_group_product_gift_from'        => $product->order_group_product_gift_from
                   ];
+                  $price            = $product->order_group_product_price;
+                  $quantity         = $product->order_group_product_quantity_count;
+                  $discount_percent = $product->order_group_product_discount_percent;
+                  $total_price_product += ($price - ( $price * ($discount_percent / 100 ) ) ) * $quantity;
                }
+               $order->total_product         = count($res_products);
+               $order->total_price_product   = $total_price_product;
             }
          }
       }
@@ -1770,6 +1795,37 @@ function atlantis_reorder(){
 
       wp_send_json_error([ 'message' => 'order_not_found' ]);
       wp_die();
+
+   }
+}
+
+
+add_action( 'wp_ajax_nopriv_atlantis_count_review_not_in_order_complete', 'atlantis_count_review_not_in_order_complete' );
+add_action( 'wp_ajax_atlantis_count_review_not_in_order_complete', 'atlantis_count_review_not_in_order_complete' );
+function atlantis_count_review_not_in_order_complete(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_count_review_not_in_order_complete'){
+      $user_id = get_current_user_id();
+
+      $sql = "SELECT 
+         COUNT(wp_watergo_order.order_id) as order_complete
+         FROM wp_watergo_order
+         LEFT JOIN wp_watergo_reviews 
+         ON wp_watergo_reviews.order_id = wp_watergo_order.order_id
+         WHERE wp_watergo_order.order_status = 'complete'
+         AND wp_watergo_order.order_by = $user_id
+         AND (wp_watergo_reviews.order_id IS NULL OR wp_watergo_reviews.order_id != wp_watergo_order.order_id)
+      ";
+
+      global $wpdb;
+      $res = $wpdb->get_results( $sql);
+      if( empty( $res )){
+         wp_send_json_error([ 'message' => 'order_not_found' ]);
+         wp_die();
+      }
+
+      wp_send_json_success([ 'message' => 'order_found', 'data' => (int) $res[0]->order_complete ]);
+      wp_die();
+
 
    }
 }

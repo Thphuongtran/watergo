@@ -549,6 +549,10 @@ function atlantis_protocal_notification_in_background(){
    }
 }
 
+
+/**
+ * @access SEND PUSH ONLY
+ */
 add_action( 'wp_ajax_atlantis_push_notification_in_background', 'atlantis_push_notification_in_background' );
 function atlantis_push_notification_in_background(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_push_notification_in_background' ){
@@ -564,4 +568,38 @@ function atlantis_push_notification_in_background(){
       );
       
    }
+}
+
+
+/**
+ * @access SEND PUSH AND MAKE NOTIFICATION WHEN APP STORE WANT TO ACCESS MULTIPLE ORDER  
+ */
+add_action( 'wp_ajax_atlantis_push_notification_in_background_multiple', 'atlantis_push_notification_in_background_multiple' );
+function atlantis_push_notification_in_background_multiple(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_push_notification_in_background_multiple'){
+      $order_ids = isset($_POST['order_ids']) ? $_POST['order_ids'] : '';
+      $send_to   = isset($_POST['send_to']) ? $_POST['send_to'] : '';
+      $order_status = isset($_POST['order_status']) ? $_POST['order_status'] : '';
+
+      if( $order_ids == '' || $send_to == '' ){
+         wp_send_json_error(['message' => 'order_not_found' ]);
+         wp_die();
+      }
+
+      $order_ids = json_decode($order_ids );
+
+      if( !empty( $order_ids )){
+         foreach( $order_ids as $order_id ){
+            protocal_atlantis_notification_to_user([
+               'order_id'     => $order_id,
+               'order_status' => $order_status
+            ] );
+         }
+      }
+
+      wp_send_json_success(['message' => 'send_push_and_notfication_ok' ]);
+      wp_die();
+
+   }
+
 }

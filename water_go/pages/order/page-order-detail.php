@@ -66,140 +66,136 @@
          <div class="break-line"></div>
       </div>
 
-      <div v-if='order != null' class='inner'>
-         <div class='list-tile delivery-address style-order'>
-            <div class='content'>
-               <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
-               <p class='tt03'>{{ order.order_delivery_address.address }}</p>
-               <p class='tt02'>{{ order.order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order.order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order.order_delivery_address.phone ) : '' }}</p>
-            </div>
-         </div>
-      </div>
-
-      <div class='break-line'></div> 
-
-      <ul v-if='order != null' class='list-tile order'>
-
-         <li>
-            <div @click='gotoStoreDetail(order.store_id)' class='shop-detail add-arrow'>
-               <div class='logo'>
-                  <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     <rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/>
-                     <path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/>
-                  </svg>
-               </div>
-               <span class='shop-name' v-if='order.store_name != null'>{{ order.store_name }}</span>
-            </div>
-
-            <div v-for='(product, product_key) in order.order_products' :key='product_key'
-               class='list-items'>
-               <div class="list-items-wrapper">
-                  <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
-                  <div class='order-gr'>
-                     <span class='product-title'>{{ product.order_group_product_name }}</span>
-                     <span class='product-subtitle'>{{ product.order_group_product_name_second }}</span>
-                     <span class='product-subtitle' v-show='product.order_group_product_gift_text != ""'>
-                        {{ product.order_group_product_gift_text }}
-                     </span>
-                  </div>
-                  <div class='order-price'>
-                     <span class='price'>
-                        {{ common_price_after_discount_and_quantity_from_group_order(product) }}
-                     </span>
-                     <span v-show='product.order_group_product_discount_percent != 0' class='od-price-discount'>
-                        {{ common_price_after_quantity_from_group_order(product) }}
-                     </span>
+      <div class='scaffold'>
+         
+         <div v-show='loading_data == false' class='scaffold-wrapper'>
+            <div v-if='order != null' class='inner'>
+               <div class='list-tile delivery-address style-order'>
+                  <div class='content'>
+                     <p class='tt01'><?php echo __('Delivery address', 'watergo'); ?></p>
+                     <p class='tt03'>{{ order.order_delivery_address.address }}</p>
+                     <p class='tt02'>{{ order.order_delivery_address.name }} {{ hasMoreThanTwoZeroes(order.order_delivery_address.phone) ? ' | (+84) ' + removeZeroLeading( order.order_delivery_address.phone ) : '' }}</p>
                   </div>
                </div>
             </div>
 
-         </li>
-      </ul>
+            <div class='break-line'></div> 
 
-      <div v-if='order != null && order.order_delivery_type != null' class='box-delivery-time'>
-         <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
-         <p class='tt02'>{{ get_delivery_time_activity }}</p>
-         <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
-         <!-- <div 
-            v-if='
-               order.order_delivery_type == "once_date_time" ||
-               order.order_delivery_type == "weekly" ||
-               order.order_delivery_type == "monthly"
-            '
-            v-for='( time_shipping, date_time_key ) in filter_time_shipping' :key='date_time_key'
-            class='display_delivery_time'
-            :class='time_shipping.order_time_shipping_id == order.order_time_shipping_id ? "highlight" : ""'
-            >
-               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ time_shipping.order_time_shipping_day }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "once_date_time"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ get_title_weekly_compact(time_shipping.order_time_shipping_day) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ time_shipping.order_time_shipping_day }}</div>
-               <div v-if='time_shipping.order_time_shipping_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(time_shipping.order_time_shipping_time) }}</div>
-         </div> -->
-         <div
-            v-if='order.order_delivery_type == "once_date_time"' class='display_delivery_time'
-         >
-            <div class='date_time_item'>{{ order.order_time_shipping.order_time_shipping_day }}</div>
-            <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(order.order_time_shipping.order_time_shipping_time) }}</div>
+            <ul v-if='order != null' class='list-tile order'>
+
+               <li>
+                  <div @click='gotoStoreDetail(order.store_id)' class='shop-detail add-arrow'>
+                     <div class='logo'>
+                        <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <rect x="2.5" y="6.5" width="16" height="10" rx="1.5" fill="white" stroke="black"/>
+                           <path d="M20.096 4.43083L20.0959 4.4307L17.8831 0.787088L17.8826 0.786241C17.7733 0.605479 17.5825 0.5 17.3865 0.5H3.61215C3.41614 0.5 3.22534 0.605479 3.11605 0.786241L3.11554 0.787088L0.902826 4.43061C0.902809 4.43064 0.902792 4.43067 0.902775 4.4307C0.0376853 5.85593 0.639918 7.73588 1.97289 8.31233C2.15024 8.38903 2.34253 8.44415 2.54922 8.47313C2.67926 8.49098 2.81302 8.5 2.9473 8.5C3.80016 8.5 4.5594 8.1146 5.08594 7.50809L5.46351 7.07318L5.84107 7.50809C6.36742 8.11438 7.12999 8.5 7.97971 8.5C8.83258 8.5 9.59181 8.1146 10.1184 7.50809L10.4959 7.07318L10.8735 7.50809C11.3998 8.11438 12.1624 8.5 13.0121 8.5C13.865 8.5 14.6242 8.1146 15.1508 7.50809L15.5273 7.07438L15.905 7.50705C16.4357 8.11494 17.1956 8.5 18.0445 8.5C18.1822 8.5 18.3128 8.49098 18.4433 8.47304L20.096 4.43083ZM20.096 4.43083C21.0907 6.06765 20.1619 8.23575 18.4435 8.47301L20.096 4.43083Z" fill="white" stroke="black"/>
+                        </svg>
+                     </div>
+                     <span class='shop-name' v-if='order.store_name != null'>{{ order.store_name }}</span>
+                  </div>
+
+                  <div v-for='(product, product_key) in order.order_products' :key='product_key'
+                     class='list-items'>
+                     <div class="list-items-wrapper">
+                        <span class='quantity'>{{ product.order_group_product_quantity_count }}x</span>
+                        <div class='order-gr'>
+                           <span class='product-title'>{{ product.order_group_product_name }}</span>
+                           <span class='product-subtitle'>{{ product.order_group_product_name_second }}</span>
+                           <span class='product-subtitle' v-show='product.order_group_product_gift_text != ""'>
+                              {{ product.order_group_product_gift_text }}
+                           </span>
+                        </div>
+                        <div class='order-price'>
+                           <span class='price'>
+                              {{ common_price_after_discount_and_quantity_from_group_order(product) }}
+                           </span>
+                           <span v-show='product.order_group_product_discount_percent != 0' class='od-price-discount'>
+                              {{ common_price_after_quantity_from_group_order(product) }}
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+
+               </li>
+            </ul>
+
+            <div v-if='order != null && order.order_delivery_type != null' class='box-delivery-time'>
+               <p class='tt01'><?php echo __('Delivery time', 'watergo'); ?></p>
+               <p class='tt02'>{{ get_delivery_time_activity }}</p>
+               <p class='tt03' v-if='order.order_delivery_type == "once_immediately"'><?php echo __('Immediately (within 2 hour)', 'watergo'); ?> </p>
+               <div
+                  v-if='order.order_delivery_type == "once_date_time"' class='display_delivery_time'
+               >
+                  <div class='date_time_item'>{{ order.order_time_shipping.order_time_shipping_day }}</div>
+                  <div class='date_time_item'>{{ add_extra_space_order_time_shipping_time(order.order_time_shipping.order_time_shipping_time) }}</div>
+               </div>
+               <div
+                  v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
+                  v-for='( ship_item, ship_key ) in order.order_setting_shipping.settings' :key='ship_key'
+                  class='display_delivery_time'
+                  :class='ship_item.day == order.order_time_shipping.order_time_shipping_day ? "highlight" : ""'
+               >
+                  <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_title_weekly_compact(ship_item.day) }}</div>
+                  <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
+                  <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ ship_item.day }}</div>
+                  <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
+               </div>
+            </div>
+
+            <div class='break-line'></div>
+            <div class='box-payment-method'>
+               <p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p>
+               <p class='heading-03'>{{ get_payment_method_activity }}</p>
+            </div>
+
+            <div class='break-line'></div>
+            <div v-if='order != null' class='box-time-order'>
+               <p class='heading-03'><?php echo __('Ordered Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
+               <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'><?php echo __('Confirmed Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
+               <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'><?php echo __('Delivery Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
+               <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'><?php echo __('Complete Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
+               <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'><?php echo __('Cancel Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
+            </div>
+
+            <div v-if='order != null && order.order_note != null && order.order_note != ""' class='inner'>
+               <div class='box-textarea'>
+                  <textarea ref='input_order_note'  class='input_order_note' readonly>{{order.order_note}}</textarea>
+               </div>
+            </div>
+
+
+            <div v-if='order_status != ""' class='order-bottomsheet'>
+               
+               <div v-if='order_status == "complete" && can_review == true' class='btn_cancel_order_wrapper'>
+                  <button @click='gotoAddReview(order.store_id, order.order_id )'
+                     class='btn btn-outline btn-review-order'><?php echo __('Review Store', 'watergo'); ?></button>
+               </div>
+               
+               <div v-if='order_status == "ordered" || order_status == "confirmed"' class='btn_cancel_order_wrapper'>
+                  <button @click='btn_cancel_order' 
+                     v-if='order_status == "ordered" || order_status == "confirmed"' 
+                     class='btn btn-outline btn-cancel-order'><?php echo __('Cancel', 'watergo'); ?></button>
+               </div>
+
+               <div class='product-detail-bottomsheet' :class='get_layout_bottomsheet'>
+                  <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
+                  <button 
+                     v-if='check_can_reorder == true'
+                     @click='buttonReOrder' 
+                     class='btn-primary'><?php echo __('Re-Order', 'watergo'); ?></button>
+               </div>
+               
+            </div>
+
          </div>
-         <div
-            v-if='order.order_delivery_type == "weekly" || order.order_delivery_type == "monthly"'
-            v-for='( ship_item, ship_key ) in order.order_setting_shipping.settings' :key='ship_key'
-            class='display_delivery_time'
-            :class='ship_item.day == order.order_time_shipping.order_time_shipping_day ? "highlight" : ""'
-         >
-            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ get_title_weekly_compact(ship_item.day) }}</div>
-            <div v-if='order.order_delivery_type == "weekly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
-            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'><?php echo __('Date', 'watergo'); ?> {{ ship_item.day }}</div>
-            <div v-if='order.order_delivery_type == "monthly"' class='date_time_item'>{{ add_extra_space_order_time_shipping_time(ship_item.time) }}</div>
-         </div>
-      </div>
-
-      <div class='break-line'></div>
-      <div class='box-payment-method'>
-         <p class='heading-02'><?php echo __('Payment method', 'watergo'); ?> </p>
-         <p class='heading-03'>{{ get_payment_method_activity }}</p>
-      </div>
-
-      <div class='break-line'></div>
-      <div v-if='order != null' class='box-time-order'>
-         <p class='heading-03'><?php echo __('Ordered Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_created) }}</span></p>
-         <p v-if='order != null && order.order_time_confirmed != null && order.order_time_confirmed != "" && order.order_time_confirmed != 0 ' class='heading-03'><?php echo __('Confirmed Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_confirmed ) }}</span></p>
-         <p v-if='order != null && order.order_time_delivery != null && order.order_time_delivery != "" && order.order_time_delivery != 0 ' class='heading-03'><?php echo __('Delivery Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_delivery) }}</span></p>
-         <p v-if='order != null && order.order_time_completed != null && order.order_time_completed != "" && order.order_time_completed != 0 ' class='heading-03'><?php echo __('Complete Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_completed) }}</span></p>
-         <p v-if='order != null && order.order_time_cancel != null && order.order_time_cancel != "" && order.order_time_cancel != 0 ' class='heading-03'><?php echo __('Cancel Time', 'watergo'); ?>: <span class='t-6 ml5'>{{ order_formatDate(order.order_time_cancel) }}</span></p>
-      </div>
-
-      <div v-if='order != null && order.order_note != null && order.order_note != ""' class='inner'>
-         <div class='box-textarea'>
-            <textarea ref='input_order_note'  class='input_order_note' readonly>{{order.order_note}}</textarea>
-         </div>
-      </div>
-
-
-      <div v-if='order_status != ""' class='order-bottomsheet'>
          
-         <div v-if='order_status == "complete" && can_review == true' class='btn_cancel_order_wrapper'>
-            <button @click='gotoAddReview(order.store_id, order.order_id )'
-               class='btn btn-outline btn-review-order'><?php echo __('Review Store', 'watergo'); ?></button>
-         </div>
-         
-         <div v-if='order_status == "ordered" || order_status == "confirmed"' class='btn_cancel_order_wrapper'>
-            <button @click='btn_cancel_order' 
-               v-if='order_status == "ordered" || order_status == "confirmed"' 
-               class='btn btn-outline btn-cancel-order'><?php echo __('Cancel', 'watergo'); ?></button>
+         <div v-show='loading_data == true' class='progress-center'>
+            <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
          </div>
 
-         <div class='product-detail-bottomsheet' :class='get_layout_bottomsheet'>
-            <p class='price-total'><?php echo __('Total', 'watergo'); ?>: <span class='t-primary t-bold'>{{ count_total_product_in_order }}</span></p>
-            <button 
-               v-if='check_can_reorder == true'
-               @click='buttonReOrder' 
-               class='btn-primary'><?php echo __('Re-Order', 'watergo'); ?></button>
-         </div>
-         
       </div>
+
+
 
    </div>
 
@@ -265,14 +261,13 @@
 
 </div>
 
-<script type='module' setup>
+<script type='module'>
 
-var { createApp } = Vue;
-
-createApp({
+var app = Vue.createApp({
    data (){
       return {
          loading: false,
+         loading_data: false,
          banner_open: false,
          popup_out_of_stock: false,
          order_is_out_of_stock: false,
@@ -415,6 +410,21 @@ createApp({
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
                if( res.message == 'cancel_done' ) {
+
+                  try {
+                     var push_notification = new FormData();
+                     push_notification.append('action', 'atlantis_protocal_notification_in_background');
+                     push_notification.append('send_to', 'store');
+                     push_notification.append('order_status', 'cancel');
+                     push_notification.append('order_id', this.order.order_id);
+                     
+                     let requestPromise = window.request(push_notification);
+                     let immediatePromise = new Promise(resolve => resolve());
+                     await Promise.race([requestPromise, immediatePromise]);
+                  } catch (error) {
+                     console.log(error);
+                  }
+
                   setTimeout(() => {
                      appBridge.navigateTo("Order", "order_refresh");
                   }, 1000);
@@ -430,7 +440,6 @@ createApp({
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
-         console.log(r);
 
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
@@ -440,6 +449,11 @@ createApp({
                this.order = res.data;
             }
          }
+      },
+
+      // REFRESH ORDER - THIS FUNCTION RUN WHEN USER DOING WRITE A REVIEW AND BACK TO ORDER, THIS ORDER NEED REFRESH
+      remove_banner_review(){
+         this.can_review = false;
       },
 
       buttonReOrder(){
@@ -637,5 +651,7 @@ createApp({
    },
 
 }).mount('#app');
+
+window.app = app;
 
 </script>

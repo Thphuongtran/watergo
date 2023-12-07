@@ -1,4 +1,8 @@
 <?php 
+
+   /**
+    * @access IMPORTANT NOT TO CHANGE OR DELETE, BECAUSE THIS IS SAME TEXT IN LOCO TRANSLATE PLUGIN
+    */
    $_change_password          = 'Change Password';
    $_current_password         = 'Current Password';
    $_enter_current_password   = 'Enter current password';
@@ -33,6 +37,20 @@
 
 <style type="text/css">
    .form-group input{border: none; outline: 0}
+   .appbar{
+      height: 56px;
+   }
+   .scaffold{
+      height: calc( 100vh - 56px );
+      overflow-y: scroll;
+      overflow-x: hidden;
+   }
+   .btn-fixed.bottom{
+      background-color: white; 
+      bottom: 0px; 
+      width: 100%;
+      padding: 15px;;
+   }
 </style>
 <div id='app'>
    <div v-if='loading == false' class='page-order-filter'>
@@ -50,33 +68,35 @@
             </div>
          </div>
       </div>
+      
+      <div class='scaffold'>
+         <div class='inner'>
+            <div class='page-change-password'>
+               <div class='box-justify-between'>
+                  
+                  <div class='form-wrapper' style="overflow-y: scroll;padding-bottom: 90px;">
+                     <div class='form-group style01'>
+                        <span><?php echo $_current_password; ?></span>
+                        <input class='input-style02' v-model='current_password' type="password" placeholder='<?php echo $_enter_current_password; ?>'>
+                     </div>
+                     <div class='form-group style01'>
+                        <span><?php echo $_new_password; ?></span>
+                        <input v-model='new_password' type="password" placeholder='<?php echo $_enter_new_password; ?>'>
+                     </div>
+                     <div class='form-group style01'>
+                        <span><?php echo $_confirm_new_password; ?></span>
+                        <input v-model='confirm_password' type="password" placeholder='<?php echo $_enter_new_password; ?>'>
+                     </div>
+                  </div>
+                  <p class='t-red'>{{ t_res }}</p>
 
-      <div class='inner'>
-         <div class='page-change-password'>
-            <div class='box-justify-between'>
-               
-               <div class='form-wrapper' style="overflow-y: scroll;padding-bottom: 90px;">
-                  <div class='form-group style01'>
-                     <span><?php echo $_current_password; ?></span>
-                     <input class='input-style02' v-model='current_password' type="password" placeholder='<?php echo $_enter_current_password; ?>'>
-                  </div>
-                  <div class='form-group style01'>
-                     <span><?php echo $_new_password; ?></span>
-                     <input v-model='new_password' type="password" placeholder='<?php echo $_enter_new_password; ?>'>
-                  </div>
-                  <div class='form-group style01'>
-                     <span><?php echo $_confirm_new_password; ?></span>
-                     <input v-model='confirm_password' type="password" placeholder='<?php echo $_enter_new_password; ?>'>
-                  </div>
+                  
+
                </div>
-               <p class='t-red'>{{ t_res }}</p>
-
-               
-
-            </div>
-            <div class='btn-fixed bottom' style="background-color:white;bottom: 0;padding-bottom: 30px;">
+               <div class='btn-fixed bottom'>
                   <button @click='btn_change_password' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
                </div>
+            </div>
          </div>
       </div>
 
@@ -94,7 +114,7 @@
       </div>
 
       <div class='banner-footer'>
-         <button onclick="close_and_refresh()" class='btn btn-outline' style="height: 40px;line-height: 38px"><?php echo __('Exit', 'watergo'); ?></button>
+         <button @click="close_and_refresh" class='btn btn-outline' style="height: 40px;line-height: 38px"><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 
@@ -104,13 +124,12 @@
       </div>
    </div>
 </div>
-<script type="text/javascript">
-   function close_and_refresh(){
-      window.appBridge.close();
-      window.appBridge.refresh();
-   }
-</script>
+
 <script type='module'>
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
 
 var { createApp } = Vue;
 
@@ -128,6 +147,11 @@ createApp({
 
    methods: {
       
+      close_and_refresh(){
+         window.appBridge.close();
+         window.appBridge.refresh();
+      },
+
       async btn_change_password(){
          this.loading = true;
          var form = new FormData();
@@ -136,7 +160,7 @@ createApp({
          form.append('new_password', this.new_password);
          form.append('confirm_password', this.confirm_password);
          var r = await window.request(form);
-         window.appbar_fixed();
+         
          if( r != undefined ){
             var res = JSON.parse(JSON.stringify(r));
             if(res.message == 'field_must_not_empty' ){
@@ -154,6 +178,8 @@ createApp({
                this.loading = false;
             }
          }
+
+         window.appbar_fixed();
       },
 
       gotoNotification(code){ window.gotoNotification(code);},
@@ -168,10 +194,4 @@ createApp({
 }).mount('#app');
 
 
-</script>
-
-<script type="text/javascript">
-   jQuery(document).ready(function($){   
-      window.appBridge.setEnableScroll(false);
-   })
 </script>

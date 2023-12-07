@@ -12,19 +12,15 @@ add_action( 'wp_ajax_atlantis_get_avg_rating', 'atlantis_get_avg_rating' );
 add_action( 'wp_ajax_nopriv_atlantis_review_average_rating', 'atlantis_review_average_rating' );
 add_action( 'wp_ajax_atlantis_review_average_rating', 'atlantis_review_average_rating' );
 
-add_action( 'wp_ajax_nopriv_atlantis_add_review', 'atlantis_add_review' );
 add_action( 'wp_ajax_atlantis_add_review', 'atlantis_add_review' );
 
-add_action( 'wp_ajax_nopriv_atlantis_delete_review', 'atlantis_delete_review' );
 add_action( 'wp_ajax_atlantis_delete_review', 'atlantis_delete_review' );
 
 add_action( 'wp_ajax_nopriv_atlantis_get_user_review', 'atlantis_get_user_review' );
 add_action( 'wp_ajax_atlantis_get_user_review', 'atlantis_get_user_review' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_review', 'atlantis_get_review' );
 add_action( 'wp_ajax_atlantis_get_review', 'atlantis_get_review' );
 
-add_action( 'wp_ajax_nopriv_atlantis_update_review', 'atlantis_update_review' );
 add_action( 'wp_ajax_atlantis_update_review', 'atlantis_update_review' );
 
 
@@ -377,3 +373,4 @@ function atlantis_get_review_store(){
 
    }
 }
+

@@ -108,6 +108,8 @@
    .space-top-product .badge-gift {
       position: relative;
       width: 100%;
+      left: -5px;
+      margin-top: 2px;
    }
    .space-top-product .badge-gift .icon {
       position: absolute;
@@ -116,6 +118,10 @@
    .space-top-product .badge-gift .text {
       padding-left: 25px;
       line-height: 20px;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
    }
    .list-horizontal ul{
       overflow-y: hidden;
@@ -175,14 +181,13 @@
                <p class='tt01'>
                   {{ product.name }}
 
-                  <span class='category-parent' 
+                  <!-- <span class='category-parent' 
                      v-if='
-                        ( product.product_type == "ice" || product.product_type == "water" ) && 
+                        product.product_type == "ice" && 
                         ( product.category_parent != null && product.category_parent != "null" && product.category_parent != "")
                      '>
-                     {{ product.category_parent }}</span>
+                     {{ product.category_parent }}</span> -->
                </p>
-               {{ product.category_parent }}
                <p class='tt02'>{{ product.name_second }}</p>
 
                <p v-if='product.description != ""' class='tt03' v-html='formatDescription(product.description)'></p>

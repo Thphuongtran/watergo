@@ -20,6 +20,13 @@
    .forcehidden{
       display: none;
    }
+   .link-term-condition{
+      line-height: 24px;
+      z-index: 8;
+   }
+   .form-check.style01{
+      align-items: flex-end;
+   }
 </style>
 <div id='authentication'>
 
@@ -130,7 +137,7 @@
             <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
          </div>
 
-         <div class='form-check style01 mt15' style="display:flex; align-items: center;column-gap: 4px;">
+         <div class='form-check style01 mt15' style="display:flex; column-gap: 4px;">
             <label class='justify-center'>
                <input @click='toggle_term_conditions' :checked='term_conditions' type='checkbox' class='checkbox-login'> 
                <span class='text text-nowrap'><?php echo __('I agree with', 'watergo'); ?></span>

@@ -51,6 +51,16 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
       margin-right: 5px;
    }
 
+   .appbar{
+      height: 221px;
+   }
+
+   .scaffold{
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: calc( 100vh - 221px);
+   }
+
 </style>
 <div id='app'>
    <div v-show='loading == false' class='page-product-store'>
@@ -206,6 +216,11 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
 
 <script>
 
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
+
 var app = Vue.createApp({
    data (){
       return {
@@ -305,9 +320,11 @@ var app = Vue.createApp({
                   }else{
                      product.is_availble = false;
                   }
-                  var _existsProduct = this.products.some( item => item.id == product.id);
-                  if( !_existsProduct ){
-                     this.products.push( product);
+                  if( product.status != 'delete' ){
+                     var _existsProduct = this.products.some( item => item.id == product.id);
+                     if( !_existsProduct ){
+                        this.products.push( product);
+                     }
                   }
 
                });
@@ -443,6 +460,42 @@ var app = Vue.createApp({
          }
       },
 
+      async atlantis_refresh_product_store(){
+         var product_ids = [];
+         this.products.forEach( item => {
+            product_ids.push( parseInt(item.id) );
+         });
+         var form = new FormData();
+         form.append('action', 'atlantis_refresh_product_store');
+         form.append('product_ids', JSON.stringify(product_ids));
+
+         var r = await window.request(form);
+         console.log(r);
+
+         if( r != undefined ){
+            var res = JSON.parse( JSON.stringify( r));
+            if( res.message == 'get_product_ok' ){
+               res.data.forEach( product => {
+                  if( product.mark_out_of_stock == null ) product.mark_out_of_stock = 0;
+                  if( product.mark_out_of_stock == 0 ) {
+                     product.is_availble = true;
+                  }else{
+                     product.is_availble = false;
+                  }
+                  if( product.status != 'delete' ){
+                     var index = this.products.findIndex( item => item.id == product.id);
+                     if( index != - 1 ){
+                        this.products[index] = product;
+                     }
+                  }
+               });
+            }
+         }
+         
+      },
+
+
+
    },
 
    mounted() { window.addEventListener('scroll', this.handleScroll); },
@@ -456,17 +509,12 @@ var app = Vue.createApp({
       const urlParams   = new URLSearchParams(window.location.search);
       const tab         = urlParams.get('tab');
       const reload      = urlParams.get('reload');
-
-      if( reload == 1 ){
-         alert('reload page');
-      }
-
       
       await this.get_product_type();
       await this.get_notification_count();
       
       if( tab && tab != '' ){
-         await this.product_tab_select(tab)
+         await this.product_tab_select(tab);
       }else{
          var _findTabSelected = this.product_tab.find( item => item.active );
          if( _findTabSelected ){
@@ -488,5 +536,6 @@ window.app = app;
 
 async function callbackActiveTab(){
    await window.app.get_notification_count();
+   await window.app.atlantis_refresh_product_store();
 }
 </script>

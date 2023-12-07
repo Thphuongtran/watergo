@@ -6,10 +6,19 @@
    .forcehidden{
       display: none;
    }
+
+   .appbar{
+      height: 56px;
+   }
+   .scaffold{
+      height: calc( 100vh - 56px );
+      overflow-y: scroll;
+      overflow-x: hidden;
+   }
 </style>
 <div id='app'>
 
-   <div v-show='loading == false' class='page-edit'>
+   <div v-if='loading == false' class='page-edit'>
 
       <div class='appbar fixed'>
 
@@ -28,105 +37,109 @@
 
       </div>
 
-      <div class='inner form-store-style'>
-         <div class='avatar-header style02'>
-            <label style="position: relative;display: block;" for='uploadAvatar' class='upload-avatar style02'  :class='previewAvatar != null ? "has-preview" : ""'>
-               
-               <svg v-if='previewAvatar == null' width="388" height="181" viewBox="0 0 388 181" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <rect width="388" height="180" rx="8" fill="#F9F9F9"/>
-               <circle cx="194" cy="90" r="35" fill="#ECECEC"/>
-               <rect x="179.529" y="86.9199" width="28" height="18.0197" rx="1" fill="white" stroke="#C9C9C9" stroke-width="2"/>
-               <path d="M210.356 83.0991L210.356 83.0988L206.451 76.4675L206.45 76.4659C206.271 76.1609 205.971 76 205.682 76H181.374C181.085 76 180.785 76.1609 180.607 76.4659L180.606 76.4675L176.701 83.0986C176.701 83.0987 176.701 83.0988 176.701 83.0988C175.187 85.6709 176.261 89.0345 178.539 90.0502C178.84 90.1848 179.167 90.2814 179.519 90.3323C179.741 90.3638 179.971 90.3797 180.201 90.3797C181.658 90.3797 182.964 89.7014 183.876 88.6171L184.641 87.7083L185.407 88.6171C186.319 89.7009 187.631 90.3797 189.082 90.3797C190.538 90.3797 191.844 89.7014 192.757 88.6171L193.522 87.7083L194.287 88.6171C195.2 89.7009 196.511 90.3797 197.963 90.3797C199.419 90.3797 200.725 89.7014 201.638 88.6171L202.401 87.7108L203.166 88.615C204.086 89.7021 205.394 90.3797 206.843 90.3797C207.08 90.3797 207.303 90.3638 207.527 90.3321L210.356 83.0991ZM210.356 83.0991C211.198 84.5276 211.251 86.2502 210.688 87.6735M210.356 83.0991L210.688 87.6735M210.688 87.6735C210.126 89.0913 208.996 90.1228 207.527 90.3321L210.688 87.6735Z" fill="white" stroke="#C9C9C9" stroke-width="2"/>
-               </svg>
+      <div class='scaffold'>
 
-               <span class="camera-icon" style="position: absolute;bottom: 6px;right: 0px;margin-bottom: 0;display: inline-block;width: 38px;">
-                  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
-                  <g filter="url(#filter0_d_780_5054)">
-                  <circle cx="19" cy="17" r="15" fill="white"/>
-                  </g>
-                  <path d="M18.8888 20.556C20.3616 20.556 21.5555 19.3621 21.5555 17.8893C21.5555 16.4166 20.3616 15.2227 18.8888 15.2227C17.4161 15.2227 16.2222 16.4166 16.2222 17.8893C16.2222 19.3621 17.4161 20.556 18.8888 20.556Z" fill="#252831"/>
-                  <path d="M26 10.7778H23.1822L22.08 9.57778C21.9143 9.39591 21.7126 9.25058 21.4876 9.1511C21.2626 9.05161 21.0193 9.00015 20.7733 9H17.0044C16.5067 9 16.0267 9.21333 15.6889 9.57778L14.5956 10.7778H11.7778C10.8 10.7778 10 11.5778 10 12.5556V23.2222C10 24.2 10.8 25 11.7778 25H26C26.9778 25 27.7778 24.2 27.7778 23.2222V12.5556C27.7778 11.5778 26.9778 10.7778 26 10.7778ZM18.8889 22.3333C16.4356 22.3333 14.4444 20.3422 14.4444 17.8889C14.4444 15.4356 16.4356 13.4444 18.8889 13.4444C21.3422 13.4444 23.3333 15.4356 23.3333 17.8889C23.3333 20.3422 21.3422 22.3333 18.8889 22.3333Z" fill="#252831"/>
-                  <defs>
-                  <filter id="filter0_d_780_5054" x="0" y="0" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                  <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                  <feOffset dy="2"/>
-                  <feGaussianBlur stdDeviation="2"/>
-                  <feComposite in2="hardAlpha" operator="out"/>
-                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
-                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_780_5054"/>
-                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_780_5054" result="shape"/>
-                  </filter>
-                  </defs>
+         <div class='inner form-store-style'>
+            <div class='avatar-header style02'>
+               <label style="position: relative;display: block;" for='uploadAvatar' class='upload-avatar style02'  :class='previewAvatar != null ? "has-preview" : ""'>
+                  
+                  <svg v-if='previewAvatar == null' width="388" height="181" viewBox="0 0 388 181" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="388" height="180" rx="8" fill="#F9F9F9"/>
+                  <circle cx="194" cy="90" r="35" fill="#ECECEC"/>
+                  <rect x="179.529" y="86.9199" width="28" height="18.0197" rx="1" fill="white" stroke="#C9C9C9" stroke-width="2"/>
+                  <path d="M210.356 83.0991L210.356 83.0988L206.451 76.4675L206.45 76.4659C206.271 76.1609 205.971 76 205.682 76H181.374C181.085 76 180.785 76.1609 180.607 76.4659L180.606 76.4675L176.701 83.0986C176.701 83.0987 176.701 83.0988 176.701 83.0988C175.187 85.6709 176.261 89.0345 178.539 90.0502C178.84 90.1848 179.167 90.2814 179.519 90.3323C179.741 90.3638 179.971 90.3797 180.201 90.3797C181.658 90.3797 182.964 89.7014 183.876 88.6171L184.641 87.7083L185.407 88.6171C186.319 89.7009 187.631 90.3797 189.082 90.3797C190.538 90.3797 191.844 89.7014 192.757 88.6171L193.522 87.7083L194.287 88.6171C195.2 89.7009 196.511 90.3797 197.963 90.3797C199.419 90.3797 200.725 89.7014 201.638 88.6171L202.401 87.7108L203.166 88.615C204.086 89.7021 205.394 90.3797 206.843 90.3797C207.08 90.3797 207.303 90.3638 207.527 90.3321L210.356 83.0991ZM210.356 83.0991C211.198 84.5276 211.251 86.2502 210.688 87.6735M210.356 83.0991L210.688 87.6735M210.688 87.6735C210.126 89.0913 208.996 90.1228 207.527 90.3321L210.688 87.6735Z" fill="white" stroke="#C9C9C9" stroke-width="2"/>
                   </svg>
-               </span>
-               <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
-               <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar">
-            </label>
-         </div>
-         
-         <div class='form-group'>
-            <span><?php echo __('Owner', 'watergo'); ?></span>
-            <input v-model='owner' type="text" placeholder='<?php echo __('Enter owner name', 'watergo'); ?>'>
-         </div>
 
-         <div class='form-group'>
-            <span><?php echo __('Store Name', 'watergo'); ?></span>
-            <input v-model='name' type="text" placeholder='<?php echo __('Enter store name', 'watergo'); ?>'>
-         </div>
-         
-         <div class='form-group form-description'>
-            <span><?php echo __('Description', 'watergo'); ?></span>
-            <textarea @input='autoResize' ref='textarea' v-model='description' placeholder='<?php echo __('Describe your store', 'watergo'); ?>'></textarea>
-         </div>
+                  <span class="camera-icon" style="position: absolute;bottom: 6px;right: 0px;margin-bottom: 0;display: inline-block;width: 38px;">
+                     <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                     <g filter="url(#filter0_d_780_5054)">
+                     <circle cx="19" cy="17" r="15" fill="white"/>
+                     </g>
+                     <path d="M18.8888 20.556C20.3616 20.556 21.5555 19.3621 21.5555 17.8893C21.5555 16.4166 20.3616 15.2227 18.8888 15.2227C17.4161 15.2227 16.2222 16.4166 16.2222 17.8893C16.2222 19.3621 17.4161 20.556 18.8888 20.556Z" fill="#252831"/>
+                     <path d="M26 10.7778H23.1822L22.08 9.57778C21.9143 9.39591 21.7126 9.25058 21.4876 9.1511C21.2626 9.05161 21.0193 9.00015 20.7733 9H17.0044C16.5067 9 16.0267 9.21333 15.6889 9.57778L14.5956 10.7778H11.7778C10.8 10.7778 10 11.5778 10 12.5556V23.2222C10 24.2 10.8 25 11.7778 25H26C26.9778 25 27.7778 24.2 27.7778 23.2222V12.5556C27.7778 11.5778 26.9778 10.7778 26 10.7778ZM18.8889 22.3333C16.4356 22.3333 14.4444 20.3422 14.4444 17.8889C14.4444 15.4356 16.4356 13.4444 18.8889 13.4444C21.3422 13.4444 23.3333 15.4356 23.3333 17.8889C23.3333 20.3422 21.3422 22.3333 18.8889 22.3333Z" fill="#252831"/>
+                     <defs>
+                     <filter id="filter0_d_780_5054" x="0" y="0" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                     <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                     <feOffset dy="2"/>
+                     <feGaussianBlur stdDeviation="2"/>
+                     <feComposite in2="hardAlpha" operator="out"/>
+                     <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
+                     <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_780_5054"/>
+                     <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_780_5054" result="shape"/>
+                     </filter>
+                     </defs>
+                     </svg>
+                  </span>
+                  <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
+                  <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar">
+               </label>
+            </div>
+            
+            <div class='form-group'>
+               <span><?php echo __('Owner', 'watergo'); ?></span>
+               <input v-model='owner' type="text" placeholder='<?php echo __('Enter owner name', 'watergo'); ?>'>
+            </div>
 
-         <div class='form-group'>
-            <span><?php echo __('Address', 'watergo'); ?></span>
-            <input id='search-address' v-model='address' type="text" placeholder='<?php echo __('Enter address', 'watergo') ?>'>
+            <div class='form-group'>
+               <span><?php echo __('Store Name', 'watergo'); ?></span>
+               <input v-model='name' type="text" placeholder='<?php echo __('Enter store name', 'watergo'); ?>'>
+            </div>
+            
+            <div class='form-group form-description'>
+               <span><?php echo __('Description', 'watergo'); ?></span>
+               <textarea @input='autoResize' ref='textarea' v-model='description' placeholder='<?php echo __('Describe your store', 'watergo'); ?>'></textarea>
+            </div>
+
+            <div class='form-group'>
+               <span><?php echo __('Address', 'watergo'); ?></span>
+               <input id='search-address' v-model='address' type="text" placeholder='<?php echo __('Enter address', 'watergo') ?>'>
+            </div>
+
+            <div class='form-group'>
+               <span><?php echo __('Phone', 'watergo'); ?></span>
+               <input v-model='phone' type="text" inputmode='numeric' pattern='[0-9]*' placeholder='<?php echo __('Enter phone', 'watergo'); ?> '>
+            </div>
+
+            <div class='form-group'>
+               <span>Email</span>
+               <input v-model='email' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>' disabled readonly>
+            </div>
+
+            <div class='form-group'>
+               <span><?php echo __('Password', 'watergo') ;?></span>
+               <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
+            </div>
+
+            <span class='mt20 d-block'><?php echo __('Select Product', 'watergo'); ?></span>
+            <div class='form-group style-checkbox-business style-store-edit'>
+               <label class='form-checkbox'>
+                  <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
+                  <span class='text'><?php echo __('Water', 'watergo'); ?></span>
+               </label>
+               <label class='form-checkbox'>
+                  <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
+                  <span class='text'><?php echo __('Ice', 'watergo'); ?></span>
+               </label>
+               <label class='form-checkbox'>
+                  <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
+                  <span class='text'><?php echo __('Both', 'watergo'); ?></span>
+               </label>
+            </div>
+
+            <span class='d-block t-red mt20'>{{text_err}}</span>
+
+            <!-- <div class='btn-fixed bottom'> -->
+               <button @click='btn_update_store' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
+            <!-- </div> -->
+
          </div>
-
-         <div class='form-group'>
-            <span><?php echo __('Phone', 'watergo'); ?></span>
-            <input v-model='phone' type="text" inputmode='numeric' pattern='[0-9]*' placeholder='<?php echo __('Enter phone', 'watergo'); ?> '>
-         </div>
-
-         <div class='form-group'>
-            <span>Email</span>
-            <input v-model='email' type="email" placeholder='<?php echo __('Enter your email', 'watergo'); ?>' disabled readonly>
-         </div>
-
-         <div class='form-group'>
-            <span><?php echo __('Password', 'watergo') ;?></span>
-            <input v-model='inputPassword' type="password" placeholder='<?php echo __('Enter your password', 'watergo'); ?>'>
-         </div>
-
-         <span class='mt20 d-block'><?php echo __('Select Product', 'watergo'); ?></span>
-         <div class='form-group style-checkbox-business style-store-edit'>
-            <label class='form-checkbox'>
-               <input class='form-check' type='checkbox' @click='btn_select_type_product("water")' :checked='select_type_product.water' :disable='select_type_product.water'> 
-               <span class='text'><?php echo __('Water', 'watergo'); ?></span>
-            </label>
-            <label class='form-checkbox'>
-               <input type='checkbox' @click='btn_select_type_product("ice")' :checked='select_type_product.ice' :disable='select_type_product.ice'> 
-               <span class='text'><?php echo __('Ice', 'watergo'); ?></span>
-            </label>
-            <label class='form-checkbox'>
-               <input type='checkbox' @click='btn_select_type_product("both")' :checked='select_type_product.both' :disable='select_type_product.both'> 
-               <span class='text'><?php echo __('Both', 'watergo'); ?></span>
-            </label>
-         </div>
-
-         <span class='d-block t-red mt20'>{{text_err}}</span>
-
-         <!-- <div class='btn-fixed bottom'> -->
-            <button @click='btn_update_store' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
-         <!-- </div> -->
 
       </div>
 
    </div>
 
-   <div v-show='loading == true'>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -136,6 +149,10 @@
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script>
 <script>
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
 
 var address = lat = lng = "";
 

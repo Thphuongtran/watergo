@@ -386,10 +386,21 @@ createApp({
          this.filter_type_box_open = !this.filter_type_box_open;
       },
 
-      async get_current_location(){
+      startLocationUpdate() {
+         // Run get_current_location every second
+         this.get_current_location();
+         // this.locationUpdateInterval = setInterval(() => {
+         // }, 3000);
+      },
+      stopLocationUpdate() {
+         // Stop the interval when needed
+         clearInterval(this.locationUpdateInterval);
+      },
+      
+      get_current_location(){
          try{
             if( window.appBridge != undefined ){
-               await window.appBridge.getLocation().then( (data) => {
+               window.appBridge.getLocation().then( (data) => {
                   if (Object.keys(data).length === 0) {
                      this.is_user_share_location = false;
                      this.sortFeatureCurrentValue = 1;
@@ -408,10 +419,15 @@ createApp({
                this.is_user_share_location = false;
                this.sortFeatureCurrentValue = 1;
             }
-
          }catch(e){
-            this.is_user_share_location = false;
-            this.sortFeatureCurrentValue = 1;
+            // this.is_user_share_location = false;
+            // this.sortFeatureCurrentValue = 1;
+         }
+
+         if( this.is_user_share_location == true ){
+            alert('location open');
+         }else{
+            alert('location close');
          }
       },
 
@@ -488,6 +504,7 @@ createApp({
             form.append('category', _category.name);
          }
          var r = await window.request(form);
+         
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -535,6 +552,8 @@ createApp({
    beforeDestroy() {
       window.removeEventListener('scroll', this.handleScroll);
       document.removeEventListener('click', this.handleClickOutside);
+
+      this.stopLocationUpdate();
    },
 
    async created(){
@@ -543,7 +562,8 @@ createApp({
       // THIS IS FILTER FOR CATEGORY
       this.category_parent    = JSON.parse(JSON.stringify(<?php echo json_encode($category_parent, true); ?>));
 
-      this.get_current_location();
+      this.startLocationUpdate();
+
       this.loading = true;
       await this.atlantis_get_product_sort_version2();
       this.loading = false;

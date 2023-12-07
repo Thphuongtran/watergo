@@ -163,9 +163,10 @@ createApp({
          var documentScroll   = documentHeight + scrollEndThreshold;
 
          // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-         if (scrollPosition + windowHeight >= documentHeight ) {
+         if (scrollPosition + windowHeight >= documentHeight - 10) {
             await this.load_all_notification();
          }
+
       }
       
       

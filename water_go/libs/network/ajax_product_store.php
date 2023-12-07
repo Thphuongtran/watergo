@@ -3,13 +3,10 @@
 /**
  * @access FOR TAB PRODUCT-STORE
  */
-add_action( 'wp_ajax_nopriv_atlantis_get_store_type_product', 'atlantis_get_store_type_product' );
 add_action( 'wp_ajax_atlantis_get_store_type_product', 'atlantis_get_store_type_product' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_product_from_store', 'atlantis_get_product_from_store' );
 add_action( 'wp_ajax_atlantis_get_product_from_store', 'atlantis_get_product_from_store' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_product_category', 'atlantis_get_product_category' );
 add_action( 'wp_ajax_atlantis_get_product_category', 'atlantis_get_product_category' );
 
 
@@ -95,8 +92,7 @@ function atlantis_get_product_from_store(){
 
       if( $product_type == 'water'){ $type_product_arr = ['water', 'water_device']; }
       if( $product_type == 'ice'){ $type_product_arr = ['ice', 'ice_device']; }
-
-      // $type_product_string = implode('", "', array_map('esc_sql', $type_product_arr));
+      
       $type_product_string = "'" . implode("', '", array_map('esc_sql', $type_product_arr)) . "'";
 
       global $wpdb;
@@ -147,7 +143,6 @@ function atlantis_get_product_from_store(){
  * @access ACTION [ ADD - EDIT - DELETE] product => Tab Product
  */
 
-add_action( 'wp_ajax_nopriv_atlantis_action_product_store', 'atlantis_action_product_store' );
 add_action( 'wp_ajax_atlantis_action_product_store', 'atlantis_action_product_store' );
 
 function atlantis_action_product_store(){
@@ -399,6 +394,9 @@ function atlantis_action_product_ice(){
       $capacity_device = isset($_POST['capacity_device']) ? $_POST['capacity_device'] : null;
       $name_device = isset($_POST['name_device']) ? $_POST['name_device'] : null;
 
+      // UPDATE WEIGHT UNIT Kg Ml Box
+      $weight_unit = isset($_POST['weight_unit']) ? $_POST['weight_unit'] : null;
+
       // UPLOAD IMAGE
       $uploadImages = isset($_FILES['uploadImages']) ? $_FILES['uploadImages'] : null;
 
@@ -452,7 +450,10 @@ function atlantis_action_product_ice(){
 
       // if($category_parent != null ) { $args['category_parent'] = $category_parent; }
       if($weight != null ) { $args['weight'] = $weight; }
-      if($length_width != null ){$args['length_width'] = $length_width;}
+      if($length_width != null ){ $args['length_width'] = $length_width;}
+
+      // WEIGHT UNIT UPDATE 
+      if( $weight_unit != null ){ $args['weight_unit'] = $weight_unit; }
 
       if($capacity_device != null ){$args['capacity_device'] = $capacity_device;}
       if($name_device != null ){$args['name_device'] = $name_device;}
@@ -793,7 +794,6 @@ function atlantis_action_product_water(){
  * @access ADMIN FUNCTION
  */
 
-add_action( 'wp_ajax_nopriv_atlantis_get_all_product_by_store_to_admin_page', 'atlantis_get_all_product_by_store_to_admin_page' );
 add_action( 'wp_ajax_atlantis_get_all_product_by_store_to_admin_page', 'atlantis_get_all_product_by_store_to_admin_page' );
 
 function atlantis_get_all_product_by_store_to_admin_page(){
@@ -829,7 +829,6 @@ function atlantis_get_all_product_by_store_to_admin_page(){
    
 }
 
-add_action( 'wp_ajax_nopriv_atlantis_get_all_product_pending_to_admin_page', 'atlantis_get_all_product_pending_to_admin_page' );
 add_action( 'wp_ajax_atlantis_get_all_product_pending_to_admin_page', 'atlantis_get_all_product_pending_to_admin_page' );
 
 function atlantis_get_all_product_pending_to_admin_page(){
@@ -863,7 +862,6 @@ function atlantis_get_all_product_pending_to_admin_page(){
  * @access CHANGE STATUS PRODUCT
  */
 
-add_action( 'wp_ajax_nopriv_atlantis_change_product_status', 'atlantis_change_product_status' );
 add_action( 'wp_ajax_atlantis_change_product_status', 'atlantis_change_product_status' );
 
 function atlantis_change_product_status(){
@@ -973,5 +971,55 @@ function atlantis_change_product_status(){
       }
       wp_send_json_error(['message' => 'product_not_found']);
       wp_die();
+   }
+}
+
+
+/**
+ * @access UPDATE PRODUCT STORE
+ */
+
+add_action( 'wp_ajax_atlantis_refresh_product_store', 'atlantis_refresh_product_store' );
+function atlantis_refresh_product_store(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_refresh_product_store' ){
+      $product_ids      = isset($_POST['product_ids']) ? $_POST['product_ids'] : '';
+      $decode_ids       = json_decode($product_ids);
+
+      $product_ids = json_decode($product_ids);
+      $wheres = [];
+      if( ! empty($product_ids) ){
+         foreach( $product_ids as $ids ){
+            $wheres[] = $ids;
+         }
+      }
+      $placeholders = implode(',', array_fill(0, count($wheres), '%d'));
+
+      global $wpdb;
+      $sql_need_update  = "SELECT * FROM wp_watergo_products WHERE status != 'delete' AND id IN($placeholders) ";
+      $prepare          = $wpdb->prepare( $sql_need_update, $wheres );
+      $res              = $wpdb->get_results( $prepare);
+
+      if( !empty( $res )){
+         $res = atlantis_component_extract_product($res);
+
+         // GET SOLD PRODUCT
+         foreach( $res as $k => $p ){
+            // SOLD PRODUCT
+            $sold = func_count_sold_product($p->id, $store_id);
+            if( $sold == null ){
+               $res[$k]->sold = 0;
+            }else{
+               $res[$k]->sold = $sold;
+            }
+         }
+
+         wp_send_json_success(['message' => 'get_product_ok', 'data' => $res ]);
+         wp_die();
+      }
+
+      wp_send_json_error(['message' => 'product_not_found', 'prepare' => $prepare ]);
+      wp_die();
+
+
    }
 }

@@ -6,7 +6,23 @@ if(!empty(get_user_meta($current_user_id,"user_login_social",true)) && empty(get
 }
 ?>
 <style type="text/css">
+   .appbar{
+      height: 56px;
+   }
    .form-group input:disabled{    border-color: rgb(84, 84, 84) !important;  opacity: 0.6;}
+
+   .scaffold{
+      height: calc( 100vh - 150px );
+      overflow-y: scroll;
+      overflow-x: hidden;
+      min-height: auto;
+   }
+   .btn-fixed.bottom{
+      background-color: white; 
+      bottom: 0px; 
+      width: 100%;
+      padding: 15px;
+   }
 </style>
 <div id='app'>
    <div v-if='loading == false' class='page-edit'>
@@ -26,54 +42,56 @@ if(!empty(get_user_meta($current_user_id,"user_login_social",true)) && empty(get
          </div>
       </div>
 
-      <div class='inner'>
-         <div class='avatar-header'>
-            <label for='uploadAvatar' class='upload-avatar' style="display:inline-block;position: relative;">
+      <div class='scaffold'>
+         <div class='inner'>
+            <div class='avatar-header'>
+               <label for='uploadAvatar' class='upload-avatar' style="display:inline-block;position: relative;">
 
-               <svg v-if="previewAvatar == null" width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <circle cx="35" cy="35" r="35" fill="#ECECEC"/>
-               <path d="M35 34.6429C39.7581 34.6429 43.6154 30.8053 43.6154 26.0714C43.6154 21.3376 39.7581 17.5 35 17.5C30.2419 17.5 26.3846 21.3376 26.3846 26.0714C26.3846 30.8053 30.2419 34.6429 35 34.6429Z" fill="white"/>
-               <path d="M39.4872 38.2145H30.5128C25.3077 38.2145 21 42.5002 21 47.6788C21 48.9288 21.5385 50.0002 22.6154 50.5359C24.2308 51.4288 27.8205 52.5002 35 52.5002C42.1795 52.5002 45.7692 51.4288 47.3846 50.5359C48.2821 50.0002 49 48.9288 49 47.6788C49 42.3216 44.6923 38.2145 39.4872 38.2145Z" fill="white"/>
-               </svg>
-
-
-               <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
-               <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar" width='80' height='80' >
-               <span class="camera-icon" style="position: absolute;bottom: -13px;right: -13px;">
-                  <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g filter="url(#filter0_d_780_5054)">
-                  <circle cx="19" cy="17" r="15" fill="white"/>
-                  </g>
-                  <path d="M18.8888 20.556C20.3616 20.556 21.5555 19.3621 21.5555 17.8893C21.5555 16.4166 20.3616 15.2227 18.8888 15.2227C17.4161 15.2227 16.2222 16.4166 16.2222 17.8893C16.2222 19.3621 17.4161 20.556 18.8888 20.556Z" fill="#252831"/>
-                  <path d="M26 10.7778H23.1822L22.08 9.57778C21.9143 9.39591 21.7126 9.25058 21.4876 9.1511C21.2626 9.05161 21.0193 9.00015 20.7733 9H17.0044C16.5067 9 16.0267 9.21333 15.6889 9.57778L14.5956 10.7778H11.7778C10.8 10.7778 10 11.5778 10 12.5556V23.2222C10 24.2 10.8 25 11.7778 25H26C26.9778 25 27.7778 24.2 27.7778 23.2222V12.5556C27.7778 11.5778 26.9778 10.7778 26 10.7778ZM18.8889 22.3333C16.4356 22.3333 14.4444 20.3422 14.4444 17.8889C14.4444 15.4356 16.4356 13.4444 18.8889 13.4444C21.3422 13.4444 23.3333 15.4356 23.3333 17.8889C23.3333 20.3422 21.3422 22.3333 18.8889 22.3333Z" fill="#252831"/>
-                  <defs>
-                  <filter id="filter0_d_780_5054" x="0" y="0" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                  <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                  <feOffset dy="2"/>
-                  <feGaussianBlur stdDeviation="2"/>
-                  <feComposite in2="hardAlpha" operator="out"/>
-                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
-                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_780_5054"/>
-                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_780_5054" result="shape"/>
-                  </filter>
-                  </defs>
+                  <svg v-if="previewAvatar == null" width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="35" cy="35" r="35" fill="#ECECEC"/>
+                  <path d="M35 34.6429C39.7581 34.6429 43.6154 30.8053 43.6154 26.0714C43.6154 21.3376 39.7581 17.5 35 17.5C30.2419 17.5 26.3846 21.3376 26.3846 26.0714C26.3846 30.8053 30.2419 34.6429 35 34.6429Z" fill="white"/>
+                  <path d="M39.4872 38.2145H30.5128C25.3077 38.2145 21 42.5002 21 47.6788C21 48.9288 21.5385 50.0002 22.6154 50.5359C24.2308 51.4288 27.8205 52.5002 35 52.5002C42.1795 52.5002 45.7692 51.4288 47.3846 50.5359C48.2821 50.0002 49 48.9288 49 47.6788C49 42.3216 44.6923 38.2145 39.4872 38.2145Z" fill="white"/>
                   </svg>
-               </span>
-            </label>
-         </div>
-         
-         <div class='form-group'>
-            <div class='label-style02'><?php echo __('Name', 'watergo'); ?></div>
-            <input class='input-style02' v-model='name' type="text">
-         </div>
 
-         <div class='form-group'>
-            <div class='label-style02'><?php echo __('Email', 'watergo'); ?></div>
-            <input <?php if($disable_email) echo "readonly disabled"; ?>  class='input-style02' v-model='email' type="email">
-         </div>
 
-         <span class='t-red'>{{text_err}}</span>
+                  <input id='uploadAvatar' class='avatarPickerDisable' type="file" @change='avatarSelected'>
+                  <img class='avatar-circle' :src="previewAvatar" v-if="previewAvatar" width='80' height='80' >
+                  <span class="camera-icon" style="position: absolute;bottom: -13px;right: -13px;">
+                     <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <g filter="url(#filter0_d_780_5054)">
+                     <circle cx="19" cy="17" r="15" fill="white"/>
+                     </g>
+                     <path d="M18.8888 20.556C20.3616 20.556 21.5555 19.3621 21.5555 17.8893C21.5555 16.4166 20.3616 15.2227 18.8888 15.2227C17.4161 15.2227 16.2222 16.4166 16.2222 17.8893C16.2222 19.3621 17.4161 20.556 18.8888 20.556Z" fill="#252831"/>
+                     <path d="M26 10.7778H23.1822L22.08 9.57778C21.9143 9.39591 21.7126 9.25058 21.4876 9.1511C21.2626 9.05161 21.0193 9.00015 20.7733 9H17.0044C16.5067 9 16.0267 9.21333 15.6889 9.57778L14.5956 10.7778H11.7778C10.8 10.7778 10 11.5778 10 12.5556V23.2222C10 24.2 10.8 25 11.7778 25H26C26.9778 25 27.7778 24.2 27.7778 23.2222V12.5556C27.7778 11.5778 26.9778 10.7778 26 10.7778ZM18.8889 22.3333C16.4356 22.3333 14.4444 20.3422 14.4444 17.8889C14.4444 15.4356 16.4356 13.4444 18.8889 13.4444C21.3422 13.4444 23.3333 15.4356 23.3333 17.8889C23.3333 20.3422 21.3422 22.3333 18.8889 22.3333Z" fill="#252831"/>
+                     <defs>
+                     <filter id="filter0_d_780_5054" x="0" y="0" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                     <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                     <feOffset dy="2"/>
+                     <feGaussianBlur stdDeviation="2"/>
+                     <feComposite in2="hardAlpha" operator="out"/>
+                     <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.14 0"/>
+                     <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_780_5054"/>
+                     <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_780_5054" result="shape"/>
+                     </filter>
+                     </defs>
+                     </svg>
+                  </span>
+               </label>
+            </div>
+            
+            <div class='form-group'>
+               <div class='label-style02'><?php echo __('Name', 'watergo'); ?></div>
+               <input class='input-style02' v-model='name' type="text">
+            </div>
+
+            <div class='form-group'>
+               <div class='label-style02'><?php echo __('Email', 'watergo'); ?></div>
+               <input <?php if($disable_email) echo "readonly disabled"; ?>  class='input-style02' v-model='email' type="email">
+            </div>
+
+            <span class='t-red'>{{text_err}}</span>
+         </div>
       </div>
 
       <div class='btn-fixed bottom'>
@@ -91,6 +109,10 @@ if(!empty(get_user_meta($current_user_id,"user_login_social",true)) && empty(get
 </div>
 
 <script type='module'>
+
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
 
 var app = Vue.createApp({
    data (){

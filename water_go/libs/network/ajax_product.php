@@ -114,8 +114,11 @@ function atlantis_load_products(){
             wp_watergo_products.quantity,
             wp_watergo_products.volume,
             wp_watergo_products.weight,
+            wp_watergo_products.weight_unit,
             wp_watergo_products.length_width,
             wp_watergo_products.mark_out_of_stock,
+            wp_watergo_products.weight_unit,
+
             -- 
             category.id,
             category.name,
@@ -649,6 +652,7 @@ function atlantis_get_product_sort_version2(){
             wp_watergo_products.quantity,
             wp_watergo_products.volume,
             wp_watergo_products.weight,
+            wp_watergo_products.weight_unit,
             wp_watergo_products.length_width,
             -- 
             wp_watergo_products.has_discount,
@@ -707,6 +711,7 @@ function atlantis_get_product_sort_version2(){
             wp_watergo_products.quantity,
             wp_watergo_products.volume,
             wp_watergo_products.weight,
+            wp_watergo_products.weight_unit,
             wp_watergo_products.length_width,
             -- 
             wp_watergo_products.has_discount,
@@ -770,14 +775,50 @@ function atlantis_get_product_sort_version2(){
          $sql .= " AND wp_watergo_products.quantity IN $sql_quantity ";
       }
 
+      // FILTER VOLUME
       if( $volume != null && $volume != ''){
          $volume_to_array = explode(',', $volume);
          $arr = [];
          foreach( $volume_to_array as $k => $vl ){
-            if( $vl == 'Dưới 350ml' ){ $arr[] = '350 ml'; }
-            if( $vl == 'Từ 350ml đến 1L' ){ $arr[] = '500 ml'; }
-            if( $vl == 'Chai lớn 1L trở lên' ){ $arr[] = '5L'; }
-            if( $vl == 'Bình vòi 18L đến 20L' || $vl == 'Bình úp 18L đến 20L' ){ $arr[] = '15L'; }
+            if( $vl == 'Dưới 350ml' ){ 
+               $arr[] = '160 ml';
+               $arr[] = '210 ml';
+               $arr[] = '230 ml';
+               $arr[] = '250 ml';
+               $arr[] = '300 ml';
+               $arr[] = '330 ml';
+            }
+            if( $vl == 'Từ 350ml đến 1L' ){ 
+               $arr[] = '350 ml';
+               $arr[] = '355 ml';
+               $arr[] = '400 ml';
+               $arr[] = '430 ml';
+               $arr[] = '450 ml';
+               $arr[] = '500 ml';
+               $arr[] = '510 ml';
+               $arr[] = '520 ml';
+               $arr[] = '530 ml';
+               $arr[] = '555 ml';
+               $arr[] = '700 ml';
+               $arr[] = '750 ml';
+            }
+            if( $vl == 'Chai lớn 1L trở lên' ){  
+               $arr[] = '1.25L';
+               $arr[] = '1.5L';
+               $arr[] = '2L';
+               $arr[] = '4.5L';
+               $arr[] = '5L';
+               $arr[] = '6L';
+               $arr[] = '7L';
+               $arr[] = '18.5L';
+               $arr[] = '19L';
+               $arr[] = '20L';
+            }
+            if( $vl == 'Bình vòi 18L đến 20L' || $vl == 'Bình úp 18L đến 20L' ){  
+               $arr[] = '18.5L';
+               $arr[] = '19L';
+               $arr[] = '20L';
+            }
          }
          $sql_volume = _convert_to_condition($wpdb, implode(',', $arr ) );
          $sql .= " AND wp_watergo_products.volume IN $sql_volume ";
@@ -811,13 +852,11 @@ function atlantis_get_product_sort_version2(){
       }
 
       if( empty( $res ) ){
-         wp_send_json_error(['message' => 'product_not_found' ]);
+         wp_send_json_error(['message' => 'product_not_found']);
          wp_die();
       }
 
-      wp_send_json_success(['message' => 'product_found', 'data' => $res,
-      'sql' => $sql
-      ]);
+      wp_send_json_success(['message' => 'product_found', 'data' => $res, 'filter' => $arr, 'volume_to_array' => $volume_to_array ]);
       wp_die(); 
 
 
@@ -833,8 +872,6 @@ add_action( 'wp_ajax_atlantis_get_product_discount_and_gift', 'atlantis_get_prod
 function atlantis_get_product_discount_and_gift(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_product_discount_and_gift'){
 
-      $current_time = atlantis_current_date_only();
-
       $paged   = isset($_POST['paged'] ) ? (int) $_POST['paged'] : 0;
       $limit   = isset($_POST['limit'] ) ? (int) $_POST['limit'] : 10;
 
@@ -845,8 +882,8 @@ function atlantis_get_product_discount_and_gift(){
          FROM wp_watergo_products
          WHERE 
          ( 
-            ( DATE_FORMAT(discount_to, '%Y-%m-%d') >= NOW() AND DATE_FORMAT(discount_from, '%Y-%m-%d') <= NOW() ) OR
-            ( DATE_FORMAT(gift_to, '%Y-%m-%d') >= NOW() AND DATE_FORMAT(gift_from, '%Y-%m-%d') <= NOW() )
+            ( DATE_FORMAT(discount_to, '%Y-%m-%d') >= '$current_time' AND DATE_FORMAT(discount_from, '%Y-%m-%d') <= '$current_time' ) OR
+            ( DATE_FORMAT(gift_to, '%Y-%m-%d') >= '$current_time' AND DATE_FORMAT(gift_from, '%Y-%m-%d') <= '$current_time' )
          )
          AND wp_watergo_products.mark_out_of_stock = 0
          AND wp_watergo_products.product_hidden != 1 

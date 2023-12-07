@@ -55,7 +55,11 @@ function func_get_product_category($res_product){
             $vl->name_second              = $vl->quantity . ' ' . $vl->volume;
          }else if( $vl->product_type == 'ice'){
             $vl->name                     = $vl->category;
-            $vl->name_second              = $vl->weight . 'kg ' . $vl->length_width . ' mm';
+            $weight_unit                  = $vl->weight_unit;
+            if( !in_array($weight_unit, ['Kg', 'Ml', 'Box']) ){
+               $weight_unit = 'Kg';
+            }
+            $vl->name_second              = $vl->weight . strtolower($weight_unit) . ' ' . $vl->length_width . ' mm';
          }else if( $vl->product_type == 'water_device'){
             $vl->name                     = $vl->name_device;
             $vl->name_second              = $vl->feature_device;

@@ -382,13 +382,14 @@ var app = Vue.createApp({
                var text_push_notification = res.notification.text_push_notification
                var link = res.notification.link
 
-               var notification_push = new FormData();
-               notification_push.append('action', 'atlantis_push_notification_in_background');
-               notification_push.append('user_id', user_id);
-               notification_push.append('text_push_notification', text_push_notification);
-               notification_push.append('link', link);
 
                try {
+                  var notification_push = new FormData();
+                  notification_push.append('action', 'atlantis_push_notification_in_background');
+                  notification_push.append('user_id', user_id);
+                  notification_push.append('text_push_notification', text_push_notification);
+                  notification_push.append('link', link);
+
                   let requestPromise = await window.request(notification_push);
                   let immediatePromise = new Promise(resolve => resolve());
                   await Promise.race([requestPromise, immediatePromise]);

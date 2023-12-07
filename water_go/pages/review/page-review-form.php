@@ -1,5 +1,20 @@
+<style>
+   .appbar{
+      height: 56px;
+   }
+   .scaffold{
+      height: calc( 100vh - 150px);
+      overflow-y: scroll;
+      overflow-x: hidden;
+      padding-bottom: 30px;
+   }
+   .btn-primary.disable{
+      touch-action: none;
+      pointer-events: none;
+   }
+</style>
 <div id='app'>
-   <div v-show='loading == false' class='page-review-form'>
+   <div v-if='loading == false' class='page-review-form'>
 
       <div class='appbar'>
          <div class='appbar-top'>
@@ -18,44 +33,46 @@
          </div>
       </div>
 
-      <div class='inner'>
-         <p class='heading'><?php echo __("What's your rate", 'watergo'); ?>?</p>
-         <div class='box-rating-star'>
-            <span v-for='i in 5' @click='select_rating_star(i)'
-               :class='rating_select >= i ? "active" :""'>
-               <svg width="35" height="34" viewBox="0 0 35 34" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.5489 1.42705C16.8483 0.50574 18.1517 0.50574 18.4511 1.42705L21.7658 11.6287C21.8996 12.0407 22.2836 12.3197 22.7168 12.3197H33.4434C34.4122 12.3197 34.8149 13.5593 34.0312 14.1287L25.3532 20.4336C25.0027 20.6883 24.8561 21.1396 24.9899 21.5517L28.3046 31.7533C28.604 32.6746 27.5495 33.4407 26.7658 32.8713L18.0878 26.5664C17.7373 26.3117 17.2627 26.3117 16.9122 26.5664L8.23419 32.8713C7.45048 33.4407 6.396 32.6746 6.69535 31.7533L10.0101 21.5517C10.1439 21.1396 9.99728 20.6883 9.64679 20.4336L0.968768 14.1287C0.185055 13.5593 0.58783 12.3197 1.55655 12.3197H12.2832C12.7164 12.3197 13.1004 12.0407 13.2342 11.6287L16.5489 1.42705Z" fill="#C4C4C4"/></svg>
-            </span>
+      <div class='scaffold'>
+
+         <div class='inner'>
+            <p class='heading'><?php echo __("What's your rate", 'watergo'); ?>?</p>
+            <div class='box-rating-star'>
+               <span v-for='i in 5' @click='select_rating_star(i)'
+                  :class='review.rating_select >= i ? "active" :""'>
+                  <svg width="35" height="34" viewBox="0 0 35 34" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.5489 1.42705C16.8483 0.50574 18.1517 0.50574 18.4511 1.42705L21.7658 11.6287C21.8996 12.0407 22.2836 12.3197 22.7168 12.3197H33.4434C34.4122 12.3197 34.8149 13.5593 34.0312 14.1287L25.3532 20.4336C25.0027 20.6883 24.8561 21.1396 24.9899 21.5517L28.3046 31.7533C28.604 32.6746 27.5495 33.4407 26.7658 32.8713L18.0878 26.5664C17.7373 26.3117 17.2627 26.3117 16.9122 26.5664L8.23419 32.8713C7.45048 33.4407 6.396 32.6746 6.69535 31.7533L10.0101 21.5517C10.1439 21.1396 9.99728 20.6883 9.64679 20.4336L0.968768 14.1287C0.185055 13.5593 0.58783 12.3197 1.55655 12.3197H12.2832C12.7164 12.3197 13.1004 12.0407 13.2342 11.6287L16.5489 1.42705Z" fill="#C4C4C4"/></svg>
+               </span>
+            </div>
          </div>
-      </div>
 
-      <div class='inner'>
-         <p class='heading'><?php echo __('Your Review', 'watergo'); ?></p>
-         <label class='input-review'>
-            <span class='icon'>
-               <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <circle cx="15" cy="15" r="15" fill="#ECECEC"/>
-               <path d="M15 14.8469C17.0392 14.8469 18.6923 13.2023 18.6923 11.1735C18.6923 9.14467 17.0392 7.5 15 7.5C12.9608 7.5 11.3077 9.14467 11.3077 11.1735C11.3077 13.2023 12.9608 14.8469 15 14.8469Z" fill="white"/>
-               <path d="M16.9231 16.3776H13.0769C10.8462 16.3776 9 18.2144 9 20.4337C9 20.9695 9.23077 21.4286 9.69231 21.6582C10.3846 22.0409 11.9231 22.5001 15 22.5001C18.0769 22.5001 19.6154 22.0409 20.3077 21.6582C20.6923 21.4286 21 20.9695 21 20.4337C21 18.1378 19.1538 16.3776 16.9231 16.3776Z" fill="white"/>
-               </svg>
-            </span>
-            <textarea @change='autoResize' @input='autoResize' ref='textarea' v-model='review_text' placeholder='<?php echo __('Write your review....', 'watergo'); ?>'></textarea>
-         </label>
-      </div>
+         <div class='inner'>
+            <p class='heading'><?php echo __('Your Review', 'watergo'); ?></p>
+            <label class='input-review'>
+               <span class='icon'>
+                  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="15" cy="15" r="15" fill="#ECECEC"/>
+                  <path d="M15 14.8469C17.0392 14.8469 18.6923 13.2023 18.6923 11.1735C18.6923 9.14467 17.0392 7.5 15 7.5C12.9608 7.5 11.3077 9.14467 11.3077 11.1735C11.3077 13.2023 12.9608 14.8469 15 14.8469Z" fill="white"/>
+                  <path d="M16.9231 16.3776H13.0769C10.8462 16.3776 9 18.2144 9 20.4337C9 20.9695 9.23077 21.4286 9.69231 21.6582C10.3846 22.0409 11.9231 22.5001 15 22.5001C18.0769 22.5001 19.6154 22.0409 20.3077 21.6582C20.6923 21.4286 21 20.9695 21 20.4337C21 18.1378 19.1538 16.3776 16.9231 16.3776Z" fill="white"/>
+                  </svg>
+               </span>
+               <textarea @change='autoResize' @input='autoResize' ref='textarea' v-model='review.review_text' placeholder='<?php echo __('Write your review....', 'watergo'); ?>'></textarea>
+            </label>
+         </div>
 
-      <div class='inner'>
-         <p class='t-red'>{{ res_text }}</p>
-      </div>
+         <div class='inner'>
+            <p class='t-red'>{{ res_text }}</p>
+         </div>
 
-      <div class='review-form-spaces'></div>
+      </div>
 
       <div class='btn-review' :class=' event == "edit" ? "btn-review-edit" : "" '>
-         <button v-if='event == "add"' @click='submit' class='btn btn-primary'><?php echo __('Add', 'watergo'); ?></button>
-         <button v-if='event == "edit"' @click='update' class='btn btn-primary'><?php echo __('Save', 'watergo'); ?></button>
+         <button v-if='event == "add"' @click='submit' class='btn btn-primary' :class='can_access == false ? "disable" : ""'><?php echo __('Add', 'watergo'); ?></button>
+         <button v-if='event == "edit"' @click='update' class='btn btn-primary' :class='can_access == false ? "disable" : ""'><?php echo __('Save', 'watergo'); ?></button>
       </div>
 
    </div>
 
-   <div v-show='loading == true'>
+   <div v-if='loading == true'>
       <div class='progress-center'>
          <div class='progress-container enabled'><progress class='progress-circular enabled' ></progress></div>
       </div>
@@ -89,13 +106,16 @@
       </div>
 
       <div class='banner-footer'>
-         <button @click='goBack' class='btn btn-outline'><?php echo __('Exit', 'watergo'); ?></button>
+         <button @click='goBackUpdate' class='btn btn-outline'><?php echo __('Exit', 'watergo'); ?></button>
       </div>
    </div>
 
 </div>
 
 <script type='module'>
+if( window.appBridge != undefined ){
+   window.appBridge.setEnableScroll(false);
+}
 
 var { createApp } = Vue;
 
@@ -109,20 +129,48 @@ createApp({
          store_id:    0,
          review_id:   0,
 
+         can_access: false,
+
          // add - edit
          event: '', 
-         rating_select: 0,
-         review_text: '',
          res_text: '',
 
-         isFixed: true
+         review: {
+            rating_select: 0,
+            review_text: '',
+         }
+
 
       }
    },
 
    watch: {
-      review_text: function( text ){
-         
+      // LISTENABLE INPUT
+      review: {
+         handler( val ){
+            var _state_text   = false;
+            var _state_rating = false;
+
+            if( val.review_text != null && val.review_text != '' && val.review_text.length > 0 ){
+               _state_text = true;
+            }else{
+               _state_text = false
+            }
+
+            if( val.rating_select > 0 ){
+               _state_rating = true;
+            }else{
+               _state_rating = false;
+            }
+
+            if( _state_text == true && _state_rating == true ){
+               this.can_access = true;
+            }else{
+               this.can_access = false;
+            }
+
+
+         }, deep: true
       }
    },
 
@@ -140,7 +188,7 @@ createApp({
          }
       },
 
-      select_rating_star( rating ){ this.rating_select = rating;},
+      select_rating_star( rating ){ this.review.rating_select = rating;},
 
       async get_review(review_id ){
          var form = new FormData();
@@ -150,8 +198,8 @@ createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));
             if( res.message == 'review_found'){
-               this.review_text     = res.data.contents;
-               this.rating_select   = res.data.rating;
+               this.review.review_text     = res.data.contents;
+               this.review.rating_select   = res.data.rating;
             }
          }
       },
@@ -159,13 +207,13 @@ createApp({
       async submit(){
 
          this.loading = true;
-         if( this.order_id != 0 && this.store_id != 0 && this.review_text != '' && this.rating_select > 0){
+         if( this.order_id != 0 && this.store_id != 0 && this.review.review_text != '' && this.review.rating_select > 0){
             var form = new FormData();
             form.append('action', 'atlantis_event_review');
-            form.append('contents', this.review_text);
+            form.append('contents', this.review.review_text);
             form.append('store_id', this.store_id);
             form.append('order_id', this.order_id);
-            form.append('rating', this.rating_select);
+            form.append('rating', this.review.rating_select);
             form.append('event', 'add');
 
             var r = await window.request(form);
@@ -173,7 +221,8 @@ createApp({
                var res = JSON.parse( JSON.stringify( r));
                if( res.message == 'review_insert_ok'){
                   this.banner_open = true;
-                  this.goBackUpdate(res.data);
+                  this.review_id = res.data;
+                  // this.goBackUpdate(res.data);
                }
             }
          }else{
@@ -185,20 +234,20 @@ createApp({
 
       async update(){
          this.loading = true;
-         if( this.review_id != 0 && this.review_text != '' && this.rating_select > 0){
+         if( this.review_id != 0 && this.review.review_text != '' && this.review.rating_select > 0){
             var form = new FormData();
             form.append('action', 'atlantis_event_review');
-            form.append('contents', this.review_text);
-            form.append('rating', this.rating_select);
+            form.append('contents', this.review.review_text);
+            form.append('rating', this.review.rating_select);
             form.append('review_id', this.review_id);
             form.append('event', 'edit');
 
             var r = await window.request(form);
-
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify( r));
                if( res.message == 'review_update_ok'){
-                  this.goBackUpdate(res.data);
+                  this.banner_open = true;
+                  // this.goBackUpdate(res.data);
                }
             }
          }else{
@@ -208,15 +257,13 @@ createApp({
          
       },
 
-      textarea_focus(){
-         console.log('textarea focus');
-      },
-
       goBack(){ 
          window.location.href = '?appt=X&data=notification_count';
       },
-      goBackUpdate(review_id){
-         window.location.href = `?appt=X&data=review_update|review_id=${review_id}`;
+      goBackUpdate(){
+         if( window.appBridge ){
+            window.appBridge.close('remove_banner_review');
+         }
       }
 
    },
