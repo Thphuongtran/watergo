@@ -184,7 +184,6 @@ createApp({
          form.append('action', 'app_change_language_callback');
          form.append('language', language);
          var r = await window.request(form);
-         // console.log('get current locale')
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'change_language_successfully' ){

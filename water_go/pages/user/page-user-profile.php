@@ -280,7 +280,6 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_user_review');
          form.append('paged', paged );
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'review_found'){

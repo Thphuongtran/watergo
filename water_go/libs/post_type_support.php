@@ -5,13 +5,14 @@
  */
 
 function admin_stylesheets(){
-   wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js');
-   wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js');
-   wp_enqueue_script('axios-main', THEME_URI . '/assets/js/common.js');
+   wp_enqueue_script('vuejs3-main', THEME_URI . '/assets/js/vue.global.min.js', [], null, true);
+   wp_enqueue_script('axios-main', THEME_URI . '/assets/js/axios.min.js', [], null, false);
+   wp_enqueue_script('axios-main', THEME_URI . '/assets/js/common.js', [], null, true);
 
 }
 
-add_action('admin_enqueue_scripts', 'admin_stylesheets');
+// add_action('admin_enqueue_scripts', 'admin_stylesheets');
+// add_action('admin_head', 'admin_stylesheets');
 
 function setup_atlantis_admin(){
    add_menu_page('Admin Support', 'Admin Support', '', 'admin_support', '', 'dashicons-admin-page', 3 );

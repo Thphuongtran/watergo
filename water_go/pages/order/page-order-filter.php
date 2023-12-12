@@ -223,7 +223,6 @@ var app = Vue.createApp({
          form.append('filter', this.filter);
          form.append('paged', this.orders.length);
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok' ){

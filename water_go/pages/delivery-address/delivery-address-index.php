@@ -148,7 +148,6 @@ var app = Vue.createApp({
 
       gotoDeliveryAddressEdit(delivery_id){ 
          window.gotoDeliveryAddressEdit(delivery_id);
-         // console.log('Edit Delivery')
       },
       removeZeroLeading( n ){ return window.removeZeroLeading(n)},
       
@@ -164,7 +163,6 @@ var app = Vue.createApp({
             if( _delivery){
                _order_delivery_address[0] = _delivery;
                localStorage.setItem('watergo_order_delivery_address', JSON.stringify(_order_delivery_address));
-               // console.log('change default delivery');
                this.goBack();
             }
 

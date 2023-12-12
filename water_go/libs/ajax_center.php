@@ -191,7 +191,9 @@ function func_atlantis_get_product_by( $args ){
    $get_by_product_type    = isset( $args['get_by_product_type'] ) ? $args['get_by_product_type'] : null;
    // exclude id
    $exclude_id             = isset( $args['exclude_id']) ? $args['exclude_id'] : 0;
-   $image_size             = isset( $args['image_size']) ? $args['image_size'] : 'medium';
+   $image_size             = isset( $args['image_size']) ? $args['image_size'] : 'large';
+
+   $custom_conditional     = isset( $args['custom_conditional']) ? $args['custom_conditional'] : '';
    
    // limit
    $limit = isset($args['limit']) ? $args['limit'] : 10;
@@ -213,26 +215,31 @@ function func_atlantis_get_product_by( $args ){
       }
 
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
+      $sql .= $custom_conditional;
    }
 
    if( $get_by == 'product_id'){
       $sql .= " WHERE wp_watergo_products.id = $id ";
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
+      $sql .= $custom_conditional;
    }
 
    if( $get_by == 'product_id_pending'){
       $sql .= " WHERE wp_watergo_products.id = $id ";
       $sql .= " AND ( wp_watergo_products.product_hidden != 1 OR ( wp_watergo_products.product_hidden = 1 AND wp_watergo_products.status = 'pending' ) ) ";
+      $sql .= $custom_conditional;
    }
 
    if( $get_by == 'category_id' ){
       $sql .= " WHERE wp_watergo_products.category = '$id' ";
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
+      $sql .= $custom_conditional;
    }
 
    if( $get_by_product_type != null ){
       $sql .= " AND wp_watergo_products.product_type = '$get_by_product_type' ";
       $sql .= " AND wp_watergo_products.product_hidden != 1 ";
+      $sql .= $custom_conditional;
    }
 
    if( $limit == -1 ){
@@ -302,7 +309,7 @@ function func_atlantis_caculator_distance( $args ){
 /**
  * @access GET IMAGE PRODUCT -> LIMIT == FALSE -> get all image by product_id
  */
-function func_atlantis_get_images($related_id, $attachment_type, $limit = true, $image_size = 'medium'){
+function func_atlantis_get_images($related_id, $attachment_type, $limit = true, $image_size = 'large'){
    global $wpdb;
    $sql = "SELECT attachment_id FROM wp_watergo_attachment WHERE related_id = $related_id AND attachment_type = '$attachment_type' 
       ORDER BY id ASC
@@ -578,7 +585,6 @@ require_once THEME_DIR . '/libs/network/ajax_chat.php';
 require_once THEME_DIR . '/libs/network/ajax_search.php';
 require_once THEME_DIR . '/libs/network/ajax_social.php';
 require_once THEME_DIR . '/libs/network/ajax_language.php';
-require_once THEME_DIR . '/libs/network/ajax_admin_supports.php';
 require_once THEME_DIR . '/libs/network/ajax_location.php';
 require_once THEME_DIR . '/libs/network/ajax_product_store.php';
 require_once THEME_DIR . '/libs/network/ajax_report.php';
@@ -657,7 +663,7 @@ function get_next_day_from_datetime($datetime, $day, $day_type ) {
 }
 
 
-function atlantis_component_extract_product( $res, $limit_image = 1, $image_size = 'medium'){
+function atlantis_component_extract_product( $res, $limit_image = 1, $image_size = 'large'){
    if($limit_image == 1 || $limit_image == true ){
       $limit_image = true;
    }else{

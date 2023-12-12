@@ -7,6 +7,9 @@
    $get_category = "SELECT * FROM wp_watergo_product_category WHERE category IN ('ice_category') AND name != 'Đá cây' ";
    $category = $wpdb->get_results($get_category);
 
+   $sql_category_parent = "SELECT * FROM wp_watergo_product_category WHERE category IN ('type_of_ice') AND (category_hidden != 1 OR category_hidden IS NULL )";
+   $category_parent     = $wpdb->get_results($sql_category_parent); 
+
    $action        = isset($_GET['action']) ? $_GET['action'] : '';
    $allow_action = ['add', 'edit'];
 
@@ -56,6 +59,19 @@
 
    .form-control-ice-weight {
       position: relative;
+
+   }
+   .form-control-ice-weight .box-select-weight-unit .text{
+      font-size: 16px;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      padding: 0 16px;
+      height: 44px;
+      line-height: 44px;
+   }
+   .form-control-ice-weight .box-select-weight-unit input{
+      padding-right: 50px;
    }
    .form-control-ice-weight .box-select-weight-unit {
       position: absolute;
@@ -114,6 +130,22 @@
                      <option 
                         v-for='(cat, catIndex) in category' :key='catIndex'
                         :value="cat.name">{{ cat.name }}</option>
+                  </select>
+                  <span class='icon-select'>
+                     <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                     </svg>
+                  </span>
+               </div>
+
+               <!-- CATEGORY PARENT -->
+               <div v-show='listen_product_type == "ice"' class='form-title'><?php echo __('Loại đá', 'watergo'); ?></div>
+               <div v-show='listen_product_type == "ice"' class='form-control form-select'>
+                  <select v-model='product.category_parent' :disabled='view_only'>
+                     <option v-if='product.category_parent == null' :value="null" disabled selected><?php echo __('Chọn loại đá', 'watergo'); ?></option>
+                     <option 
+                        v-for='(cat, catIndex) in get_category_parent' :key='catIndex'
+                        :value="cat.name" :selected='cat.active'>{{ cat.name }}</option>
                   </select>
                   <span class='icon-select'>
                      <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -218,7 +250,8 @@
                   <input v-model='product.weight' ref='product_weight' inputmode='numeric' class='input-trailing' data-trailing='kg' type="text" placeholder='<?php echo __('Input Weight', 'watergo'); ?>' :disabled='view_only'>
 
                   <div class='box-select-weight-unit'>
-                     <select v-model='product.weight_unit'>
+                     <span class='text'>Kg</span>
+                     <!-- <select v-model='product.weight_unit'>
                         <option :value="'Kg'" selected>Kg</option>
                         <option :value="'Ml'">Ml</option>
                         <option :value="'Box'">Box</option>
@@ -227,7 +260,7 @@
                         <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L6 6L11 1" stroke="#252831" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                     </span>
+                     </span> -->
                   </div>
 
                </div>
@@ -352,6 +385,7 @@ var app = Vue.createApp({
          product: {
             id: null,
             category: null,
+            category_parent: null,
             product_type: null,
             description: '',
             brand: null,
@@ -390,6 +424,7 @@ var app = Vue.createApp({
          size_width: null,
 
          category: [],
+         category_parent: [],
 
          uploadImages: [],
          productImages: [],
@@ -408,6 +443,7 @@ var app = Vue.createApp({
             listen_product_type: 'ice',
 
             select_category:  false,
+            select_category_parent:  false,
             price:            false,
             description:      false,
             
@@ -437,8 +473,6 @@ var app = Vue.createApp({
    },
 
    watch: {
-
-
       
       'product.category': function( val ){
          if( val != ''){ this.check_error.select_category = true; }else{
@@ -452,6 +486,20 @@ var app = Vue.createApp({
             this.listen_product_type = 'ice';
             // RE-BUILD CHECK ERROR 
             this.check_error.listen_product_type   = 'ice';
+         }
+
+         if( this.get_category_parent.length > 0 ){
+            var _find = this.get_category_parent.find( item => item.name == this.product.category_parent );
+            if( _find == undefined ) {
+               this.product.category_parent = null;
+            }
+         }
+
+      },
+
+      'product.category_parent': function( val ){
+         if( val != '' && val != null && this.listen_product_type == 'ice' ){ this.check_error.select_category_parent = true}else{
+            this.check_error.select_category_parent = false;
          }
       },
 
@@ -523,12 +571,13 @@ var app = Vue.createApp({
          if( val == null ){
             this.product.discount_percent = null;
          }
-         if( val != undefined && val != ''){
+         if( val != undefined && val != 0 ){
             this.check_error.discount_percent = true;
          }else{
             this.check_error.discount_percent = false;
          }
-      },  
+      },
+
       'product.discount_from': function(val){
          if( val != undefined && val != '' && val != 0){
             this.check_error.discount_from = true;
@@ -616,11 +665,12 @@ var app = Vue.createApp({
 
                if(
                   val.select_category == true &&
+                  val.select_category_parent == true &&
                   val.price == true &&
                   val.description == true &&
                   val.ice_weight == true &&
                   val.size_length == true &&
-                  val.size_width == true
+                  val.size_width == true 
                ){
                   this.is_can_action = true;
                   // OPTION DISCOUNT
@@ -697,6 +747,17 @@ var app = Vue.createApp({
    },
 
    computed: {
+
+      get_category_parent(){
+         if(this.product.category != null){
+            var _findCat = this.category.find( item => item.name == this.product.category );
+            if( _findCat ){
+               return this.category_parent.filter( item => item.parent == _findCat.id);
+            }
+         }
+         return [];
+      },
+
       get_name_product_heading(){
          if( this.product.product_type == 'ice' ){
             return this.product.category;
@@ -770,7 +831,6 @@ var app = Vue.createApp({
                      $(el).attr('value', dateText); 
 
                      if( var_changed == 'discount_from' ){
-                        console.log('dassd')
                         instanceApp.product.discount_from = dateText;
                      }
                      if( var_changed == 'gift_from' ){
@@ -933,6 +993,7 @@ var app = Vue.createApp({
                var _product_id = res.data;
 
                if( this.disable_goback == true ){
+                  // VERSION ADMIN
                   window.parent.app.btn_close_popup(_product_id);
                }else{
                   this.goBackDelete(_product_id);
@@ -994,6 +1055,7 @@ var app = Vue.createApp({
             this.product.has_gift  = 0;
             this.product.gift_from = 0;
             this.product.gift_to   = 0;
+            
          }
 
          form.append('has_gift',       this.product.has_gift);
@@ -1006,7 +1068,7 @@ var app = Vue.createApp({
          form.append('description', this.product.description);
 
          if(this.listen_product_type == 'ice'){
-
+            form.append('category_parent', this.product.category_parent );
             form.append('weight', this.product.weight );
             form.append('weight_unit', this.product.weight_unit );
             form.append('length_width', this.size_length + '*' + this.size_width);
@@ -1015,6 +1077,7 @@ var app = Vue.createApp({
             form.append('capacity_device', this.product.capacity_device);
             form.append('name_device', this.product.name_device);
          }
+
          if( this.is_can_action == true ){
             this.loading = true;
             var r = await window.request(form);
@@ -1024,8 +1087,10 @@ var app = Vue.createApp({
                if( res.message == 'action_product_ok'){
                   var _product_id = res.data;
                   if( this.disable_goback == true ){
+                     // VERSION ADMIN
                      window.parent.app.btn_close_popup(_product_id);
                   }else{
+                     // VERSION WEB
                      this.goBackUpdate(_product_id);
                   }
                }else{
@@ -1101,7 +1166,7 @@ var app = Vue.createApp({
                   this.product.has_gift     = null;
                   this.product.gift_to      = null;
                   this.product.gift_from    = null;
-                  this.product.gift_text    = null;
+                  this.product.gift_text    = '';
                }
 
                // PRODUCT IMAGE
@@ -1167,6 +1232,7 @@ var app = Vue.createApp({
       this._to_discount('#gift_to', 'gift_to');
 
       this.category        = JSON.parse('<?php echo json_encode($category) ?>');
+      this.category_parent = JSON.parse('<?php echo json_encode($category_parent) ?>');
       
       this.loading = true;
       var urlParams = new URLSearchParams(window.location.search);
@@ -1206,6 +1272,73 @@ var app = Vue.createApp({
                this.product.weight_unit = 'Kg'
             }
          }
+
+         // CHECK DISCOUNT DATE AND GIFT DATE STILL AVAILABLE
+         function _format_to_date( dateString ){
+            if( dateString != undefined && dateString != null && dateString != 0){
+               const inputDate = new Date(dateString.split('/').reverse().join('-'));
+               inputDate.setHours(0, 0, 0, 0);
+               return inputDate;
+            }
+            return false;
+         }
+
+         var _current_date = new Date();
+         _current_date.setHours(0, 0, 0, 0);
+
+         var _date_discount_from = _format_to_date( this.product.discount_from);
+         var _date_discount_to   = _format_to_date( this.product.discount_to);
+         var _date_gift_from     = _format_to_date( this.product.gift_from);
+         var _date_gift_to       = _format_to_date( this.product.gift_to);
+
+
+         if( _date_discount_from != false && _date_discount_to != false ){
+            var _flag_discount = false;
+            if( _date_discount_from <= _current_date && _date_discount_to >= _current_date ){
+               _flag_discount = true;
+            }else{
+               // CHECK IF IT IS FUTURE DATE
+               if( _date_discount_from > _current_date && _date_discount_to > _current_date ){
+                  _flag_discount = true;
+               }else{
+                  _flag_discount = false;
+               }
+            }
+            if( _flag_discount == false ){
+               this.product.discount_from  = null;
+               this.product.discount_to    = null;
+               this.product.has_discount   = null;
+               this.product.discount_percent  = null;
+               this.open_discount_input = false;
+            }
+         }
+
+         if( _date_gift_from != false && _date_gift_to != false ){
+            var _flag_gift = false;
+            if( _date_gift_from <= _current_date && _date_gift_to >= _current_date ){
+               _flag_gift = true;
+            }else{
+               // CHECK IF IT IS FUTURE DATE
+               if( _date_gift_from > _current_date && _date_gift_to > _current_date ){
+                  _flag_gift = true;
+               }else{
+                  _flag_gift = false;
+               }
+            }
+            if( _flag_gift == false ){
+               // this.product.discount_from = null;
+               // this.product.discount_to = null;
+               this.product.gift_from  = null;
+               this.product.gift_to    = null;
+               this.product.has_gift   = null;
+               this.product.gift_text  = '';
+               this.open_gift_input = false;
+            }
+         }
+
+
+
+
       }
 
       window.appbar_fixed();

@@ -336,7 +336,6 @@ createApp({
 
       focusNextField(fieldId) {
          var nextInput = document.getElementById(fieldId);
-         console.log(fieldId);
          if (nextInput) {
             nextInput.focus();
             nextInput.select();
@@ -344,7 +343,6 @@ createApp({
       },
 
       placeCaretToEnd(fieldId) {
-         console.log(' placeCaretToEnd ' + fieldId);
          var inputElement = $('#' + fieldId);
          if ( inputElement != undefined && inputElement.val().length > 0 ) {
             inputElement[0].selectionStart = inputElement.val().length;

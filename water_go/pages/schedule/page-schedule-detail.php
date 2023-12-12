@@ -371,8 +371,6 @@ var app = Vue.createApp({
       await this.findOrder(order_id);
       await this.get_order_timeshipping(order_id);
 
-      // console.log(this.order);
-
       this.loading = false;
       window.appbar_fixed();
    },

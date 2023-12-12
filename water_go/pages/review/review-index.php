@@ -65,9 +65,10 @@ createApp({
          reviews: [],
 
          store_id: 0,
-         paged: 0,
          total_reviews: 0,
          averageRating: 0,
+
+         isRequestInProgress: false,
 
       }
    },
@@ -94,24 +95,35 @@ createApp({
          }
       },
 
-      async findReview( paged ){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_review_store');
-         form.append('store_id', this.store_id);
-         form.append('paged', paged);
-         
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'review_found' ){
-               res.data.forEach(item => {
-                  if (!this.reviews.some(existingItem => existingItem.id === item.id)) {
-                     this.reviews.push(item);
-                  }
-               });
-               
+      async findReview(){
+
+         if( this.isRequestInProgress ) return;
+
+         this.isRequestInProgress = true;
+
+         try{
+            await this.delay(500);
+            var form = new FormData();
+            form.append('action', 'atlantis_get_review_store');
+            form.append('store_id', this.store_id);
+            form.append('paged', this.reviews.length);
+            var r = await window.request(form);
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'review_found' ){
+                  res.data.forEach(item => {
+                     if (!this.reviews.some(existingItem => existingItem.id === item.id)) {
+                        this.reviews.push(item);
+                     }
+                  });
+                  
+               }
             }
+         }catch( e){}
+         finally{
+            this.isRequestInProgress = false;
          }
+
       },
 
       async get_total_review( store_id ){
@@ -149,13 +161,19 @@ createApp({
          const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
          const windowHeight   = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
-         var windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
-         var documentScroll   = documentHeight + scrollEndThreshold;
-         // if (scrollPosition + windowHeight + 10 >= documentHeight - 10) {
-         if (scrollPosition + windowHeight >= documentHeight ) {
-            await this.findReview( this.paged++);
+         const windowScroll     = scrollPosition + windowHeight + scrollEndThreshold;
+         const documentScroll   = documentHeight + scrollEndThreshold;
+         // THRESHOLD
+
+
+         if (scrollPosition + windowHeight >= documentHeight - 50 ) {
+            await this.findReview();
          }
-      }
+      },
+
+      // MAKE USER CANT PRESS SPEED OF LIGHT
+      delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
 
    },
 
@@ -176,11 +194,9 @@ createApp({
       const store_id  = urlParams.get('store_id'); 
       this.store_id   = store_id;
 
-      await this.findReview( 0);
+      await this.findReview();
       await this.get_total_review(store_id);
       await this.get_review_rating_average(store_id);
-
-      console.log(this.reviews)
 
       this.loading = false;
 

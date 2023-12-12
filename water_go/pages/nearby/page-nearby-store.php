@@ -103,7 +103,6 @@ var app = Vue.createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r ));
             if( res.message == 'store_location_found' ){
-               console.log(res);
                res.data.forEach( item => {
                   var _exists = this.stores.some( s => s.id == item.id );
                   if( !_exists ){

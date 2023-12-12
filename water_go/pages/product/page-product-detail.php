@@ -1,3 +1,5 @@
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" integrity="sha512-yHknP1/AwR+yx26cB1y0cjvQUMvEa2PFzt1c9LlS4pRQ5NOTZFWbhBig+X9G9eYW/8m0/4OXNx8pxJ6z57x0dw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
@@ -401,6 +403,8 @@ var app = Vue.createApp({
 
          database: null,
 
+         max_stock: 1,
+
          // memory
          carts: [],
 
@@ -464,7 +468,8 @@ var app = Vue.createApp({
                      {
                         product_id: parseInt(this.product.id ),
                         product_quantity_count: this.product_quantity_count,
-                        product_select: true
+                        product_select: true,
+                        max_stock: this.max_stock
                      }
                   ]
                });
@@ -476,7 +481,8 @@ var app = Vue.createApp({
                   this.carts[_storeIndex].products.push({
                      product_id: parseInt(this.product.id ),
                      product_quantity_count: this.product_quantity_count,
-                     product_select: true
+                     product_select: true,
+                     max_stock: this.max_stock
                   });
                }else{
                   this.carts[_storeIndex].products.some( product => product.product_select = false);
@@ -516,6 +522,7 @@ var app = Vue.createApp({
             if( res.message == 'product_found' ){
                this.product = res.data;
 
+
                if( ! Array.isArray( res.data.product_image ) ){
                   this.product.product_image = [ res.data.product_image];
                }
@@ -529,8 +536,17 @@ var app = Vue.createApp({
                      this.canOrder = true;
                      this.product.mark_out_of_stock = 0;
                   }
+                  // SOME CATEGORY HAS MAX QUANTITY SELECT
                   this.product_quantity_count = 1;
                   this.canOrder = true;
+
+                  var _cat = ['Bình vòi', 'Bình úp', 'Nước chai'];
+                  var _quantity = ['Bình', 'Lốc 6 chai'];
+                  if( _cat.includes( this.product.category) == true && _quantity.includes( this.product.quantity ) == true ){
+                     this.product_quantity_count = 3;
+                     this.max_stock = 3;
+                  }
+
                }
 
 
@@ -564,6 +580,7 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_all_product_by_store');
          form.append('store_id', store_id);
          form.append('product_id', product_id);
+         form.append('condition', 'mark_out_of_stock');
          var r = await window.request(form);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
@@ -575,17 +592,21 @@ var app = Vue.createApp({
 
       plusQuantity(){
          if( this.product.mark_out_of_stock == 0 ){
-            this.product_quantity_count++;
+            if( this.product_quantity_count >= this.max_stock ){
+               this.product_quantity_count++;
+            }
          }
       },
 
       minsQuantity(){
          if( this.product.mark_out_of_stock == 0 ){
-            if( this.product_quantity_count == 0 ){
-               this.product_quantity_count = 0;
-            }else{ 
+
+            if( this.product_quantity_count > 0 && this.product_quantity_count > this.max_stock ){
                this.product_quantity_count--;
+            }else if( this.product_quantity_count == this.max_stock ) {
+               this.product_quantity_count = this.max_stock;
             }
+            
          }
       },
 
@@ -631,7 +652,7 @@ var app = Vue.createApp({
 
    computed: {
       check_can_order(){
-         if( this.canOrder == true && this.product_quantity_count > 0){
+         if( this.canOrder == true && this.product_quantity_count > 0 && this.product_quantity_count >= this.max_stock ){
             return true;
          }
          return false;

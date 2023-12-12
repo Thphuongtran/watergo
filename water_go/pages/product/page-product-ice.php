@@ -34,6 +34,7 @@
    }
 
 
+
 ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.2/jquery.matchHeight-min.js" integrity="sha512-/bOVV1DV1AQXcypckRwsR9ThoCj7FqTV2/0Bm79bL3YSyLkVideFLE3MIZkq1u5t28ke1c0n31WYCOrO01dsUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
@@ -183,6 +184,15 @@
       pointer-events: none;
       opacity: 0.6;
    }
+   .navbar.style01.select-style01{
+      white-space: nowrap;
+   }
+
+   .navbar.style01.select-style01 li{
+      padding-left: 10px;
+      padding-right: 10px;
+      min-width: auto;
+   }
    
 </style>
 <div id='app'>
@@ -239,7 +249,17 @@
                      <span class='text'>{{ cat.name }}</span>
                   </li>
                </ul>
+
+               <ul v-show='show_category_parent == true && get_category_parent.length > 0' class='navbar style01 select-item select-style01'>
+                  <li v-for='( subcat, subcatIndex ) in get_category_parent' 
+                     @click='select_category_parent(subcat.name)'
+                     :class='subcat.active == true ? "active" : ""'
+                     :key='subcatIndex'>
+                     {{ subcat.name }}
+                  </li>
+               </ul>
             </div>
+
 
          </div>
       </div>
@@ -262,7 +282,9 @@
                         <span v-if='has_discount(product) == true' class='badge-discount'>-{{ product.discount_percent }}%</span>
                      </div>
                      <div class='box-wrapper'>
-                        <p class='tt01'>{{ product.name }} </p>
+                        <p v-if='product.category_parent != undefined && product.category_parent != null && product.product_type == "ice"' class='tt01'>{{ product.category_parent }} </p>
+                        <p v-if='product.product_type == "ice_device" ' class='tt01'>{{ product.name }} </p>
+
                         <p class='tt02'>{{ product.name_second }}</p>
                         
                         <div class='gr-price' :class="has_discount(product) == true ? 'has_discount' : '' ">
@@ -324,13 +346,17 @@ createApp({
          products: [],
 
          category: [],
+
+         show_category_parent: false,
          category_parent: [],
 
          category_id_selected: null,
          category_parent_id_selected: null,
 
          filter_type_box_open: false,
-         is_user_share_location: false,
+         is_user_share_location: null,
+
+         isRequestInProgress: false,
 
       }
    },
@@ -348,6 +374,7 @@ createApp({
       },
 
       filter_products(){
+
          var _products = this.products;
          if(this.sortFeatureCurrentValue == 2 ){
             // 'Top Rated Filter'
@@ -362,10 +389,6 @@ createApp({
             _products.sort((a, b) => a.distance - b.distance);
          }
 
-         // if( this.category_parent_id_selected != null ){
-         //    _products = _products.filter( item => item.category_parent == this.category_parent_id_selected );
-         // }
-
          return _products;
       },
    },
@@ -378,57 +401,62 @@ createApp({
             });
          }, deep: true
       },
+
+      category: {
+         handler( val ){
+            var _is_anyone_active = val.some( item => item.active == true);
+            if( _is_anyone_active ){
+               this.show_category_parent = true;
+            }else{
+               this.show_category_parent = false;
+            }
+         }, deep: true
+      }
+
    },
 
    methods: {
 
       open_filter_type_box(){
          this.filter_type_box_open = !this.filter_type_box_open;
-      },
-
-      startLocationUpdate() {
-         // Run get_current_location every second
-         this.get_current_location();
-         // this.locationUpdateInterval = setInterval(() => {
-         // }, 3000);
-      },
-      stopLocationUpdate() {
-         // Stop the interval when needed
-         clearInterval(this.locationUpdateInterval);
-      },
+      }, 
       
-      get_current_location(){
+      async get_current_location(){
+         
+         let _location = false;
          try{
             if( window.appBridge != undefined ){
-               window.appBridge.getLocation().then( (data) => {
+               await window.appBridge.getLocation().then( (data) => {
                   if (Object.keys(data).length === 0) {
-                     this.is_user_share_location = false;
-                     this.sortFeatureCurrentValue = 1;
+                     _location = false;
                   }else{
                      let lat = data.lat;
                      let lng = data.lng;
 
                      this.latitude = data.lat;
                      this.longitude = data.lng;
-
-                     this.is_user_share_location = true;
-                     this.sortFeatureCurrentValue = 0;
+                     _location = true;
                   }
                });
             }else{
-               this.is_user_share_location = false;
-               this.sortFeatureCurrentValue = 1;
+               _location = false;
             }
          }catch(e){
-            // this.is_user_share_location = false;
-            // this.sortFeatureCurrentValue = 1;
+            _location = false;
          }
 
-         if( this.is_user_share_location == true ){
-            alert('location open');
-         }else{
-            alert('location close');
+         if( this.is_user_share_location != _location ){
+            this.is_user_share_location = _location;
+            this.loading_data = true;
+            this.products = [];
+            await this.atlantis_get_product_sort_version2();
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+            this.loading_data = false;
+
          }
+
       },
 
       has_discount( product ){ return window.has_discount(product); },
@@ -447,7 +475,38 @@ createApp({
          window.bodyScrollToggle();
       },
 
+      async select_category_parent( cat_id ){
+         // toggle active
+         this.category_parent.some( cat => { 
+            if (cat.name == cat_id) {cat.active = !cat.active;}else{
+               cat.active = false;
+            }
+         });
+
+         var cat_active = this.category_parent.find( cat => cat.active == true );
+         if( cat_active == undefined ){
+            this.category_parent_id_selected = null;
+         }else{
+            this.category_parent_id_selected = cat_active.name;
+         }
+
+         this.loading_data = true;
+         this.products = [];
+
+         await this.atlantis_get_product_sort_version2();
+
+         jQuery(document).ready(function($){
+            jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+         });
+
+         window.appbar_fixed();
+
+         this.loading_data = false;
+      },
+
       async select_category(cat_id){
+         this.category_parent.some(item => item.active = false);
+         this.category_parent_id_selected = null;
 
          // toggle active
          this.category.some( cat => { 
@@ -460,61 +519,92 @@ createApp({
          if( cat_active == undefined ){
             this.category_id_selected = null;
             this.is_ice_device_selected = false;
+            this.show_category_parent = false;
          }else{
             if( cat_active.name == "Thiết bị đá"){
                this.is_ice_device_selected = true;
                this.category_id_selected = null;
+               this.show_category_parent = false;
             }else{
                this.is_ice_device_selected = false;
                this.category_id_selected = cat_active.name;
+               this.show_category_parent = true;
             }
          }
          
          this.loading_data = true;
          this.products = [];
-
          await this.atlantis_get_product_sort_version2();
+
+         jQuery(document).ready(function($){
+            jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+         });
+
+         window.appbar_fixed();
+
          this.loading_data = false;
 
       },
 
-      // INIT
+      // MAKE USER CANT PRESS SPEED OF LIGHT
+      delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); },
+
+      // INT
       async atlantis_get_product_sort_version2(){
 
-         var form = new FormData();
-         form.append('action', 'atlantis_get_product_sort_version2');
+         if( this.isRequestInProgress) return;
 
-         if( this.latitude == null && this.longitude == null ){
-            form.append('no_location_found', 1);
-            this.sortFeatureCurrentValue = 1;
-         }else{
-            form.append('lat', this.latitude);
-            form.append('lng', this.longitude);
-         }
+         this.isRequestInProgress = true;
 
-         form.append('paged', this.products.length );
-         var _category  = this.category.find(item => item.name == this.category_id_selected );
+         try{
+            
+            var form = new FormData();
+            form.append('action', 'atlantis_get_product_sort_version2');
 
-         if( this.is_ice_device_selected == false ){
-            form.append('product_type', 'ice');
-         }else{
-            form.append('product_type', 'ice_device');
-         }
-         if(this.category_id_selected != null ){
-            form.append('category', _category.name);
-         }
-         var r = await window.request(form);
-         
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               res.data.forEach(item => {
-                  if (!this.products.some(existingItem => existingItem.id === item.id)) {
-                     this.products.push(item);
-                  }
-               });
+            if( this.is_user_share_location == false ){
+               form.append('no_location_found', 1);
+               this.sortFeatureCurrentValue = 1;
+            }else{
+               this.sortFeatureCurrentValue = 0;
+               form.append('lat', this.latitude);
+               form.append('lng', this.longitude);
             }
+
+            form.append('paged', this.products.length );
+            var _category  = this.category.find(item => item.name == this.category_id_selected );
+            var _category_parent = this.category_parent.find(item => item.name == this.category_parent_id_selected );
+
+            if( this.is_ice_device_selected == false ){
+               form.append('product_type', 'ice');
+            }else{
+               form.append('product_type', 'ice_device');
+            }
+            if(this.category_id_selected != null ){
+               form.append('category', _category.name);
+            }
+            if(this.category_parent_id_selected != null ){
+               form.append('category_parent', _category_parent.name);
+            }
+            var r = await window.request(form);
+            
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'product_found' ){
+                  res.data.forEach(item => {
+                     if (!this.products.some(existingItem => existingItem.id === item.id)) {
+                        this.products.push(item);
+                     }
+                  });
+               }
+            }
+
+            // await this.delay(500);
+         }catch(e){
+            this.isRequestInProgress = false;
+         } finally{
+            this.isRequestInProgress = false;
          }
+
       },
 
       goBack(){ window.goBack(); },
@@ -552,8 +642,6 @@ createApp({
    beforeDestroy() {
       window.removeEventListener('scroll', this.handleScroll);
       document.removeEventListener('click', this.handleClickOutside);
-
-      this.stopLocationUpdate();
    },
 
    async created(){
@@ -562,10 +650,12 @@ createApp({
       // THIS IS FILTER FOR CATEGORY
       this.category_parent    = JSON.parse(JSON.stringify(<?php echo json_encode($category_parent, true); ?>));
 
-      this.startLocationUpdate();
-
       this.loading = true;
-      await this.atlantis_get_product_sort_version2();
+      await this.get_current_location();
+      await setInterval( async () => {
+         await this.get_current_location();
+      }, 2000);
+
       this.loading = false;
       window.appbar_fixed();
       

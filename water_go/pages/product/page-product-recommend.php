@@ -255,15 +255,15 @@ var app = Vue.createApp({
 
       sortFeatureCurrentValue: async function( val ){
          if(val == 2 ){
-            // console.log('Top Rated Filter');
+            // Top Rated Filter
             this.products.sort((a, b) => b.avg_rating - a.avg_rating);
          }
          else if(val == 1 ){
-            // console.log('Top Cheapest');
+            // Top Cheapest
             this.products.sort((a, b) => a.price - b.price);
          }
          else if(val == 0 ){
-            // console.log('Nearest');
+            // Nearest
             this.products.sort((a, b) => a.distance - b.distance);
          }
 

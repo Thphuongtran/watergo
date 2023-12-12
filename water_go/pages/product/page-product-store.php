@@ -61,6 +61,16 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : '';
       height: calc( 100vh - 221px);
    }
 
+   .product-image{
+      overflow: hidden;
+   }
+
+   .list-type-product li .product-l img{
+      width: 80px;
+      height: 100%;
+      object-fit: cover;
+   }
+
 </style>
 <div id='app'>
    <div v-show='loading == false' class='page-product-store'>
@@ -470,7 +480,6 @@ var app = Vue.createApp({
          form.append('product_ids', JSON.stringify(product_ids));
 
          var r = await window.request(form);
-         console.log(r);
 
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r));

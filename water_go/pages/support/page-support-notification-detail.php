@@ -1,3 +1,18 @@
+<?php 
+
+   $id = isset($_GET['support_id']) ? $_GET['support_id'] : 0;
+   $sql = "SELECT * FROM wp_watergo_supports WHERE id = $id";
+   global $wpdb;
+   $res = $wpdb->get_results( $sql);
+   if( empty( $res)){
+      $res = [];
+   }else{
+      $res = $res[0];
+   }
+
+   $res = json_encode( $res , true);
+
+?>
 <div id='app'>
    <div v-if='loading == false' class='page-support'>
       <div class='appbar'>
@@ -59,24 +74,7 @@ createApp({
    async created(){
       this.loading = true;
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const support_id = urlParams.get('support_id');
-
-      var form = new FormData();
-      form.append('action', 'atlantis_get_support');
-      form.append('support_id', support_id);
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify(r));
-         if( res.message == 'support_found' ){
-            this.support = res.data;
-         }
-      }
-      // make as read
-      var form2 = new FormData();
-      form2.append('action', 'atlantis_support_make_as_read');
-      form2.append('support_id', support_id);
-      var r = await window.request(form2);
+      this.support = JSON.parse( JSON.stringify( <?php echo $res; ?> ));
 
       this.loading = false;
 

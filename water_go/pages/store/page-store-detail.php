@@ -40,6 +40,7 @@
    .list-product-by-store .badge-gift {
       position: relative;
       width: 100%;
+      left: -4px;
    }
    .list-product-by-store .badge-gift .icon {
       position: absolute;
@@ -198,8 +199,6 @@ var app = Vue.createApp({
       return {
          loading: false,
          store_id: 0,
-         latitude: 10.780900239854994,
-         longitude: 106.7226271387539,
 
          reviews: [],
          products: [],
@@ -239,22 +238,6 @@ var app = Vue.createApp({
          }
       },
 
-      async get_current_location(){
-
-         if( window.appBridge != undefined ){
-            await window.appBridge.getLocation().then( (data) => {
-               if (Object.keys(data).length === 0) {
-                  // alert("Error-1 :Không thể truy cập vị trí");
-               }else{
-                  let lat = data.lat;
-                  let lng = data.lng;
-                  this.latitude = data.lat;
-                  this.longitude = data.lng;
-               }
-            });
-         }
-      },
-
       has_discount( product ){return window.has_discount(product);},
       has_gift( product ){return window.has_gift(product);},
       product_is_mark_out_of_stock( product ){ return window.product_is_mark_out_of_stock(product); },
@@ -272,19 +255,11 @@ var app = Vue.createApp({
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if(res.message == 'store_found' ){
-               var _distance = window.calculateDistance(
-                  this.latitude,
-                  this.longitude,
-                  res.data.latitude,
-                  res.data.longitude
-               );
 
-               res.data.distance = parseFloat(_distance).toFixed(1) + ' km';
                this.store = res.data;
 
                await this.findReview(store_id);
                await this.get_total_review(store_id);
-
 
                if( this.store.store_type == "both" ){
 
@@ -333,7 +308,6 @@ var app = Vue.createApp({
          form.append('store_id', store_id);
          form.append('limit', -1);
          var r = await window.request(form);
-         console.log()
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'product_found' ){
@@ -376,6 +350,9 @@ var app = Vue.createApp({
             }else{
                item.active = false;
             }
+         });
+         jQuery(document).ready(function($){
+            jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
          });
       },
 
@@ -460,7 +437,6 @@ var app = Vue.createApp({
 
       this.loading = true;
 
-      await this.get_current_location();
       await this.findStore(this.store_id);
 
       window.appbar_fixed();

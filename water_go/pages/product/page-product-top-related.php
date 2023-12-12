@@ -228,19 +228,16 @@ createApp({
          // top rated 2
 
          if(this.sortFeatureCurrentValue == 2 ){
-            // console.log('Top Rated Filter');
             _filter.sort((a, b) => b.avg_rating - a.avg_rating);
          }
          
          // Sort products by price in ascending order (cheapest first)
          else if(this.sortFeatureCurrentValue == 1 ){
-            // console.log('Top Cheapest');
             _filter.sort((a, b) => a.price - b.price);
          }
 
          // Filter products by distance (assuming you have access to user's location)
          else if(this.sortFeatureCurrentValue == 0 ){
-            // console.log('Nearest');
             _filter.sort((a, b) => a.distance - b.distance);
          }
 

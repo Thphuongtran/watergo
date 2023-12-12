@@ -298,7 +298,9 @@ var app = Vue.createApp({
          this.carts.some(( store ) => {
             store.products.find(product => {
                if( product.product_id == product_id ){
+                  if( product.product_quantity_count >= product.max_stock ){
                      product.product_quantity_count++;
+                  }
                }
             });
          });
@@ -308,11 +310,14 @@ var app = Vue.createApp({
          this.carts.some(( store ) => {
             store.products.find(product => { 
                if( product.product_id == product_id ){
-                  if( product.product_quantity_count == 0 ) {
-                     product.product_quantity_count = 0;
-                  }else{
+
+                  if( product.product_quantity_count > 0 && product.product_quantity_count > product.max_stock ){
                      product.product_quantity_count--;
+                  }else if( product.product_quantity_count == product.max_stock ) {
+                     product.product_quantity_count = product.max_stock;
                   }
+
+
                }
             });
          });

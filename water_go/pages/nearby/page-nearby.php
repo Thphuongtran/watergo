@@ -496,7 +496,6 @@ window.app = app;
          $('.list-store-carousel').owlCarousel({ margin:10,autoWidth:true, dots:false,items:1,onTranslated: function(event) {
             owl_callback(event,row_store);
          }})
-         //console.log(data_json);
       });
       $(".back_to_mylocation").click(function(){
          map.panTo(center);

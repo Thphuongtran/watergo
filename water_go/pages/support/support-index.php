@@ -1,7 +1,32 @@
 <?php  
-$sql = "SELECT * FROM wp_watergo_supports WHERE user_id = ".get_current_user_id() ." AND is_read = 0 LIMIT 1";
-      global $wpdb;
-      $res = $wpdb->get_results($sql);
+
+   $user_id = get_current_user_id();
+
+   $is_user_store = get_user_meta($user_id , 'user_store', true);
+   $select_app = 'user_app';
+   if( $is_user_store == 1 || $is_user_store == true ){
+      $select_app = 'business_app';
+   }
+
+   global $wpdb;
+   $sql = "SELECT * FROM wp_watergo_supports WHERE select_app = '$select_app' AND page_manager = 'admin' ORDER BY id DESC";
+   $res = $wpdb->get_results($sql);
+
+   if( empty( $res )){
+      $res = [];
+   }
+
+   $res = json_encode($res, true);
+
+   $is_some_question_answer = 0;
+   $sql = "SELECT COUNT(*) AS is_some_question_answer FROM wp_watergo_supports WHERE user_id = $user_id AND page_manager = 'user' AND ( is_read != 1 OR is_read IS NULL ) ";
+   $count = $wpdb->get_results( $sql);
+   if( $count[0]->is_some_question_answer > 0 && $count[0]->is_some_question_answer != NULL && $count[0]->is_some_question_answer != '' ){
+      $is_some_question_answer = 1;
+   }
+
+
+
 ?>
 <style type="text/css">
    .badge-circle{display: block;width: 7px; height: 7px;border-radius: 100%; background-color: #FF4848; position: absolute; top: -2px; right: -2px;}
@@ -44,7 +69,7 @@ $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = ".get_current_user_id(
                      <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                      <path d="M4.62643 18.9053C4.48098 19.0318 4.30247 19.1142 4.11185 19.1427C3.92123 19.1713 3.72642 19.1449 3.55029 19.0666C3.37416 18.9883 3.22401 18.8614 3.11748 18.7008C3.01096 18.5402 2.95246 18.3525 2.94888 18.1598V15.8876C2.41154 15.8876 1.89621 15.6741 1.51626 15.2942C1.13631 14.9142 0.922852 14.3989 0.922852 13.8615V6.77046C0.922852 6.23312 1.13631 5.7178 1.51626 5.33784C1.89621 4.95789 2.41154 4.74443 2.94888 4.74443H14.092C14.6294 4.74443 15.1447 4.95789 15.5246 5.33784C15.9046 5.7178 16.118 6.23312 16.118 6.77046V13.8615C16.118 14.3989 15.9046 14.9142 15.5246 15.2942C15.1447 15.6741 14.6294 15.8876 14.092 15.8876H9.02999L4.62643 18.9053ZM17.1311 10.8397C17.1278 10.9643 17.1278 11.089 17.1311 11.2135V10.8387C17.1361 10.7303 17.1371 9.37289 17.1351 6.76742C17.1343 5.96194 16.8138 5.18973 16.2439 4.62046C15.6741 4.05119 14.9015 3.73142 14.0961 3.73142H5.98792V2.71841C5.98792 2.18107 6.20137 1.66575 6.58132 1.28579C6.96128 0.905838 7.47661 0.692383 8.01394 0.692383L19.1571 0.692383C19.6944 0.692383 20.2097 0.905838 20.5897 1.28579C20.9697 1.66575 21.1831 2.18107 21.1831 2.71841V9.8095C21.1831 10.3468 20.9697 10.8622 20.5897 11.2421C20.2097 11.6221 19.6944 11.8355 19.1571 11.8355V14.1077C19.1535 14.3004 19.095 14.4881 18.9885 14.6487C18.8819 14.8094 18.7318 14.9363 18.5557 15.0146C18.3795 15.0928 18.1847 15.1192 17.9941 15.0907C17.8035 15.0621 17.625 14.9798 17.4795 14.8533L17.1311 14.6142V10.8397Z" fill="white"/>
                      </svg>
-                     <span class='badge-circle<?php if (empty($res)) echo " d-none" ?>'></span>
+                     <span class='badge-circle' :class='is_some_question_answer == 0 ? "d-none" : ""'></span>
                   </button>
                </div>
             </div>
@@ -118,8 +143,8 @@ var app = Vue.createApp({
       return {
          loading: false,
          supports: [],
+         is_some_question_answer: 0,
          inputSearch: "",
-
          select_app: '',
       }
    },
@@ -166,21 +191,9 @@ var app = Vue.createApp({
       this.select_app   = urlParams.get('select_app');
 
       this.loading = true;
-      // await this.get_admin_support_question();
 
-      var form = new FormData();
-      form.append('action', 'atlantis_support');
-      form.append('select_app', this.select_app);
-      if( this.supports.length == 0 ){
-         var r = await window.request(form);
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'get_support_ok' ){
-               res.data.forEach( item => item.user_side = true );
-               this.supports.push( ...res.data);
-            }
-         }
-      };
+      this.supports = JSON.parse( JSON.stringify( <?php echo $res; ?> ));
+      this.is_some_question_answer = parseInt('<?php echo $is_some_question_answer; ?>');
       this.loading = false;
 
       // window.appbar_fixed();

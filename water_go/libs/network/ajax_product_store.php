@@ -379,16 +379,16 @@ function atlantis_action_product_ice(){
       $length_width = isset($_POST['length_width']) ? $_POST['length_width'] : null;
       
       // DISCOUNT
-      $has_discount = isset($_POST['has_discount']) ? $_POST['has_discount'] : null;
-      $discount_percent = isset($_POST['discount_percent']) ? $_POST['discount_percent'] : null;
-      $discount_from = isset($_POST['discount_from']) ? $_POST['discount_from'] : null;
-      $discount_to = isset($_POST['discount_to']) ? $_POST['discount_to'] : null;
+      $has_discount = isset($_POST['has_discount']) ? $_POST['has_discount'] : 0;
+      $discount_percent = isset($_POST['discount_percent']) ? $_POST['discount_percent'] : 0;
+      $discount_from = isset($_POST['discount_from']) ? $_POST['discount_from'] : 0;
+      $discount_to = isset($_POST['discount_to']) ? $_POST['discount_to'] : 0;
 
       // GIFT INPUT
-      $has_gift = isset($_POST['has_gift']) ? $_POST['has_gift'] : null;
-      $gift_text = isset($_POST['gift_text']) ? $_POST['gift_text'] : null;
-      $gift_from = isset($_POST['gift_from']) ? $_POST['gift_from'] : null;
-      $gift_to = isset($_POST['gift_to']) ? $_POST['gift_to'] : null;
+      $has_gift = isset($_POST['has_gift']) ? $_POST['has_gift'] : 0;
+      $gift_text = isset($_POST['gift_text']) ? $_POST['gift_text'] : '';
+      $gift_from = isset($_POST['gift_from']) ? $_POST['gift_from'] : 0;
+      $gift_to = isset($_POST['gift_to']) ? $_POST['gift_to'] : 0;
 
       $mark_out_of_stock = isset($_POST['mark_out_of_stock']) ? $_POST['mark_out_of_stock'] : null;
       $capacity_device = isset($_POST['capacity_device']) ? $_POST['capacity_device'] : null;
@@ -400,55 +400,22 @@ function atlantis_action_product_ice(){
       // UPLOAD IMAGE
       $uploadImages = isset($_FILES['uploadImages']) ? $_FILES['uploadImages'] : null;
 
-      $arg_discount = [];
-      if( $has_discount == 1 ){
-         $arg_discount['has_discount']       = $has_discount;
-         $arg_discount['discount_percent']   = $discount_percent;
-         $arg_discount['discount_from']      = $discount_from;
-         $arg_discount['discount_to']        = $discount_to;
-      }else if( $has_discount == 0 || $has_discount == null ){
-         $arg_discount['has_discount']       = 0;
-         $arg_discount['discount_percent']   = 0;
-         $arg_discount['discount_from']      = 0;
-         $arg_discount['discount_to']        = 0;
-      }
-
-      // GIFT
-      $arg_gift = [];
-      if( $has_gift == 1 ){
-         $arg_gift['has_gift']       = $has_gift;
-         $arg_gift['gift_text']      = $gift_text;
-         $arg_gift['gift_from']      = $gift_from;
-         $arg_gift['gift_to']        = $gift_to;
-      }else if( $has_gift == 0 || $has_gift == null ){
-         $arg_gift['has_gift']         = 0;
-         $arg_gift['gift_text']        = '';
-         $arg_gift['gift_from']        = 0;
-         $arg_gift['gift_to']          = 0;
-      }
-
       $args = [
          'category'           => $category,
          'has_discount'       => $has_discount,
          'discount_percent'   => $discount_percent,
          'discount_from'      => $discount_from,
          'discount_to'        => $discount_to,
+         'has_gift'           => $has_gift,
+         'gift_text'          => $gift_text,
+         'gift_from'          => $gift_from,
+         'gift_to'            => $gift_to,
          'mark_out_of_stock'  => $mark_out_of_stock,
          'description'        => $description,
          'price'              => $price
       ];
-      
 
-      // MERGE DATA DISCOUNT
-      if(!empty($arg_discount)){
-         $args = array_merge($args, $arg_discount);
-      }
-      // MERGE DATA GIFT
-      if(!empty($arg_gift)){
-         $args = array_merge($args, $arg_gift);
-      }
-
-      // if($category_parent != null ) { $args['category_parent'] = $category_parent; }
+      if($category_parent != null ) { $args['category_parent'] = $category_parent; }
       if($weight != null ) { $args['weight'] = $weight; }
       if($length_width != null ){ $args['length_width'] = $length_width;}
 
@@ -595,16 +562,16 @@ function atlantis_action_product_water(){
       $category = isset($_POST['category']) ? $_POST['category'] : null;
       $category_parent = isset($_POST['category_parent']) ? $_POST['category_parent'] : null;
       // DISCOUNT INPUT
-      $has_discount = isset($_POST['has_discount']) ? $_POST['has_discount'] : null;
-      $discount_percent = isset($_POST['discount_percent']) ? $_POST['discount_percent'] : null;
-      $discount_from = isset($_POST['discount_from']) ? $_POST['discount_from'] : null;
-      $discount_to = isset($_POST['discount_to']) ? $_POST['discount_to'] : null;
+      $has_discount = isset($_POST['has_discount']) ? $_POST['has_discount'] : 0;
+      $discount_percent = isset($_POST['discount_percent']) ? $_POST['discount_percent'] : 0;
+      $discount_from = isset($_POST['discount_from']) ? $_POST['discount_from'] : 0;
+      $discount_to = isset($_POST['discount_to']) ? $_POST['discount_to'] : 0;
 
       // GIFT INPUT
-      $has_gift = isset($_POST['has_gift']) ? $_POST['has_gift'] : null;
-      $gift_text = isset($_POST['gift_text']) ? $_POST['gift_text'] : null;
-      $gift_from = isset($_POST['gift_from']) ? $_POST['gift_from'] : null;
-      $gift_to = isset($_POST['gift_to']) ? $_POST['gift_to'] : null;
+      $has_gift = isset($_POST['has_gift']) ? $_POST['has_gift'] : 0;
+      $gift_text = isset($_POST['gift_text']) ? $_POST['gift_text'] : '';
+      $gift_from = isset($_POST['gift_from']) ? $_POST['gift_from'] : 0;
+      $gift_to = isset($_POST['gift_to']) ? $_POST['gift_to'] : 0;
 
       $mark_out_of_stock = isset($_POST['mark_out_of_stock']) ? $_POST['mark_out_of_stock'] : 0;
 
@@ -614,55 +581,20 @@ function atlantis_action_product_water(){
       // UPLOAD IMAGE
       $uploadImages = isset($_FILES['uploadImages']) ? $_FILES['uploadImages'] : null;
 
-      // DISCOUNT
-      $arg_discount = [];
-      if( $has_discount == 1 ){
-         $arg_discount['has_discount']       = $has_discount;
-         $arg_discount['discount_percent']   = $discount_percent;
-         $arg_discount['discount_from']      = $discount_from;
-         $arg_discount['discount_to']        = $discount_to;
-      }else if( $has_discount == 0 || $has_discount == null ){
-         $arg_discount['has_discount']       = 0;
-         $arg_discount['discount_percent']   = 0;
-         $arg_discount['discount_from']      = 0;
-         $arg_discount['discount_to']        = 0;
-      }
-
-      // GIFT
-      $arg_gift = [];
-      if( $has_gift == 1 ){
-         $arg_gift['has_gift']       = $has_gift;
-         $arg_gift['gift_text']      = $gift_text;
-         $arg_gift['gift_from']      = $gift_from;
-         $arg_gift['gift_to']        = $gift_to;
-      }else if( $has_gift == 0 || $has_gift == null ){
-         $arg_gift['has_gift']         = 0;
-         $arg_gift['gift_text']        = '';
-         $arg_gift['gift_from']        = 0;
-         $arg_gift['gift_to']          = 0;
-      }
-
-
-
       $args = [
          'category'           => $category,
          'has_discount'       => $has_discount,
          'discount_percent'   => $discount_percent,
          'discount_from'      => $discount_from,
          'discount_to'        => $discount_to,
+         'has_gift'           => $has_gift,
+         'gift_text'          => $gift_text,
+         'gift_from'          => $gift_from,
+         'gift_to'            => $gift_to,
          'mark_out_of_stock'  => $mark_out_of_stock,
          'description'        => $description,
          'price'              => $price,
       ];
-
-      // MERGE DATA DISCOUNT
-      if(!empty($arg_discount)){
-         $args = array_merge($args, $arg_discount);
-      }
-      // MERGE DATA GIFT
-      if(!empty($arg_gift)){
-         $args = array_merge($args, $arg_gift);
-      }
 
       if( $category_parent != null ) { $args['category_parent'] = $category_parent; }
       if( $name_device != null ){$args['name_device']     = $name_device;}
@@ -672,14 +604,7 @@ function atlantis_action_product_water(){
       if( $volume != null ){ $args['volume'] = $volume; }
       if( $feature_device != null ){ $args['feature_device'] = $feature_device; }
 
-      // wp_send_json_success(['message' => 'bug', 'res' => $_POST]);
-      // wp_die();
-
-
       global $wpdb;
-      
-      // wp_send_json_success(['message' => 'bug', 'res' => $args ]);
-      // wp_die();
 
       $allowed_skip = ['pending', 'publish'];
 
@@ -732,7 +657,7 @@ function atlantis_action_product_water(){
             // SET AS DEFAULT
             $args['status']         = 'pending';
             $args['product_hidden'] = 1;
-         }         
+         }
          
          $list_attachment = func_atlantis_upload_no_ajax('product', $uploadImages);
          if( !empty($list_attachment)){
@@ -767,6 +692,11 @@ function atlantis_action_product_water(){
          //    $args['discount_to']       = 0;
          // }
 
+         $time_demo = [
+            'from_' => strtotime($discount_from),
+            'to_'   => strtotime($discount_to)
+         ];
+
          $updated = $wpdb->update('wp_watergo_products', $args, ['id' => $product_id ]);
 
          if( $updated === false ){
@@ -774,7 +704,7 @@ function atlantis_action_product_water(){
             wp_die();
          }
 
-         wp_send_json_success(['message' => 'action_product_ok', 'data' => $product_id ]);
+         wp_send_json_success(['message' => 'action_product_ok', 'data' => $product_id, 'testing' => $time_demo ]);
          wp_die();
 
       }

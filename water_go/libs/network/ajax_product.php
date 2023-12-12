@@ -517,12 +517,17 @@ function atlantis_get_all_product_by_store(){
       $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
       $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
       $limit      = isset($_POST['limit']) ? $_POST['limit'] : 0;
+      $condition  = isset($_POST['condition']) ? $_POST['condition'] : '';
 
       $args = [
          'id'           => $store_id,
          'get_by'       => 'store_id',
          'exclude_id'   => $product_id,
       ];
+      
+      if( $condition == 'mark_out_of_stock' ){
+         $args['custom_conditional'] = " AND wp_watergo_products.mark_out_of_stock != 1 ";
+      }
 
       if( $limit == -1){
          $args['limit'] = -1;

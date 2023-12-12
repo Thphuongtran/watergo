@@ -539,9 +539,7 @@ var app = Vue.createApp({
                   let requestPromise = window.request(push_notification);
                   let immediatePromise = new Promise(resolve => resolve());
                   await Promise.race([requestPromise, immediatePromise]);
-               } catch (error) {
-                  console.log(error);
-               }
+               } catch (error) {}
 
             }
          }

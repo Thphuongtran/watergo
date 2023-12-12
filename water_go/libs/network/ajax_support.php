@@ -1,194 +1,139 @@
 <?php
 
-add_action( 'wp_ajax_nopriv_atlantis_support', 'atlantis_support' );
-add_action( 'wp_ajax_atlantis_support', 'atlantis_support' );
 
-add_action( 'wp_ajax_nopriv_atlantis_get_support', 'atlantis_get_support' );
-add_action( 'wp_ajax_atlantis_get_support', 'atlantis_get_support' );
-
-add_action( 'wp_ajax_nopriv_atlantis_add_support', 'atlantis_add_support' );
 add_action( 'wp_ajax_atlantis_add_support', 'atlantis_add_support' );
+function atlantis_add_support(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_add_support' ){
+      $question = isset($_POST['question']) ? $_POST['question'] : '';
 
-add_action( 'wp_ajax_nopriv_atlantis_support_make_as_read', 'atlantis_support_make_as_read' );
-add_action( 'wp_ajax_atlantis_support_make_as_read', 'atlantis_support_make_as_read' );
-
-add_action( 'wp_ajax_nopriv_atlantis_get_support_question_user', 'atlantis_get_support_question_user' );
-add_action( 'wp_ajax_atlantis_get_support_question_user', 'atlantis_get_support_question_user' );
-
-
-
-// GET ALL QUESTION FROM ADMIN
-function atlantis_support(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_support' ){
-
-      if( is_user_logged_in() ){
-         $user_id = get_current_user_id();
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
-
-      $select_app = isset($_POST['select_app']) ? $_POST['select_app'] : '';
-
-      if( $select_app == '' && !in_array($select_app, ['user_app', 'business_app']) ){
-         wp_send_json_error([ 'message' => 'no_support_service_found' ]);
-         wp_die();
-      }
-
-      global $wpdb;
-      $sql = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL AND select_app = '$select_app' ";
-      $res = $wpdb->get_results($sql);
-
-      // $sql_admin = "SELECT * FROM wp_watergo_supports WHERE admin_id IS NOT NULL";
-      // $res_admin = $wpdb->get_results($sql_admin);
-
-      // $sql_user = "SELECT * FROM wp_watergo_supports WHERE user_id = $user_id ";
-      // $res_user = $wpdb->get_results($sql_user);
-
-      // $mergedData = [];
-      // $mergedData = array_merge( $res_user, $res_admin);
-
-
-      if( empty( $res )){
-         wp_send_json_error([ 'message' => 'no_support_service_found' ]);
+      if( $question == '' ){
+         wp_send_json_error(['message' => 'support_not_found']);
          wp_die();
       }
       
-      // sort($mergedData);
-      wp_send_json_success([ 'message' => 'get_support_ok', 'data' => $res ]);
-      wp_die();
-
-   }
-}
-
-function atlantis_add_support(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_add_support' ){
-      $question = isset($_POST['question']) ? $_POST['question'] : '';
-
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
-
-      if( $question == '' ){
-         wp_send_json_error([ 'message' => 'question_is_not_empty' ]);
-         wp_die();
-      }
+      date_default_timezone_set('Asia/Bangkok');
+      $user_id = get_current_user_id();
 
       global $wpdb;
       $wpdb->insert('wp_watergo_supports', [
-         'question' => $question,
+         'question'  => $question,
+         'user_id'   => $user_id,
+         'is_read'   => 1,
          'time_created' => time(),
-         'is_read' => "1",
-         'user_id' => $user_id
+         'page_manager' => 'user'
       ]);
-
-      wp_send_json_success([ 'message' => 'question_add_ok' ]);
+      wp_send_json_success(['message' => 'question_found']);
       wp_die();
    }
 }
 
-function atlantis_get_support(){
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_get_support' ){
-      $support_id = isset($_POST['support_id']) ? $_POST['support_id'] : 0;
-
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
-
-      if($support_id == 0){
-         wp_send_json_error(['message' => 'support_not_found' ]);
-         wp_die();
-      }
-
+add_action( 'wp_ajax_atlantis_as_read_support', 'atlantis_as_read_support' );
+function atlantis_as_read_support(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_as_read_support' ){
+      $id = isset($_POST['id']) ? $_POST['id'] : '';
       global $wpdb;
+      $wpdb->update('wp_watergo_supports', ['is_read' => 1], ['id' => $id]);
+      wp_send_json_success(['message' => 'question_found' ]);
+      wp_die();
 
-      $sql = "SELECT * FROM wp_watergo_supports WHERE id = $support_id ";
-      $res = $wpdb->get_results($sql);
-      if( empty( $res )){
-         wp_send_json_error([ 'message' => 'support_not_found' ]);
+   }
+}
+
+
+add_action( 'wp_ajax_atlantis_action_question_from_admin_page', 'atlantis_action_question_from_admin_page' );
+// GET QUESTION FROM ADMIN ONLY ( admin wp ) 
+function atlantis_action_question_from_admin_page(){
+   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_action_question_from_admin_page' ){
+
+      $user_id = get_current_user_id();
+
+      $event = isset($_POST['event']) ? $_POST['event'] : '';
+
+      $page_manager = isset($_POST['page_manager']) ? $_POST['page_manager'] : '';
+
+      if( !in_array( $event, ['add', 'edit', 'get' ] )){
+         wp_send_json_error(['message' => 'question_not_found']);
          wp_die();
       }
 
-      wp_send_json_success([ 'message' => 'support_found', 'data' => $res[0] ]);
-      wp_die();
-      
-   }
+      $id            = isset($_POST['id']) ? $_POST['id'] : '';
+      $question      = isset($_POST['question']) ? $_POST['question'] : '';
+      $answer        = isset($_POST['answer']) ? $_POST['answer'] : '';
+      $select_app    = isset($_POST['select_app']) ? $_POST['select_app'] : '';
+
+      // SPEC answer_user => from admin
+      $answer_user   = isset($_POST['answer_user']) ? $_POST['answer_user'] : 0;
+
+      if( $event == 'get' ){
+         global $wpdb;
+         $sql = "SELECT * FROM wp_watergo_supports WHERE id = $id";
+         $res = $wpdb->get_results( $sql);
          
-}
+         if( empty( $res )){
+            wp_send_json_error(['message' => 'question_not_found']);
+            wp_die();
+         }
 
-function atlantis_support_make_as_read(){
-
-   if( isset( $_POST['action'] ) && $_POST['action'] == 'atlantis_support_make_as_read' ){
-      $support_id = isset($_POST['support_id']) ? $_POST['support_id'] : 0;
-
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
+         wp_send_json_success(['message' => 'question_found', 'data' => $res[0] ]);
          wp_die();
       }
 
-      if( $support_id == 0 ){
-         wp_send_json_error([ 'message' => 'support_not_found' ]);
+      if( $event == 'add' ){
+         global $wpdb;
+         // SET GMT+7
+         date_default_timezone_set('Asia/Bangkok');
+         $wpdb->insert('wp_watergo_supports', [
+            'question'     => $question,
+            'answer'       => $answer,
+            'admin_id'     => $user_id,
+            'select_app'   => $select_app,
+            'time_created' => time(),
+            'page_manager' => $page_manager
+         ]);
+
+         wp_send_json_success(['message' => 'question_found', 'data' ]);
          wp_die();
       }
 
-      global $wpdb;
+      if( $event == 'edit'){
+         global $wpdb;
+         if( $page_manager == 'admin' ){
+            $update_data = [];
+            if( $question ){
+               $update_data['question'] = $question;
+            }
+            if( $answer ){
+               $update_data['answer'] = $answer;
+            }
+            if($select_app ){
+               $update_data['select_app'] = $select_app;
+            }
+            
+            $wpdb->update('wp_watergo_supports', $update_data, ['id' => $id ]);
+         }
+         else if( $page_manager == 'user' ){
+            date_default_timezone_set('Asia/Bangkok');
+            $wpdb->update('wp_watergo_supports',[ 'admin_id' => $user_id, 'answer' => $answer, 'time_answer' => time() ], ['id' => $id ]);
+         }
+         else{
+            wp_send_json_error(['message' => 'question_not_found']);
+            wp_die();
+         }
 
-      $sql = $wpdb->prepare("UPDATE wp_watergo_supports SET is_read = 1 WHERE is_read = 0 AND user_id = $user_id AND id = $support_id ");
-      $wpdb->query($sql);
+         wp_send_json_success(['message' => 'question_found']);
+         wp_die();
+      }
 
-      wp_send_json_success([ 'message' => 'support_mark_as_read', ]);
+      wp_send_json_error(['message' => 'question_not_found']);
       wp_die();
+
+
 
    }
 }
 
-/**
- * @access UPDATE FOR USER [no matter user is store or not => just get all question for user]
- */
-
-function atlantis_get_support_question_user(){
-   if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_support_question_user' ){
-      
-      if(is_user_logged_in() == true ){
-         $user_id = get_current_user_id();
-         $user = get_user_by('id', $user_id);
-         $prefix_user = 'user_' . $user->data->ID;
-      }else{
-         wp_send_json_error(['message' => 'no_login_invalid' ]);
-         wp_die();
-      }
-
-      $sql = "SELECT * FROM wp_watergo_supports WHERE user_id = ".$user_id;
-      global $wpdb;
-      $res = $wpdb->get_results($sql);
-
-      if( empty($res ) ){
-         wp_send_json_error(['message' => 'support_question_not_found' ]);
-         wp_die();
-      }
-
-      wp_send_json_success(['message' => 'get_support_user_ok', 'data' => $res ]);
-      wp_die();
-
-
-   }
-}
 
 
 /**
- * @access UPDATE FOR ADMIN
+ * @access GET ALL QUESTION FROM CURRENT USER
  */

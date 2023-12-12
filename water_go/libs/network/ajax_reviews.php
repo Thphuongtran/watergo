@@ -329,9 +329,8 @@ add_action( 'wp_ajax_atlantis_get_review_store', 'atlantis_get_review_store' );
 function atlantis_get_review_store(){
    if( isset($_POST['action']) && $_POST['action'] == 'atlantis_get_review_store' ){
       $store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-      $limit      = 10;
+      $limit      = isset($_POST['limit']) ? $_POST['limit'] : 10;
       $paged      = isset($_POST['paged']) ? $_POST['paged'] : 0;
-      $paged      = $paged * $limit;
       $extension  = isset($_POST['extension']) ? $_POST['extension'] : 0;
 
       if( $store_id == 0 ){
@@ -341,7 +340,7 @@ function atlantis_get_review_store(){
 
       $sql = "SELECT * FROM wp_watergo_reviews 
          WHERE store_id = $store_id ORDER BY id DESC 
-         LIMIT $paged, 10
+         LIMIT $paged, $limit
       ";
 
       global $wpdb;
@@ -357,7 +356,6 @@ function atlantis_get_review_store(){
          $res[$k]->first_name    = get_user_meta( $vl->user_id, 'first_name', true );
          $res[$k]->nickname      = get_user_meta( $vl->user_id, 'nickname', true );
          $res[$k]->user_avatar   = func_atlantis_get_images($vl->user_id, 'user_avatar', true);
-
          // wp_send_json_error(['message' => 'bug', 'data' => strlen( $vl->contents) ]);
          // wp_die();
 

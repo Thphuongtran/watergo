@@ -248,11 +248,6 @@ createApp({
             this.final_datetime     = '01/01/' + this.get_full_current_datetime({ year: date });
          }
             await this._re_get_order_report( this.reverse_date_to_system_datetime( this.final_datetime ) );
-
-         
-
-         console.log( this.final_datetime );
-         
       },
 
       select_filter_datetime(value){
@@ -322,7 +317,6 @@ createApp({
          form.append('action', 'atlantis_get_order_report_by_datetime');
          form.append('from_date', from_date );
          var r = await window.request(form);
-         console.log( r );
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_order_ok' ){

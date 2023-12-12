@@ -76,9 +76,8 @@ createApp({
             var r = await window.request(form);
             if( r != undefined ){
                var res = JSON.parse( JSON.stringify(r));
-               if( res.message == 'question_add_ok' ){
+               if( res.message == 'question_found' ){
                   this.goBack();
-                  
                }else{
                   this.loading = false;
                }

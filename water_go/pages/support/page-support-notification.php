@@ -1,3 +1,17 @@
+<?php 
+   $user_id = get_current_user_id();
+
+   global $wpdb;
+   $sql = "SELECT * FROM wp_watergo_supports WHERE page_manager = 'user' AND user_id = $user_id ORDER BY id DESC, is_read DESC";
+   $res = $wpdb->get_results( $sql);
+
+   if( empty( $res ) ){
+      $res = [];
+   }
+
+   $res = json_encode( $res, true);
+?>
+
 <div id='app'>
    <div v-if='loading == false' class='page-support'>
 
@@ -48,19 +62,23 @@ createApp({
    methods: {
       timestamp_to_date(timestamp){ return window.timestamp_to_date(timestamp);},
       goBack(){ window.goBack();},
-      gotoPageSupportNotificationDetail(support_id){ window.gotoPageSupportNotificationDetail(support_id);},
+
+      async gotoPageSupportNotificationDetail(support_id){
+         // EVEN READ OR NOT, LET MAKE IT READ BY THE WAY 
+         try {
+            var form = new FormData();
+            form.append('action', 'atlantis_as_read_support');
+            form.append('id', support_id);
+            let requestPromise = await window.request(form);
+            let immediatePromise = new Promise(resolve => resolve());
+            await Promise.race([requestPromise, immediatePromise]);
+         } catch (error) {}
+         window.gotoPageSupportNotificationDetail(support_id);
+      },
    },
    async created(){
       this.loading = true;
-      var form = new FormData();
-      form.append('action', 'atlantis_get_support_question_user');
-      var r = await window.request(form);
-      if( r != undefined ){
-         var res = JSON.parse( JSON.stringify(r));
-         if( res.message == 'get_support_user_ok' ){
-            this.supports.push( ...res.data);
-         }
-      }
+      this.supports = JSON.parse( JSON.stringify( <?php echo $res; ?> ));
       this.loading = false;
 
       window.appbar_fixed();

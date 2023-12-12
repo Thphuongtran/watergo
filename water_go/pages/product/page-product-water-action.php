@@ -794,9 +794,10 @@ var app = Vue.createApp({
       },
 
       get_brand(){
-         return this.category.filter( cat => {
+         var _get_brand = this.category.filter( cat => {
             if( cat.category == 'water_brand' ) return cat.category == 'water_brand';
          });
+         return _get_brand.sort((a, b) => a.name.localeCompare(b.name));
       },
 
       get_water_quantity(){
@@ -1198,7 +1199,7 @@ var app = Vue.createApp({
                   this.product.has_gift     = null;
                   this.product.gift_to      = null;
                   this.product.gift_from    = null;
-                  this.product.gift_text    = null;
+                  this.product.gift_text    = '';
                }
 
                // PRODUCT IMAGE
@@ -1289,6 +1290,69 @@ var app = Vue.createApp({
          await this.atlantis_find_product(this.product_id);
          if( this.product.mark_out_of_stock == null ){
             this.product.mark_out_of_stock = 0;
+         }
+
+         // CHECK DISCOUNT DATE AND GIFT DATE STILL AVAILABLE
+         function _format_to_date( dateString ){
+            if( dateString != undefined && dateString != null && dateString != 0){
+               const inputDate = new Date(dateString.split('/').reverse().join('-'));
+               inputDate.setHours(0, 0, 0, 0);
+               return inputDate;
+            }
+            return false;
+         }
+
+         var _current_date = new Date();
+         _current_date.setHours(0, 0, 0, 0);
+
+         var _date_discount_from = _format_to_date( this.product.discount_from);
+         var _date_discount_to   = _format_to_date( this.product.discount_to);
+         var _date_gift_from     = _format_to_date( this.product.gift_from);
+         var _date_gift_to       = _format_to_date( this.product.gift_to);
+
+
+         if( _date_discount_from != false && _date_discount_to != false ){
+            var _flag_discount = false;
+            if( _date_discount_from <= _current_date && _date_discount_to >= _current_date ){
+               _flag_discount = true;
+            }else{
+               // CHECK IF IT IS FUTURE DATE
+               if( _date_discount_from > _current_date && _date_discount_to > _current_date ){
+                  _flag_discount = true;
+               }else{
+                  _flag_discount = false;
+               }
+            }
+            if( _flag_discount == false ){
+               this.product.discount_from  = null;
+               this.product.discount_to    = null;
+               this.product.has_discount   = null;
+               this.product.discount_percent  = null;
+               this.open_discount_input = false;
+            }
+         }
+
+         if( _date_gift_from != false && _date_gift_to != false ){
+            var _flag_gift = false;
+            if( _date_gift_from <= _current_date && _date_gift_to >= _current_date ){
+               _flag_gift = true;
+            }else{
+               // CHECK IF IT IS FUTURE DATE
+               if( _date_gift_from > _current_date && _date_gift_to > _current_date ){
+                  _flag_gift = true;
+               }else{
+                  _flag_gift = false;
+               }
+            }
+            if( _flag_gift == false ){
+               // this.product.discount_from = null;
+               // this.product.discount_to = null;
+               this.product.gift_from  = null;
+               this.product.gift_to    = null;
+               this.product.has_gift   = null;
+               this.product.gift_text  = '';
+               this.open_gift_input = false;
+            }
          }
 
       }

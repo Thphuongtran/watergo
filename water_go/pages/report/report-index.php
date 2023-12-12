@@ -509,7 +509,6 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_today_order_report');
          var r = await window.request(form);
          window.appbar_fixed();
-         console.log(r);
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'get_order_ok' ){

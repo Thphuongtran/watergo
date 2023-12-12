@@ -9,7 +9,7 @@
    $sql_category_parent = "SELECT * FROM wp_watergo_product_category
       WHERE category = 'type_of_water' AND ( category_hidden != 1 || category_hidden IS NULL) 
       ORDER BY wp_watergo_product_category.order ASC";
-   $sql_brand      = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_brand' AND ( category_hidden != 1 || category_hidden IS NULL) ORDER BY wp_watergo_product_category.order DESC" ;
+   $sql_brand      = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_brand' AND ( category_hidden != 1 || category_hidden IS NULL) " ;
 
    // $sql_volume     = "SELECT * FROM wp_watergo_product_category WHERE category = 'water_volume' AND ( category_hidden != 1 || category_hidden IS NULL)";
 
@@ -307,6 +307,8 @@
    }
    .box-button .item-image img{
       width: 100%;
+      height: 100%;
+      object-fit: cover;
    }
    .box-button .item.selected{
       background: #2790F9;
@@ -597,8 +599,10 @@
          <p class='heading'><?php echo __('Brand', 'watergo'); ?></p>
          <div class='box-button'>
             <div :class='is_select_brand(cat.name) == true ? "selected" : ""' 
-               @click='select_brand(cat.name)' class='item-image' v-for='(cat, cat_index) in brand' :key='cat_index'>
-               <img :src="get_full_path_image(cat.image)">
+               @click='select_brand(cat.name)' class='item-image' v-for='(cat, cat_index) in filter_brand' :key='cat_index'>
+               <img :src="get_full_path_image(cat.image)" :style='{
+                  "object-fit": cat.image_scale
+               }'>
             </div>
          </div>
          <div class='wrapper-btn'>
@@ -654,7 +658,9 @@ createApp({
          arg_get_product: 0,
          loading_data: false,
 
-         is_user_share_location: false,
+         is_user_share_location: null,
+
+         isRequestInProgress: false,
          
       }
    },
@@ -671,6 +677,12 @@ createApp({
    },
 
    computed: {
+      
+
+      // SORT BY NAME
+      filter_brand(){
+         return this.brand.sort((a, b) => a.name.localeCompare(b.name));
+      },
 
       filter_products(){
          var _products = this.products;
@@ -699,7 +711,11 @@ createApp({
          this.loading_data = true;
          this.products = [];
          await this.atlantis_get_product_sort_version2();
+         jQuery(document).ready(function($){
+            jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+         });
          this.loading_data = false;
+
       },
 
       select_category_parent( cat_name ){
@@ -803,55 +819,71 @@ createApp({
       goBack(){ window.goBack(); },
       gotoProductDetail(product_id){ window.gotoProductDetail(product_id)},
 
+      delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); },
+
       async atlantis_get_product_sort_version2(){
-         var form = new FormData();
-         form.append('action', 'atlantis_get_product_sort_version2');
-         form.append('perPage', 20);
 
-         if( this.is_user_share_location == false ){
-            form.append('no_location_found', 1);
-            this.sortFeatureCurrentValue = 1;
-         }else{
-            form.append('lat', this.latitude);
-            form.append('lng', this.longitude);
-         }
+         if(this.isRequestInProgress ) return;
 
-         form.append('paged', this.products.length);
+         this.isRequestInProgress = true;
 
-         if( this.is_water_device_selected == false ){
-            form.append('product_type', 'water');
-         }else{
-            form.append('product_type', 'water_device');
-         }
+         try{
+            var form = new FormData();
+            form.append('action', 'atlantis_get_product_sort_version2');
+            form.append('perPage', 20);
 
-         if(this.popup_filter_data.category != ''){
-            form.append('category', this.popup_filter_data.category );
-         }
-         if(this.popup_filter_data.category_parent.length > 0){
-            form.append('category_parent', this.popup_filter_data.category_parent.join(',') );
-         }
-         if(this.popup_filter_data.quantity.length > 0){
-            form.append('quantity', this.popup_filter_data.quantity.join(',') );
-         }
-         if(this.popup_filter_data.volume.length > 0){
-            form.append('volume', this.popup_filter_data.volume.join(',') );
-         }
-         if(this.popup_filter_data.brand.length > 0){
-            form.append('brand', this.popup_filter_data.brand.join(',') );
-         }
-
-         var r = await window.request(form);
-
-         if( r != undefined ){
-            var res = JSON.parse( JSON.stringify(r));
-            if( res.message == 'product_found' ){
-               res.data.forEach(item => {
-                  if (!this.products.some(existingItem => existingItem.id === item.id)) {
-                     this.products.push(item);
-                  }
-               });
+            if( this.is_user_share_location == false ){
+               form.append('no_location_found', 1);
+               this.sortFeatureCurrentValue = 1;
+            }else{
+               form.append('lat', this.latitude);
+               form.append('lng', this.longitude);
             }
+
+            form.append('paged', this.products.length);
+
+            if( this.is_water_device_selected == false ){
+               form.append('product_type', 'water');
+            }else{
+               form.append('product_type', 'water_device');
+            }
+
+            if(this.popup_filter_data.category != ''){
+               form.append('category', this.popup_filter_data.category );
+            }
+            if(this.popup_filter_data.category_parent.length > 0){
+               form.append('category_parent', this.popup_filter_data.category_parent.join(',') );
+            }
+            if(this.popup_filter_data.quantity.length > 0){
+               form.append('quantity', this.popup_filter_data.quantity.join(',') );
+            }
+            if(this.popup_filter_data.volume.length > 0){
+               form.append('volume', this.popup_filter_data.volume.join(',') );
+            }
+            if(this.popup_filter_data.brand.length > 0){
+               form.append('brand', this.popup_filter_data.brand.join(',') );
+            }
+
+            var r = await window.request(form);
+
+            if( r != undefined ){
+               var res = JSON.parse( JSON.stringify(r));
+               if( res.message == 'product_found' ){
+                  res.data.forEach(item => {
+                     if (!this.products.some(existingItem => existingItem.id === item.id)) {
+                        this.products.push(item);
+                     }
+                  });
+               }
+            }
+
+            // await this.delay(500);
+         }catch(e){
+            this.isRequestInProgress = false;
+         } finally{
+            this.isRequestInProgress = false;
          }
+
       },
 
       async select_category(cat_name){
@@ -869,6 +901,9 @@ createApp({
             this.loading_data = true;
             this.products = [];
             await this.atlantis_get_product_sort_version2();
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
             this.loading_data = false;
          }else{
 
@@ -882,47 +917,55 @@ createApp({
 
             this.loading_data = true;
             this.products = [];
+
             await this.atlantis_get_product_sort_version2();
+
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
             this.loading_data = false;
          }
 
       },
 
       async get_current_location(){
+         
+         let _location = false;
 
          try{
             if( window.appBridge != undefined ){
                await window.appBridge.getLocation().then( (data) => {
                   if (Object.keys(data).length === 0) {
-                     this.is_user_share_location = false;
-                     this.sortFeatureCurrentValue = 1;
+                     _location = false;
                   }else{
                      let lat = data.lat;
                      let lng = data.lng;
 
                      this.latitude = data.lat;
                      this.longitude = data.lng;
-
-                     this.is_user_share_location = true;
-                     this.sortFeatureCurrentValue = 0;
+                     _location = true;
                   }
                });
             }else{
-               this.is_user_share_location = false;
-               this.sortFeatureCurrentValue = 1;
+               _location = false;
             }
-
          }catch(e){
-            this.is_user_share_location = false;
-            this.sortFeatureCurrentValue = 1;
+            _location = false;
+         }
+
+         if( this.is_user_share_location != _location ){
+            this.is_user_share_location = _location;
+            this.loading_data = true;
+            this.products = [];
+            await this.atlantis_get_product_sort_version2();
+            jQuery(document).ready(function($){
+               jQuery('.box-wrapper').matchHeight({ property: 'min-height' });
+            });
+            this.loading_data = false;
          }
 
       },
 
-   },
-
-   update(){
-      this.get_current_location();
    },
 
    mounted() {
@@ -942,11 +985,12 @@ createApp({
       this.category_parent    = JSON.parse(JSON.stringify(<?php echo json_encode($category_parent, true); ?>));
       this.brand              = JSON.parse(JSON.stringify(<?php echo json_encode($brand, true); ?>));
       this.quantity           = JSON.parse(JSON.stringify(<?php echo json_encode($quantity, true); ?>));
-      
-         await this.get_current_location();
 
       this.loading = true;
-      await this.atlantis_get_product_sort_version2();
+      await this.get_current_location();
+      await setInterval( async () => {
+         await this.get_current_location();
+      }, 2000);
 
       this.loading = false;
 

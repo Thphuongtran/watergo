@@ -304,8 +304,6 @@ var app = Vue.createApp({
          form.append('order_id', JSON.stringify(ods));
          form.append('status', order_status);
          var r = await window.request(form);
-         console.log(r);
-
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify(r));
             if( res.message == 'order_status_ok'){
@@ -384,7 +382,6 @@ var app = Vue.createApp({
          form.append('action', 'atlantis_get_order_detail');
          form.append('order_id', order_id);
          var r = await window.request(form);
-         console.log(r)
          if( r != undefined ){
             var res = JSON.parse( JSON.stringify( r ));
             if( res.message == 'get_order_ok'){
