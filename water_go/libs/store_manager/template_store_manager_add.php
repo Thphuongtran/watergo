@@ -184,8 +184,7 @@ function template_store_manager_add(){
    <!--  -->
 
 </div>
-<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&libraries=places"></script> -->
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAP_KEY; ?>&libraries=places"></script>
 
 <script>
    

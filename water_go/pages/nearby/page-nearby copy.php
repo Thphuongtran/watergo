@@ -100,9 +100,7 @@
          </div>
       </div>
 <script src="<?php echo THEME_URI."/assets/js/owl.carousel.min.js?" ?>"></script>
-
-<!-- <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=marker&v=beta"  async defer ></script> -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrhkRyBm3jXLkcMmVvd_GNhINb03VSVfI&callback=initMap&libraries=marker&v=beta"  async defer ></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAP_KEY; ?>&callback=initMap&libraries=marker&v=beta"  async defer ></script>
 <script type="text/javascript">
    // Nhập key to continue
    var icon = `<svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">

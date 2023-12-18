@@ -15,6 +15,8 @@ define( 'THEME_URI',get_template_directory_uri() );
 define( 'TEXTDOMAIN',$theme['TextDomain'] );
 define( 'SHORTCODE_CATEGORY',sprintf(__('by %s',TEXTDOMAIN),THEME_NAME) );
 
+define('GOOGLE_MAP_KEY', 'AIzaSyCJW76zFHUh2HK5-Rm_Z1KW9tGr6zBbOZc');
+
 // ADD HELPER INSIGHT
 // require_once THEME_DIR . '/classes/class-insight-core-breadcrumbs.php';
 require_once THEME_DIR . '/libs/class-setup-theme.php';
